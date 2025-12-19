@@ -13,37 +13,60 @@ export const content = {
         {
           title: "AI & Automaatio",
           description:
-            "Vapauta aikaa rutiineista. n8n, Make ja kustomoidut integraatiot, jotka tekevät työstäsi sujuvampaa.",
-          tags: ["n8n", "Make", "OpenAI", "Anthropic"],
+            "Poistan manuaaliset pullonkaulat myynnistä, markkinoinnista ja operatiivisesta työstä. Rakennan tuotantokelpoisia AI- ja automaatioratkaisuja, jotka joko säästävät rahaa tai tuottavat sitä – ei kokeellista leikkimistä.",
+          tags: ["n8n", "Make", "AI Agents", "MCP", "OpenAI", "Anthropic"],
         },
         {
           title: "WordPress & WooCommerce",
           description:
-            "Korkean suorituskyvyn verkkokaupat ja sivustot. Kustomoituja ratkaisuja vaativaan käyttöön.",
-          tags: ["ACF", "Multisite", "Performance", "React"],
+            "Vaativiin WordPress- ja WooCommerce-ympäristöihin, joissa perusplugin-ratkaisut eivät enää riitä. Korjaan, optimoin ja laajennan monimutkaisia kokonaisuuksia ilman että liiketoiminta pysähtyy.",
+          tags: [
+            "ACF",
+            "Multisite",
+            "WooCommerce",
+            "Performance",
+            "Custom Data",
+          ],
         },
         {
           title: "Mittaus & Konversiot",
           description:
-            "Tiedä, älä arvaa. Server-side tracking (GTM), GA4 ja CAPI-ratkaisut, jotka tuovat luotettavaa dataa.",
-          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery"],
+            "Korjaan rikkinäisen analytiikan ja rakennan mittauksen, johon voi oikeasti luottaa. Server-side tracking, GA4 ja CAPI-ratkaisut ilman arvailua tai harhaista dataa.",
+          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery", "Consent Mode"],
         },
         {
           title: "Agentit & Botit",
           description:
-            "Älykkäät asiakaspalvelijat ja sisäiset avustajat Telegramiin, WhatsAppiin tai Slackiin.",
-          tags: ["Telegram", "WhatsApp", "Vercel AI SDK", "Claude Agent SDK"],
+            "Rakennan tekoälyagentteja, jotka hoitavat oikeita tehtäviä: asiakaspalvelua, tiedonhakua ja sisäisiä prosesseja. Ei pelkkiä chatboteja, vaan järjestelmiin integroituvia digitaalisia työntekijöitä.",
+          tags: [
+            "Telegram",
+            "WhatsApp",
+            "Slack",
+            "Vercel AI SDK",
+            "Claude Agent SDK",
+          ],
         },
         {
-          title: "Tekniset Auditit",
+          title: "Tekniset & AI-auditit",
           description:
-            "Syvällinen katsaus nykyiseen pinoosi. Pullonkaulojen tunnistus ja korjausehdotukset.",
+            "Riippumaton analyysi nykyisestä teknisestä pinostasi: suorituskyky, turvallisuus, mittaus ja AI-valmius. Saat konkreettisen toimenpidelistan – ei myyntipuhetta.",
           tags: [
             "Performance",
             "Security",
             "SEO",
             "Architecture",
-            "AI Security Audit",
+            "AI Readiness",
+          ],
+        },
+        {
+          title: "Jatkuva AI- & automaatiokumppanuus",
+          description:
+            "Pitkäjänteinen kumppanuus yrityksille, jotka haluavat kehittää järjestelmiään jatkuvasti. Toimin teknisenä ajattelukumppanina ja toteuttajana ilman jatkuvaa projektien käynnistämistä.",
+          tags: [
+            "Retainer",
+            "AI Strategy",
+            "Continuous Improvement",
+            "Systems Thinking",
           ],
         },
       ],
