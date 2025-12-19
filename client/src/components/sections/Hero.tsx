@@ -50,7 +50,7 @@ export function Hero({ content }: HeroProps) {
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
           className="flex flex-col sm:flex-row gap-4 items-center justify-center w-full sm:w-auto"
         >
-          <a href="#lead-capture" className="w-full sm:w-auto">
+          <a href={content.bookingUrl} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
             <Button size="lg" className="rounded-full w-full h-12 px-8 text-base shadow-lg hover:shadow-xl transition-all duration-300 group">
               {content.cta_primary}
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />

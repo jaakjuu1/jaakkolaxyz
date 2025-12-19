@@ -71,9 +71,11 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                   <p className="text-sm text-muted-foreground">Skip the queue if you are ready.</p>
                 </div>
               </div>
-              <Button variant="link" className="px-0 text-primary underline">
-                Book a 20min Discovery Call &rarr;
-              </Button>
+              <a href="https://calendly.com" target="_blank" rel="noopener noreferrer">
+                <Button variant="link" className="px-0 text-primary underline">
+                  Book a 20min Discovery Call &rarr;
+                </Button>
+              </a>
             </div>
           </div>
 
@@ -111,13 +113,16 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
+    console.log("Form submitted with values:", values);
+    
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
+    
     setIsSubmitting(false);
     setIsSuccess(true);
     toast({
       title: "Message sent",
-      description: "Thanks for reaching out!",
+      description: "Thanks for reaching out! We've received your inquiry.",
     });
   }
 
