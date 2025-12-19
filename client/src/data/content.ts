@@ -6,7 +6,7 @@ export const content = {
         "Autan suomalaisia pk-yrityksiä ja kasvuhakuisia tiimejä skaalautumaan ilman kaaosta. Tekoäly, automaatio ja data valjastettuna liiketoimintasi ytimeen.",
       cta_primary: "Varaa 20 min kartoitus",
       cta_secondary: "Katso case-esimerkit",
-      bookingUrl: "https://calendly.com",
+      bookingUrl: "https://calendly.com/juuso-jaakkola/consultation",
     },
     services: {
       title: "Palvelut",
@@ -247,7 +247,7 @@ export const content = {
         "Helping Finnish SMEs and growth teams scale without chaos. AI, automation, and data at the core of your business.",
       cta_primary: "Book a 20min Discovery",
       cta_secondary: "View Case Studies",
-      bookingUrl: "https://calendly.com",
+      bookingUrl: "https://calendly.com/juuso-jaakkola/consultation",
     },
     services: {
       title: "Services",

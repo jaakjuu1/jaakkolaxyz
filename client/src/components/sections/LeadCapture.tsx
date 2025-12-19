@@ -73,7 +73,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                   <p className="text-sm text-muted-foreground">Skip the queue if you are ready.</p>
                 </div>
               </div>
-              <a href="https://calendly.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://calendly.com/juuso-jaakkola/consultation" target="_blank" rel="noopener noreferrer">
                 <Button variant="link" className="px-0 text-primary underline" data-testid="link-booking">
                   Book a 20min Discovery Call &rarr;
                 </Button>
