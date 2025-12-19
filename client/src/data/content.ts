@@ -156,7 +156,6 @@ export const content = {
             "Docker + CI/CD",
             "PWA",
           ],
-          note: "Passion project / experimental research",
         },
       ],
     },
