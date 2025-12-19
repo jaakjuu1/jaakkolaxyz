@@ -118,6 +118,23 @@ export const content = {
             "Zod (runtime validation)",
           ],
         },
+        {
+          client: "Henkilökohtainen tutkimusprojekti",
+          challenge:
+            "Tutkia, miten teknologia ja tekoäly voivat tukea tietoisuutta, hengitystä ja kokemuksellista läsnäoloa.",
+          solution:
+            "Reaaliaikainen meditaatio- ja soundscape-sovellus, joka yhdistää Web Audio API:n, AI-generoidun musiikin ja hengitykseen reagoivan ääniympäristön.",
+          result:
+            "Kokeellinen mutta tuotantotason järjestelmä, joka tutkii ihmisen ja teknologian välistä vuorovaikutusta.",
+          stack: [
+            "Web Audio API",
+            "Google Lyria (Realtime)",
+            "Vite + React + TypeScript",
+            "Docker + CI/CD",
+            "PWA",
+          ],
+          note: "Passion project / experimental research",
+        },
       ],
     },
     process: {
