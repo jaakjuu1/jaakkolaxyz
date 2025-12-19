@@ -2,7 +2,8 @@ export const content = {
   fi: {
     hero: {
       headline: "Älykästä kasvua & automaatiota.",
-      subheadline: "Autan suomalaisia pk-yrityksiä ja kasvuhakuisia tiimejä skaalautumaan ilman kaaosta. Tekoäly, automaatio ja data valjastettuna liiketoimintasi ytimeen.",
+      subheadline:
+        "Autan suomalaisia pk-yrityksiä ja kasvuhakuisia tiimejä skaalautumaan ilman kaaosta. Tekoäly, automaatio ja data valjastettuna liiketoimintasi ytimeen.",
       cta_primary: "Varaa 20 min kartoitus",
       cta_secondary: "Katso case-esimerkit",
     },
@@ -11,56 +12,113 @@ export const content = {
       items: [
         {
           title: "AI & Automaatio",
-          description: "Vapauta aikaa rutiineista. n8n, Make ja kustomoidut integraatiot, jotka tekevät työstäsi sujuvampaa.",
-          tags: ["n8n", "Make", "OpenAI", "Anthropic"]
+          description:
+            "Vapauta aikaa rutiineista. n8n, Make ja kustomoidut integraatiot, jotka tekevät työstäsi sujuvampaa.",
+          tags: ["n8n", "Make", "OpenAI", "Anthropic"],
         },
         {
           title: "WordPress & WooCommerce",
-          description: "Korkean suorituskyvyn verkkokaupat ja sivustot. Kustomoituja ratkaisuja vaativaan käyttöön.",
-          tags: ["ACF", "Multisite", "Performance", "React"]
+          description:
+            "Korkean suorituskyvyn verkkokaupat ja sivustot. Kustomoituja ratkaisuja vaativaan käyttöön.",
+          tags: ["ACF", "Multisite", "Performance", "React"],
         },
         {
           title: "Mittaus & Konversiot",
-          description: "Tiedä, älä arvaa. Server-side tracking (GTM), GA4 ja CAPI-ratkaisut, jotka tuovat luotettavaa dataa.",
-          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery"]
+          description:
+            "Tiedä, älä arvaa. Server-side tracking (GTM), GA4 ja CAPI-ratkaisut, jotka tuovat luotettavaa dataa.",
+          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery"],
         },
         {
           title: "Agentit & Botit",
-          description: "Älykkäät asiakaspalvelijat ja sisäiset avustajat Telegramiin, WhatsAppiin tai Slackiin.",
-          tags: ["Telegram", "WhatsApp", "LangChain", "Vercel AI SDK"]
+          description:
+            "Älykkäät asiakaspalvelijat ja sisäiset avustajat Telegramiin, WhatsAppiin tai Slackiin.",
+          tags: ["Telegram", "WhatsApp", "Vercel AI SDK", "Claude Agent SDK"],
         },
         {
           title: "Tekniset Auditit",
-          description: "Syvällinen katsaus nykyiseen pinoosi. Pullonkaulojen tunnistus ja korjausehdotukset.",
-          tags: ["Performance", "Security", "SEO", "Architecture"]
-        }
-      ]
+          description:
+            "Syvällinen katsaus nykyiseen pinoosi. Pullonkaulojen tunnistus ja korjausehdotukset.",
+          tags: [
+            "Performance",
+            "Security",
+            "SEO",
+            "Architecture",
+            "AI Security Audit",
+          ],
+        },
+      ],
     },
     cases: {
       title: "Valittuja projekteja",
       items: [
         {
-          client: "Verkkokauppa X",
-          challenge: "Hidas latausaika ja manuaalinen tilausten käsittely.",
-          solution: "Headless-arkkitehtuuri ja n8n-automaatio varastonhallintaan.",
-          result: "+40% konversio, 20h säästö viikossa.",
-          stack: ["Next.js", "WooCommerce", "n8n"]
+          client: "Sisältö- ja verkkokauppavetoinen organisaatio",
+          challenge:
+            "Perinteinen WordPress/WooCommerce ei täyttänyt suorituskyky-, turvallisuus- ja jatkokehitysvaatimuksia.",
+          solution:
+            "Headless-arkkitehtuuri, jossa WordPress toimii sisällönhallintana ja Next.js liiketoimintakriittisenä frontendinä type-safe GraphQL -kerroksen kautta.",
+          result:
+            "Nopeampi sivusto, parempi kehityskokemus ja selkeä erotus sisällön, datan ja liiketoimintalogiikan välillä.",
+          stack: [
+            "Next.js 14 (App Router, RSC)",
+            "WordPress + WPGraphQL",
+            "WooCommerce (REST + GraphQL)",
+            "GraphQL Codegen",
+            "NextAuth",
+            "TypeScript (strict)",
+          ],
         },
         {
-          client: "Markkinointitoimisto Y",
-          challenge: "Liidien laadun vaihtelu ja hidas seuranta.",
-          solution: "AI-pohjainen liidien pisteytys ja automaattinen CRM-syöttö.",
-          result: "Myynnin hit-rate +25%.",
-          stack: ["OpenAI API", "Pipedrive", "Make"]
+          client: "Rakennusalan urakoitsija (saumaus / julkisivutyöt)",
+          challenge:
+            "Työmaamittaukset, tuntikirjaukset ja tarjoukset perustuivat hajanaisiin muistiinpanoihin ja manuaaliseen laskentaan.",
+          solution:
+            "Toimialakohtainen projektinhallintasovellus, jossa AI jäsentää mittausmuistiinpanot rakenteiseksi dataksi ja yhdistää ne tuntikirjauksiin, tarjouksiin ja palkkoihin.",
+          result:
+            "Vähemmän virheitä, nopeampi tarjouslaskenta ja selkeä näkymä projektien kannattavuuteen.",
+          stack: [
+            "React + TypeScript",
+            "Gemini AI (structured output)",
+            "Drizzle ORM",
+            "Turso (SQLite)",
+            "White-label theming",
+          ],
         },
         {
-          client: "Konsultti Z",
-          challenge: "Asiakasraportoinnin työläys.",
-          solution: "Automatisoitu data pipeline BigQuerystä Looker Studioon.",
-          result: "Reaaliaikainen näkymä, 0h manuaalista työtä.",
-          stack: ["GTM Server-side", "BigQuery", "Looker"]
-        }
-      ]
+          client: "Tuotanto / laskenta (sisäinen työkalu)",
+          challenge:
+            "Laskenta- ja toteutuspiirustusten erot jäivät helposti huomaamatta ja tarkastus vei kohtuuttomasti aikaa.",
+          solution:
+            "ZIP-pohjainen diff-työkalu, joka parittaa dokumentit, analysoi erot Gemini 3 Prolla ja tuottaa suodatettavan raportin (reviewed + kommentit) sekä PDF-viennin.",
+          result:
+            "Nopeampi tarkastus, vähemmän virheitä ja selkeä yhteinen review-workflow.",
+          stack: [
+            "React",
+            "Gemini 3 Pro",
+            "JSZip",
+            "PDF export",
+            "Tailwind (CDN)",
+          ],
+        },
+        {
+          client: "B2B-palveluyritys",
+          challenge:
+            "Uusien asiakkuuksien hankinta perustui manuaaliseen prospektointiin ja geneerisiin viesteihin.",
+          solution:
+            "AI-pohjainen outbound-järjestelmä, joka analysoi kohdeyritykset, muodostaa ICP:t, löytää relevantit prospektit ja tuottaa personoidut viestit hallitulla volyymilla.",
+          result:
+            "Parempi liidien laatu, vähemmän hukkatyötä ja selkeä näkyvyys myyntiputken toimintaan.",
+          stack: [
+            "AI-agentit (tool-based orchestration)",
+            "Vercel AI SDK",
+            "DeepSeek",
+            "Node.js + BullMQ",
+            "WebSockets",
+            "React + Vite",
+            "Zod (runtime validation)",
+          ],
+        },
+      ],
     },
     process: {
       title: "Kuinka työskentelen",
@@ -68,24 +126,27 @@ export const content = {
         {
           step: "01",
           name: "Diagnose",
-          description: "Ensin ymmärrämme ongelman juurisyyn. Ei arvauksia, vaan dataan ja prosesseihin pohjautuva analyysi."
+          description:
+            "Ensin ymmärrämme ongelman juurisyyn. Ei arvauksia, vaan dataan ja prosesseihin pohjautuva analyysi.",
         },
         {
           step: "02",
           name: "Build",
-          description: "Rakennan ratkaisun nopeilla iteraatioilla. MVP viikoissa, ei kuukausissa. Läpinäkyvä prosessi."
+          description:
+            "Rakennan ratkaisun nopeilla iteraatioilla. MVP viikoissa, ei kuukausissa. Läpinäkyvä prosessi.",
         },
         {
           step: "03",
           name: "Iterate",
-          description: "Maailma muuttuu, ja niin myös softa. Mittaamme tulokset ja optimoimme jatkuvasti."
-        }
-      ]
+          description:
+            "Maailma muuttuu, ja niin myös softa. Mittaamme tulokset ja optimoimme jatkuvasti.",
+        },
+      ],
     },
     about: {
       title: "Tietoa minusta",
       text: "Olen yrittäjähenkinen kehittäjä ja automaatioarkkitehti. Uskon, että suurin osa 'kiireestä' on vain huonosti suunniteltuja prosesseja. Rakennan järjestelmiä, jotka taistelevat entropiaa vastaan ja tuottavat mitattavaa arvoa. En myy tunteja, vaan tuloksia.",
-      signature: "JJ"
+      signature: "JJ",
     },
     leadCapture: {
       title: "Aloitetaan keskustelu",
@@ -97,7 +158,7 @@ export const content = {
         message: "Mitä haluat saavuttaa?",
         budget: "Budjettiluokka",
         submit: "Lähetä",
-        success: "Kiitos viestistäsi! Olen pian yhteydessä."
+        success: "Kiitos viestistäsi! Olen pian yhteydessä.",
       },
       quiz: {
         title: "Project Fit -kartoitus",
@@ -105,34 +166,45 @@ export const content = {
         questions: [
           {
             q: "Mikä kuvaa tilannettasi parhaiten?",
-            options: ["Haluan automatisoida manuaalista työtä", "Tarvitsen verkkokaupan/sivuston kehitystä", "Haluan parempaa dataa/analytiikkaa", "Muu / En osaa sanoa"]
+            options: [
+              "Haluan automatisoida manuaalista työtä",
+              "Tarvitsen verkkokaupan/sivuston kehitystä",
+              "Haluan parempaa dataa/analytiikkaa",
+              "Muu / En osaa sanoa",
+            ],
           },
           {
             q: "Mikä on projektin aikataulu?",
-            options: ["Heti / ASAP", "1-2 kuukauden sisällä", "Puolen vuoden sisällä", "Vain alustava selvitys"]
+            options: [
+              "Heti / ASAP",
+              "1-2 kuukauden sisällä",
+              "Puolen vuoden sisällä",
+              "Vain alustava selvitys",
+            ],
           },
           {
             q: "Onko budjetti jo mietitty?",
-            options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"]
-          }
+            options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"],
+          },
         ],
         results: {
           book_call: "Varaa 20min puhelu, niin katsotaan tarkemmin.",
           audit: "Suosittelen teknistä auditointia nykytilan selvittämiseksi.",
           quote: "Vaikuttaa selkeältä projektilta. Pyydä tarjous.",
-          cta: "Jatka tästä"
-        }
-      }
+          cta: "Jatka tästä",
+        },
+      },
     },
     footer: {
       copyright: "© 2024 JJ. All rights reserved.",
-      links: ["LinkedIn", "Twitter", "GitHub"]
-    }
+      links: ["LinkedIn", "Twitter", "GitHub"],
+    },
   },
   en: {
     hero: {
       headline: "Intelligent Growth & Automation.",
-      subheadline: "Helping Finnish SMEs and growth teams scale without chaos. AI, automation, and data at the core of your business.",
+      subheadline:
+        "Helping Finnish SMEs and growth teams scale without chaos. AI, automation, and data at the core of your business.",
       cta_primary: "Book a 20min Discovery",
       cta_secondary: "View Case Studies",
     },
@@ -141,30 +213,35 @@ export const content = {
       items: [
         {
           title: "AI & Automation",
-          description: "Free up time from routines. n8n, Make, and custom integrations that make work smoother.",
-          tags: ["n8n", "Make", "OpenAI", "Anthropic"]
+          description:
+            "Free up time from routines. n8n, Make, and custom integrations that make work smoother.",
+          tags: ["n8n", "Make", "OpenAI", "Anthropic"],
         },
         {
           title: "WordPress & WooCommerce",
-          description: "High-performance ecommerce and websites. Custom solutions for demanding use cases.",
-          tags: ["ACF", "Multisite", "Performance", "React"]
+          description:
+            "High-performance ecommerce and websites. Custom solutions for demanding use cases.",
+          tags: ["ACF", "Multisite", "Performance", "React"],
         },
         {
           title: "Measurement & Conversions",
-          description: "Know, don't guess. Server-side tracking (GTM), GA4, and CAPI solutions that provide reliable data.",
-          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery"]
+          description:
+            "Know, don't guess. Server-side tracking (GTM), GA4, and CAPI solutions that provide reliable data.",
+          tags: ["GA4", "Server-side GTM", "CAPI", "BigQuery"],
         },
         {
           title: "Agents & Bots",
-          description: "Intelligent customer service agents and internal assistants for Telegram, WhatsApp, or Slack.",
-          tags: ["Telegram", "WhatsApp", "LangChain", "Vercel AI SDK"]
+          description:
+            "Intelligent customer service agents and internal assistants for Telegram, WhatsApp, or Slack.",
+          tags: ["Telegram", "WhatsApp", "LangChain", "Vercel AI SDK"],
         },
         {
           title: "Technical Audits",
-          description: "Deep dive into your current stack. Identifying bottlenecks and proposing fixes.",
-          tags: ["Performance", "Security", "SEO", "Architecture"]
-        }
-      ]
+          description:
+            "Deep dive into your current stack. Identifying bottlenecks and proposing fixes.",
+          tags: ["Performance", "Security", "SEO", "Architecture"],
+        },
+      ],
     },
     cases: {
       title: "Selected Projects",
@@ -172,25 +249,26 @@ export const content = {
         {
           client: "Ecommerce X",
           challenge: "Slow load times and manual order processing.",
-          solution: "Headless architecture and n8n automation for inventory management.",
+          solution:
+            "Headless architecture and n8n automation for inventory management.",
           result: "+40% conversion, 20h saved per week.",
-          stack: ["Next.js", "WooCommerce", "n8n"]
+          stack: ["Next.js", "WooCommerce", "n8n"],
         },
         {
           client: "Marketing Agency Y",
           challenge: "Lead quality variation and slow follow-up.",
           solution: "AI-based lead scoring and automatic CRM entry.",
           result: "Sales hit-rate +25%.",
-          stack: ["OpenAI API", "Pipedrive", "Make"]
+          stack: ["OpenAI API", "Pipedrive", "Make"],
         },
         {
           client: "Consultant Z",
           challenge: "Laborious client reporting.",
           solution: "Automated data pipeline from BigQuery to Looker Studio.",
           result: "Real-time view, 0h manual work.",
-          stack: ["GTM Server-side", "BigQuery", "Looker"]
-        }
-      ]
+          stack: ["GTM Server-side", "BigQuery", "Looker"],
+        },
+      ],
     },
     process: {
       title: "How I Work",
@@ -198,28 +276,32 @@ export const content = {
         {
           step: "01",
           name: "Diagnose",
-          description: "First, we understand the root cause. No guessing, but analysis based on data and processes."
+          description:
+            "First, we understand the root cause. No guessing, but analysis based on data and processes.",
         },
         {
           step: "02",
           name: "Build",
-          description: "I build the solution with fast iterations. MVP in weeks, not months. Transparent process."
+          description:
+            "I build the solution with fast iterations. MVP in weeks, not months. Transparent process.",
         },
         {
           step: "03",
           name: "Iterate",
-          description: "The world changes, and so does software. We measure results and optimize continuously."
-        }
-      ]
+          description:
+            "The world changes, and so does software. We measure results and optimize continuously.",
+        },
+      ],
     },
     about: {
       title: "About Me",
       text: "I am an entrepreneurial developer and automation architect. I believe that most 'busyness' is just poorly designed processes. I build systems that fight entropy and produce measurable value. I don't sell hours, I sell results.",
-      signature: "JJ"
+      signature: "JJ",
     },
     leadCapture: {
       title: "Let's Talk",
-      subtitle: "Briefly tell me about your needs. I usually respond within 24h.",
+      subtitle:
+        "Briefly tell me about your needs. I usually respond within 24h.",
       form: {
         name: "Name",
         email: "Email",
@@ -227,7 +309,7 @@ export const content = {
         message: "What do you want to achieve?",
         budget: "Budget Range",
         submit: "Send",
-        success: "Thanks for your message! I'll be in touch soon."
+        success: "Thanks for your message! I'll be in touch soon.",
       },
       quiz: {
         title: "Project Fit Quiz",
@@ -235,28 +317,38 @@ export const content = {
         questions: [
           {
             q: "What describes your situation best?",
-            options: ["I want to automate manual work", "I need ecommerce/website development", "I want better data/analytics", "Other / Not sure"]
+            options: [
+              "I want to automate manual work",
+              "I need ecommerce/website development",
+              "I want better data/analytics",
+              "Other / Not sure",
+            ],
           },
           {
             q: "What is the project timeline?",
-            options: ["Immediate / ASAP", "Within 1-2 months", "Within 6 months", "Just preliminary research"]
+            options: [
+              "Immediate / ASAP",
+              "Within 1-2 months",
+              "Within 6 months",
+              "Just preliminary research",
+            ],
           },
           {
             q: "Is there a budget in mind?",
-            options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"]
-          }
+            options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"],
+          },
         ],
         results: {
           book_call: "Book a 20min call, let's look closer.",
           audit: "I recommend a technical audit to clarify current state.",
           quote: "Seems like a clear project. Request a quote.",
-          cta: "Continue"
-        }
-      }
+          cta: "Continue",
+        },
+      },
     },
     footer: {
       copyright: "© 2024 JJ. All rights reserved.",
-      links: ["LinkedIn", "Twitter", "GitHub"]
-    }
-  }
+      links: ["LinkedIn", "Twitter", "GitHub"],
+    },
+  },
 };
