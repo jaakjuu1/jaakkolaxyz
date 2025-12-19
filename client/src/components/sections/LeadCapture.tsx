@@ -21,10 +21,10 @@ interface LeadCaptureProps {
 }
 
 const formSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  company: z.string().min(2),
-  message: z.string().min(10),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  company: z.string().min(2, "Company name must be at least 2 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
   budget: z.string().optional(),
 });
 
@@ -49,6 +49,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                 variant={activeTab === "form" ? "default" : "outline"}
                 onClick={() => setActiveTab("form")}
                 className="rounded-full"
+                data-testid="button-tab-form"
               >
                 Message
               </Button>
@@ -56,6 +57,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                 variant={activeTab === "quiz" ? "default" : "outline"}
                 onClick={() => setActiveTab("quiz")}
                 className="rounded-full"
+                data-testid="button-tab-quiz"
               >
                 Project Fit Quiz
               </Button>
@@ -72,7 +74,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                 </div>
               </div>
               <a href="https://calendly.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="link" className="px-0 text-primary underline">
+                <Button variant="link" className="px-0 text-primary underline" data-testid="link-booking">
                   Book a 20min Discovery Call &rarr;
                 </Button>
               </a>
@@ -113,17 +115,38 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
-    console.log("Form submitted with values:", values);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setIsSuccess(true);
-    toast({
-      title: "Message sent",
-      description: "Thanks for reaching out! We've received your inquiry.",
-    });
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to submit form");
+      }
+
+      setIsSuccess(true);
+      toast({
+        title: "Message sent!",
+        description: content.success,
+      });
+      form.reset();
+    } catch (error: any) {
+      console.error("Form submission error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (isSuccess) {
@@ -137,7 +160,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
           <Check className="h-10 w-10" />
         </div>
         <h3 className="text-2xl font-serif">{content.success}</h3>
-        <Button onClick={() => setIsSuccess(false)} variant="outline">
+        <Button onClick={() => setIsSuccess(false)} variant="outline" data-testid="button-send-another">
           Send another
         </Button>
       </motion.div>
@@ -160,7 +183,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
               <FormItem>
                 <FormLabel>{content.name}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} />
+                  <Input placeholder="John Doe" {...field} data-testid="input-name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -174,7 +197,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <FormItem>
                   <FormLabel>{content.email}</FormLabel>
                   <FormControl>
-                    <Input placeholder="john@company.com" {...field} />
+                    <Input placeholder="john@company.com" {...field} data-testid="input-email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,7 +210,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <FormItem>
                   <FormLabel>{content.company}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme Inc" {...field} />
+                    <Input placeholder="Acme Inc" {...field} data-testid="input-company" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +225,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <FormLabel>{content.budget}</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger data-testid="select-budget">
                       <SelectValue placeholder="Select range" />
                     </SelectTrigger>
                   </FormControl>
@@ -224,13 +247,13 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
               <FormItem>
                 <FormLabel>{content.message}</FormLabel>
                 <FormControl>
-                  <Textarea className="min-h-[120px]" placeholder="..." {...field} />
+                  <Textarea className="min-h-[120px]" placeholder="..." {...field} data-testid="input-message" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit" className="w-full h-12 text-lg" disabled={isSubmitting}>
+          <Button type="submit" className="w-full h-12 text-lg" disabled={isSubmitting} data-testid="button-submit-form">
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : content.submit}
           </Button>
         </form>
@@ -240,7 +263,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
 }
 
 function Quiz({ content }: { content: any }) {
-  const [step, setStep] = useState(0); // 0 = start, 1..n = questions, n+1 = result
+  const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
 
   const handleStart = () => setStep(1);
@@ -251,15 +274,11 @@ function Quiz({ content }: { content: any }) {
     if (step < content.questions.length) {
       setStep(step + 1);
     } else {
-      setStep(content.questions.length + 1); // Go to results
+      setStep(content.questions.length + 1);
     }
   };
 
   const getRecommendation = () => {
-    // Simple logic based on answers
-    // Q2: Timeline (0=ASAP, 1=1-2m, 2=6m, 3=Research)
-    // Q3: Budget (0=<2k, 1=2-5k, 2=5-10k, 3=10k+)
-    
     const timeline = answers[1];
     const budget = answers[2];
 
@@ -277,7 +296,7 @@ function Quiz({ content }: { content: any }) {
         >
           <h3 className="text-2xl font-serif">{content.title}</h3>
           <p className="text-muted-foreground">Let's find the best way to help you in 3 steps.</p>
-          <Button size="lg" onClick={handleStart} className="rounded-full px-8">
+          <Button size="lg" onClick={handleStart} className="rounded-full px-8" data-testid="button-start-quiz">
             {content.start}
           </Button>
         </motion.div>
@@ -303,6 +322,7 @@ function Quiz({ content }: { content: any }) {
                 variant="outline" 
                 className="justify-start h-auto py-4 px-6 text-left whitespace-normal hover:border-primary hover:bg-secondary/50"
                 onClick={() => handleAnswer(idx)}
+                data-testid={`button-quiz-option-${idx}`}
               >
                 {opt}
               </Button>
@@ -320,11 +340,11 @@ function Quiz({ content }: { content: any }) {
             !
           </div>
           <h3 className="text-2xl font-serif">Recommendation</h3>
-          <p className="text-xl font-medium text-foreground">{getRecommendation()}</p>
-          <Button size="lg" className="rounded-full w-full">
+          <p className="text-xl font-medium text-foreground" data-testid="text-quiz-result">{getRecommendation()}</p>
+          <Button size="lg" className="rounded-full w-full" data-testid="button-quiz-continue">
             {content.results.cta} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
-          <Button variant="ghost" onClick={() => { setStep(0); setAnswers([]); }} className="text-muted-foreground">
+          <Button variant="ghost" onClick={() => { setStep(0); setAnswers([]); }} className="text-muted-foreground" data-testid="button-quiz-restart">
             Restart
           </Button>
         </motion.div>
