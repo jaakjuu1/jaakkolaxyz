@@ -191,6 +191,15 @@ export const content = {
     leadCapture: {
       title: "Aloitetaan keskustelu",
       subtitle: "Kerro lyhyesti tarpeestasi. Vastaan yleensä 24h sisällä.",
+      booking: {
+        title: "Suora varaus",
+        subtitle: "Ohita jono, jos olet valmis.",
+        cta: "Varaa 20min kartoituspuhelu",
+      },
+      tabs: {
+        form: "Viesti",
+        quiz: "Project Fit -kysely",
+      },
       form: {
         name: "Nimi",
         email: "Sähköposti",
@@ -202,7 +211,11 @@ export const content = {
       },
       quiz: {
         title: "Project Fit -kartoitus",
+        subtitle: "Selvitetään paras tapa auttaa sinua kolmessa vaiheessa.",
         start: "Aloita kartoitus",
+        questionPrefix: "Kysymys",
+        recommendationTitle: "Suositus",
+        restart: "Aloita alusta",
         questions: [
           {
             q: "Mikä kuvaa tilannettasi parhaiten?",
@@ -343,6 +356,15 @@ export const content = {
       title: "Let's Talk",
       subtitle:
         "Briefly tell me about your needs. I usually respond within 24h.",
+      booking: {
+        title: "Direct Booking",
+        subtitle: "Skip the queue if you are ready.",
+        cta: "Book a 20min Discovery Call",
+      },
+      tabs: {
+        form: "Message",
+        quiz: "Project Fit Quiz",
+      },
       form: {
         name: "Name",
         email: "Email",
@@ -354,7 +376,11 @@ export const content = {
       },
       quiz: {
         title: "Project Fit Quiz",
+        subtitle: "Let's find the best way to help you in 3 steps.",
         start: "Start Quiz",
+        questionPrefix: "Question",
+        recommendationTitle: "Recommendation",
+        restart: "Restart",
         questions: [
           {
             q: "What describes your situation best?",

@@ -51,7 +51,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                 className="rounded-full"
                 data-testid="button-tab-form"
               >
-                Message
+                {content.tabs.form}
               </Button>
               <Button 
                 variant={activeTab === "quiz" ? "default" : "outline"}
@@ -59,7 +59,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                 className="rounded-full"
                 data-testid="button-tab-quiz"
               >
-                Project Fit Quiz
+                {content.tabs.quiz}
               </Button>
             </div>
 
@@ -69,13 +69,13 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                   <Calendar className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-medium">Direct Booking</h4>
-                  <p className="text-sm text-muted-foreground">Skip the queue if you are ready.</p>
+                  <h4 className="font-medium">{content.booking.title}</h4>
+                  <p className="text-sm text-muted-foreground">{content.booking.subtitle}</p>
                 </div>
               </div>
-              <a href="https://calendly.com/juuso-jaakkola/consultation" target="_blank" rel="noopener noreferrer">
+              <a href="https://calendly.com" target="_blank" rel="noopener noreferrer">
                 <Button variant="link" className="px-0 text-primary underline" data-testid="link-booking">
-                  Book a 20min Discovery Call &rarr;
+                  {content.booking.cta} &rarr;
                 </Button>
               </a>
             </div>
@@ -295,7 +295,7 @@ function Quiz({ content }: { content: any }) {
           className="text-center space-y-6"
         >
           <h3 className="text-2xl font-serif">{content.title}</h3>
-          <p className="text-muted-foreground">Let's find the best way to help you in 3 steps.</p>
+          <p className="text-muted-foreground">{content.subtitle}</p>
           <Button size="lg" onClick={handleStart} className="rounded-full px-8" data-testid="button-start-quiz">
             {content.start}
           </Button>
@@ -311,7 +311,7 @@ function Quiz({ content }: { content: any }) {
           className="space-y-8"
         >
           <div className="flex justify-between text-sm text-muted-foreground uppercase font-mono tracking-wider">
-            <span>Question {step}</span>
+            <span>{content.questionPrefix} {step}</span>
             <span>{step} / {content.questions.length}</span>
           </div>
           <h3 className="text-xl md:text-2xl font-medium">{content.questions[step - 1].q}</h3>
@@ -339,13 +339,13 @@ function Quiz({ content }: { content: any }) {
           <div className="h-16 w-16 bg-primary text-primary-foreground rounded-full mx-auto flex items-center justify-center text-2xl font-serif">
             !
           </div>
-          <h3 className="text-2xl font-serif">Recommendation</h3>
+          <h3 className="text-2xl font-serif">{content.recommendationTitle}</h3>
           <p className="text-xl font-medium text-foreground" data-testid="text-quiz-result">{getRecommendation()}</p>
           <Button size="lg" className="rounded-full w-full" data-testid="button-quiz-continue">
             {content.results.cta} <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
           <Button variant="ghost" onClick={() => { setStep(0); setAnswers([]); }} className="text-muted-foreground" data-testid="button-quiz-restart">
-            Restart
+            {content.restart}
           </Button>
         </motion.div>
       )}
