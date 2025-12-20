@@ -192,8 +192,8 @@ export const content = {
       title: "Aloitetaan keskustelu",
       subtitle: "Kerro lyhyesti tarpeestasi. Vastaan yleensä 24h sisällä.",
       booking: {
-        title: "Suora varaus",
-        subtitle: "Ohita jono, jos olet valmis.",
+        title: "Aika kalenteriin",
+        subtitle: "Tule jakamaan haasteesi.",
         cta: "Varaa 20min kartoituspuhelu",
       },
       tabs: {
