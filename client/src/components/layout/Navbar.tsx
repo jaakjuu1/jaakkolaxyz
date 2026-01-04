@@ -43,6 +43,12 @@ export function Navbar({ lang, setLang }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-4">
+        <Link href="/blog">
+          <Button variant="ghost" size="sm" className="text-sm font-medium hover:bg-secondary/50 transition-colors">
+            {lang === 'fi' ? 'Blogi' : 'Blog'}
+          </Button>
+        </Link>
+
         <Button
           variant="ghost"
           size="icon"
