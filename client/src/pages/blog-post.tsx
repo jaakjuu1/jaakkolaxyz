@@ -9,6 +9,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/useLanguage";
 
+// Import highlight.js theme for code syntax highlighting
+import "highlight.js/styles/github-dark.css";
+
 interface BlogPostData {
   slug: string;
   title: string;
@@ -118,17 +121,12 @@ export default function BlogPost() {
                 </header>
 
                 <div
-                  className="prose prose-neutral dark:prose-invert max-w-none
-                    prose-headings:font-serif prose-headings:font-normal
-                    prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-                    prose-p:text-base prose-p:leading-relaxed
-                    prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                    prose-strong:font-semibold
-                    prose-code:text-sm prose-code:bg-secondary/50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded
-                    prose-pre:bg-secondary/30 prose-pre:border prose-pre:border-border
-                    prose-blockquote:border-l-primary/30 prose-blockquote:italic
-                    prose-ul:list-disc prose-ol:list-decimal
-                    prose-li:text-base"
+                  className="prose prose-lg prose-neutral dark:prose-invert max-w-none
+                    prose-headings:font-serif prose-headings:font-normal prose-headings:tracking-tight
+                    prose-h1:text-3xl prose-h1:md:text-4xl
+                    prose-h2:text-2xl
+                    prose-h3:text-xl prose-h3:text-foreground/90
+                    prose-code:before:content-none prose-code:after:content-none"
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
               </motion.div>

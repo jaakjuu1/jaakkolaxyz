@@ -114,3 +114,281 @@
     @apply font-serif tracking-tight;
   }
 }
+
+/* Blog post prose enhancements */
+@layer components {
+  /* Base prose improvements for better readability */
+  .prose {
+    --prose-body: hsl(var(--foreground) / 0.85);
+    --prose-headings: hsl(var(--foreground));
+    --prose-lead: hsl(var(--foreground) / 0.7);
+    --prose-links: hsl(var(--primary));
+    --prose-bold: hsl(var(--foreground));
+    --prose-counters: hsl(var(--primary) / 0.6);
+    --prose-bullets: hsl(var(--primary) / 0.5);
+    --prose-hr: hsl(var(--border));
+    --prose-quotes: hsl(var(--foreground) / 0.8);
+    --prose-quote-borders: hsl(var(--primary) / 0.3);
+    --prose-captions: hsl(var(--muted-foreground));
+    --prose-code: hsl(var(--foreground));
+    --prose-pre-code: hsl(var(--foreground) / 0.9);
+    --prose-pre-bg: hsl(var(--secondary) / 0.3);
+    --prose-th-borders: hsl(var(--border));
+    --prose-td-borders: hsl(var(--border) / 0.5);
+  }
+
+  /* Generous spacing between all elements */
+  .prose > * + * {
+    margin-top: 1.75em;
+  }
+
+  /* Even more space before headings */
+  .prose > h2 {
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  .prose > h3 {
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Paragraphs with comfortable reading spacing */
+  .prose p {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    line-height: 1.85;
+  }
+
+  /* Image container styling */
+  .prose p:has(> img) {
+    margin-top: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose img {
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 20px hsl(var(--foreground) / 0.1);
+  }
+
+  /* Image captions - italicized text in same paragraph as image */
+  .prose p:has(> img) > em {
+    display: block;
+    text-align: center;
+    font-size: 0.9rem;
+    color: hsl(var(--muted-foreground));
+    margin-top: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* Standalone caption paragraphs after images */
+  .prose p:has(> img) + p:has(> em:first-child) {
+    text-align: center;
+    margin-top: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .prose p:has(> img) + p > em:first-child {
+    font-size: 0.9rem;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* First paragraph after a heading - lead style */
+  .prose h2 + p,
+  .prose h3 + p {
+    font-size: 1.1rem;
+    line-height: 1.9;
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  /* Horizontal rules as elegant section dividers */
+  .prose hr {
+    border: none;
+    height: 1px;
+    margin: 4rem auto;
+    max-width: 200px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      hsl(var(--foreground) / 0.2) 20%,
+      hsl(var(--foreground) / 0.2) 80%,
+      transparent
+    );
+    position: relative;
+  }
+
+  .prose hr::before {
+    content: '§';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: hsl(var(--background));
+    padding: 0 1rem;
+    color: hsl(var(--muted-foreground) / 0.5);
+    font-size: 1.25rem;
+    font-family: var(--font-serif);
+  }
+
+  /* Table styling */
+  .prose table {
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid hsl(var(--border) / 0.5);
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+
+  .prose thead {
+    background: hsl(var(--secondary) / 0.5);
+  }
+
+  .prose thead tr {
+    border-bottom: 2px solid hsl(var(--border));
+  }
+
+  .prose th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .prose td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid hsl(var(--border) / 0.3);
+  }
+
+  .prose tbody tr:hover {
+    background-color: hsl(var(--secondary) / 0.3);
+  }
+
+  .prose tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* Better blockquote styling */
+  .prose blockquote {
+    border-left: 3px solid hsl(var(--primary) / 0.4);
+    background: hsl(var(--secondary) / 0.3);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-style: italic;
+    position: relative;
+  }
+
+  .prose blockquote p {
+    margin: 0.75rem 0;
+    color: hsl(var(--foreground) / 0.8);
+  }
+
+  .prose blockquote p:first-child {
+    margin-top: 0;
+  }
+
+  .prose blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Lists with better spacing */
+  .prose ul,
+  .prose ol {
+    margin: 1.75rem 0;
+    padding-left: 1.75rem;
+  }
+
+  .prose li {
+    margin: 0.75rem 0;
+    line-height: 1.75;
+    padding-left: 0.5rem;
+  }
+
+  .prose ul > li::marker,
+  .prose ol > li::marker {
+    color: hsl(var(--primary) / 0.6);
+    font-weight: 500;
+  }
+
+  /* Nested list styling */
+  .prose ul ul,
+  .prose ol ol,
+  .prose ul ol,
+  .prose ol ul {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Code blocks */
+  .prose pre {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid hsl(var(--border) / 0.5);
+    overflow-x: auto;
+  }
+
+  .prose code {
+    font-size: 0.9em;
+    background: hsl(var(--secondary) / 0.5);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-family: var(--font-mono);
+  }
+
+  .prose pre code {
+    background: transparent;
+    padding: 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  /* Strong emphasis */
+  .prose strong {
+    font-weight: 600;
+    color: hsl(var(--foreground));
+  }
+
+  /* Links */
+  .prose a {
+    color: hsl(var(--primary));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: hsl(var(--primary) / 0.3);
+    transition: text-decoration-color 0.2s;
+  }
+
+  .prose a:hover {
+    text-decoration-color: hsl(var(--primary));
+  }
+
+  /* Better focus states for links */
+  .prose a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Image full-width on mobile */
+  @media (max-width: 640px) {
+    .prose img {
+      margin-left: -1rem;
+      margin-right: -1rem;
+      max-width: calc(100% + 2rem);
+      border-radius: 0;
+    }
+
+    .prose p:has(> img) {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
