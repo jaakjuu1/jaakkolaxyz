@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { content } from "@/data/content";
@@ -6,6 +5,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BlogCard } from "@/components/sections/BlogCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface BlogPost {
   slug: string;
@@ -16,7 +16,7 @@ interface BlogPost {
 }
 
 export default function Blog() {
-  const [lang, setLang] = useState<"fi" | "en">("fi");
+  const { lang, setLang } = useLanguage();
   const t = content[lang];
 
   const { data, isLoading } = useQuery<{ success: boolean; data: BlogPost[] }>({

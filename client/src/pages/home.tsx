@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { content } from "@/data/content";
 import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/sections/Hero";
@@ -8,9 +7,10 @@ import { Process } from "@/components/sections/Process";
 import { About } from "@/components/sections/About";
 import { LeadCapture } from "@/components/sections/LeadCapture";
 import { Footer } from "@/components/layout/Footer";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function Home() {
-  const [lang, setLang] = useState<"fi" | "en">("fi");
+  const { lang, setLang } = useLanguage();
   const t = content[lang];
 
   return (
