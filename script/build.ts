@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm } from "fs/promises";
+import path from "path";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -24,6 +25,8 @@ const allowlist = [
   "passport",
   "passport-local",
   "pg",
+  "@aws-sdk/client-ses",
+  "@aws-sdk/client-sesv2",
   "stripe",
   "uuid",
   "ws",
@@ -31,6 +34,19 @@ const allowlist = [
   "zod",
   "zod-validation-error",
 ];
+
+async function copyDirectoryContents(source: string, destination: string) {
+  await mkdir(destination, { recursive: true });
+  for (const entry of await readdir(source, { withFileTypes: true })) {
+    const from = path.join(source, entry.name);
+    const to = path.join(destination, entry.name);
+    if (entry.isDirectory()) {
+      await copyDirectoryContents(from, to);
+    } else if (entry.isFile()) {
+      await copyFile(from, to);
+    }
+  }
+}
 
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
@@ -59,6 +75,9 @@ async function buildAll() {
     external: externals,
     logLevel: "info",
   });
+
+  console.log("copying standalone static pages...");
+  await copyDirectoryContents("public-static", "dist/public");
 }
 
 buildAll().catch((err) => {

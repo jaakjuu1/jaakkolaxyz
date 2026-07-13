@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Ateneum</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a6e3a">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #777;
+    --rule: #e8e8e4;
+    --accent: #0a6e3a;
+    --accent-bg: #e9f4ec;
+    --warn: #c0392b;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+    padding-bottom: 80px; /* tilaa alaviivalle */
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 1rem 1rem 0; }
+
+  /* Header */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 0; margin-bottom: 1rem;
+  }
+  header h1 { margin: 0; font-size: 1.3rem; font-weight: 600; letter-spacing: -0.01em; }
+  header .who { font-size: 0.85rem; color: var(--muted); }
+  header .who strong { color: var(--ink); font-weight: 600; }
+
+  /* Login */
+  .login {
+    max-width: 360px; margin: 4rem auto; padding: 2rem;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+  }
+  .login h2 { margin: 0 0 1.2rem; font-size: 1.4rem; text-align: center; }
+  .login label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.8rem 0 0.3rem; }
+  .login input {
+    width: 100%; padding: 0.8rem; font: inherit; font-size: 1rem;
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--bg);
+  }
+  .login input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .login button {
+    width: 100%; padding: 1rem; margin-top: 1.2rem;
+    background: var(--accent); color: white; border: 0; border-radius: 6px;
+    font: inherit; font-size: 1rem; font-weight: 600; cursor: pointer;
+  }
+  .login button:active { transform: scale(0.98); }
+  .login button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .login .err { color: var(--warn); font-size: 0.9rem; margin-top: 0.6rem; text-align: center; }
+  .login .hint { font-size: 0.78rem; color: var(--muted); margin-top: 1.5rem; text-align: center; line-height: 1.6; }
+
+  /* Section */
+  h2 { font-size: 1.05rem; margin: 1.5rem 0 0.6rem; font-weight: 600; }
+  h2 small { font-weight: 400; color: var(--muted); font-size: 0.85rem; margin-left: 0.4rem; }
+
+  /* Hero card (viikkoehdotus) */
+  .hero {
+    background: linear-gradient(135deg, var(--accent-bg) 0%, #f5f1e6 100%);
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 1.2rem; margin-bottom: 1rem;
+  }
+  .hero .label { font-size: 0.78rem; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .hero h3 { margin: 0 0 0.4rem; font-size: 1.2rem; font-weight: 600; }
+  .hero p { margin: 0 0 0.8rem; color: #444; font-size: 0.92rem; line-height: 1.55; }
+  .hero .meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .hero .actions { display: flex; gap: 0.5rem; }
+  .hero .actions button { flex: 1; }
+  .btn {
+    padding: 0.7rem 1rem; font: inherit; font-size: 0.92rem; font-weight: 600;
+    border-radius: 6px; cursor: pointer; border: 1px solid var(--rule);
+    background: var(--card); color: var(--ink);
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-secondary { background: transparent; color: var(--muted); }
+  .btn-block { width: 100%; }
+
+  /* Idea list */
+  .idea {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 1rem; margin-bottom: 0.7rem;
+  }
+  .idea h4 { margin: 0 0 0.3rem; font-size: 1rem; font-weight: 600; }
+  .idea p { margin: 0 0 0.6rem; color: #555; font-size: 0.9rem; }
+  .idea .meta { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+  .chip {
+    font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 10px;
+    background: #f0ede5; color: #555;
+  }
+  .chip.cat { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+
+  /* Forms */
+  .field { margin-bottom: 0.8rem; }
+  .field label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 0.7rem; font: inherit; font-size: 0.95rem;
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--bg);
+  }
+  .field textarea { min-height: 80px; resize: vertical; }
+
+  /* Activity list */
+  .activity {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+    padding: 1rem; margin-bottom: 0.6rem;
+  }
+  .activity.done { opacity: 0.7; }
+  .activity .row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .activity .status { font-size: 0.78rem; color: var(--muted); }
+
+  /* Star rating */
+  .stars { display: inline-flex; gap: 0.2rem; font-size: 1.4rem; }
+  .stars button {
+    background: transparent; border: 0; cursor: pointer; padding: 0.1rem 0.3rem;
+    color: #ddd; font-size: 1.4rem;
+  }
+  .stars button.on { color: #f1c40f; }
+
+  /* Bottom tab bar */
+  nav.tabs {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card); border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-around; padding: 0.6rem 0;
+    padding-bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  }
+  nav.tabs button {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 0.4rem 0.6rem; color: var(--muted); font: inherit;
+    font-size: 0.78rem; display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+    min-width: 60px;
+  }
+  nav.tabs button .ico { font-size: 1.4rem; line-height: 1; }
+  nav.tabs button.on { color: var(--accent); }
+
+  /* Helpers */
+  .planner-panel {
+    margin-top: 0.9rem; padding: 0.9rem;
+    background: rgba(255,255,255,0.65);
+    border: 1px solid var(--rule); border-radius: 6px;
+    display: flex; flex-direction: column; gap: 0.7rem;
+  }
+  .planner-row {
+    display: flex; flex-direction: column; gap: 0.3rem;
+  }
+  .planner-row label {
+    font-size: 0.78rem; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .planner-row select, .planner-row input[type="time"], .planner-row input[type="date"] {
+    width: 100%; padding: 0.6rem; font: inherit; font-size: 0.95rem;
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--card);
+  }
+  .planner-row select:focus, .planner-row input:focus {
+    outline: 2px solid var(--accent); outline-offset: -1px;
+  }
+  .planner-summary {
+    padding: 0.6rem 0.8rem; background: var(--accent-bg); border-radius: 6px;
+    font-size: 0.92rem; color: var(--accent); font-weight: 600;
+    text-align: center;
+  }
+
+  /* Onnistumiskortti */
+  .success-card {
+    background: linear-gradient(135deg, #e9f4ec 0%, #d4ebd9 100%);
+    border: 1px solid var(--accent); border-radius: 8px;
+    padding: 1.2rem; margin-bottom: 1rem; text-align: center;
+  }
+  .success-icon {
+    width: 48px; height: 48px; line-height: 48px;
+    border-radius: 50%; background: var(--accent); color: white;
+    font-size: 1.6rem; font-weight: 700; margin: 0 auto 0.6rem;
+    display: block;
+  }
+  .success-card h3 { margin: 0 0 0.3rem; font-size: 1.1rem; font-weight: 600; }
+  .success-card .when { font-size: 0.95rem; color: var(--ink); margin: 0.3rem 0 0.8rem; font-weight: 500; }
+  .success-card .notify { font-size: 0.85rem; color: #3d6b48; margin-bottom: 1rem; }
+  .success-card .actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+
+  .muted { color: var(--muted); font-size: 0.85rem; }
+
+  /* Helpers */
+
+.empty { color: var(--muted); text-align: center; padding: 2rem 1rem; font-size: 0.9rem; }
+  .hidden { display: none !important; }
+  .loading { color: var(--muted); text-align: center; padding: 1rem; }
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: white; padding: 0.6rem 1.2rem; border-radius: 6px;
+    font-size: 0.9rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 0.95; }
+</style>
+</head>
+<body>
+
+<!-- Magic-link login -->
+<div id="login-view" class="login">
+  <h2>Ateneum</h2>
+  <div id="li-form">
+    <label for="li-email">Sähköposti</label>
+    <input id="li-email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" placeholder="esim. nimi@example.com">
+    <button id="li-btn" onclick="requestMagicLink()">Lähetä kirjautumislinkki</button>
+    <div id="li-err" class="err"></div>
+    <div class="hint">Lähetämme sinulle kirjautumislinkin sähköpostiin.<br>Linkki on voimassa 15 minuuttia.</div>
+  </div>
+  <div id="li-sent" class="hidden" style="text-align:center;">
+    <div style="font-size:2.5rem; margin-bottom:0.5rem;">📬</div>
+    <h2 style="margin:0 0 0.6rem;">Tarkista sähköpostisi</h2>
+    <p style="color:var(--muted); font-size:0.92rem; margin:0 0 1.2rem;">Lähetimme kirjautumislinkin osoitteeseen <strong id="li-sent-email" style="color:var(--ink);"></strong>.<br>Avaa se kirjautuaksesi.</p>
+    <button class="btn btn-secondary" onclick="resetLogin()">Käytä toista osoitetta</button>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app-view" class="wrap hidden">
+
+  <header>
+    <h1>Ateneum</h1>
+    <div class="who">
+      <span id="who-name"></span>
+      <button class="btn btn-secondary" onclick="doLogout()" style="padding:0.3rem 0.6rem; font-size:0.78rem; margin-left:0.4rem;">Ulos</button>
+    </div>
+  </header>
+
+  <!-- Tämä viikko -->
+  <section id="view-home">
+    <div id="hero" class="hero">
+      <div class="loading">Ladataan ehdotusta…</div>
+    </div>
+
+    <h2>Viikon aktiviteetit</h2>
+    <div id="activities-list"></div>
+
+    <h2>Pikatoiminnot</h2>
+    <div style="display: grid; gap: 0.5rem; grid-template-columns: 1fr 1fr;">
+      <button class="btn" onclick="showView('ideas')">📋 Selaa ideoita</button>
+      <button class="btn" onclick="showView('wishes')">⭐ Toiveet</button>
+      <button class="btn" onclick="addWish()">+ Lisää toive</button>
+      <button class="btn" onclick="rotateWeeklySuggestion()">🔄 Uusi ehdotus</button>
+    </div>
+  </section>
+
+  <!-- Ideat -->
+  <section id="view-ideas" class="hidden">
+    <h2>Ideat <small id="ideas-count"></small></h2>
+    <div id="ideas-list"></div>
+  </section>
+
+  <!-- Toiveet -->
+  <section id="view-wishes" class="hidden">
+    <h2>Toiveet <small id="wishes-count"></small></h2>
+    <button class="btn btn-primary btn-block" onclick="showWishForm()" style="margin-bottom: 1rem;">+ Lisää uusi toive</button>
+    <div id="wish-form" class="hidden" style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+      <div class="field">
+        <label>Toive</label>
+        <textarea id="wf-title" placeholder="esim. Toivon että sinä laittaisit yllätysaamiaisen sänkyyn"></textarea>
+      </div>
+      <div class="field">
+        <label>Tunnelma</label>
+        <select id="wf-mood">
+          <option value="longing">Kaipaava</option>
+          <option value="playful" selected>Leikkisä</option>
+          <option value="tender">Hellä</option>
+          <option value="restless">Levoton</option>
+          <option value="grateful">Kiitollinen</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Näkyvyys</label>
+        <select id="wf-visibility">
+          <option value="shared" selected>Jaettu (molemmat näkevät)</option>
+          <option value="private">Vain itselle</option>
+        </select>
+      </div>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-primary" onclick="submitWish()">Tallenna</button>
+        <button class="btn btn-secondary" onclick="hideWishForm()">Peruuta</button>
+      </div>
+    </div>
+    <div id="wishes-list"></div>
+  </section>
+
+  <!-- Asetukset -->
+  <section id="view-settings" class="hidden">
+    <h2>Asetukset</h2>
+    <div style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem;">
+      <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 0.6rem;">Sähköposti-ilmoitukset</div>
+      <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Valitse mitä haluat saada sähköpostiisi.</div>
+      <div id="settings-prefs" class="loading">Ladataan…</div>
+      <button class="btn btn-primary btn-block" onclick="savePrefs()" style="margin-top: 1rem;">Tallenna asetukset</button>
+      <div id="settings-msg" style="font-size: 0.85rem; color: var(--accent); margin-top: 0.5rem; text-align: center;"></div>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+      <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 0.4rem;">Testaa viikkoehdotus</div>
+      <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Lähettää sinulle viikon ehdotuksen heti testiä varten.</div>
+      <button class="btn btn-block" onclick="testWeeklySend()">Lähetä minulle nyt</button>
+      <div id="settings-test-msg" style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; text-align: center;"></div>
+    </div>
+  </section>
+</div>
+
+<!-- Footer unsubscribe linkki -->
+<div id="app-footer" class="wrap hidden" style="padding: 1rem 1rem 0; text-align: center;">
+  <a href="#" id="footer-unsubscribe" style="font-size: 0.78rem; color: var(--muted); text-decoration: underline;">Lopeta sähköposti-ilmoitukset</a>
+</div>
+
+<!-- Tab bar -->
+<nav id="tabs" class="tabs hidden">
+  <button class="on" data-view="home" onclick="showView('home')">
+    <span class="ico">🏠</span><span>Koti</span>
+  </button>
+  <button data-view="ideas" onclick="showView('ideas')">
+    <span class="ico">💡</span><span>Ideat</span>
+  </button>
+  <button data-view="wishes" onclick="showView('wishes')">
+    <span class="ico">⭐</span><span>Toiveet</span>
+  </button>
+  <button data-view="settings" onclick="showView('settings')">
+    <span class="ico">⚙️</span><span>Aset.</span>
+  </button>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// === API ===
+const API_BASE = '/api/ateneum';
+let currentUser = null;
+
+async function api(path, opts = {}) {
+  const r = await fetch(API_BASE + path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    ...opts,
+  });
+  const text = await r.text();
+  let body;
+  try { body = JSON.parse(text); } catch { body = { raw: text }; }
+  if (!r.ok) throw new Error(body.message || body.error || `HTTP ${r.status}`);
+  return body;
+}
+
+function toast(msg, ms = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+// === Auth: magic-link ===
+async function requestMagicLink() {
+  const email = document.getElementById('li-email').value.trim();
+  const btn = document.getElementById('li-btn');
+  const err = document.getElementById('li-err');
+  err.textContent = '';
+  if (!email) { err.textContent = 'Anna sähköposti'; return; }
+  btn.disabled = true; btn.textContent = 'Lähetetään…';
+  try {
+    const r = await api('/auth/magic-link/request', { method: 'POST', body: JSON.stringify({ email }) });
+    // Palvelin palauttaa aina saman viestin (privacy: älä paljasta onko käyttäjä olemassa)
+    document.getElementById('li-form').classList.add('hidden');
+    document.getElementById('li-sent').classList.remove('hidden');
+    document.getElementById('li-sent-email').textContent = email;
+    if (r && r.emailSent === false) {
+      document.getElementById('li-sent').insertAdjacentHTML('beforeend',
+        '<p style="font-size:0.8rem; color:var(--warn); margin-top:0.6rem;">⚠️ Sähköpostin lähetys epäonnistui (tarkista Resend-konfiguraatio).</p>');
+    }
+  } catch (e) {
+    err.textContent = e.message;
+    btn.disabled = false; btn.textContent = 'Lähetä kirjautumislinkki';
+  }
+}
+
+function resetLogin() {
+  document.getElementById('li-form').classList.remove('hidden');
+  document.getElementById('li-sent').classList.add('hidden');
+  document.getElementById('li-email').value = '';
+  const btn = document.getElementById('li-btn');
+  btn.disabled = false; btn.textContent = 'Lähetä kirjautumislinkki';
+  document.getElementById('li-email').focus();
+}
+
+async function verifyMagicLinkToken(token) {
+  try {
+    const { user } = await api('/auth/magic-link/verify', {
+      method: 'POST',
+      body: JSON.stringify({ token }),
+    });
+    enterApp(user);
+    toast('Tervetuloa, ' + (user.displayName || '') + '!');
+  } catch (e) {
+    toast('Linkki ei toimi: ' + e.message);
+    resetLogin();
+  }
+}
+
+async function doLogout() {
+  try { await api('/auth/logout', { method: 'POST' }); } catch {}
+  currentUser = null;
+  document.getElementById('app-view').classList.add('hidden');
+  document.getElementById('app-footer').classList.add('hidden');
+  document.getElementById('login-view').classList.remove('hidden');
+  document.getElementById('tabs').classList.add('hidden');
+  resetLogin();
+}
+
+function enterApp(user) {
+  currentUser = user;
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('app-view').classList.remove('hidden');
+  document.getElementById('app-footer').classList.remove('hidden');
+  document.getElementById('tabs').classList.remove('hidden');
+  document.getElementById('who-name').textContent = user.displayName;
+  // Footer unsubscribe
+  const unsubBtn = document.getElementById('footer-unsubscribe');
+  unsubBtn.onclick = async (e) => {
+    e.preventDefault();
+    if (!confirm('Lopetetaanko sinulle lähetettävät sähköposti-ilmoitukset?')) return;
+    try {
+      const disabled = Object.fromEntries(Object.keys(PREF_LABELS).map(key => [key, false]));
+      await api('/notification-prefs', {
+        method: 'PATCH',
+        body: JSON.stringify(disabled),
+      });
+      toast('Ilmoitukset lopetettu. Voit laittaa ne takaisin asetuksista.');
+      showView('settings');
+      await loadSettings();
+    } catch (err) {
+      toast('Virhe: ' + err.message);
+    }
+  };
+  showView('home');
+  loadHome();
+}
+
+// Enter-näppäin lähettää lomakkeen
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('login-view').classList.contains('hidden')) {
+    requestMagicLink();
+  }
+});
+
+// === View switching ===
+function showView(name) {
+  for (const v of ['home', 'ideas', 'wishes', 'settings']) {
+    document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
+  }
+  for (const b of document.querySelectorAll('nav.tabs button')) {
+    b.classList.toggle('on', b.dataset.view === name);
+  }
+  if (name === 'ideas' && !document.getElementById('ideas-list').dataset.loaded) loadIdeas();
+  if (name === 'wishes' && !document.getElementById('wishes-list').dataset.loaded) loadWishes();
+  if (name === 'settings') loadSettings();
+}
+
+// === Home: viikkoehdotus ===
+async function loadHome() {
+  const hero = document.getElementById('hero');
+  hero.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const { suggestion } = await api('/suggestions/weekly');
+    if (!suggestion) {
+      hero.innerHTML = '<div class="empty">Ei ehdotusta tällä viikolla — kokeile ladata uudestaan.</div>';
+      return;
+    }
+    const dur = suggestion.durationMin >= 60 ? `${Math.round(suggestion.durationMin/60)}h` : `${suggestion.durationMin}min`;
+    hero.innerHTML = `
+      <div class="label">Tämän viikon ehdotus</div>
+      <h3>${escapeHtml(suggestion.title)}</h3>
+      <p>${escapeHtml(suggestion.description)}</p>
+      <div class="meta">
+        <span class="chip cat">${escapeHtml(suggestion.category)}</span>
+        <span class="chip">⚡ ${escapeHtml(suggestion.energyCost)}</span>
+        <span class="chip">💶 ${escapeHtml(suggestion.budgetCost)}</span>
+        <span class="chip">⏱ ${dur}</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" data-suggestion='${JSON.stringify(suggestion).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}' onclick="openPlanner(this)">Suunnittele</button>
+        <button class="btn" onclick="rotateWeeklySuggestion()">Vaihda</button>
+      </div>
+    `;
+  } catch (e) {
+    hero.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+  loadActivities();
+}
+
+async function rotateWeeklySuggestion() {
+  try {
+    await api('/suggestions/weekly/rotate', { method: 'POST' });
+    await loadHome();
+    toast('Yhteinen viikkoehdotus vaihdettu.');
+  } catch (e) {
+    toast('Vaihto epäonnistui: ' + e.message);
+  }
+}
+
+// === Activities ===
+async function loadActivities() {
+  const el = document.getElementById('activities-list');
+  el.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const { activities } = await api('/activities');
+    if (!activities || activities.length === 0) {
+      el.innerHTML = '<div class="empty">Ei aktiviteetteja vielä. Suunnittele viikon ehdotus!</div>';
+      return;
+    }
+    el.innerHTML = activities.map(a => renderActivity(a)).join('');
+  } catch (e) {
+    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+function renderActivity(a) {
+  const date = new Date(a.scheduledFor);
+  const dateStr = date.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' });
+  const isDone = a.status === 'done';
+  const isSkipped = a.status === 'skipped';
+  let feedbackHtml = '';
+  if (isDone) {
+    feedbackHtml = `<div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px solid var(--rule);">
+      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:0.3rem;">Palaute:</div>
+      ${renderStars(a.id, a.rating)}
+      ${a.notes ? `<div style="font-size:0.85rem; margin-top:0.3rem; color:#444; font-style:italic;">"${escapeHtml(a.notes)}"</div>` : ''}
+    </div>`;
+  }
+  const hasDetails = a.details && Object.keys(a.details).length > 0;
+  return `
+    <div class="activity ${isDone ? 'done' : ''}" data-aid="${a.id}">
+      <div class="row">
+        <div style="flex: 1;">
+          <div style="font-weight:600;">${escapeHtml(a.title)}</div>
+          <div class="status">${dateStr} · ${escapeHtml(a.category || '')} · ${escapeHtml(a.status)}</div>
+        </div>
+        <div style="display:flex; gap:0.3rem; flex-wrap: wrap; align-items: center;">
+          ${hasDetails ? `
+            <a class="btn" href="/ateneum/activity.html?id=${a.id}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background: var(--accent); color: white; border-color: var(--accent);">📋 Suunnitelma</a>
+          ` : ''}
+          ${a.status === 'planned' ? `
+            <button class="btn btn-primary" onclick="markDone('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;">✓ Tehty</button>
+            <button class="btn" onclick="skipActivity('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Siirrä myöhemmäksi">⏸ Ei nyt</button>
+          ` : ''}
+          ${a.status === 'done' ? `
+            <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Peruuta</button>
+          ` : ''}
+          ${a.status === 'skipped' ? `
+            <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Palauta</button>
+          ` : ''}
+        </div>
+      </div>
+      ${feedbackHtml}
+    </div>
+  `;
+}
+
+function renderStars(activityId, currentRating) {
+  let html = `<div class="stars" data-aid="${activityId}">`;
+  for (let i = 1; i <= 5; i++) {
+    html += `<button class="${i <= (currentRating || 0) ? 'on' : ''}" onclick="rateActivity('${activityId}', ${i})">★</button>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+async function rateActivity(id, rating) {
+  // 1. Välitön UI-päivitys: päivitä tähdet näkyviin (ei listan uudelleenrenderöintiä)
+  const card = document.querySelector(`.activity[data-aid="${id}"]`);
+  if (card) {
+    const starsDiv = card.querySelector('.stars');
+    if (starsDiv) {
+      const btns = starsDiv.querySelectorAll('button');
+      btns.forEach((btn, idx) => {
+        btn.classList.toggle('on', idx < rating);
+      });
+    }
+  }
+  // 2. Backend-kutsu
+  try {
+    await api(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify({ rating }) });
+    toast(`Arvioitu ${rating}/5`);
+    // EI loadActivities() - uudelleenrenderöinti rikkoo tähdet!
+    // Sen sijaan päivitä aktiviteetin status paikallisesti
+    if (card) {
+      // Lisää "merkattu arvioiduksi" -indikaattori jos ei vielä
+      if (!card.querySelector('.rating-saved')) {
+        const saved = document.createElement('div');
+        saved.className = 'rating-saved';
+        saved.style.cssText = 'font-size:0.78rem; color:var(--accent); margin-top:0.3rem; font-weight:600;';
+        saved.textContent = '✓ Arvioitu';
+        const ratingSection = card.querySelector('.stars').parentElement;
+        if (ratingSection) ratingSection.appendChild(saved);
+      }
+    }
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+  }
+}
+
+function openPlanner(btn) {
+  const card = btn.closest('.hero, .idea');
+  if (!card) return;
+  // Älä avaa kahta kertaa
+  if (card.querySelector('.planner-panel')) return;
+
+  // Hae suggestion data-attribuutista
+  let suggestion;
+  try {
+    const raw = btn.getAttribute('data-suggestion') || '';
+    // JSON.parse ei ymmärrä HTML-entiteettejä, palauta '&apos;' -> '
+    const decoded = raw.replace(/&apos;/g, "'");
+    suggestion = JSON.parse(decoded);
+  } catch (e) {
+    toast('Ehdotuksen lukeminen epäonnistui');
+    return;
+  }
+
+  const titleSafe = escapeHtml(suggestion.title || '');
+  const descSafe = escapeHtml(suggestion.description || '');
+
+  // Piilota alkuperäinen toimintorivi ja lisää laajennus actions-alueen alle
+  const actions = card.querySelector('.actions');
+  if (actions) actions.style.display = 'none';
+
+  const panel = document.createElement('div');
+  panel.className = 'planner-panel';
+  panel.dataset.suggestionId = suggestion.id || '';
+  panel.innerHTML = `
+    <div style="font-size:0.85rem; color:var(--muted); margin-bottom:-0.2rem;">Suunnittele <strong>${titleSafe}</strong></div>
+    <div class="planner-row">
+      <label for="pp-day-${suggestion.id}">Päivä</label>
+      <select id="pp-day-${suggestion.id}" class="pp-day">
+        <option value="tomorrow" selected>Huomenna</option>
+        <option value="weekend">Tänä viikonloppuna</option>
+        <option value="next-week">Ensi viikolla</option>
+        <option value="custom">Valitse päivä…</option>
+      </select>
+      <input type="date" id="pp-date-${suggestion.id}" class="pp-date hidden" style="margin-top:0.4rem;">
+    </div>
+    <div class="planner-row">
+      <label for="pp-time-${suggestion.id}">Aika</label>
+      <input type="time" id="pp-time-${suggestion.id}" class="pp-time" value="18:00">
+    </div>
+    <div class="planner-summary pp-preview" id="pp-preview-${suggestion.id}">→ Ladataan…</div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closePlanner(this)">Peruuta</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmPlan(this)">✓ Vahvista</button>
+    </div>
+  `;
+
+  // Lisää paneeli: hero-kortissa actions-alueen jälkeen, idea-kortissa loppuun
+  if (actions) {
+    actions.insertAdjacentElement('afterend', panel);
+  } else {
+    card.appendChild(panel);
+  }
+
+  // Kuuntele muutoksia esikatselua varten
+  const daySel = panel.querySelector('.pp-day');
+  const dateInp = panel.querySelector('.pp-date');
+  const timeInp = panel.querySelector('.pp-time');
+  daySel.addEventListener('change', () => {
+    if (daySel.value === 'custom') {
+      dateInp.classList.remove('hidden');
+      // Aseta minimipäiväksi tänään
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      dateInp.min = `${yyyy}-${mm}-${dd}`;
+      if (!dateInp.value) dateInp.value = dateInp.min;
+    } else {
+      dateInp.classList.add('hidden');
+    }
+    updatePlannerPreview(panel);
+  });
+  dateInp.addEventListener('change', () => updatePlannerPreview(panel));
+  timeInp.addEventListener('change', () => updatePlannerPreview(panel));
+
+  updatePlannerPreview(panel);
+}
+
+
+async function markDone(id) {
+  try {
+    await api(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'done' }) });
+    toast('Merkitty tehdyksi — anna palaute');
+    await loadActivities();
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+  }
+}
+async function markPlanned(id) {
+  try {
+    await api(`/activities/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "planned" })
+    });
+    toast("Palautettu suunnitelluksi");
+    await loadActivities();
+  } catch (e) {
+    toast("Virhe: " + e.message);
+    console.error("markPlanned failed:", e);
+  }
+}
+
+
+async function skipActivity(id) {
+  try {
+    await api(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'skipped' }) });
+    toast('Ohitettu');
+    await loadActivities();
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+  }
+}
+
+function closePlanner(btn) {
+  const panel = btn.closest('.planner-panel');
+  if (!panel) return;
+  const card = panel.closest('.hero, .idea');
+  panel.remove();
+  const actions = card && card.querySelector('.actions');
+  if (actions) actions.style.display = '';
+}
+
+function computeScheduledFor(panel) {
+  const day = panel.querySelector('.pp-day').value;
+  const time = panel.querySelector('.pp-time').value || '18:00';
+  const [hh, mm] = time.split(':').map(Number);
+
+  let date;
+  if (day === 'custom') {
+    const dateStr = panel.querySelector('.pp-date').value;
+    if (!dateStr) return null;
+    date = new Date(`${dateStr}T${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:00`);
+    return date;
+  }
+
+  const now = new Date();
+  if (day === 'tomorrow') {
+    date = new Date(now);
+    date.setDate(date.getDate() + 1);
+  } else if (day === 'weekend') {
+    date = new Date(now);
+    // 0=su, 6=la — seuraava lauantai
+    const dow = now.getDay();
+    let addDays = (6 - dow + 7) % 7;
+    if (addDays === 0 && now.getHours() >= 20) addDays = 7;
+    date.setDate(date.getDate() + addDays);
+  } else if (day === 'next-week') {
+    date = new Date(now);
+    // Ensi viikon maanantai
+    const dow = now.getDay();
+    // distance to next Monday: (1 - dow + 7) % 7, with 0 → 7
+    let addDays = (1 - dow + 7) % 7;
+    if (addDays === 0) addDays = 7;
+    date.setDate(date.getDate() + addDays);
+  } else {
+    date = new Date(now);
+    date.setDate(date.getDate() + 1);
+  }
+  date.setHours(hh, mm, 0, 0);
+  return date;
+}
+
+function updatePlannerPreview(panel) {
+  const preview = panel.querySelector('.pp-preview');
+  if (!preview) return;
+  const when = computeScheduledFor(panel);
+  if (!when) {
+    preview.textContent = '→ Valitse päivämäärä';
+    return;
+  }
+  const dateStr = when.toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' });
+  const timeStr = when.toTimeString().slice(0, 5);
+  preview.textContent = `→ ${dateStr} klo ${timeStr}`;
+}
+
+async function confirmPlan(btn) {
+  const panel = btn.closest('.planner-panel');
+  if (!panel) return;
+  const card = panel.closest('.hero, .idea');
+  const when = computeScheduledFor(panel);
+  if (!when) { toast('Valitse päivämäärä'); return; }
+
+  // Hae suggestion takaisin paneelin data-attribuutista (turvallisempi kuin globaali)
+  const btnOrig = card.querySelector('[data-suggestion]');
+  let suggestion;
+  try {
+    const raw = btnOrig ? (btnOrig.getAttribute('data-suggestion') || '') : '';
+    const decoded = raw.replace(/&apos;/g, "'");
+    suggestion = JSON.parse(decoded);
+  } catch {
+    toast('Ehdotuksen lukeminen epäonnistui');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Tallennetaan…';
+
+  try {
+    const created = await api('/activities', {
+      method: 'POST',
+      body: JSON.stringify({
+        ideaId: suggestion.id,
+        title: suggestion.title,
+        scheduledFor: when.toISOString(),
+        durationMin: suggestion.durationMin || 120,
+        status: 'planned',
+      }),
+    });
+    showSuccessState(suggestion, when);
+    toast(`📅 ${suggestion.title} — ${when.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' })} klo ${when.toTimeString().slice(0, 5)}`, 4000);
+    loadActivities();
+
+    // Skrollaa aktiviteettilistaan jos mahdollista
+    setTimeout(() => {
+      const list = document.getElementById('activities-list');
+      if (list) list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = '✓ Vahvista';
+  }
+}
+
+function showSuccessState(suggestion, when) {
+  const hero = document.getElementById('hero');
+  if (!hero) return;
+  const dateStr = when.toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' });
+  const timeStr = when.toTimeString().slice(0, 5);
+  hero.innerHTML = `
+    <div class="success-card">
+      <span class="success-icon">✓</span>
+      <h3>Suunniteltu: ${escapeHtml(suggestion.title)}</h3>
+      <div class="when">📅 ${dateStr} klo ${timeStr}</div>
+      <div class="notify">Toinen saa ilmoituksen.</div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="loadHome()">🔄 Uusi ehdotus</button>
+      </div>
+    </div>
+  `;
+}
+
+// === Ideas ===
+async function loadIdeas() {
+  const el = document.getElementById('ideas-list');
+  el.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const { ideas = [] } = await api('/ideas');
+    document.getElementById('ideas-count').textContent = `(${ideas.length})`;
+    if (!ideas.length) {
+      el.innerHTML = '<div class="empty">Ei ideoita.</div>';
+      return;
+    }
+    el.innerHTML = ideas.map(i => {
+      const dur = i.durationMin >= 60 ? `${Math.round(i.durationMin / 60)}h` : `${i.durationMin}min`;
+      return `
+        <div class="idea">
+          <h4>${escapeHtml(i.title)}</h4>
+          <p>${escapeHtml(i.description)}</p>
+          <div class="meta">
+            <span class="chip cat">${escapeHtml(i.category)}</span>
+            <span class="chip">⚡ ${escapeHtml(i.energyCost)}</span>
+            <span class="chip">💶 ${escapeHtml(i.budgetCost)}</span>
+            <span class="chip">⏱ ${dur}</span>
+          </div>
+          <div style="margin-top:0.6rem;">
+            <button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(i))}" onclick="openPlanner(this)">Suunnittele</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+    el.dataset.loaded = '1';
+  } catch (e) {
+    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+// === Wishes ===
+function showWishForm() {
+  document.getElementById('wish-form').classList.remove('hidden');
+}
+function hideWishForm() {
+  document.getElementById('wish-form').classList.add('hidden');
+}
+
+async function addWish() {
+  showView('wishes');
+  showWishForm();
+}
+
+async function submitWish() {
+  const body = document.getElementById('wf-title').value.trim();
+  if (!body) { toast('Kirjoita toive'); return; }
+  const mood = document.getElementById('wf-mood').value;
+  const visibility = document.getElementById('wf-visibility').value;
+  try {
+    await api('/wishes', {
+      method: 'POST',
+      body: JSON.stringify({ body, mood, visibility }),
+    });
+    toast('Toive lisätty');
+    hideWishForm();
+    document.getElementById('wf-title').value = '';
+    document.getElementById('wishes-list').dataset.loaded = ''; // pakota uudelleenlataus
+    loadWishes();
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+  }
+}
+
+async function loadWishes() {
+  const el = document.getElementById('wishes-list');
+  el.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const { wishes } = await api('/wishes');
+    document.getElementById('wishes-count').textContent = `(${wishes.length})`;
+    if (!wishes.length) { el.innerHTML = '<div class="empty">Ei toiveita vielä — lisää ensimmäinen!</div>'; return; }
+    const moodLabels = {
+      longing: '🌊 kaipaava',
+      playful: '✨ leikkisä',
+      tender: '🤍 hellä',
+      restless: '🌬 levoton',
+      grateful: '💚 kiitollinen',
+    };
+    el.innerHTML = wishes.map(w => {
+      const fulfilled = w.fulfilled;
+      const mood = moodLabels[w.mood] || w.mood || '';
+      const owner = w.owner?.displayName || 'tuntematon';
+      return `
+        <div class="activity ${fulfilled ? 'done' : ''}">
+          <div class="row">
+            <div style="flex:1;">
+              <div style="font-size:0.95rem; line-height:1.5;">${escapeHtml(w.body)}</div>
+              <div class="status">${escapeHtml(owner)} · ${mood} ${fulfilled ? '· ✓ toteutettu' : ''}</div>
+            </div>
+          </div>
+          ${!fulfilled && currentUser && w.userId === currentUser.id ? `<div style="margin-top:0.6rem;"><button class="btn btn-primary" onclick="fulfillWish('${w.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;">✓ Toteutui</button></div>` : ''}
+        </div>
+      `;
+    }).join('');
+    el.dataset.loaded = '1';
+  } catch (e) {
+    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function fulfillWish(id) {
+  if (!confirm('Merkitäänkö tämä toive toteutuneeksi?')) return;
+  try {
+    await api(`/wishes/${id}/fulfill`, { method: 'POST' });
+    toast('Toteutettu!');
+    loadWishes();
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+  }
+}
+
+// === Settings (notification preferences) ===
+const PREF_LABELS = {
+  weeklySuggestion: '📅 Viikon ehdotus (maanantaisin)',
+  wishAdded: '⭐ Uusi toive lisätty',
+  wishFulfilled: '✅ Toive toteutui',
+  activityPlanned: '🎯 Aktiviteetti suunniteltu',
+  inactivityReminder: '💤 Inaktiivisuusmuistutus (7 pv jälkeen)',
+};
+
+async function loadSettings() {
+  const el = document.getElementById('settings-prefs');
+  if (!el) return;
+  el.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const { prefs } = await api('/notification-prefs');
+    el.innerHTML = Object.keys(PREF_LABELS).map(k => `
+      <label style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; font-size:0.92rem; cursor:pointer;">
+        <input type="checkbox" data-pref="${k}" ${prefs[k] ? 'checked' : ''} style="width:auto;">
+        <span>${PREF_LABELS[k]}</span>
+      </label>
+    `).join('');
+    document.getElementById('settings-msg').textContent = '';
+  } catch (e) {
+    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function savePrefs() {
+  const inputs = document.querySelectorAll('#settings-prefs input[type="checkbox"]');
+  const prefs = {};
+  inputs.forEach(i => { prefs[i.dataset.pref] = i.checked; });
+  const msg = document.getElementById('settings-msg');
+  msg.textContent = 'Tallennetaan…';
+  try {
+    await api('/notification-prefs', { method: 'PATCH', body: JSON.stringify(prefs) });
+    msg.textContent = '✓ Tallennettu';
+    setTimeout(() => { msg.textContent = ''; }, 2500);
+  } catch (e) {
+    msg.style.color = 'var(--warn)';
+    msg.textContent = 'Virhe: ' + e.message;
+  }
+}
+
+async function testWeeklySend() {
+  const msg = document.getElementById('settings-test-msg');
+  msg.textContent = 'Lähetetään…';
+  try {
+    const r = await api('/suggestions/weekly/send', { method: 'POST' });
+    if (r && r.emailSent) {
+      msg.textContent = '✓ Lähetetty — tarkista sähköposti';
+    } else if (r && r.emailSent === false) {
+      msg.textContent = '⚠️ Sähköpostin lähetys epäonnistui';
+    } else {
+      msg.textContent = '✓ OK';
+    }
+  } catch (e) {
+    msg.textContent = 'Virhe: ' + e.message;
+  }
+}
+
+// === Init ===
+(async () => {
+  // Fragmentti ei lähde HTTP-requestissä palvelimelle tai reverse proxylle.
+  const fragment = new URLSearchParams(window.location.hash.slice(1));
+  const token = fragment.get('magic');
+  if (token) {
+    window.history.replaceState({}, '', window.location.pathname + window.location.search);
+    await verifyMagicLinkToken(token);
+    return;
+  }
+  try {
+    const me = await api('/auth/me');
+    if (me && me.user) enterApp(me.user);
+  } catch {}
+})();
+</script>
+
+</body>
+</html>
