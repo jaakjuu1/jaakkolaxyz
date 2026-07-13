@@ -293,6 +293,7 @@ REMOTE
 restore_database() {
   ssh teppo-server "APP='$APP' BACKUP='$BACKUP' bash -s" <<'REMOTE'
 set -euo pipefail
+cd "$APP"
 cp -a "$APP/data/ateneum.db" "$APP/data/ateneum.db.failed-$(date +%Y%m%d-%H%M%S)"
 cp -a "$BACKUP/ateneum.db" "$APP/data/ateneum.db"
 node -e '
