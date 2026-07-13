@@ -74,6 +74,41 @@
   .hero .meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1rem; }
   .hero .actions { display: flex; gap: 0.5rem; }
   .hero .actions button { flex: 1; }
+  .connection-card {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 12px;
+    padding: 1.1rem; margin-bottom: 1.2rem;
+    box-shadow: 0 8px 28px rgba(26, 26, 26, 0.05);
+  }
+  .connection-card .eyebrow {
+    color: var(--accent); font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em;
+  }
+  .connection-card h2 { margin: 0.25rem 0 0.35rem; font-size: 1.25rem; }
+  .connection-card .intro { margin: 0 0 1rem; color: var(--muted); font-size: 0.9rem; }
+  .checkin-question { margin: 1rem 0; }
+  .checkin-question > label { display: block; font-size: 0.86rem; font-weight: 650; margin-bottom: 0.45rem; }
+  .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.45rem; }
+  .choice-grid.compact { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .choice {
+    min-height: 44px; padding: 0.55rem 0.45rem; border: 1px solid var(--rule);
+    border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit;
+    font-size: 0.84rem; cursor: pointer;
+  }
+  .choice.selected { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); font-weight: 650; }
+  .privacy-row { display: flex; gap: 0.55rem; align-items: flex-start; color: var(--muted); font-size: 0.82rem; }
+  .privacy-row input { margin-top: 0.2rem; }
+  .connection-state { background: var(--accent-bg); border-radius: 9px; padding: 0.9rem; margin-top: 0.8rem; }
+  .connection-state.waiting { background: #f5f1e6; }
+  .connection-state.space { background: #eef0f6; }
+  .connection-state h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+  .connection-state p { margin: 0; color: #465049; font-size: 0.9rem; }
+  .connection-meta { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.7rem; }
+  .connection-suggestions { display: grid; gap: 0.65rem; margin-top: 0.9rem; }
+  .connection-suggestion { margin: 0; padding: 0.85rem; background: var(--bg); }
+  .connection-suggestion .actions { margin-top: 0.65rem; }
+  @media (max-width: 420px) {
+    .choice-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
   .btn {
     padding: 0.7rem 1rem; font: inherit; font-size: 0.92rem; font-weight: 600;
     border-radius: 6px; cursor: pointer; border: 1px solid var(--rule);
@@ -232,6 +267,11 @@
 
   <!-- Tämä viikko -->
   <section id="view-home">
+    <div id="connection-card" class="connection-card">
+      <div class="loading">Ladataan tämän päivän yhteyttä…</div>
+    </div>
+
+    <h2>Viikon ehdotus</h2>
     <div id="hero" class="hero">
       <div class="loading">Ladataan ehdotusta…</div>
     </div>
@@ -466,8 +506,168 @@ function showView(name) {
   if (name === 'settings') loadSettings();
 }
 
-// === Home: viikkoehdotus ===
+// === Home: yhteyssilmukka + viikkoehdotus ===
+let connectionState = null;
+
+function connectionChoices(field, options, selected, compact = false) {
+  return `<div class="choice-grid ${compact ? 'compact' : ''}" data-field="${field}">${options.map(([value, label]) => `
+    <button type="button" class="choice ${selected === value ? 'selected' : ''}" data-value="${value}"
+      aria-pressed="${selected === value}" onclick="selectCheckinOption(this)">${escapeHtml(label)}</button>
+  `).join('')}</div>`;
+}
+
+function selectCheckinOption(button) {
+  const group = button.closest('.choice-grid');
+  if (!group) return;
+  group.querySelectorAll('.choice').forEach(choice => {
+    const selected = choice === button;
+    choice.classList.toggle('selected', selected);
+    choice.setAttribute('aria-pressed', String(selected));
+  });
+}
+
+function renderCheckInForm(state) {
+  const own = state?.ownCheckIn || {
+    energy: 'medium', need: 'closeness', capacityMin: 30,
+    togetherness: 'flexible', note: '', noteVisibility: 'private'
+  };
+  return `
+    <div class="eyebrow">Tämän päivän yhteys</div>
+    <h2>Miltä sinusta tuntuu juuri nyt?</h2>
+    <p class="intro">Vastaa itsenäisesti. Kumppani ei näe raakavastauksiasi. Yhteinen näkymä kertoo vain, tukeeko tätä hetkeä oma tila vai pieni yhteinen teko.</p>
+    <div class="checkin-question">
+      <label>Paljonko sinulla on energiaa?</label>
+      ${connectionChoices('energy', [['low','Vähän'],['medium','Sopivasti'],['high','Paljon']], own.energy)}
+    </div>
+    <div class="checkin-question">
+      <label>Mitä kaipaat eniten?</label>
+      ${connectionChoices('need', Object.entries(CONNECTION_NEEDS), own.need)}
+    </div>
+    <div class="checkin-question">
+      <label>Paljonko sinulla on aikaa tai kapasiteettia?</label>
+      ${connectionChoices('capacityMin', [['10','10 min'],['30','30 min'],['60','1 tunti'],['180','Koko ilta']], String(own.capacityMin), true)}
+    </div>
+    <div class="checkin-question">
+      <label>Haluatko nyt olla…</label>
+      ${connectionChoices('togetherness', [['together','Yhdessä'],['flexible','Joustavasti'],['space','Omassa tilassa']], own.togetherness)}
+    </div>
+    <div class="field">
+      <label for="ci-note">Haluatko sanoa jotain lisää? <span class="muted">Vapaaehtoinen</span></label>
+      <textarea id="ci-note" maxlength="500" placeholder="Esim. päivä oli raskas, kaipaan jotain helppoa…">${escapeHtml(own.note)}</textarea>
+    </div>
+    <label class="privacy-row">
+      <input id="ci-share" type="checkbox" ${own.noteVisibility === 'shared' ? 'checked' : ''}>
+      <span>Näytä tämä lisähuomio kumppanille. Muuten se pysyy vain omana tietonasi.</span>
+    </label>
+    <button class="btn btn-primary btn-block" style="margin-top:1rem" onclick="submitConnectionCheckIn(this)">
+      ${state?.ownCheckIn ? 'Päivitä tämän päivän vastaus' : 'Tallenna tämän päivän vastaus'}
+    </button>
+  `;
+}
+
+function renderConnectionCard(state, edit = false) {
+  connectionState = state;
+  const card = document.getElementById('connection-card');
+  if (!card) return;
+  if (currentUser?.role === 'bot') {
+    card.innerHTML = state.synthesis
+      ? renderConnectionSynthesis(state, true)
+      : '<div class="eyebrow">Tämän päivän yhteys</div><h2>Odotetaan molempien vastauksia</h2><p class="intro">Botti näkee vain valmiin yhteisen synteesin.</p>';
+    return;
+  }
+  if (edit || !state.ownCheckIn) {
+    card.innerHTML = renderCheckInForm(state);
+    return;
+  }
+  if (!state.synthesis) {
+    card.innerHTML = `
+      <div class="eyebrow">Tämän päivän yhteys</div>
+      <h2>Sinun vastauksesi on tallennettu</h2>
+      <p class="intro">Odotetaan kumppanin omaa vastausta. Raakavastauksia ei näytetä kummallekaan.</p>
+      <div class="connection-state waiting"><h3>Yksi kahdesta vastannut</h3><p>Palaamme yhteiseen tilanteeseen, kun molemmat ovat vastanneet.</p></div>
+      <button class="btn btn-secondary btn-block" style="margin-top:0.7rem" onclick="showCheckInForm()">Muokkaa vastaustani</button>
+    `;
+    return;
+  }
+  card.innerHTML = renderConnectionSynthesis(state, false);
+}
+
+function renderConnectionSynthesis(state, readOnly) {
+  const synthesis = state.synthesis;
+  const notes = !readOnly && state.sharedNotes?.length
+    ? `<div class="connection-state" style="margin-top:0.7rem">${state.sharedNotes.map(item => `<p><strong>${escapeHtml(item.displayName)}:</strong> ${escapeHtml(item.note)}</p>`).join('')}</div>`
+    : '';
+  const suggestions = synthesis.mode === 'connect' && state.suggestions?.length
+    ? `<div class="connection-suggestions">${state.suggestions.map(suggestion => {
+        const duration = suggestion.durationMin >= 60 ? `${Math.round(suggestion.durationMin / 60)} h` : `${suggestion.durationMin} min`;
+        return `<div class="connection-suggestion idea">
+          <h4>${escapeHtml(suggestion.title)}</h4>
+          <p>${escapeHtml(suggestion.description)}</p>
+          <div class="meta"><span class="chip">${duration}</span><span class="chip">${escapeHtml(suggestion.energyCost)}</span></div>
+          ${readOnly ? '' : `<div class="actions"><button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(suggestion))}" onclick="openPlanner(this)">Suunnittele tämä</button></div>`}
+        </div>`;
+      }).join('')}</div>`
+    : '';
+  return `
+    <div class="eyebrow">Tämän päivän yhteys</div>
+    <h2>${synthesis.mode === 'space' ? 'Tänään tila on yhteyttä' : 'Teidän yhteinen tilanteenne'}</h2>
+    <div class="connection-state ${synthesis.mode === 'space' ? 'space' : ''}">
+      <h3>${escapeHtml(synthesis.message)}</h3>
+    </div>
+    ${notes}
+    ${suggestions}
+    ${readOnly ? '' : '<button class="btn btn-secondary btn-block" style="margin-top:0.7rem" onclick="showCheckInForm()">Muokkaa omaa vastaustani</button>'}
+  `;
+}
+
+function showCheckInForm() {
+  if (connectionState) renderConnectionCard(connectionState, true);
+}
+
+async function submitConnectionCheckIn(button) {
+  const card = document.getElementById('connection-card');
+  const value = field => card.querySelector(`.choice-grid[data-field="${field}"] .choice.selected`)?.dataset.value;
+  const body = {
+    energy: value('energy'),
+    need: value('need'),
+    capacityMin: Number(value('capacityMin')),
+    togetherness: value('togetherness'),
+    note: document.getElementById('ci-note').value.trim(),
+    noteVisibility: document.getElementById('ci-share').checked ? 'shared' : 'private'
+  };
+  if (!body.energy || !body.need || !body.capacityMin || !body.togetherness) {
+    toast('Vastaa ensin kaikkiin kohtiin');
+    return;
+  }
+  button.disabled = true;
+  button.textContent = 'Tallennetaan…';
+  try {
+    const state = await api('/connection/check-in', { method: 'POST', body: JSON.stringify(body) });
+    renderConnectionCard(state);
+    toast('Tämän päivän vastaus tallennettu');
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+    button.disabled = false;
+    button.textContent = 'Tallenna tämän päivän vastaus';
+  }
+}
+
+async function loadConnection() {
+  const card = document.getElementById('connection-card');
+  card.innerHTML = '<div class="loading">Ladataan tämän päivän yhteyttä…</div>';
+  try {
+    renderConnectionCard(await api('/connection/today'));
+  } catch (e) {
+    card.innerHTML = `<div class="empty">Yhteystilan lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
 async function loadHome() {
+  await Promise.all([loadConnection(), loadWeeklySuggestion()]);
+  loadActivities();
+}
+
+async function loadWeeklySuggestion() {
   const hero = document.getElementById('hero');
   hero.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
@@ -498,8 +698,6 @@ async function loadHome() {
     `;
   } catch (e) {
     hero.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
-  } finally {
-    loadActivities();
   }
 }
 
@@ -827,7 +1025,7 @@ async function confirmPlan(btn) {
         status: 'planned',
       }),
     });
-    showSuccessState(suggestion, when);
+    showSuccessState(suggestion, when, card);
     toast(`📅 ${suggestion.title} — ${when.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' })} klo ${when.toTimeString().slice(0, 5)}`, 4000);
     loadActivities();
 
@@ -843,8 +1041,8 @@ async function confirmPlan(btn) {
   }
 }
 
-function showSuccessState(suggestion, when) {
-  const hero = document.getElementById('hero');
+function showSuccessState(suggestion, when, sourceCard = null) {
+  const hero = sourceCard?.closest('#connection-card') || document.getElementById('hero');
   if (!hero) return;
   const dateStr = when.toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' });
   const timeStr = when.toTimeString().slice(0, 5);

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -134,6 +134,53 @@ export const ateneumWeeklySuggestions = sqliteTable("ateneum_weekly_suggestions"
     .default(sql`(unixepoch())`),
 });
 
+export const ateneumConnectionCycles = sqliteTable("ateneum_connection_cycles", {
+  cycleKey: text("cycle_key").primaryKey(),
+  suggestionIds: text("suggestion_ids").notNull().default("[]"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const ateneumConnectionCheckIns = sqliteTable(
+  "ateneum_connection_checkins",
+  {
+    id: text("id").primaryKey(),
+    cycleKey: text("cycle_key")
+      .notNull()
+      .references(() => ateneumConnectionCycles.cycleKey, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    energy: text("energy", { enum: ["low", "medium", "high"] }).notNull(),
+    need: text("need", {
+      enum: ["rest", "closeness", "talk", "play", "adventure", "practical_support", "space"],
+    }).notNull(),
+    capacityMin: integer("capacity_min").notNull(),
+    togetherness: text("togetherness", { enum: ["together", "space", "flexible"] })
+      .notNull(),
+    note: text("note").notNull().default(""),
+    noteVisibility: text("note_visibility", { enum: ["private", "shared"] })
+      .notNull()
+      .default("private"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    cycleUserUnique: uniqueIndex("idx_ateneum_connection_checkins_cycle_user").on(
+      table.cycleKey,
+      table.userId,
+    ),
+  }),
+);
+
 // ============================================
 // Magic-link and notification tables
 // ============================================
@@ -252,6 +299,8 @@ export type InsertAteneumActivity = z.infer<typeof insertAteneumActivitySchema>;
 export type AteneumWish = typeof ateneumWishes.$inferSelect;
 export type InsertAteneumWish = z.infer<typeof insertAteneumWishSchema>;
 export type AteneumWeeklySuggestion = typeof ateneumWeeklySuggestions.$inferSelect;
+export type AteneumConnectionCycle = typeof ateneumConnectionCycles.$inferSelect;
+export type AteneumConnectionCheckIn = typeof ateneumConnectionCheckIns.$inferSelect;
 export type AteneumEmailToken = typeof ateneumEmailTokens.$inferSelect;
 export type AteneumNotificationPrefs = typeof ateneumNotificationPrefs.$inferSelect;
 export type AteneumEmailLog = typeof ateneumEmailLog.$inferSelect;

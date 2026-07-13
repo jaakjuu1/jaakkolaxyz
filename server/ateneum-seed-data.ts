@@ -76,6 +76,7 @@ export const SEED_IDEAS: SeedIdea[] = [
   { title: "Retki saaristoon", description: "Laivalla tai veneellä saaristoon, retkieväät mukana.", category: "outdoor", tags: ["meri", "yhdessä", "kesä", "retki"], energyCost: "medium", budgetCost: "moderate", socialMode: "together", durationMin: 360 },
 
   // low-effort together
+  { title: "Kymmenen minuutin yhteys", description: "Istukaa hetkeksi vierekkäin ilman puhelimia. Kumpikin saa sanoa yhden asian päivästä — tai olla vain hiljaa.", category: "wellness", tags: ["yhdessä", "läsnäolo", "arki-ilta", "rauha"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 10 },
   { title: "Yhdessä pelaaminen", description: "Korttipeli, lautapeli tai yhteinen videopeli hetki.", category: "indoor", tags: ["pelit", "yhdessä", "arki-ilta"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 60 },
   { title: "Kahvit terassilla", description: "Heti aamusta tai iltapäivästä, kahvit ja sanomalehti yhdessä.", category: "culinary", tags: ["kahvi", "yhdessä", "arki-aamu", "arki-ilta"], energyCost: "low", budgetCost: "cheap", socialMode: "together", durationMin: 45 },
   { title: "Aamiainen sänkyyn", description: "Toinen yllättää aamiaisella sänkyyn — kahvit, leipä, hedelmät.", category: "culinary", tags: ["aamiainen", "yllätys", "yhdessä", "arki-aamu"], energyCost: "low", budgetCost: "cheap", socialMode: "together", durationMin: 30 },

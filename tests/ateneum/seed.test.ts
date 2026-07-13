@@ -187,6 +187,16 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
       .prepare("SELECT count(*) AS count FROM ateneum_schema_migrations WHERE name = ?")
       .pluck()
       .get("api_token_scopes_v1");
+    const connectionTables = migrated
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('ateneum_connection_cycles','ateneum_connection_checkins') ORDER BY name",
+      )
+      .pluck()
+      .all();
+    const checkInSql = migrated
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_connection_checkins'")
+      .pluck()
+      .get() as string;
     migrated.close();
 
     assert.deepEqual(roles, ["partner_a", "partner_b", "bot"]);
@@ -201,6 +211,11 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
     assert.equal(freshToken.revoked_at, null, "a later boot must not revoke scoped tokens");
     assert.equal(expiresInfo.notnull, 1);
     assert.equal(markerCount, 1);
+    assert.deepEqual(connectionTables, [
+      "ateneum_connection_checkins",
+      "ateneum_connection_cycles",
+    ]);
+    assert.match(checkInSql, /UNIQUE\s*\(cycle_key,\s*user_id\)/i);
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

@@ -108,11 +108,34 @@ export function initAteneumSchema(): void {
       created_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
 
+    CREATE TABLE IF NOT EXISTS ateneum_connection_cycles (
+      cycle_key TEXT PRIMARY KEY,
+      suggestion_ids TEXT NOT NULL DEFAULT '[]',
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    CREATE TABLE IF NOT EXISTS ateneum_connection_checkins (
+      id TEXT PRIMARY KEY,
+      cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      energy TEXT NOT NULL CHECK (energy IN ('low','medium','high')),
+      need TEXT NOT NULL CHECK (need IN ('rest','closeness','talk','play','adventure','practical_support','space')),
+      capacity_min INTEGER NOT NULL CHECK (capacity_min IN (10,30,60,180)),
+      togetherness TEXT NOT NULL CHECK (togetherness IN ('together','space','flexible')),
+      note TEXT NOT NULL DEFAULT '',
+      note_visibility TEXT NOT NULL DEFAULT 'private' CHECK (note_visibility IN ('private','shared')),
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(cycle_key, user_id)
+    );
+
     CREATE INDEX IF NOT EXISTS idx_ateneum_sessions_user ON ateneum_sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_activities_scheduled ON ateneum_activities(scheduled_for);
     CREATE INDEX IF NOT EXISTS idx_ateneum_activities_status ON ateneum_activities(status);
     CREATE INDEX IF NOT EXISTS idx_ateneum_wishes_user ON ateneum_wishes(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_ideas_active ON ateneum_ideas(is_active);
+    CREATE INDEX IF NOT EXISTS idx_ateneum_connection_checkins_user ON ateneum_connection_checkins(user_id);
   `);
 }
 // Migration: add new tables/columns idempotently.
@@ -204,6 +227,29 @@ export function migrateAteneumSchema(): void {
       );
       CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_hash ON ateneum_api_tokens(token_hash);
       CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_user ON ateneum_api_tokens(user_id);
+
+      CREATE TABLE IF NOT EXISTS ateneum_connection_cycles (
+        cycle_key TEXT PRIMARY KEY,
+        suggestion_ids TEXT NOT NULL DEFAULT '[]',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE TABLE IF NOT EXISTS ateneum_connection_checkins (
+        id TEXT PRIMARY KEY,
+        cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        energy TEXT NOT NULL CHECK (energy IN ('low','medium','high')),
+        need TEXT NOT NULL CHECK (need IN ('rest','closeness','talk','play','adventure','practical_support','space')),
+        capacity_min INTEGER NOT NULL CHECK (capacity_min IN (10,30,60,180)),
+        togetherness TEXT NOT NULL CHECK (togetherness IN ('together','space','flexible')),
+        note TEXT NOT NULL DEFAULT '',
+        note_visibility TEXT NOT NULL DEFAULT 'private' CHECK (note_visibility IN ('private','shared')),
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(cycle_key, user_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_connection_checkins_user
+        ON ateneum_connection_checkins(user_id);
     `);
 
     const tokenMigration = "api_token_scopes_v1";
@@ -343,6 +389,19 @@ export function migrateAteneumSchema(): void {
     ateneum_email_tokens: ["id", "email", "token_hash", "purpose", "expires_at"],
     ateneum_email_claims: ["id", "to_email", "kind", "week_key", "status"],
     ateneum_weekly_suggestions: ["week_key", "idea_id"],
+    ateneum_connection_cycles: ["cycle_key", "suggestion_ids", "updated_at"],
+    ateneum_connection_checkins: [
+      "id",
+      "cycle_key",
+      "user_id",
+      "energy",
+      "need",
+      "capacity_min",
+      "togetherness",
+      "note",
+      "note_visibility",
+      "updated_at",
+    ],
   };
   for (const [table, required] of Object.entries(requiredColumns)) {
     const actual = columnNames(table);

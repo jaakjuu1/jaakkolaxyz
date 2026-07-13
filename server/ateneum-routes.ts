@@ -2,7 +2,7 @@ import type { Express, NextFunction, Request, Response } from "express";
 import { eq, and, gte, desc, inArray, isNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { ateneumDb, newId } from "./ateneum-db";
+import { ateneumDb, ateneumRawDb, newId } from "./ateneum-db";
 import {
   ateneumUsers,
   ateneumPreferences,
@@ -10,6 +10,8 @@ import {
   ateneumActivities,
   ateneumWishes,
   ateneumWeeklySuggestions,
+  ateneumConnectionCycles,
+  ateneumConnectionCheckIns,
   ateneumNotificationPrefs,
   ateneumApiTokens,
   insertAteneumPreferencesSchema,
@@ -125,6 +127,201 @@ const ideaUpdateBodySchema = ideaCreateBodySchema
   .refine((body) => Object.keys(body).length > 0, {
     message: "At least one field is required",
   });
+
+const connectionCheckInBodySchema = z
+  .object({
+    energy: z.enum(["low", "medium", "high"]),
+    need: z.enum([
+      "rest",
+      "closeness",
+      "talk",
+      "play",
+      "adventure",
+      "practical_support",
+      "space",
+    ]),
+    capacityMin: z.union([z.literal(10), z.literal(30), z.literal(60), z.literal(180)]),
+    togetherness: z.enum(["together", "space", "flexible"]),
+    note: z.string().trim().max(500).default(""),
+    noteVisibility: z.enum(["private", "shared"]).default("private"),
+  })
+  .strict();
+
+type ConnectionCheckIn = typeof ateneumConnectionCheckIns.$inferSelect;
+type ConnectionCheckInInput = z.infer<typeof connectionCheckInBodySchema>;
+
+function connectionCycleKey(now = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: "Europe/Helsinki",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(now);
+  const value = (type: "year" | "month" | "day") =>
+    parts.find((part) => part.type === type)?.value;
+  return `${value("year")}-${value("month")}-${value("day")}`;
+}
+
+function connectionSynthesis(
+  checkIns: Array<Pick<ConnectionCheckIn, "need" | "togetherness">>,
+) {
+  const mode = checkIns.some(
+    (checkIn) => checkIn.need === "space" || checkIn.togetherness === "space",
+  )
+    ? "space"
+    : "connect";
+  return {
+    mode,
+    message:
+      mode === "space"
+        ? "Tänään yhteyttä tukee parhaiten se, että omaa tilaa kunnioitetaan."
+        : "Molemmat ovat vastanneet. Valitkaa teille sopiva pieni yhteinen hetki.",
+  };
+}
+
+function serializeConnectionCheckIn(checkIn: ConnectionCheckIn) {
+  return {
+    energy: checkIn.energy,
+    need: checkIn.need,
+    capacityMin: checkIn.capacityMin,
+    togetherness: checkIn.togetherness,
+    note: checkIn.note,
+    noteVisibility: checkIn.noteVisibility,
+    updatedAt:
+      checkIn.updatedAt instanceof Date ? checkIn.updatedAt.toISOString() : checkIn.updatedAt,
+  };
+}
+
+const saveConnectionCheckIn = ateneumRawDb.transaction(
+  (
+    cycleKey: string,
+    userId: string,
+    id: string,
+    input: ConnectionCheckInInput,
+  ) => {
+    ateneumRawDb
+      .prepare(
+        `INSERT INTO ateneum_connection_cycles (cycle_key, suggestion_ids)
+         VALUES (?, '[]')
+         ON CONFLICT(cycle_key) DO NOTHING`,
+      )
+      .run(cycleKey);
+    ateneumRawDb
+      .prepare(
+        `INSERT INTO ateneum_connection_checkins
+          (id, cycle_key, user_id, energy, need, capacity_min, togetherness, note, note_visibility)
+         VALUES (@id, @cycleKey, @userId, @energy, @need, @capacityMin, @togetherness, @note, @noteVisibility)
+         ON CONFLICT(cycle_key, user_id) DO UPDATE SET
+           energy = excluded.energy,
+           need = excluded.need,
+           capacity_min = excluded.capacity_min,
+           togetherness = excluded.togetherness,
+           note = excluded.note,
+           note_visibility = excluded.note_visibility,
+           updated_at = unixepoch()`,
+      )
+      .run({ id, cycleKey, userId, ...input });
+
+    const checkIns = ateneumRawDb
+      .prepare(
+        `SELECT need, togetherness
+         FROM ateneum_connection_checkins
+         WHERE cycle_key = ?`,
+      )
+      .all(cycleKey) as Array<Pick<ConnectionCheckIn, "need" | "togetherness">>;
+    const synthesis = checkIns.length >= 2 ? connectionSynthesis(checkIns) : null;
+    const suggestionIds =
+      synthesis?.mode === "connect"
+        ? (ateneumRawDb
+            .prepare(
+              `SELECT id
+               FROM ateneum_ideas
+               WHERE is_active = 1
+                 AND social_mode = 'together'
+                 AND energy_cost = 'low'
+                 AND duration_min <= 10
+               ORDER BY duration_min, id
+               LIMIT 3`,
+            )
+            .pluck()
+            .all() as string[])
+        : [];
+    ateneumRawDb
+      .prepare(
+        `UPDATE ateneum_connection_cycles
+         SET suggestion_ids = ?, updated_at = unixepoch()
+         WHERE cycle_key = ?`,
+      )
+      .run(JSON.stringify(suggestionIds), cycleKey);
+  },
+);
+
+async function readConnectionState(
+  actor: { id: string; role: string },
+  includePersonalData = false,
+) {
+  const cycleKey = connectionCycleKey();
+  const [cycle] = await ateneumDb
+    .select()
+    .from(ateneumConnectionCycles)
+    .where(eq(ateneumConnectionCycles.cycleKey, cycleKey))
+    .limit(1);
+  const checkIns = cycle
+    ? await ateneumDb
+        .select()
+        .from(ateneumConnectionCheckIns)
+        .where(eq(ateneumConnectionCheckIns.cycleKey, cycleKey))
+    : [];
+  const isHumanSession =
+    includePersonalData && (actor.role === "partner_a" || actor.role === "partner_b");
+  const own = isHumanSession
+    ? checkIns.find((checkIn) => checkIn.userId === actor.id) ?? null
+    : null;
+  const partnerResponded = isHumanSession
+    ? checkIns.some((checkIn) => checkIn.userId !== actor.id)
+    : checkIns.length >= 2;
+  const synthesis = checkIns.length >= 2 ? connectionSynthesis(checkIns) : null;
+  const ids = synthesis?.mode === "connect" ? parseTags(cycle?.suggestionIds) : [];
+  const ideaRows = ids.length
+    ? await ateneumDb.select().from(ateneumIdeas).where(inArray(ateneumIdeas.id, ids))
+    : [];
+  const ideasById = new Map(ideaRows.map((idea) => [idea.id, idea]));
+  const suggestions = ids
+    .map((id) => ideasById.get(id))
+    .filter((idea): idea is NonNullable<typeof idea> => Boolean(idea))
+    .map(serializeIdea);
+
+  let sharedNotes: Array<{ displayName: string; note: string }> = [];
+  if (isHumanSession) {
+    const sharedPartnerCheckIns = checkIns.filter(
+      (checkIn) =>
+        checkIn.userId !== actor.id &&
+        checkIn.noteVisibility === "shared" &&
+        checkIn.note.length > 0,
+    );
+    if (sharedPartnerCheckIns.length > 0) {
+      const owners = await ateneumDb
+        .select({ id: ateneumUsers.id, displayName: ateneumUsers.displayName })
+        .from(ateneumUsers)
+        .where(inArray(ateneumUsers.id, sharedPartnerCheckIns.map((checkIn) => checkIn.userId)));
+      const names = new Map(owners.map((owner) => [owner.id, owner.displayName]));
+      sharedNotes = sharedPartnerCheckIns.map((checkIn) => ({
+        displayName: names.get(checkIn.userId) ?? "Kumppani",
+        note: checkIn.note,
+      }));
+    }
+  }
+
+  return {
+    cycleKey,
+    ownCheckIn: own ? serializeConnectionCheckIn(own) : null,
+    partnerResponded,
+    respondedCount: checkIns.length,
+    synthesis,
+    suggestions,
+    sharedNotes,
+  };
+}
 
 function escapeHtmlAttribute(value: string): string {
   return value
@@ -810,6 +1007,47 @@ export function registerAteneumRoutes(app: Express): void {
           .status(500)
           .json({ message: err.message || "Failed to update preferences" });
       }
+    },
+  );
+
+  // Connection loop — raw check-ins stay personal; only the synthesis is shared.
+  app.get(
+    "/api/ateneum/connection/today",
+    requireAteneumAuth,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      res.setHeader("Cache-Control", "no-store");
+      return res.json(
+        await readConnectionState(
+          req.ateneumUser!,
+          req.ateneumAuth?.kind === "session",
+        ),
+      );
+    },
+  );
+
+  app.post(
+    "/api/ateneum/connection/check-in",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = connectionCheckInBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const cycleKey = connectionCycleKey();
+      saveConnectionCheckIn(
+        cycleKey,
+        req.ateneumUser!.id,
+        newId("checkin"),
+        parsed.data,
+      );
+      res.setHeader("Cache-Control", "no-store");
+      return res.json(
+        await readConnectionState(
+          req.ateneumUser!,
+          req.ateneumAuth?.kind === "session",
+        ),
+      );
     },
   );
 

@@ -105,10 +105,10 @@ before(async () => {
       description: "Yhteinen testi-idea",
       category: "indoor",
       tags: '["yhdessä"]',
-      energyCost: "medium" as const,
+      energyCost: index === 0 ? ("low" as const) : ("medium" as const),
       budgetCost: "moderate" as const,
       socialMode: "together" as const,
-      durationMin: 60,
+      durationMin: index === 0 ? 10 : 60,
       isActive: true,
       createdBy: juusoId,
     })),
@@ -763,6 +763,183 @@ test("authenticated user can disable every notification preference", async () =>
   assert.deepEqual(((await read.json()) as { prefs: typeof disabled }).prefs, disabled);
 });
 
+test("connection check-ins stay private while both partners receive one shared synthesis", async () => {
+  const countCheckIns = () =>
+    rawDb.prepare("SELECT count(*) FROM ateneum_connection_checkins").pluck().get();
+
+  const initial = await request("/api/ateneum/connection/today", {
+    cookie: juusoCookie,
+  });
+  assert.equal(initial.status, 200);
+  assert.equal(countCheckIns(), 0, "connection GET must be side-effect free");
+
+  const botWrite = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: botCookie,
+    body: {
+      energy: "medium",
+      need: "closeness",
+      capacityMin: 60,
+      togetherness: "together",
+      note: "must not be stored",
+      noteVisibility: "private",
+    },
+  });
+  assert.equal(botWrite.status, 403);
+  assert.equal(countCheckIns(), 0);
+
+  const unknownField = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      energy: "medium",
+      need: "closeness",
+      capacityMin: 60,
+      togetherness: "together",
+      note: "",
+      noteVisibility: "private",
+      unexpected: true,
+    },
+  });
+  assert.equal(unknownField.status, 400);
+
+  const juusoSubmit = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      energy: "high",
+      need: "closeness",
+      capacityMin: 180,
+      togetherness: "together",
+      note: "Juuson yksityinen huomio",
+      noteVisibility: "private",
+    },
+  });
+  assert.equal(juusoSubmit.status, 200);
+
+  const hennaWaiting = await request("/api/ateneum/connection/today", {
+    cookie: hennaCookie,
+  });
+  assert.equal(hennaWaiting.status, 200);
+  const hennaWaitingText = await hennaWaiting.text();
+  assert.doesNotMatch(hennaWaitingText, /Juuson yksityinen huomio/);
+  const hennaWaitingBody = JSON.parse(hennaWaitingText);
+  assert.equal(hennaWaitingBody.ownCheckIn, null);
+  assert.equal(hennaWaitingBody.partnerResponded, true);
+  assert.equal(hennaWaitingBody.synthesis, null);
+
+  const hennaSubmit = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: {
+      energy: "low",
+      need: "talk",
+      capacityMin: 10,
+      togetherness: "flexible",
+      note: "Hennan yksityinen huomio",
+      noteVisibility: "private",
+    },
+  });
+  assert.equal(hennaSubmit.status, 200);
+  assert.equal(countCheckIns(), 2);
+
+  const [asJuusoResponse, asHennaResponse, asBotResponse] = await Promise.all([
+    request("/api/ateneum/connection/today", { cookie: juusoCookie }),
+    request("/api/ateneum/connection/today", { cookie: hennaCookie }),
+    request("/api/ateneum/connection/today", { cookie: botCookie }),
+  ]);
+  const asJuusoText = await asJuusoResponse.text();
+  const asHennaText = await asHennaResponse.text();
+  const asBotText = await asBotResponse.text();
+  assert.doesNotMatch(asJuusoText, /Hennan yksityinen huomio/);
+  assert.doesNotMatch(asHennaText, /Juuson yksityinen huomio/);
+  assert.doesNotMatch(asBotText, /yksityinen huomio/);
+
+  const asJuuso = JSON.parse(asJuusoText);
+  const asHenna = JSON.parse(asHennaText);
+  const asBot = JSON.parse(asBotText);
+  assert.equal(asJuuso.ownCheckIn.need, "closeness");
+  assert.equal(asHenna.ownCheckIn.need, "talk");
+  assert.equal(asBot.ownCheckIn, null);
+  assert.deepEqual(asJuuso.synthesis, asHenna.synthesis);
+  assert.deepEqual(asJuuso.synthesis, asBot.synthesis);
+  assert.deepEqual(Object.keys(asJuuso.synthesis).sort(), ["message", "mode"]);
+  assert.doesNotMatch(
+    JSON.stringify(asJuuso.synthesis),
+    /high|low|180|10|closeness|talk/,
+    "the shared synthesis must not expose invertible personal values",
+  );
+  assert.deepEqual(
+    asJuuso.suggestions.map((idea: { id: string }) => idea.id),
+    asHenna.suggestions.map((idea: { id: string }) => idea.id),
+  );
+  assert.ok(asJuuso.suggestions.length > 0);
+  assert.ok(
+    asJuuso.suggestions.every(
+      (idea: { durationMin: number; energyCost: string }) =>
+        idea.durationMin <= 10 && idea.energyCost === "low",
+    ),
+    "shared suggestions must come only from the non-invertible universal safe set",
+  );
+
+  const concurrentUpdates = await Promise.all([
+    request("/api/ateneum/connection/check-in", {
+      method: "POST",
+      cookie: juusoCookie,
+      body: {
+        energy: "high",
+        need: "adventure",
+        capacityMin: 180,
+        togetherness: "together",
+        note: "",
+        noteVisibility: "private",
+      },
+    }),
+    request("/api/ateneum/connection/check-in", {
+      method: "POST",
+      cookie: juusoCookie,
+      body: {
+        energy: "low",
+        need: "rest",
+        capacityMin: 10,
+        togetherness: "flexible",
+        note: "",
+        noteVisibility: "private",
+      },
+    }),
+  ]);
+  assert.deepEqual(concurrentUpdates.map((response) => response.status), [200, 200]);
+  const afterConcurrent = await (
+    await request("/api/ateneum/connection/today", { cookie: juusoCookie })
+  ).json();
+  assert.equal(afterConcurrent.respondedCount, 2);
+  assert.ok(
+    afterConcurrent.suggestions.every(
+      (idea: { durationMin: number; energyCost: string }) =>
+        idea.durationMin <= 10 && idea.energyCost === "low",
+    ),
+    "concurrent upserts must not leave stale unsafe suggestions",
+  );
+
+  const requestSpace = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      energy: "low",
+      need: "space",
+      capacityMin: 10,
+      togetherness: "space",
+      note: "",
+      noteVisibility: "private",
+    },
+  });
+  assert.equal(requestSpace.status, 200);
+  const spaceState = await requestSpace.json();
+  assert.equal(spaceState.synthesis.mode, "space");
+  assert.deepEqual(spaceState.suggestions, []);
+  assert.equal(countCheckIns(), 2, "same-day check-in must upsert instead of duplicate");
+});
+
 test("seed source contains no hardcoded personal credentials", () => {
   const seed = readFileSync(path.resolve("server/ateneum-seed-data.ts"), "utf8");
   assert.doesNotMatch(seed, /password\s*:\s*["'][^"']+["']/i);
@@ -864,6 +1041,13 @@ test("API tokens are session-minted, scoped, expiring, listable and revocable", 
 
   const readable = await request("/api/ateneum/ideas", { bearer: issued.token });
   assert.equal(readable.status, 200);
+  const tokenConnection = await request("/api/ateneum/connection/today", {
+    bearer: issued.token,
+  });
+  assert.equal(tokenConnection.status, 200);
+  const tokenConnectionText = await tokenConnection.text();
+  assert.doesNotMatch(tokenConnectionText, /yksityinen huomio/);
+  assert.equal(JSON.parse(tokenConnectionText).ownCheckIn, null);
   const deniedWrite = await request("/api/ateneum/wishes", {
     method: "POST",
     bearer: issued.token,
