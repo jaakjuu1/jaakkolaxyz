@@ -251,7 +251,8 @@ ssh teppo-server '
     dist/public/ateneum/activity.html
   )
   cd "$RELEASE"
-  rsync -ain --relative "${FILES[@]}" "$APP/"
+  rsync -rlti --dry-run --relative --omit-dir-times \
+    --no-perms --no-owner --no-group "${FILES[@]}" "$APP/"
 '
 ```
 
@@ -303,7 +304,8 @@ FILES=(
   dist/public/ateneum/activity.html
 )
 cd "$RELEASE"
-rsync -ai --relative "${FILES[@]}" "$APP/"
+rsync -rlti --relative --omit-dir-times \
+  --no-perms --no-owner --no-group "${FILES[@]}" "$APP/"
 cd "$APP"
 node --check dist/index.cjs
 grep -q ateneum_weekly_suggestions dist/index.cjs
