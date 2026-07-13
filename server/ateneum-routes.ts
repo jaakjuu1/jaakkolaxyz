@@ -13,7 +13,6 @@ import {
   ateneumNotificationPrefs,
   ateneumApiTokens,
   insertAteneumPreferencesSchema,
-  insertAteneumIdeaSchema,
   insertAteneumActivitySchema,
   insertAteneumWishSchema,
 } from "@shared/ateneum-schema";
@@ -92,6 +91,48 @@ function requireNotificationPermission(
     return res.status(403).json({ message: "API token lacks notifications:send scope" });
   }
   return next();
+}
+
+const ideaCategorySchema = z.enum([
+  "indoor",
+  "outdoor",
+  "culinary",
+  "culture",
+  "wellness",
+  "creative",
+  "social",
+]);
+const ideaEnergySchema = z.enum(["low", "medium", "high"]);
+const ideaBudgetSchema = z.enum(["free", "cheap", "moderate", "splurge"]);
+const ideaSocialModeSchema = z.enum(["solo", "together", "with-friends"]);
+const ideaTagsSchema = z.array(z.string().trim().min(1).max(64)).max(30);
+const ideaCreateBodySchema = z
+  .object({
+    title: z.string().trim().min(1).max(200),
+    description: z.string().trim().max(5_000).default(""),
+    category: ideaCategorySchema.default("indoor"),
+    tags: ideaTagsSchema.default([]),
+    energyCost: ideaEnergySchema.default("medium"),
+    budgetCost: ideaBudgetSchema.default("cheap"),
+    socialMode: ideaSocialModeSchema.default("together"),
+    durationMin: z.number().int().min(1).max(1_440).default(90),
+  })
+  .strict();
+const ideaUpdateBodySchema = ideaCreateBodySchema
+  .partial()
+  .extend({ isActive: z.boolean().optional() })
+  .strict()
+  .refine((body) => Object.keys(body).length > 0, {
+    message: "At least one field is required",
+  });
+
+function escapeHtmlAttribute(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 const CUSTOM_NOTIFICATION_WINDOW_MS = 10 * 60 * 1000;
@@ -585,57 +626,21 @@ export function registerAteneumRoutes(app: Express): void {
     },
   );
 
-  // GET variant for plain link clicks
+  // GET only confirms intent. Email scanners and prefetchers must not consume
+  // the token or change notification preferences.
   app.get(
     "/api/ateneum/auth/unsubscribe",
-    async (req: Request, res: Response) => {
-      // Delegate to POST handler
-      (req as any).body = { token: req.query.token };
-      // Inline handler
-      try {
-        const token = String(req.query.token ?? "");
-        if (!token) return res.status(400).send("Missing token");
-        const consumed = await consumeToken({
-          rawToken: token,
-          purpose: "unsubscribe",
-        });
-        if (!consumed) return res.status(400).send("Linkki vanhentunut.");
-        const user = await findUserByEmail(consumed.email);
-        if (!user) return res.status(404).send("Käyttäjää ei löytynyt.");
-        const existing = await ateneumDb
-          .select()
-          .from(ateneumNotificationPrefs)
-          .where(eq(ateneumNotificationPrefs.userId, user.id))
-          .limit(1);
-        if (existing[0]) {
-          await ateneumDb
-            .update(ateneumNotificationPrefs)
-            .set({
-              weeklySuggestion: false,
-              wishAdded: false,
-              wishFulfilled: false,
-              activityPlanned: false,
-              inactivityReminder: false,
-              updatedAt: new Date(),
-            })
-            .where(eq(ateneumNotificationPrefs.userId, user.id));
-        } else {
-          await ateneumDb.insert(ateneumNotificationPrefs).values({
-            userId: user.id,
-            weeklySuggestion: false,
-            wishAdded: false,
-            wishFulfilled: false,
-            activityPlanned: false,
-            inactivityReminder: false,
-          });
-        }
-        return res.send(
-          `<!doctype html><html lang="fi"><head><meta charset="utf-8"><title>Lopetettu</title></head><body style="font-family:sans-serif; max-width:480px; margin:4rem auto; text-align:center; color:#1a1a1a;"><h2>Ilmoitukset lopetettu</h2><p>Et saa enää sähköposti-ilmoituksia Ateneumista.</p><p><a href="/ateneum/">Palaa Ateneumiin</a></p></body></html>`,
-        );
-      } catch (err: any) {
-        console.error("[ateneum] unsubscribe (GET) error:", err);
-        return res.status(500).send("Unsubscribe failed");
+    (req: Request, res: Response) => {
+      const parsed = z.string().min(32).max(512).safeParse(req.query.token);
+      if (!parsed.success) {
+        return res.status(400).send("Missing or invalid token");
       }
+      const token = escapeHtmlAttribute(parsed.data);
+      res.setHeader("Cache-Control", "no-store");
+      res.setHeader("Referrer-Policy", "no-referrer");
+      return res.type("html").send(
+        `<!doctype html><html lang="fi"><head><meta charset="utf-8"><meta name="referrer" content="no-referrer"><title>Vahvista ilmoitusten lopetus</title></head><body style="font-family:sans-serif; max-width:480px; margin:4rem auto; text-align:center; color:#1a1a1a;"><h2>Lopeta sähköposti-ilmoitukset?</h2><p>Vahvista, ettet halua enää sähköposti-ilmoituksia Ateneumista.</p><form method="post" action="/api/ateneum/auth/unsubscribe"><input type="hidden" name="token" value="${token}"><button type="submit" style="padding:.75rem 1rem; cursor:pointer;">Lopeta ilmoitukset</button></form><p><a href="/ateneum/">Peruuta ja palaa Ateneumiin</a></p></body></html>`,
+      );
     },
   );
 
@@ -830,21 +835,7 @@ export function registerAteneumRoutes(app: Express): void {
     async (req: AteneumAuthedRequest, res: Response) => {
       const user = req.ateneumUser!;
       try {
-        const raw = req.body ?? {};
-        const tags = Array.isArray(raw.tags)
-          ? JSON.stringify(raw.tags.map(String))
-          : raw.tags ?? "[]";
-        const parsed = insertAteneumIdeaSchema.safeParse({
-          title: String(raw.title ?? "").trim(),
-          description: String(raw.description ?? "").trim(),
-          category: String(raw.category ?? "indoor"),
-          tags,
-          energyCost: raw.energyCost ?? "medium",
-          budgetCost: raw.budgetCost ?? "cheap",
-          socialMode: raw.socialMode ?? "together",
-          durationMin: Number(raw.durationMin ?? 90),
-          createdBy: user.id,
-        });
+        const parsed = ideaCreateBodySchema.safeParse(req.body ?? {});
         if (!parsed.success) {
           return res
             .status(400)
@@ -853,7 +844,12 @@ export function registerAteneumRoutes(app: Express): void {
         const id = newId("idea");
         const inserted = await ateneumDb
           .insert(ateneumIdeas)
-          .values({ id, ...parsed.data })
+          .values({
+            id,
+            ...parsed.data,
+            tags: JSON.stringify(parsed.data.tags),
+            createdBy: user.id,
+          })
           .returning();
         return res.json({ idea: serializeIdea(inserted[0]) });
       } catch (err: any) {
@@ -872,21 +868,16 @@ export function registerAteneumRoutes(app: Express): void {
     async (req: AteneumAuthedRequest, res: Response) => {
       try {
         const id = req.params.id;
-        const raw = req.body ?? {};
-        const update: any = {};
-        if (raw.title !== undefined) update.title = String(raw.title);
-        if (raw.description !== undefined) update.description = String(raw.description);
-        if (raw.category !== undefined) update.category = String(raw.category);
-        if (raw.tags !== undefined) {
-          update.tags = Array.isArray(raw.tags)
-            ? JSON.stringify(raw.tags.map(String))
-            : raw.tags;
+        const parsed = ideaUpdateBodySchema.safeParse(req.body ?? {});
+        if (!parsed.success) {
+          return res
+            .status(400)
+            .json({ message: fromZodError(parsed.error).message });
         }
-        if (raw.energyCost !== undefined) update.energyCost = raw.energyCost;
-        if (raw.budgetCost !== undefined) update.budgetCost = raw.budgetCost;
-        if (raw.socialMode !== undefined) update.socialMode = raw.socialMode;
-        if (raw.durationMin !== undefined) update.durationMin = Number(raw.durationMin);
-        if (raw.isActive !== undefined) update.isActive = Boolean(raw.isActive);
+        const update: any = { ...parsed.data };
+        if (parsed.data.tags !== undefined) {
+          update.tags = JSON.stringify(parsed.data.tags);
+        }
         const updated = await ateneumDb
           .update(ateneumIdeas)
           .set(update)

@@ -574,6 +574,175 @@ test("wish PATCH rejects unknown enum values without changing the row", async ()
   );
 });
 
+test("unsubscribe GET is side-effect free and POST consumes the token", async () => {
+  const email = await import("../../server/ateneum-email");
+  const rawToken = `unsubscribe_${"a".repeat(43)}`;
+  const tokenHash = email.sha256(rawToken);
+
+  rawDb
+    .prepare(
+      `INSERT INTO ateneum_notification_prefs (
+        user_id, weekly_suggestion, wish_added, wish_fulfilled,
+        activity_planned, inactivity_reminder, updated_at
+      ) VALUES (?, 1, 1, 1, 1, 1, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        weekly_suggestion=1, wish_added=1, wish_fulfilled=1,
+        activity_planned=1, inactivity_reminder=1, updated_at=excluded.updated_at`,
+    )
+    .run("usr_test_juuso", Date.now());
+  await email.recordEmailToken({
+    email: "juuso@example.test",
+    tokenHash,
+    purpose: "unsubscribe",
+    ttlMs: 60_000,
+  });
+
+  const confirmation = await request(
+    `/api/ateneum/auth/unsubscribe?token=${encodeURIComponent(rawToken)}`,
+  );
+  assert.equal(confirmation.status, 200);
+  assert.equal(confirmation.headers.get("cache-control"), "no-store");
+  assert.equal(confirmation.headers.get("referrer-policy"), "no-referrer");
+  assert.match(await confirmation.text(), /<form[^>]+method="post"/i);
+  assert.equal(
+    rawDb
+      .prepare("SELECT used_at FROM ateneum_email_tokens WHERE token_hash = ?")
+      .pluck()
+      .get(tokenHash),
+    null,
+  );
+  const before = rawDb
+    .prepare(
+      `SELECT weekly_suggestion, wish_added, wish_fulfilled,
+        activity_planned, inactivity_reminder
+       FROM ateneum_notification_prefs WHERE user_id = ?`,
+    )
+    .get("usr_test_juuso");
+  assert.deepEqual(before, {
+    weekly_suggestion: 1,
+    wish_added: 1,
+    wish_fulfilled: 1,
+    activity_planned: 1,
+    inactivity_reminder: 1,
+  });
+
+  const unsubscribe = await request("/api/ateneum/auth/unsubscribe", {
+    method: "POST",
+    body: { token: rawToken },
+  });
+  assert.equal(unsubscribe.status, 200);
+  assert.ok(
+    rawDb
+      .prepare("SELECT used_at FROM ateneum_email_tokens WHERE token_hash = ?")
+      .pluck()
+      .get(tokenHash),
+  );
+  const after = rawDb
+    .prepare(
+      `SELECT weekly_suggestion, wish_added, wish_fulfilled,
+        activity_planned, inactivity_reminder
+       FROM ateneum_notification_prefs WHERE user_id = ?`,
+    )
+    .get("usr_test_juuso");
+  assert.deepEqual(after, {
+    weekly_suggestion: 0,
+    wish_added: 0,
+    wish_fulfilled: 0,
+    activity_planned: 0,
+    inactivity_reminder: 0,
+  });
+  rawDb
+    .prepare("DELETE FROM ateneum_notification_prefs WHERE user_id = ?")
+    .run("usr_test_juuso");
+});
+
+test("idea POST and PATCH reject invalid enums and unknown fields without mutation", async () => {
+  const base = {
+    title: "Strict idea validation",
+    description: "Regression fixture",
+    category: "indoor",
+    tags: ["together"],
+    energyCost: "medium",
+    budgetCost: "cheap",
+    socialMode: "together",
+    durationMin: 60,
+  };
+  const invalidFields = [
+    ["category", '<svg onload="alert(1)">'],
+    ["energyCost", "unlimited"],
+    ["budgetCost", "priceless"],
+    ["socialMode", "everyone"],
+  ] as const;
+  const countBefore = rawDb.prepare("SELECT count(*) FROM ateneum_ideas").pluck().get();
+  for (const [field, value] of invalidFields) {
+    const response = await request("/api/ateneum/ideas", {
+      method: "POST",
+      cookie: juusoCookie,
+      body: { ...base, [field]: value },
+    });
+    assert.equal(response.status, 400, `POST accepted invalid ${field}`);
+  }
+  assert.equal(
+    (
+      await request("/api/ateneum/ideas", {
+        method: "POST",
+        cookie: juusoCookie,
+        body: { ...base, unexpected: true },
+      })
+    ).status,
+    400,
+  );
+  assert.equal(rawDb.prepare("SELECT count(*) FROM ateneum_ideas").pluck().get(), countBefore);
+
+  const createdResponse = await request("/api/ateneum/ideas", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: base,
+  });
+  assert.equal(createdResponse.status, 200);
+  const id = ((await createdResponse.json()) as { idea: { id: string } }).idea.id;
+  const readRow = () =>
+    rawDb
+      .prepare(
+        `SELECT title, description, category, tags, energy_cost,
+          budget_cost, social_mode, duration_min, is_active
+         FROM ateneum_ideas WHERE id = ?`,
+      )
+      .get(id);
+  const unchanged = readRow();
+
+  for (const [field, value] of invalidFields) {
+    const response = await request(`/api/ateneum/ideas/${id}`, {
+      method: "PATCH",
+      cookie: hennaCookie,
+      body: { [field]: value },
+    });
+    assert.equal(response.status, 400, `PATCH accepted invalid ${field}`);
+    assert.deepEqual(readRow(), unchanged);
+  }
+  for (const body of [{}, { unexpected: true }]) {
+    const response = await request(`/api/ateneum/ideas/${id}`, {
+      method: "PATCH",
+      cookie: juusoCookie,
+      body,
+    });
+    assert.equal(response.status, 400);
+    assert.deepEqual(readRow(), unchanged);
+  }
+
+  const valid = await request(`/api/ateneum/ideas/${id}`, {
+    method: "PATCH",
+    cookie: hennaCookie,
+    body: {
+      category: "outdoor",
+      energyCost: "high",
+      budgetCost: "moderate",
+      socialMode: "with-friends",
+    },
+  });
+  assert.equal(valid.status, 200);
+});
+
 test("authenticated user can disable every notification preference", async () => {
   const disabled = {
     weeklySuggestion: false,
