@@ -195,7 +195,10 @@ test("bot is read-only across every shared-data mutation", async () => {
     { method: "POST", path: "/api/ateneum/wishes/missing/fulfill" },
     { method: "DELETE", path: "/api/ateneum/wishes/missing" },
     { method: "POST", path: "/api/ateneum/suggestions/weekly/rotate" },
+    { method: "POST", path: "/api/ateneum/suggestions/weekly/select" },
     { method: "POST", path: "/api/ateneum/suggestions/weekly/send" },
+    { method: "PATCH", path: "/api/ateneum/notification-prefs", body: {} },
+    { method: "PUT", path: "/api/ateneum/preferences", body: {} },
   ];
 
   for (const mutation of mutations) {
@@ -206,6 +209,39 @@ test("bot is read-only across every shared-data mutation", async () => {
     });
     assert.equal(response.status, 403, `${mutation.method} ${mutation.path}`);
   }
+});
+
+test("read endpoints do not create preferences or weekly suggestions", async () => {
+  const count = (sql: string, userId?: string): number =>
+    (userId ? rawDb.prepare(sql).get(userId) : rawDb.prepare(sql).get()).count;
+  const before = {
+    preferences: count(
+      "SELECT count(*) AS count FROM ateneum_preferences WHERE user_id = ?",
+      "usr_test_bot",
+    ),
+    notifications: count(
+      "SELECT count(*) AS count FROM ateneum_notification_prefs WHERE user_id = ?",
+      "usr_test_bot",
+    ),
+    weekly: count("SELECT count(*) AS count FROM ateneum_weekly_suggestions"),
+  };
+
+  assert.equal((await request("/api/ateneum/preferences", { cookie: botCookie })).status, 200);
+  assert.equal((await request("/api/ateneum/notification-prefs", { cookie: botCookie })).status, 200);
+  assert.equal((await request("/api/ateneum/suggestions/weekly", { cookie: botCookie })).status, 200);
+
+  const after = {
+    preferences: count(
+      "SELECT count(*) AS count FROM ateneum_preferences WHERE user_id = ?",
+      "usr_test_bot",
+    ),
+    notifications: count(
+      "SELECT count(*) AS count FROM ateneum_notification_prefs WHERE user_id = ?",
+      "usr_test_bot",
+    ),
+    weekly: count("SELECT count(*) AS count FROM ateneum_weekly_suggestions"),
+  };
+  assert.deepEqual(after, before);
 });
 
 test("only the wish author can mark a wish fulfilled", async () => {
@@ -295,7 +331,10 @@ test("weekly suggestion is stable across reloads and both partners", async () =>
 
 test("stored weekly suggestion survives planning and idea deactivation", async () => {
   const before = (await (
-    await request("/api/ateneum/suggestions/weekly", { cookie: juusoCookie })
+    await request("/api/ateneum/suggestions/weekly/select", {
+      method: "POST",
+      cookie: juusoCookie,
+    })
   ).json()) as { suggestion: { id: string; title: string } };
 
   const planned = await request("/api/ateneum/activities", {
@@ -330,7 +369,10 @@ test("stored weekly suggestion survives planning and idea deactivation", async (
 
 test("explicit weekly rotation becomes the new shared stable suggestion", async () => {
   const before = (await (
-    await request("/api/ateneum/suggestions/weekly", { cookie: juusoCookie })
+    await request("/api/ateneum/suggestions/weekly/select", {
+      method: "POST",
+      cookie: juusoCookie,
+    })
   ).json()) as { suggestion: { id: string }; weekKey: string };
 
   const rotate = await request("/api/ateneum/suggestions/weekly/rotate", {
@@ -499,6 +541,37 @@ test("activity status and rating use the shared PATCH contract", async () => {
   const ratedBody = (await rated.json()) as { activity: { status: string; rating: number } };
   assert.equal(ratedBody.activity.status, "done");
   assert.equal(ratedBody.activity.rating, 5);
+
+  const invalidStatus = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: '<img src=x onerror="alert(1)">' },
+  });
+  assert.equal(invalidStatus.status, 400);
+  assert.equal(
+    rawDb.prepare("SELECT status FROM ateneum_activities WHERE id = ?").pluck().get(created.activity.id),
+    "done",
+  );
+});
+
+test("wish PATCH rejects unknown enum values without changing the row", async () => {
+  const create = await request("/api/ateneum/wishes", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { body: "Enum regression", mood: "tender", visibility: "shared" },
+  });
+  assert.equal(create.status, 200);
+  const id = ((await create.json()) as { wish: { id: string } }).wish.id;
+  const invalid = await request(`/api/ateneum/wishes/${id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { mood: '<svg onload="alert(1)">' },
+  });
+  assert.equal(invalid.status, 400);
+  assert.equal(
+    rawDb.prepare("SELECT mood FROM ateneum_wishes WHERE id = ?").pluck().get(id),
+    "tender",
+  );
 });
 
 test("authenticated user can disable every notification preference", async () => {
@@ -628,6 +701,48 @@ test("API tokens are session-minted, scoped, expiring, listable and revocable", 
     body: { body: "must not be written", mood: "tender", visibility: "shared" },
   });
   assert.equal(deniedWrite.status, 403);
+
+  const preferencesBefore = rawDb
+    .prepare("SELECT * FROM ateneum_preferences WHERE user_id = ?")
+    .get("usr_test_juuso");
+  const notificationCountBefore = (
+    rawDb
+      .prepare("SELECT count(*) AS count FROM ateneum_notification_prefs WHERE user_id = ?")
+      .get("usr_test_juuso") as { count: number }
+  ).count;
+  assert.equal(
+    (
+      await request("/api/ateneum/preferences", {
+        method: "PUT",
+        bearer: issued.token,
+        body: { notes: "must not change" },
+      })
+    ).status,
+    403,
+  );
+  assert.equal(
+    (
+      await request("/api/ateneum/notification-prefs", {
+        method: "PATCH",
+        bearer: issued.token,
+        body: { weeklySuggestion: false },
+      })
+    ).status,
+    403,
+  );
+  assert.deepEqual(
+    rawDb.prepare("SELECT * FROM ateneum_preferences WHERE user_id = ?").get("usr_test_juuso"),
+    preferencesBefore,
+  );
+  assert.equal(
+    (
+      rawDb
+        .prepare("SELECT count(*) AS count FROM ateneum_notification_prefs WHERE user_id = ?")
+        .get("usr_test_juuso") as { count: number }
+    ).count,
+    notificationCountBefore,
+  );
+
   const deniedNotification = await request("/api/ateneum/notifications", {
     method: "POST",
     bearer: issued.token,
@@ -653,6 +768,39 @@ test("API tokens are session-minted, scoped, expiring, listable and revocable", 
   assert.equal(
     (await request("/api/ateneum/auth/api-tokens", { bearer: issued.token })).status,
     403,
+  );
+
+  const partnerBTokenIssue = await request("/api/ateneum/auth/api-token", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: {
+      name: "partner-b-owned",
+      password: process.env.ATENEUM_HENNA_PASSWORD,
+      expiresInDays: 1,
+      scopes: ["read"],
+    },
+  });
+  assert.equal(partnerBTokenIssue.status, 200);
+  const partnerBToken = (await partnerBTokenIssue.json()) as { id: string };
+  const partnerBNotification = await request("/api/ateneum/notifications", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: {
+      to: "juuso",
+      kind: "custom_message",
+      payload: { subject: "Symmetric access", body: "Test" },
+    },
+  });
+  assert.equal(partnerBNotification.status, 200);
+  assert.equal(
+    (
+      await request(`/api/ateneum/auth/api-tokens/${partnerBToken.id}`, {
+        method: "DELETE",
+        cookie: hennaCookie,
+        body: { password: process.env.ATENEUM_HENNA_PASSWORD },
+      })
+    ).status,
+    200,
   );
 
   const notificationIssue = await request("/api/ateneum/auth/api-token", {

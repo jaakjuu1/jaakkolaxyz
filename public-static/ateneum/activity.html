@@ -466,8 +466,9 @@ async function api(path, opts = {}) {
 }
 
 function statusPill(status) {
-  const label = { planned: "Suunniteltu", done: "Tehty", skipped: "Ohitettu" }[status] || status;
-  return `<span class="status-pill ${status}">${label}</span>`;
+  const labels = { planned: "Suunniteltu", done: "Tehty", skipped: "Ohitettu" };
+  const safeStatus = Object.hasOwn(labels, status) ? status : "planned";
+  return `<span class="status-pill ${safeStatus}">${escapeHtml(labels[status] || status)}</span>`;
 }
 
 function priorityPill(p) {
@@ -476,7 +477,7 @@ function priorityPill(p) {
     high: { label: "Tärkeä", cls: "high" },
     medium: { label: "Hyvä olla", cls: "medium" },
   };
-  const v = map[p] || { label: p, cls: "medium" };
+  const v = map[p] || { label: escapeHtml(p), cls: "medium" };
   return `<span class="priority ${v.cls}">${v.label}</span>`;
 }
 

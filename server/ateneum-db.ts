@@ -116,108 +116,158 @@ export function initAteneumSchema(): void {
   `);
 }
 // Migration: add new tables/columns idempotently.
-// Safe to run on every boot — all statements use IF NOT EXISTS / try/catch.
+// Safe to run on every boot: additive changes are transactional and final state is validated.
 export function migrateAteneumSchema(): void {
-  // email column on users
-  try {
-    ateneumRawDb.exec(`ALTER TABLE ateneum_users ADD COLUMN email TEXT`);
-  } catch {
-    /* column already exists */
-  }
-  ateneumRawDb.exec(
-    `CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_email ON ateneum_users(email)`,
-  );
+  type ColumnInfo = { name: string; notnull: number };
+  const columnInfo = (table: string): ColumnInfo[] =>
+    ateneumRawDb.prepare(`PRAGMA table_info(${table})`).all() as ColumnInfo[];
+  const columnNames = (table: string): Set<string> =>
+    new Set(columnInfo(table).map((column) => column.name));
 
-  try {
-    ateneumRawDb.exec(`ALTER TABLE ateneum_activities ADD COLUMN details TEXT`);
-  } catch {
-    /* column already exists */
-  }
+  const migrateAdditiveSchema = ateneumRawDb.transaction(() => {
+    ateneumRawDb.exec(`
+      CREATE TABLE IF NOT EXISTS ateneum_schema_migrations (
+        name TEXT PRIMARY KEY,
+        applied_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+    `);
 
-  ateneumRawDb.exec(`
-    CREATE TABLE IF NOT EXISTS ateneum_email_tokens (
-      id TEXT PRIMARY KEY,
-      email TEXT NOT NULL,
-      token_hash TEXT NOT NULL,
-      purpose TEXT NOT NULL CHECK (purpose IN ('magic_link','unsubscribe')),
-      expires_at INTEGER NOT NULL,
-      used_at INTEGER,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch())
-    );
-    CREATE INDEX IF NOT EXISTS idx_ateneum_email_tokens_email ON ateneum_email_tokens(email);
-    CREATE INDEX IF NOT EXISTS idx_ateneum_email_tokens_hash ON ateneum_email_tokens(token_hash);
-
-    CREATE TABLE IF NOT EXISTS ateneum_notification_prefs (
-      user_id TEXT PRIMARY KEY REFERENCES ateneum_users(id) ON DELETE CASCADE,
-      weekly_suggestion INTEGER NOT NULL DEFAULT 1,
-      wish_added INTEGER NOT NULL DEFAULT 1,
-      wish_fulfilled INTEGER NOT NULL DEFAULT 1,
-      activity_planned INTEGER NOT NULL DEFAULT 1,
-      inactivity_reminder INTEGER NOT NULL DEFAULT 1,
-      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    if (!columnNames("ateneum_users").has("email")) {
+      ateneumRawDb.exec(`ALTER TABLE ateneum_users ADD COLUMN email TEXT`);
+    }
+    ateneumRawDb.exec(
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_email ON ateneum_users(email)`,
     );
 
-    CREATE TABLE IF NOT EXISTS ateneum_email_log (
-      id TEXT PRIMARY KEY,
-      to_email TEXT NOT NULL,
-      subject TEXT NOT NULL,
-      kind TEXT NOT NULL,
-      sent_at INTEGER NOT NULL DEFAULT (unixepoch()),
-      meta TEXT
-    );
-    CREATE INDEX IF NOT EXISTS idx_ateneum_email_log_kind_time ON ateneum_email_log(kind, sent_at);
-    CREATE INDEX IF NOT EXISTS idx_ateneum_email_log_to ON ateneum_email_log(to_email);
+    if (!columnNames("ateneum_activities").has("details")) {
+      ateneumRawDb.exec(`ALTER TABLE ateneum_activities ADD COLUMN details TEXT`);
+    }
 
-    CREATE TABLE IF NOT EXISTS ateneum_email_claims (
-      id TEXT PRIMARY KEY,
-      to_email TEXT NOT NULL,
-      kind TEXT NOT NULL,
-      week_key TEXT NOT NULL,
-      status TEXT NOT NULL CHECK (status IN ('claimed','sent','failed')),
-      claimed_at INTEGER NOT NULL DEFAULT (unixepoch()),
-      completed_at INTEGER,
-      error TEXT,
-      UNIQUE(kind, to_email, week_key)
-    );
-    CREATE INDEX IF NOT EXISTS idx_ateneum_email_claims_status
-      ON ateneum_email_claims(status, claimed_at);
+    ateneumRawDb.exec(`
+      CREATE TABLE IF NOT EXISTS ateneum_email_tokens (
+        id TEXT PRIMARY KEY,
+        email TEXT NOT NULL,
+        token_hash TEXT NOT NULL,
+        purpose TEXT NOT NULL CHECK (purpose IN ('magic_link','unsubscribe')),
+        expires_at INTEGER NOT NULL,
+        used_at INTEGER,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_email_tokens_email ON ateneum_email_tokens(email);
+      CREATE INDEX IF NOT EXISTS idx_ateneum_email_tokens_hash ON ateneum_email_tokens(token_hash);
 
-    -- API tokens for Bearer auth (scripts, integrations)
-    CREATE TABLE IF NOT EXISTS ateneum_api_tokens (
-      id TEXT PRIMARY KEY,
-      token_hash TEXT NOT NULL UNIQUE,
-      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
-      name TEXT NOT NULL,
-      scopes TEXT NOT NULL DEFAULT '["read"]',
-      expires_at INTEGER NOT NULL,
-      revoked_at INTEGER,
-      last_used_at INTEGER,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch())
-    );
-    CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_hash ON ateneum_api_tokens(token_hash);
-    CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_user ON ateneum_api_tokens(user_id);
-  `);
+      CREATE TABLE IF NOT EXISTS ateneum_notification_prefs (
+        user_id TEXT PRIMARY KEY REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        weekly_suggestion INTEGER NOT NULL DEFAULT 1,
+        wish_added INTEGER NOT NULL DEFAULT 1,
+        wish_fulfilled INTEGER NOT NULL DEFAULT 1,
+        activity_planned INTEGER NOT NULL DEFAULT 1,
+        inactivity_reminder INTEGER NOT NULL DEFAULT 1,
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
 
-  const apiTokenColumns = new Set(
-    (ateneumRawDb.prepare("PRAGMA table_info(ateneum_api_tokens)").all() as Array<{ name: string }>).map(
-      (column) => column.name,
-    ),
-  );
-  let migratedLegacyApiTokens = false;
-  if (!apiTokenColumns.has("scopes")) {
-    ateneumRawDb.exec(`ALTER TABLE ateneum_api_tokens ADD COLUMN scopes TEXT NOT NULL DEFAULT '["read"]'`);
-    migratedLegacyApiTokens = true;
-  }
-  if (!apiTokenColumns.has("revoked_at")) {
-    ateneumRawDb.exec("ALTER TABLE ateneum_api_tokens ADD COLUMN revoked_at INTEGER");
-    migratedLegacyApiTokens = true;
-  }
-  if (migratedLegacyApiTokens) {
-    const revoked = ateneumRawDb
-      .prepare("UPDATE ateneum_api_tokens SET revoked_at = unixepoch() WHERE revoked_at IS NULL")
-      .run();
-    console.log(`[ateneum] revoked ${revoked.changes} legacy API tokens during scope migration`);
-  }
+      CREATE TABLE IF NOT EXISTS ateneum_email_log (
+        id TEXT PRIMARY KEY,
+        to_email TEXT NOT NULL,
+        subject TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        sent_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        meta TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_email_log_kind_time ON ateneum_email_log(kind, sent_at);
+      CREATE INDEX IF NOT EXISTS idx_ateneum_email_log_to ON ateneum_email_log(to_email);
+
+      CREATE TABLE IF NOT EXISTS ateneum_email_claims (
+        id TEXT PRIMARY KEY,
+        to_email TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        week_key TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('claimed','sent','failed')),
+        claimed_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        completed_at INTEGER,
+        error TEXT,
+        UNIQUE(kind, to_email, week_key)
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_email_claims_status
+        ON ateneum_email_claims(status, claimed_at);
+
+      CREATE TABLE IF NOT EXISTS ateneum_api_tokens (
+        id TEXT PRIMARY KEY,
+        token_hash TEXT NOT NULL UNIQUE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        scopes TEXT NOT NULL DEFAULT '["read"]',
+        expires_at INTEGER NOT NULL,
+        revoked_at INTEGER,
+        last_used_at INTEGER,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_hash ON ateneum_api_tokens(token_hash);
+      CREATE INDEX IF NOT EXISTS idx_ateneum_api_tokens_user ON ateneum_api_tokens(user_id);
+    `);
+
+    const tokenMigration = "api_token_scopes_v1";
+    const migrationApplied = Boolean(
+      ateneumRawDb
+        .prepare("SELECT 1 FROM ateneum_schema_migrations WHERE name = ?")
+        .get(tokenMigration),
+    );
+    const apiTokenColumns = columnNames("ateneum_api_tokens");
+    if (
+      migrationApplied &&
+      (!apiTokenColumns.has("scopes") || !apiTokenColumns.has("revoked_at"))
+    ) {
+      throw new Error("api_token_scopes_v1 marker exists but required columns are missing");
+    }
+    if (!migrationApplied) {
+      if (!apiTokenColumns.has("scopes")) {
+        ateneumRawDb.exec(
+          `ALTER TABLE ateneum_api_tokens ADD COLUMN scopes TEXT NOT NULL DEFAULT '["read"]'`,
+        );
+      }
+      if (!apiTokenColumns.has("revoked_at")) {
+        ateneumRawDb.exec(`ALTER TABLE ateneum_api_tokens ADD COLUMN revoked_at INTEGER`);
+      }
+      const revoked = ateneumRawDb
+        .prepare("UPDATE ateneum_api_tokens SET revoked_at = unixepoch() WHERE revoked_at IS NULL")
+        .run();
+      if (revoked.changes > 0) {
+        console.log(`[ateneum] revoked ${revoked.changes} legacy API tokens during scope migration`);
+      }
+
+      const expiresColumn = columnInfo("ateneum_api_tokens").find(
+        (column) => column.name === "expires_at",
+      );
+      if (!expiresColumn?.notnull) {
+        ateneumRawDb.exec(`
+          CREATE TABLE ateneum_api_tokens__new (
+            id TEXT PRIMARY KEY,
+            token_hash TEXT NOT NULL UNIQUE,
+            user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+            name TEXT NOT NULL,
+            scopes TEXT NOT NULL DEFAULT '["read"]',
+            expires_at INTEGER NOT NULL,
+            revoked_at INTEGER,
+            last_used_at INTEGER,
+            created_at INTEGER NOT NULL DEFAULT (unixepoch())
+          );
+          INSERT INTO ateneum_api_tokens__new
+            (id, token_hash, user_id, name, scopes, expires_at, revoked_at, last_used_at, created_at)
+          SELECT id, token_hash, user_id, name, scopes, COALESCE(expires_at, 0),
+                 COALESCE(revoked_at, unixepoch()), last_used_at, created_at
+          FROM ateneum_api_tokens;
+          DROP TABLE ateneum_api_tokens;
+          ALTER TABLE ateneum_api_tokens__new RENAME TO ateneum_api_tokens;
+          CREATE INDEX idx_ateneum_api_tokens_hash ON ateneum_api_tokens(token_hash);
+          CREATE INDEX idx_ateneum_api_tokens_user ON ateneum_api_tokens(user_id);
+        `);
+      }
+      ateneumRawDb
+        .prepare("INSERT INTO ateneum_schema_migrations (name) VALUES (?)")
+        .run(tokenMigration);
+    }
+  });
+  migrateAdditiveSchema();
 
   // Raw legacy bearer values are incompatible with hash-only lookups and must not
   // remain recoverable from the database after the migration.
@@ -244,32 +294,99 @@ export function migrateAteneumSchema(): void {
       currentSql.includes("'wife'"));
   if (needsNeutralRoles) {
     console.log("[ateneum] migrating: replacing legacy user roles with neutral partner roles");
-    ateneumRawDb.exec(`
-      PRAGMA foreign_keys=OFF;
-      BEGIN;
-      CREATE TABLE ateneum_users__new (
-        id TEXT PRIMARY KEY,
-        username TEXT NOT NULL UNIQUE,
-        display_name TEXT NOT NULL,
-        password_hash TEXT NOT NULL,
-        email TEXT UNIQUE,
-        role TEXT NOT NULL CHECK (role IN ('partner_a','partner_b','bot')),
-        created_at INTEGER NOT NULL DEFAULT (unixepoch())
-      );
-      INSERT INTO ateneum_users__new (id, username, display_name, password_hash, email, role, created_at)
-        SELECT id, username, display_name, password_hash, email,
-          CASE role
-            WHEN 'juuso' THEN 'partner_a'
-            WHEN 'wife' THEN 'partner_b'
-            ELSE role
-          END,
-          created_at
-        FROM ateneum_users;
-      DROP TABLE ateneum_users;
-      ALTER TABLE ateneum_users__new RENAME TO ateneum_users;
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_username ON ateneum_users(username);
-      COMMIT;
-      PRAGMA foreign_keys=ON;
-    `);
+    ateneumRawDb.pragma("foreign_keys = OFF");
+    try {
+      const migrateRoles = ateneumRawDb.transaction(() => {
+        ateneumRawDb.exec(`
+          CREATE TABLE ateneum_users__new (
+            id TEXT PRIMARY KEY,
+            username TEXT NOT NULL UNIQUE,
+            display_name TEXT NOT NULL,
+            password_hash TEXT NOT NULL,
+            email TEXT UNIQUE,
+            role TEXT NOT NULL CHECK (role IN ('partner_a','partner_b','bot')),
+            created_at INTEGER NOT NULL DEFAULT (unixepoch())
+          );
+          INSERT INTO ateneum_users__new (id, username, display_name, password_hash, email, role, created_at)
+            SELECT id, username, display_name, password_hash, email,
+              CASE role
+                WHEN 'juuso' THEN 'partner_a'
+                WHEN 'wife' THEN 'partner_b'
+                ELSE role
+              END,
+              created_at
+            FROM ateneum_users;
+          DROP TABLE ateneum_users;
+          ALTER TABLE ateneum_users__new RENAME TO ateneum_users;
+          CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_username ON ateneum_users(username);
+          CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_email ON ateneum_users(email);
+        `);
+      });
+      migrateRoles();
+    } finally {
+      ateneumRawDb.pragma("foreign_keys = ON");
+    }
+  }
+
+  const requiredColumns: Record<string, string[]> = {
+    ateneum_users: ["id", "username", "display_name", "password_hash", "email", "role"],
+    ateneum_activities: ["id", "details", "status"],
+    ateneum_api_tokens: [
+      "id",
+      "token_hash",
+      "user_id",
+      "name",
+      "scopes",
+      "expires_at",
+      "revoked_at",
+    ],
+    ateneum_email_tokens: ["id", "email", "token_hash", "purpose", "expires_at"],
+    ateneum_email_claims: ["id", "to_email", "kind", "week_key", "status"],
+    ateneum_weekly_suggestions: ["week_key", "idea_id"],
+  };
+  for (const [table, required] of Object.entries(requiredColumns)) {
+    const actual = columnNames(table);
+    const missing = required.filter((column) => !actual.has(column));
+    if (missing.length > 0) {
+      throw new Error(`Ateneum schema validation failed: ${table} missing ${missing.join(", ")}`);
+    }
+  }
+  const tokenInfo = new Map(
+    columnInfo("ateneum_api_tokens").map((column) => [column.name, column]),
+  );
+  for (const requiredNotNull of ["token_hash", "user_id", "name", "scopes", "expires_at"]) {
+    if (tokenInfo.get(requiredNotNull)?.notnull !== 1) {
+      throw new Error(`Ateneum token constraint validation failed: ${requiredNotNull} is nullable`);
+    }
+  }
+  if (
+    !ateneumRawDb
+      .prepare("SELECT 1 FROM ateneum_schema_migrations WHERE name = ?")
+      .get("api_token_scopes_v1")
+  ) {
+    throw new Error("Ateneum token migration marker is missing");
+  }
+  const finalUserSql = (
+    ateneumRawDb
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_users'")
+      .get() as { sql?: string } | undefined
+  )?.sql ?? "";
+  if (
+    !finalUserSql.includes("'partner_a'") ||
+    !finalUserSql.includes("'partner_b'") ||
+    finalUserSql.includes("'juuso'") ||
+    finalUserSql.includes("'wife'")
+  ) {
+    throw new Error("Ateneum role constraint validation failed");
+  }
+  if (ateneumRawDb.pragma("foreign_keys", { simple: true }) !== 1) {
+    throw new Error("Ateneum foreign key enforcement is disabled");
+  }
+  const foreignKeyErrors = ateneumRawDb.pragma("foreign_key_check") as unknown[];
+  if (foreignKeyErrors.length > 0) {
+    throw new Error(`Ateneum foreign key validation failed: ${foreignKeyErrors.length} violation(s)`);
+  }
+  if (ateneumRawDb.pragma("quick_check", { simple: true }) !== "ok") {
+    throw new Error("Ateneum SQLite quick_check failed");
   }
 }

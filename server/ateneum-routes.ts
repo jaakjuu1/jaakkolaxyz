@@ -66,13 +66,13 @@ export function requireHumanWrite(
   return next();
 }
 
-function requirePartnerASession(
+function requireHumanSession(
   req: AteneumAuthedRequest,
   res: Response,
   next: NextFunction,
 ) {
-  if (req.ateneumUser?.role !== "partner_a" || req.ateneumAuth?.kind !== "session") {
-    return res.status(403).json({ message: "A partner_a browser session is required" });
+  if (req.ateneumUser?.role === "bot" || req.ateneumAuth?.kind !== "session") {
+    return res.status(403).json({ message: "A human browser session is required" });
   }
   return next();
 }
@@ -82,8 +82,8 @@ function requireNotificationPermission(
   res: Response,
   next: NextFunction,
 ) {
-  if (req.ateneumUser?.role !== "partner_a") {
-    return res.status(403).json({ message: "Only partner_a can send custom notifications" });
+  if (req.ateneumUser?.role === "bot") {
+    return res.status(403).json({ message: "Bot access is read-only" });
   }
   if (
     req.ateneumAuth?.kind === "api_token" &&
@@ -656,6 +656,7 @@ export function registerAteneumRoutes(app: Express): void {
   app.patch(
     "/api/ateneum/notification-prefs",
     requireAteneumAuth,
+    requireHumanWrite,
     async (req: AteneumAuthedRequest, res: Response) => {
       const user = req.ateneumUser!;
       const body = z
@@ -723,11 +724,21 @@ export function registerAteneumRoutes(app: Express): void {
         .where(eq(ateneumPreferences.userId, user.id))
         .limit(1);
       if (!rows[0]) {
-        const created = await ateneumDb
-          .insert(ateneumPreferences)
-          .values({ userId: user.id })
-          .returning();
-        return res.json({ preferences: serializePreferences(created[0]) });
+        return res.json({
+          preferences: serializePreferences({
+            userId: user.id,
+            likedTags: "[]",
+            dislikedTags: "[]",
+            energyLevel: "medium",
+            budgetLevel: "moderate",
+            socialMode: "together",
+            preferredDuration: 120,
+            weekdayEvenings: true,
+            weekendMornings: true,
+            notes: "",
+            updatedAt: null,
+          }),
+        });
       }
       return res.json({ preferences: serializePreferences(rows[0]) });
     },
@@ -736,6 +747,7 @@ export function registerAteneumRoutes(app: Express): void {
   app.put(
     "/api/ateneum/preferences",
     requireAteneumAuth,
+    requireHumanWrite,
     async (req: AteneumAuthedRequest, res: Response) => {
       const user = req.ateneumUser!;
       try {
@@ -1029,22 +1041,29 @@ export function registerAteneumRoutes(app: Express): void {
     async (req: AteneumAuthedRequest, res: Response) => {
       try {
         const id = req.params.id;
-        const raw = req.body ?? {};
-        const update: any = {};
-        if (raw.title !== undefined) update.title = String(raw.title);
-        if (raw.scheduledFor !== undefined) update.scheduledFor = new Date(raw.scheduledFor);
-        if (raw.durationMin !== undefined) update.durationMin = Number(raw.durationMin);
-        if (raw.status !== undefined) {
-          update.status = raw.status;
-          if (raw.status === "done") update.completedAt = new Date();
-          if (raw.status === "planned" || raw.status === "skipped")
+        const parsed = z
+          .object({
+            title: z.string().trim().min(1).max(300).optional(),
+            scheduledFor: z.coerce.date().optional(),
+            durationMin: z.number().int().min(1).max(1440).optional(),
+            status: z.enum(["planned", "done", "skipped"]).optional(),
+            rating: z.number().int().min(1).max(5).nullable().optional(),
+            notes: z.string().max(5000).optional(),
+            ideaId: z.string().min(1).max(200).nullable().optional(),
+          })
+          .strict()
+          .refine((value) => Object.keys(value).length > 0)
+          .safeParse(req.body ?? {});
+        if (!parsed.success) {
+          return res.status(400).json({ message: "Invalid activity update" });
+        }
+        const update: any = { ...parsed.data };
+        if (parsed.data.status !== undefined) {
+          if (parsed.data.status === "done") update.completedAt = new Date();
+          if (parsed.data.status === "planned" || parsed.data.status === "skipped") {
             update.completedAt = null;
+          }
         }
-        if (raw.rating !== undefined) {
-          update.rating = raw.rating === null ? null : Number(raw.rating);
-        }
-        if (raw.notes !== undefined) update.notes = String(raw.notes);
-        if (raw.ideaId !== undefined) update.ideaId = raw.ideaId ?? null;
         const updated = await ateneumDb
           .update(ateneumActivities)
           .set(update)
@@ -1178,12 +1197,22 @@ export function registerAteneumRoutes(app: Express): void {
       const me = req.ateneumUser!;
       try {
         const id = req.params.id;
-        const raw = req.body ?? {};
-        const update: any = {};
-        if (raw.body !== undefined) update.body = String(raw.body);
-        if (raw.mood !== undefined) update.mood = raw.mood;
-        if (raw.visibility !== undefined) update.visibility = raw.visibility;
-        if (raw.fulfilled !== undefined) update.fulfilled = Boolean(raw.fulfilled);
+        const parsed = z
+          .object({
+            body: z.string().trim().min(1).max(5000).optional(),
+            mood: z
+              .enum(["longing", "playful", "tender", "restless", "grateful"])
+              .optional(),
+            visibility: z.enum(["shared", "private"]).optional(),
+            fulfilled: z.boolean().optional(),
+          })
+          .strict()
+          .refine((value) => Object.keys(value).length > 0)
+          .safeParse(req.body ?? {});
+        if (!parsed.success) {
+          return res.status(400).json({ message: "Invalid wish update" });
+        }
+        const update = parsed.data;
 
         const existing = await ateneumDb
           .select()
@@ -1343,24 +1372,26 @@ export function registerAteneumRoutes(app: Express): void {
       ateneumDb.select().from(ateneumIdeas),
     ]);
 
+    const persisted = Boolean(existing[0]);
     let suggestion =
       allIdeas.find((idea) => idea.id === existing[0]?.ideaId) ?? null;
     const ranked = await rankSharedSuggestions(weekKey);
-    if (!suggestion && ranked[0]) {
-      await ateneumDb
-        .insert(ateneumWeeklySuggestions)
-        .values({ weekKey, ideaId: ranked[0].id })
-        .onConflictDoUpdate({
-          target: ateneumWeeklySuggestions.weekKey,
-          set: { ideaId: ranked[0].id },
-        });
-      suggestion = ranked[0];
-    }
+    if (!suggestion && ranked[0]) suggestion = ranked[0];
 
     const alternates = ranked
       .filter((idea) => idea.id !== suggestion?.id)
       .slice(0, 10);
-    return { weekKey, suggestion, alternates };
+    return { weekKey, suggestion, alternates, persisted };
+  }
+
+  async function persistWeeklySuggestion() {
+    const current = await getWeeklySuggestion();
+    if (!current.suggestion || current.persisted) return current;
+    await ateneumDb
+      .insert(ateneumWeeklySuggestions)
+      .values({ weekKey: current.weekKey, ideaId: current.suggestion.id })
+      .onConflictDoNothing({ target: ateneumWeeklySuggestions.weekKey });
+    return getWeeklySuggestion();
   }
 
   async function rotateWeeklySuggestion() {
@@ -1396,10 +1427,27 @@ export function registerAteneumRoutes(app: Express): void {
   app.get(
     "/api/ateneum/suggestions/weekly",
     requireAteneumAuth,
-    async (req: AteneumAuthedRequest, res: Response) => {
-      const { weekKey, suggestion, alternates } = await getWeeklySuggestion();
+    async (_req: AteneumAuthedRequest, res: Response) => {
+      const { weekKey, suggestion, alternates, persisted } = await getWeeklySuggestion();
       return res.json({
         weekKey,
+        persisted,
+        suggestion: suggestion ? serializeIdea(suggestion) : null,
+        alternates: alternates.map(serializeIdea),
+      });
+    },
+  );
+
+  app.post(
+    "/api/ateneum/suggestions/weekly/select",
+    requireAteneumAuth,
+    requireHumanWrite,
+    async (_req: AteneumAuthedRequest, res: Response) => {
+      const { weekKey, suggestion, alternates, persisted } =
+        await persistWeeklySuggestion();
+      return res.json({
+        weekKey,
+        persisted,
         suggestion: suggestion ? serializeIdea(suggestion) : null,
         alternates: alternates.map(serializeIdea),
       });
@@ -1437,7 +1485,7 @@ export function registerAteneumRoutes(app: Express): void {
         return res.json({ ok: true, skipped: true, reason: "already-sent-this-week" });
       }
       try {
-        const { suggestion, alternates } = await getWeeklySuggestion();
+        const { suggestion, alternates } = await persistWeeklySuggestion();
         const r = await sendWeeklySuggestion({
           user: me,
           suggestion,
@@ -1510,13 +1558,13 @@ export function registerAteneumRoutes(app: Express): void {
   );
 
   // ============================================
-  // API TOKEN MANAGEMENT (partner_a browser session + password confirmation)
+  // API TOKEN MANAGEMENT (human browser session + password confirmation)
   // ============================================
   // The plaintext token is returned exactly once; only its SHA-256 hash is stored.
   app.post(
     "/api/ateneum/auth/api-token",
     requireAteneumAuth,
-    requirePartnerASession,
+    requireHumanSession,
     async (req: AteneumAuthedRequest, res: Response) => {
       try {
         const me = req.ateneumUser!;
@@ -1565,7 +1613,7 @@ export function registerAteneumRoutes(app: Express): void {
   app.get(
     "/api/ateneum/auth/api-tokens",
     requireAteneumAuth,
-    requirePartnerASession,
+    requireHumanSession,
     async (req: AteneumAuthedRequest, res: Response) => {
       const rows = await ateneumDb
         .select({
@@ -1597,7 +1645,7 @@ export function registerAteneumRoutes(app: Express): void {
   app.delete(
     "/api/ateneum/auth/api-tokens/:id",
     requireAteneumAuth,
-    requirePartnerASession,
+    requireHumanSession,
     async (req: AteneumAuthedRequest, res: Response) => {
       const body = z.object({ password: z.string().min(1).max(512) }).safeParse(req.body ?? {});
       if (!body.success) return res.status(400).json({ message: "Current password is required" });
@@ -1622,7 +1670,7 @@ export function registerAteneumRoutes(app: Express): void {
   );
 
   // ============================================
-  // GENERIC NOTIFICATION (partner_a + optional scoped token)
+  // GENERIC NOTIFICATION (human partner + optional scoped token)
   // ============================================
   //
   // POST /api/ateneum/notifications
@@ -1631,7 +1679,7 @@ export function registerAteneumRoutes(app: Express): void {
   //     kind: "custom_message",                  // only kind supported now
   //     payload: { subject: string, body: string | htmlBody: string }
   //   }
-  //   auth: requireAteneumAuth (and role === "partner_a")
+  //   auth: requireAteneumAuth (human session or notifications:send token)
   //   resp: { ok, sent, messageId?, error? }
   app.post(
     "/api/ateneum/notifications",

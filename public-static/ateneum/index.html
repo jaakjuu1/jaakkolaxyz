@@ -471,7 +471,11 @@ async function loadHome() {
   const hero = document.getElementById('hero');
   hero.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
-    const { suggestion } = await api('/suggestions/weekly');
+    let weekly = await api('/suggestions/weekly');
+    if (weekly.suggestion && !weekly.persisted && currentUser?.role !== 'bot') {
+      weekly = await api('/suggestions/weekly/select', { method: 'POST' });
+    }
+    const suggestion = weekly.suggestion;
     if (!suggestion) {
       hero.innerHTML = '<div class="empty">Ei ehdotusta tällä viikolla — kokeile ladata uudestaan.</div>';
       return;
@@ -494,8 +498,9 @@ async function loadHome() {
     `;
   } catch (e) {
     hero.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  } finally {
+    loadActivities();
   }
-  loadActivities();
 }
 
 async function rotateWeeklySuggestion() {
@@ -940,7 +945,7 @@ async function loadWishes() {
     };
     el.innerHTML = wishes.map(w => {
       const fulfilled = w.fulfilled;
-      const mood = moodLabels[w.mood] || w.mood || '';
+      const mood = escapeHtml(moodLabels[w.mood] || w.mood || '');
       const owner = w.owner?.displayName || 'tuntematon';
       return `
         <div class="activity ${fulfilled ? 'done' : ''}">
@@ -1019,12 +1024,14 @@ async function testWeeklySend() {
   msg.textContent = 'Lähetetään…';
   try {
     const r = await api('/suggestions/weekly/send', { method: 'POST' });
-    if (r && r.emailSent) {
+    if (r?.sent === true) {
       msg.textContent = '✓ Lähetetty — tarkista sähköposti';
-    } else if (r && r.emailSent === false) {
-      msg.textContent = '⚠️ Sähköpostin lähetys epäonnistui';
+    } else if (r?.skipped === true) {
+      msg.textContent = r.reason === 'already-sent-this-week'
+        ? 'ℹ️ Tämän viikon viesti on jo käsitelty'
+        : 'ℹ️ Viestiä ei lähetetty';
     } else {
-      msg.textContent = '✓ OK';
+      msg.textContent = '⚠️ Sähköpostin lähetys epäonnistui';
     }
   } catch (e) {
     msg.textContent = 'Virhe: ' + e.message;

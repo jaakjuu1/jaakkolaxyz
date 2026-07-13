@@ -37,6 +37,8 @@ public-static/ateneum/activity.html
 tests/ateneum/p0.test.ts
 tests/ateneum/seed.test.ts
 dist/index.cjs
+dist/server-metafile.json
+dist/runtime-externals.json
 dist/public/ateneum/index.html
 dist/public/ateneum/activity.html
 ```
@@ -48,7 +50,8 @@ Muita tuotantotiedostoja, dashboardia tai salaista `.env`-tiedostoa ei korvata.
 - PR on hyväksytty ja merge-SHA on muuttujassa `MERGE_SHA`.
 - `npm ci`, `npm run check`, `npm run test:ateneum` ja `npm run build` menevät läpi puhtaassa release-worktreessä.
 - Release-bundle sisältää `ateneum_weekly_suggestions`-skeeman.
-- Tuotannon externalisoidut runtime-paketit täsmäävät lockiin (`argon2`, `better-sqlite3`, `cookie-parser`). AWS SES -client bundlataan `dist/index.cjs`:ään.
+- `dist/runtime-externals.json` on johdettu esbuild-metafilesta. Jokainen vaadittu external-paketti täsmää release-lockiin ja tuotantoon; native-moduulit `argon2` ja `better-sqlite3` myös smoke-loadataan. `pg-native` on `pg`:n valinnainen importti ja saa puuttua vain, jos bundle käynnistyy ilman sitä.
+- Release-portti käynnistää ensin uuden ja sitten vanhan live-bundlen samalla tuotanto-DB:n kopiolla. Näin rollback vanhaan koodiin uuden migraation jälkeen todistetaan ennen live-stoppiä.
 - Tuotannon kahdella ihmisroolilla on jo käyttäjä ja sähköposti tietokannassa. Jos jompikumpi puuttuu, `.env`:ssä pitää olla kyseisen `ATENEUM_PARTNER_A_*`- tai `ATENEUM_PARTNER_B_*`-ryhmän kaikki arvot ennen käynnistystä.
 - Julkisen sivun ja palvelun nykytila on kirjattu ennen muutosta.
 
@@ -68,6 +71,8 @@ npm run test:ateneum
 npm run build
 
 test -s dist/index.cjs
+test -s dist/server-metafile.json
+test -s dist/runtime-externals.json
 test -s dist/public/ateneum/index.html
 test -s dist/public/ateneum/activity.html
 grep -q 'ateneum_weekly_suggestions' dist/index.cjs
@@ -81,7 +86,8 @@ tar -czf "$ARTIFACT" \
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts \
   shared/ateneum-schema.ts public-static/ateneum/index.html \
   public-static/ateneum/activity.html tests/ateneum/p0.test.ts \
-  tests/ateneum/seed.test.ts dist/index.cjs dist/public/ateneum/index.html \
+  tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json \
+  dist/runtime-externals.json dist/public/ateneum/index.html \
   dist/public/ateneum/activity.html
 sha256sum "$ARTIFACT"
 ```
@@ -154,17 +160,21 @@ ssh teppo-server '
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
     public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-    tests/ateneum/seed.test.ts dist/index.cjs dist/public/ateneum/index.html
+    tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+    dist/runtime-externals.json dist/public/ateneum/index.html
     dist/public/ateneum/activity.html
   )
 
   cd "$APP"
   : > "$BACKUP/manifest.txt"
+  : > "$BACKUP/live-before.sha256"
   EXISTING=()
   declare -A SEEN_MISSING_DIRS=()
   for file in "${FILES[@]}"; do
     if [ -e "$file" ]; then
+      test -f "$file"
       printf "E %s\n" "$file" >> "$BACKUP/manifest.txt"
+      sha256sum "$file" >> "$BACKUP/live-before.sha256"
       EXISTING+=("$file")
     else
       printf "M %s\n" "$file" >> "$BACKUP/manifest.txt"
@@ -208,13 +218,19 @@ ssh teppo-server '
     const fs=require("fs"), path=require("path");
     const [app, release]=process.argv.slice(1);
     const lock=JSON.parse(fs.readFileSync(path.join(release,"package-lock.json"), "utf8"));
+    const externals=JSON.parse(fs.readFileSync(path.join(release,"dist/runtime-externals.json"), "utf8"));
+    const optional=new Set(["pg-native"]);
     let invalid=false;
-    for (const name of ["argon2","better-sqlite3","cookie-parser"]) {
+    for (const name of externals) {
       const file=path.join(app,"node_modules",name,"package.json");
       const actual=fs.existsSync(file) ? JSON.parse(fs.readFileSync(file)).version : "MISSING";
       const expected=lock.packages?.[`node_modules/${name}`]?.version ?? "MISSING_FROM_LOCK";
-      console.log(name, {actual, expected});
+      console.log(name, {actual, expected, optional:optional.has(name)});
+      if (optional.has(name) && actual === "MISSING") continue;
       if (actual !== expected) invalid=true;
+    }
+    for (const name of ["argon2","better-sqlite3"]) {
+      require(path.join(app,"node_modules",name));
     }
     if (invalid) process.exit(2);
   '\'' "$APP" "$RELEASE"
@@ -247,7 +263,8 @@ ssh teppo-server '
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
     public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-    tests/ateneum/seed.test.ts dist/index.cjs dist/public/ateneum/index.html
+    tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+    dist/runtime-externals.json dist/public/ateneum/index.html
     dist/public/ateneum/activity.html
   )
   cd "$RELEASE"
@@ -295,7 +312,7 @@ restore_database() {
 set -euo pipefail
 cd "$APP"
 cp -a "$APP/data/ateneum.db" "$APP/data/ateneum.db.failed-$(date +%Y%m%d-%H%M%S)"
-cp -a "$BACKUP/ateneum.db" "$APP/data/ateneum.db"
+cp -a "$BACKUP/ateneum-stopped.db" "$APP/data/ateneum.db"
 node -e '
   const Database=require("better-sqlite3");
   const db=new Database(process.argv[1], {readonly:true});
@@ -308,6 +325,36 @@ REMOTE
 
 ssh hetzner-teppo 'set -e; systemctl stop jaakkolaxyz.service; systemctl is-active --quiet jaakkolaxyz.service && exit 1 || true'
 
+# Sulje backupin ja applyn välinen TOCTOU-ikkuna: varmista stopin jälkeen, ettei
+# yksikään live-tiedosto muuttunut, ja ota vasta nyt auktoritatiivinen DB-snapshot.
+if ! ssh teppo-server "APP='$APP' BACKUP='$BACKUP' bash -s" <<'REMOTE'
+set -euo pipefail
+cd "$APP"
+sha256sum -c "$BACKUP/live-before.sha256"
+while IFS=" " read -r kind target; do
+  if [ "$kind" = "M" ] && [ -e "$target" ]; then
+    echo "Preflight drift: expected missing but now exists: $target" >&2
+    exit 2
+  fi
+done < "$BACKUP/manifest.txt"
+node -e '
+  (async () => {
+    const Database=require("better-sqlite3");
+    const src=new Database(process.argv[1]);
+    await src.backup(process.argv[2]);
+    src.close();
+    const copy=new Database(process.argv[2], {readonly:true});
+    const quick=copy.pragma("quick_check", {simple:true});
+    copy.close();
+    if (quick !== "ok") process.exit(2);
+  })().catch(error => { console.error(error); process.exit(1); });
+' "$APP/data/ateneum.db" "$BACKUP/ateneum-stopped.db"
+REMOTE
+then
+  ssh hetzner-teppo 'systemctl start jaakkolaxyz.service && systemctl is-active jaakkolaxyz.service'
+  exit 1
+fi
+
 if ! ssh teppo-server "APP='$APP' RELEASE='$RELEASE' bash -s" <<'REMOTE'
 set -euo pipefail
 FILES=(
@@ -316,7 +363,8 @@ FILES=(
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
   shared/ateneum-schema.ts public-static/ateneum/index.html
   public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-  tests/ateneum/seed.test.ts dist/index.cjs dist/public/ateneum/index.html
+  tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+  dist/runtime-externals.json dist/public/ateneum/index.html
   dist/public/ateneum/activity.html
 )
 cd "$RELEASE"
@@ -421,7 +469,7 @@ ssh teppo-server '
   APP=/home/clawdbot/jaakkolaxyz
   BACKUP=<KIRJATTU_BACKUP_POLKU>
   cp -a "$APP/data/ateneum.db" "$APP/data/ateneum.db.failed-$(date +%Y%m%d-%H%M%S)"
-  cp -a "$BACKUP/ateneum.db" "$APP/data/ateneum.db"
+  cp -a "$BACKUP/ateneum-stopped.db" "$APP/data/ateneum.db"
   node -e '\''
     const Database=require("better-sqlite3");
     const db=new Database(process.argv[1], {readonly:true});

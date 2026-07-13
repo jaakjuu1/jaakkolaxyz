@@ -133,6 +133,20 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
     raw.close();
     (async () => {
       const db = await import("./server/ateneum-db");
+      db.initAteneumSchema();
+      db.migrateAteneumSchema();
+      db.ateneumRawDb.prepare(\`
+        INSERT INTO ateneum_api_tokens
+          (id, token_hash, user_id, name, scopes, expires_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      \`).run(
+        "fresh-token",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "legacy-a",
+        "Fresh scoped token",
+        '["read"]',
+        Date.now() + 86400000,
+      );
       db.migrateAteneumSchema();
       db.ateneumRawDb.close();
     })().catch(error => { console.error(error); process.exit(1); });
@@ -162,6 +176,17 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
     const legacyToken = migrated
       .prepare("SELECT scopes, revoked_at FROM ateneum_api_tokens WHERE id = 'legacy-token'")
       .get() as { scopes: string; revoked_at: number | null };
+    const freshToken = migrated
+      .prepare("SELECT revoked_at FROM ateneum_api_tokens WHERE id = 'fresh-token'")
+      .get() as { revoked_at: number | null };
+    const expiresInfo = migrated
+      .prepare("PRAGMA table_info(ateneum_api_tokens)")
+      .all()
+      .find((column: any) => column.name === "expires_at") as { notnull: number };
+    const markerCount = migrated
+      .prepare("SELECT count(*) AS count FROM ateneum_schema_migrations WHERE name = ?")
+      .pluck()
+      .get("api_token_scopes_v1");
     migrated.close();
 
     assert.deepEqual(roles, ["partner_a", "partner_b", "bot"]);
@@ -173,6 +198,9 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
     assert.doesNotMatch(schemaSql, /'juuso'|'wife'/);
     assert.deepEqual(JSON.parse(legacyToken.scopes), ["read"]);
     assert.ok(legacyToken.revoked_at, "legacy API token must be revoked during migration");
+    assert.equal(freshToken.revoked_at, null, "a later boot must not revoke scoped tokens");
+    assert.equal(expiresInfo.notnull, 1);
+    assert.equal(markerCount, 1);
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
