@@ -316,7 +316,15 @@ then
   exit 1
 fi
 
-if ! ssh hetzner-teppo 'systemctl start jaakkolaxyz.service && systemctl is-active jaakkolaxyz.service'; then
+if ! ssh hetzner-teppo '
+  systemctl start jaakkolaxyz.service
+  systemctl is-active --quiet jaakkolaxyz.service
+  for attempt in $(seq 1 30); do
+    if curl -fsS http://127.0.0.1:5000/ateneum/ >/dev/null; then exit 0; fi
+    sleep 1
+  done
+  exit 1
+'; then
   ssh hetzner-teppo 'systemctl stop jaakkolaxyz.service || true'
   restore_files
   ssh hetzner-teppo 'systemctl start jaakkolaxyz.service && systemctl is-active jaakkolaxyz.service'
