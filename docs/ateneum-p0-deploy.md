@@ -290,6 +290,21 @@ node --check "$APP/dist/index.cjs"
 REMOTE
 }
 
+restore_database() {
+  ssh teppo-server "APP='$APP' BACKUP='$BACKUP' bash -s" <<'REMOTE'
+set -euo pipefail
+cp -a "$APP/data/ateneum.db" "$APP/data/ateneum.db.failed-$(date +%Y%m%d-%H%M%S)"
+cp -a "$BACKUP/ateneum.db" "$APP/data/ateneum.db"
+node -e '
+  const Database=require("better-sqlite3");
+  const db=new Database(process.argv[1], {readonly:true});
+  const result=db.pragma("quick_check", {simple:true});
+  db.close();
+  if (result !== "ok") process.exit(2);
+' "$APP/data/ateneum.db"
+REMOTE
+}
+
 ssh hetzner-teppo 'set -e; systemctl stop jaakkolaxyz.service; systemctl is-active --quiet jaakkolaxyz.service && exit 1 || true'
 
 if ! ssh teppo-server "APP='$APP' RELEASE='$RELEASE' bash -s" <<'REMOTE'
@@ -329,6 +344,7 @@ if ! ssh hetzner-teppo '
 '; then
   ssh hetzner-teppo 'systemctl stop jaakkolaxyz.service || true'
   restore_files
+  restore_database
   ssh hetzner-teppo 'systemctl start jaakkolaxyz.service && systemctl is-active jaakkolaxyz.service'
   exit 1
 fi
