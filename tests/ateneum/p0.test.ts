@@ -882,6 +882,34 @@ test("connection check-ins stay private while both partners receive one shared s
     "shared suggestions must come only from the non-invertible universal safe set",
   );
 
+  const safeIdeaId = asJuuso.suggestions[0].id as string;
+  const mutateSafeIdea = rawDb.prepare(
+    `UPDATE ateneum_ideas
+     SET is_active = ?, social_mode = ?, energy_cost = ?, duration_min = ?
+     WHERE id = ?`,
+  );
+  const unsafeVariants: Array<[number, string, string, number]> = [
+    [0, "together", "low", 10],
+    [1, "solo", "low", 10],
+    [1, "together", "high", 10],
+    [1, "together", "low", 60],
+  ];
+  try {
+    for (const [active, socialMode, energyCost, durationMin] of unsafeVariants) {
+      mutateSafeIdea.run(active, socialMode, energyCost, durationMin, safeIdeaId);
+      const filteredState = await (
+        await request("/api/ateneum/connection/today", { cookie: juusoCookie })
+      ).json();
+      assert.deepEqual(
+        filteredState.suggestions,
+        [],
+        "stored suggestion ids must be revalidated against the universal safe set on read",
+      );
+    }
+  } finally {
+    mutateSafeIdea.run(1, "together", "low", 10, safeIdeaId);
+  }
+
   const concurrentUpdates = await Promise.all([
     request("/api/ateneum/connection/check-in", {
       method: "POST",

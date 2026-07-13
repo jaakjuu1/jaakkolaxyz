@@ -1,5 +1,5 @@
 import type { Express, NextFunction, Request, Response } from "express";
-import { eq, and, gte, desc, inArray, isNull, or, sql } from "drizzle-orm";
+import { eq, and, gte, lte, desc, inArray, isNull, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { ateneumDb, ateneumRawDb, newId } from "./ateneum-db";
@@ -283,7 +283,18 @@ async function readConnectionState(
   const synthesis = checkIns.length >= 2 ? connectionSynthesis(checkIns) : null;
   const ids = synthesis?.mode === "connect" ? parseTags(cycle?.suggestionIds) : [];
   const ideaRows = ids.length
-    ? await ateneumDb.select().from(ateneumIdeas).where(inArray(ateneumIdeas.id, ids))
+    ? await ateneumDb
+        .select()
+        .from(ateneumIdeas)
+        .where(
+          and(
+            inArray(ateneumIdeas.id, ids),
+            eq(ateneumIdeas.isActive, true),
+            eq(ateneumIdeas.socialMode, "together"),
+            eq(ateneumIdeas.energyCost, "low"),
+            lte(ateneumIdeas.durationMin, 10),
+          ),
+        )
     : [];
   const ideasById = new Map(ideaRows.map((idea) => [idea.id, idea]));
   const suggestions = ids
