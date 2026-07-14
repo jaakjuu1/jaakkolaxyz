@@ -52,7 +52,9 @@
     border: 1px solid var(--rule); border-radius: 12px;
     padding: 1.4rem; margin-bottom: 1.2rem;
   }
-  .hero h2 { margin: 0 0 0.5rem; font-size: 1.5rem; font-weight: 600; }
+  .hero h2 { margin: 0; font-size: 1.5rem; font-weight: 600; min-width: 0; flex: 1 1 14rem; overflow-wrap: anywhere; }
+  .hero-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+  .hero-heading .status-pill { flex: 0 0 auto; }
   .hero .meta {
     display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem;
     color: var(--muted); font-size: 0.9rem;
@@ -188,6 +190,7 @@
   .activity-controls .star {
     background: none; border: none; cursor: pointer;
     font-size: 1.4rem; color: #ddd; padding: 0; line-height: 1;
+    min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
   }
   .activity-controls .star.on { color: #f0a500; }
   .activity-controls .star:hover { transform: scale(1.1); }
@@ -450,6 +453,8 @@ const toastEl = document.getElementById("toast");
 let me = null;
 let activityId = null;
 let activity = null;
+let activityLoadGeneration = 0;
+let activityRefreshTimer = null;
 
 function escapeHtml(s) {
   if (s == null) return "";
@@ -1008,7 +1013,12 @@ function renderActivity() {
   if (isMutual) {
     let message = "";
     if (isPlanned && isProposed) {
-      message = `<strong>${escapeHtml(proposerName)}</strong> ehdotti tätä aikaa. ${a.acceptedByMe ? "Odottaa kumppanin vastausta." : "Odottaa sinun vastaustasi."}`;
+      const waiting = !canWrite()
+        ? "Odottaa toisen kumppanin vastausta."
+        : a.acceptedByMe
+          ? "Odottaa kumppanin vastausta."
+          : "Odottaa sinun vastaustasi.";
+      message = `<strong>${escapeHtml(proposerName)}</strong> ehdotti tätä aikaa. ${waiting}`;
     } else if (isPlanned && isAccepted) {
       message = "Molemmat hyväksyivät tämän version.";
     } else if (isDone) {
@@ -1025,18 +1035,18 @@ function renderActivity() {
   } else if (canWrite() && isMutual) {
     if (isPlanned && isProposed) {
       controlsHtml = `${a.acceptedByMe ? "" : '<button class="btn btn-primary" id="hero-accept">Hyväksy aika</button>'}
-        <a class="btn" href="/ateneum/?view=activities">Ehdota muutosta</a>
+        <a class="btn" href="/ateneum/?editActivity=${encodeURIComponent(a.id)}">Ehdota muutosta</a>
         <button class="btn" id="hero-skip">${a.proposedBy?.id === me.id ? "Peru ehdotus" : "Ei sovi"}</button>`;
     } else if (isPlanned && isAccepted) {
-      controlsHtml = `<a class="btn" href="/ateneum/?view=activities">Ehdota muutosta</a>
+      controlsHtml = `<a class="btn" href="/ateneum/?editActivity=${encodeURIComponent(a.id)}">Ehdota muutosta</a>
         <button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button>
         <button class="btn" id="hero-skip">Peru suunnitelma</button>`;
-    } else if (isSkipped) {
+    } else if (isDone || isSkipped) {
       controlsHtml = '<button class="btn" id="hero-undo">Ehdota uudelleen</button>';
     }
   } else if (canWrite() && !isMutual) {
     if (isPlanned) {
-      controlsHtml = '<button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button><button class="btn" id="hero-skip">Ei nyt</button>';
+      controlsHtml = '<button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button><button class="btn" id="hero-skip">Ei nyt</button><button class="btn" id="hero-delete">Poista pysyvästi</button>';
     } else if (isDone) {
       controlsHtml = `<div class="rating-block">
         <span class="rating-label">Yhteinen legacy-arvio:</span>
@@ -1052,7 +1062,7 @@ function renderActivity() {
   let html = `<div class="wrap">${renderHeader()}<div id="content">`;
   html += `
     <div class="hero">
-      <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 0.5rem;">
+      <div class="hero-heading">
         <h2>${escapeHtml(a.title)}</h2>
         ${statusPill(a)}
       </div>
@@ -1147,6 +1157,16 @@ function renderActivity() {
     }
   }
 
+  async function deleteLegacyActivity() {
+    if (!confirm("Poistetaanko tämä legacy-aktiviteetti pysyvästi? Tätä ei voi perua.")) return;
+    try {
+      await api(`/activities/${a.id}`, { method: "DELETE" });
+      window.location.assign("/ateneum/");
+    } catch (error) {
+      await refreshAfterError("Aktiviteettia ei voitu poistaa", error);
+    }
+  }
+
   const acceptButton = document.getElementById("hero-accept");
   if (acceptButton) acceptButton.onclick = acceptTime;
   const doneButton = document.getElementById("hero-mark-done");
@@ -1154,22 +1174,41 @@ function renderActivity() {
   const skipButton = document.getElementById("hero-skip");
   if (skipButton) skipButton.onclick = () => setStatus("skipped", "Peruttu", "Tämä muuttaa tilan teiltä molemmilta. Jatketaanko?");
   const undoButton = document.getElementById("hero-undo");
-  if (undoButton) undoButton.onclick = () => setStatus("planned", isMutual ? "Aikaehdotus avattu uudelleen" : "Palautettu suunnitelluksi");
+  if (undoButton) undoButton.onclick = () => setStatus(
+    "planned",
+    isMutual ? "Uusi aikaehdotus avattu — kumppanin hyväksyntä tarvitaan" : "Palautettu suunnitelluksi",
+    isMutual ? "Avataanko tämä uutena aikaehdotuksena? Aiemmat hyväksynnät nollataan ja kumppanin pitää hyväksyä uusi versio." : undefined,
+  );
+  const deleteButton = document.getElementById("hero-delete");
+  if (deleteButton) deleteButton.onclick = deleteLegacyActivity;
   document.querySelectorAll("#hero-stars .star").forEach(btn => {
     btn.onclick = () => setRating(Number(btn.dataset.rating));
   });
 }
 
 async function loadActivity() {
+  const generation = ++activityLoadGeneration;
   try {
     const data = await api(`/activities/${activityId}`);
+    if (generation !== activityLoadGeneration) return;
     activity = data.activity || data;
     if (!activity) throw new Error("Aktiviteettia ei löytynyt");
     renderActivity();
   } catch (err) {
+    if (generation !== activityLoadGeneration) return;
     app.innerHTML = `<div class="wrap"><div class="error">Virhe ladattaessa aktiviteettia: ${escapeHtml(err.message)}</div><a class="btn" href="/ateneum/">← Takaisin</a></div>`;
   }
 }
+
+function queueActivityRefresh() {
+  if (!me || !activityId) return;
+  clearTimeout(activityRefreshTimer);
+  activityRefreshTimer = setTimeout(loadActivity, 200);
+}
+window.addEventListener("focus", queueActivityRefresh);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") queueActivityRefresh();
+});
 
 async function init() {
   const params = new URLSearchParams(location.search);

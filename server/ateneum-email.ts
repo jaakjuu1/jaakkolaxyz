@@ -495,7 +495,7 @@ export async function sendActivityPlanned(opts: {
       <div style="font-size: 14px; color: #555; margin-top: 4px;">${escapeHtml(whenStr)} · ${dur}</div>
     </div>
     <p>Aikaehdotuksesta tulee yhteinen suunnitelma vasta, kun hyväksyt saman version Ateneumissa.</p>
-    ${button(`${PUBLIC_URL}/ateneum/?view=activities`, "Katso aikaehdotus")}
+    ${button(`${PUBLIC_URL}/ateneum/activity.html?id=${encodeURIComponent(opts.activity.id)}`, "Katso aikaehdotus")}
   `;
   const unsub = await buildUnsubscribeUrl(opts.toUser);
   return sendEmail({

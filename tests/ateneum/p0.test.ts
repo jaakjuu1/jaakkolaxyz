@@ -564,7 +564,22 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.match(detail, /\/activities\/\$\{a\.id\}\/accept/);
   assert.match(detail, /expectedVersion:\s*a\.version/);
   assert.match(detail, /me\.role\s*!==\s*"bot"/);
-  assert.doesNotMatch(detail, /method:\s*"DELETE"/);
+  assert.match(detail, /id="hero-delete"/);
+  assert.match(detail, /api\(`\/activities\/\$\{a\.id\}`\s*,\s*\{\s*method:\s*"DELETE"/);
+  assert.match(detail, /else if \(canWrite\(\) && !isMutual\)[\s\S]*?if \(isPlanned\)[\s\S]*?hero-delete/);
+  assert.match(detail, /else if \(isDone \|\| isSkipped\)[\s\S]*?hero-undo/);
+  assert.match(detail, /editActivity=\$\{encodeURIComponent\(a\.id\)\}/);
+  assert.doesNotMatch(detail, /view=activities/);
+  assert.match(detail, /activityLoadGeneration/);
+  assert.match(detail, /addEventListener\("focus", queueActivityRefresh\)/);
+  assert.match(detail, /min-width:\s*44px;\s*min-height:\s*44px/);
+  assert.match(index, /openDeepLinkedActivity\(activities\)/);
+  assert.match(index, /const generation = beginLoad\('ideas'\)/);
+  assert.match(index, /const generation = beginLoad\('wishes'\)/);
+  assert.match(index, /const generation = beginLoad\('settings'\)/);
+  assert.match(index, /data-suggestion="\$\{escapeHtml\(JSON\.stringify\(suggestion\)\)\}"/);
+  assert.match(index, /Odottaa toisen kumppanin vastausta/);
+  assert.match(index, /isDone \|\| isSkipped\)[\s\S]*?markPlanned\([^\n]+mutual/);
   assert.match(detail, /Tila ja reflektio käsitellään päivän yhteysnäkymässä/);
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
@@ -583,7 +598,8 @@ test("activity proposal email describes a proposal instead of a shared agreement
   ]) {
     assert.ok(activityEmail.includes(marker), `activity email missing: ${marker}`);
   }
-  assert.doesNotMatch(activityEmail, /Suunnitelma on nyt tallennettu|Aktiviteetti suunniteltu/);
+  assert.match(activityEmail, /\/ateneum\/activity\.html\?id=\$\{encodeURIComponent\(opts\.activity\.id\)\}/);
+  assert.doesNotMatch(activityEmail, /view=activities|Suunnitelma on nyt tallennettu|Aktiviteetti suunniteltu/);
 });
 
 test("mutual activity proposals require reciprocal acceptance and optimistic versions", async () => {

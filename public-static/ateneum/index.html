@@ -187,13 +187,14 @@
   .status-chip.skipped { color: #721c24; background: #f8d7da; }
   .idea-author { margin: 0.4rem 0 0.55rem; color: var(--muted); font-size: 0.8rem; }
   .optional-fields { margin: 0.3rem 0 0.9rem; border-top: 1px solid var(--rule); padding-top: 0.55rem; }
-  .optional-fields summary { cursor: pointer; color: var(--accent); font-size: 0.86rem; font-weight: 600; min-height: 40px; display: flex; align-items: center; }
+  .optional-fields summary { cursor: pointer; color: var(--accent); font-size: 0.86rem; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
   body.read-only .human-write { display: none !important; }
 
   /* Star rating */
   .stars { display: inline-flex; gap: 0.2rem; font-size: 1.4rem; }
   .stars button {
-    background: transparent; border: 0; cursor: pointer; padding: 0.1rem 0.3rem;
+    background: transparent; border: 0; cursor: pointer; padding: 0;
+    min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
     color: #ddd; font-size: 1.4rem;
   }
   .stars button.on { color: #f1c40f; }
@@ -491,7 +492,8 @@
 // === API ===
 const API_BASE = '/api/ateneum';
 let currentUser = null;
-const loadGenerations = { connection: 0, weekly: 0, activities: 0, ideas: 0, wishes: 0 };
+const loadGenerations = { connection: 0, weekly: 0, activities: 0, ideas: 0, wishes: 0, settings: 0 };
+let activityDeepLinkHandled = false;
 function canWrite() { return currentUser && currentUser.role !== 'bot'; }
 function beginLoad(key) { loadGenerations[key] = (loadGenerations[key] || 0) + 1; return loadGenerations[key]; }
 function isLatestLoad(key, generation) { return loadGenerations[key] === generation; }
@@ -610,7 +612,11 @@ function enterApp(user) {
       toast('Virhe: ' + err.message);
     }
   };
-  showView('home');
+  const params = new URLSearchParams(window.location.search);
+  const requestedView = params.get('view');
+  showView(params.get('editActivity')
+    ? 'home'
+    : ['home', 'ideas', 'wishes', 'settings'].includes(requestedView) ? requestedView : 'home');
 }
 
 // Enter-näppäin lähettää lomakkeen
@@ -993,7 +999,7 @@ async function loadWeeklySuggestion() {
         <span class="chip">${formatDuration(suggestion.durationMin)}</span>
       </div>
       ${canWrite() ? `<div class="actions human-write">
-        <button class="btn btn-primary" data-suggestion='${JSON.stringify(suggestion).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}' onclick="openPlanner(this)">Ehdota aikaa</button>
+        <button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(suggestion))}" onclick="openPlanner(this)">Ehdota aikaa</button>
         <button class="btn" onclick="rotateWeeklySuggestion()">Vaihda ehdotus</button>
       </div>` : ''}
     `;
@@ -1043,11 +1049,29 @@ async function loadActivities() {
       ? `<details class="activity-history"><summary>Aiemmat aktiviteetit (${history.length})</summary>${history.map(a => renderActivity(a)).join('')}</details>`
       : '';
     el.innerHTML = plannedHtml + historyHtml;
+    openDeepLinkedActivity(activities);
   } catch (e) {
     if (isLatestLoad('activities', generation)) {
       el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
     }
   }
+}
+
+function openDeepLinkedActivity(activities) {
+  if (activityDeepLinkHandled || !canWrite()) return;
+  const id = new URLSearchParams(window.location.search).get('editActivity');
+  if (!id) return;
+  activityDeepLinkHandled = true;
+  const target = activities.find(item => item.id === id);
+  const card = document.querySelector(`.activity[data-aid="${CSS.escape(id)}"]`);
+  if (!target || !card || target.details?.source === 'connection') {
+    toast('Muokattavaa suunnitelmaa ei löytynyt');
+    return;
+  }
+  const history = card.closest('details');
+  if (history) history.open = true;
+  openActivityEditorForCard(card, target);
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function renderActivity(a) {
@@ -1076,7 +1100,11 @@ function renderActivity(a) {
   const updater = a.updatedBy?.displayName || proposer;
   let planStateHtml = '';
   if (isProposed) {
-    const waiting = a.acceptedByMe ? 'Odottaa kumppanin vastausta.' : 'Odottaa sinun vastaustasi.';
+    const waiting = !canWrite()
+      ? 'Odottaa toisen kumppanin vastausta.'
+      : a.acceptedByMe
+        ? 'Odottaa kumppanin vastausta.'
+        : 'Odottaa sinun vastaustasi.';
     planStateHtml = `<div class="activity-plan-state"><strong>${escapeHtml(proposer)}</strong> ehdotti tätä aikaa. ${waiting}</div>`;
   } else if (isAccepted) {
     planStateHtml = '<div class="activity-plan-state"><strong>Molemmat hyväksyivät tämän ajan.</strong></div>';
@@ -1120,10 +1148,10 @@ function renderActivity(a) {
         <button class="btn" data-activity="${editablePlan}" onclick="openActivityEditor(this)">Muokkaa suunnitelmaa</button>
         <button class="btn btn-primary" onclick="markDone('${a.id}', ${a.version})">✓ Tehty</button>
         <button class="btn" onclick="skipActivity('${a.id}', ${a.version}, 'Ei nyt')">Ei nyt</button>`;
-    } else if (isSkipped && isMutual) {
-      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version})">Ehdota uudelleen</button>`;
+    } else if ((isDone || isSkipped) && isMutual) {
+      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version}, 'mutual')">Ehdota uudelleen</button>`;
     } else if (!isMutual && (isDone || isSkipped)) {
-      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version})">↩ Palauta suunnitelmiin</button>`;
+      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version}, 'legacy')">↩ Palauta suunnitelmiin</button>`;
     }
   }
 
@@ -1294,13 +1322,15 @@ async function markDone(id, version) {
     await loadActivities();
   }
 }
-async function markPlanned(id, version) {
+async function markPlanned(id, version, planningMode = 'legacy') {
+  const isMutual = planningMode === 'mutual';
+  if (isMutual && !confirm('Avataanko tämä uutena aikaehdotuksena? Aiemmat hyväksynnät nollataan ja kumppanin pitää hyväksyä uusi versio.')) return;
   try {
     await api(`/activities/${id}`, {
       method: 'PATCH',
       body: JSON.stringify({ status: 'planned', expectedVersion: version })
     });
-    toast('Aikaehdotus avattu uudelleen');
+    toast(isMutual ? 'Uusi aikaehdotus avattu — kumppanin hyväksyntä tarvitaan' : 'Palautettu suunnitelluksi');
     await loadActivities();
   } catch (e) {
     toast('Virhe: ' + e.message, 4500);
@@ -1335,6 +1365,11 @@ function openActivityEditor(btn) {
     return;
   }
 
+  openActivityEditorForCard(card, activity);
+}
+
+function openActivityEditorForCard(card, activity) {
+  if (!card || card.querySelector('.activity-editor')) return;
   const when = new Date(activity.scheduledFor);
   const isMutual = activity.planningMode === 'mutual';
   const panel = document.createElement('div');
@@ -1620,10 +1655,12 @@ async function submitIdea(btn) {
 }
 
 async function loadIdeas() {
+  const generation = beginLoad('ideas');
   const el = document.getElementById('ideas-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
     const { ideas = [] } = await api('/ideas');
+    if (!isLatestLoad('ideas', generation)) return;
     document.getElementById('ideas-count').textContent = `(${ideas.length})`;
     if (!ideas.length) {
       el.innerHTML = '<div class="empty">Ei ideoita vielä. Luo ensimmäinen yhteinen idea.</div>';
@@ -1647,7 +1684,7 @@ async function loadIdeas() {
     `).join('');
     el.dataset.loaded = '1';
   } catch (e) {
-    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('ideas', generation)) el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
   }
 }
 
@@ -1685,10 +1722,12 @@ async function submitWish() {
 }
 
 async function loadWishes() {
+  const generation = beginLoad('wishes');
   const el = document.getElementById('wishes-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
     const { wishes } = await api('/wishes');
+    if (!isLatestLoad('wishes', generation)) return;
     document.getElementById('wishes-count').textContent = `(${wishes.length})`;
     if (!wishes.length) { el.innerHTML = '<div class="empty">Ei toiveita vielä — lisää ensimmäinen!</div>'; return; }
     const moodLabels = {
@@ -1716,7 +1755,7 @@ async function loadWishes() {
     }).join('');
     el.dataset.loaded = '1';
   } catch (e) {
-    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('wishes', generation)) el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
   }
 }
 
@@ -1736,16 +1775,18 @@ const PREF_LABELS = {
   weeklySuggestion: '📅 Viikon ehdotus (maanantaisin)',
   wishAdded: '⭐ Uusi toive lisätty',
   wishFulfilled: '✅ Toive toteutui',
-  activityPlanned: '🎯 Aktiviteetti suunniteltu',
+  activityPlanned: '🎯 Uusi aikaehdotus',
   inactivityReminder: '💤 Inaktiivisuusmuistutus (7 pv jälkeen)',
 };
 
 async function loadSettings() {
+  const generation = beginLoad('settings');
   const el = document.getElementById('settings-prefs');
   if (!el) return;
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
     const { prefs } = await api('/notification-prefs');
+    if (!isLatestLoad('settings', generation)) return;
     el.innerHTML = Object.keys(PREF_LABELS).map(k => `
       <label style="display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; font-size:0.92rem; cursor:pointer;">
         <input type="checkbox" data-pref="${k}" ${prefs[k] ? 'checked' : ''} style="width:auto;">
@@ -1754,7 +1795,7 @@ async function loadSettings() {
     `).join('');
     document.getElementById('settings-msg').textContent = '';
   } catch (e) {
-    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('settings', generation)) el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
   }
 }
 

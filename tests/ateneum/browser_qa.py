@@ -349,6 +349,8 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         bot.eval("showView('home')")
         bot.wait(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}]')")
         assert bot.eval(visible_controls_expression(marker)) == 0, "bot sees activity write controls"
+        bot_text = bot.eval(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}]').textContent")
+        assert "Odottaa toisen kumppanin vastausta" in bot_text and "Odottaa sinun vastaustasi" not in bot_text
 
         b.click_in_card(marker, 'button[onclick^="acceptActivity"]')
         b.wait(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .status-chip.accepted')")
@@ -387,7 +389,14 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         expected_conflicts = len(conflicts)
         assert expected_conflicts >= 1, "stale editor did not receive HTTP 409"
 
-        # A accepts version 2 from the alternate detail entry point.
+        # Alternate detail entry opens the actual editor through a deep link.
+        a.navigate(f"/ateneum/activity.html?id={activity_id}")
+        a.wait("document.querySelector('.status-pill.proposed') && document.getElementById('hero-accept')")
+        a.click('a[href*="editActivity="]')
+        a.wait(
+            f"location.search.includes('editActivity=') && document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .activity-editor')",
+            message="detail change action did not open the activity editor",
+        )
         a.navigate(f"/ateneum/activity.html?id={activity_id}")
         a.wait("document.querySelector('.status-pill.proposed') && document.getElementById('hero-accept')")
         a.click("#hero-accept")
@@ -411,8 +420,8 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         b.click_in_card(marker, 'button[onclick^="acceptActivity"]')
         b.wait(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .status-chip.accepted')")
 
-        # A can complete only after B's acceptance. B sees completion on focus refresh.
-        a.eval("loadActivity()", await_promise=True)
+        # A can complete only after B's acceptance. Detail focus refresh exposes it without a manual reload.
+        a.eval("window.dispatchEvent(new Event('focus'))")
         a.wait("document.querySelector('.status-pill.accepted') && document.getElementById('hero-mark-done')")
         a.eval("window.confirm = () => true")
         a.click("#hero-mark-done")
@@ -421,6 +430,15 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         b.eval("window.dispatchEvent(new Event('focus'))")
         b.wait(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .status-chip.done')")
         assert not b.eval(f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .stars')"), "mutual list rendered a shared rating"
+        assert b.eval(f"Boolean(document.querySelector('.activity[data-aid={json.dumps(activity_id)}] button[onclick*=\"markPlanned\"]'))"), "completed mutual plan cannot be reopened from list"
+        assert a.eval("Boolean(document.getElementById('hero-undo'))"), "completed mutual plan cannot be reopened from detail"
+        a.click("#hero-undo")
+        a.wait("document.querySelector('.status-pill.proposed') && !document.getElementById('hero-mark-done')")
+        b.eval("window.dispatchEvent(new Event('focus'))")
+        b.wait(
+            f"document.querySelector('.activity[data-aid={json.dumps(activity_id)}] .status-chip.proposed')",
+            message="completed mutual plan did not reopen as a fresh proposal",
+        )
 
         # Only the intentionally exercised stale write may fail.
         unexpected_http = [
