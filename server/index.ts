@@ -2,9 +2,18 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import cookieParser from "cookie-parser";
+import path from "path";
+import { initAteneumSchema, migrateAteneumSchema } from "./ateneum-db";
+import { seedAteneum } from "./ateneum-seed";
+import { registerAteneumRoutes } from "./ateneum-routes";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Production Caddy connects over loopback. Trust only that hop so req.ip uses
+// Caddy's appended client address without trusting arbitrary direct proxies.
+app.set("trust proxy", "loopback");
 
 declare module "http" {
   interface IncomingMessage {
@@ -21,6 +30,7 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -36,11 +46,12 @@ export function log(message: string, source = "express") {
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
+  const mayLogResponseBody = !path.startsWith("/api/ateneum");
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
+    if (mayLogResponseBody) capturedJsonResponse = bodyJson;
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
@@ -59,8 +70,19 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+async function startServer() {
   await registerRoutes(httpServer, app);
+
+  // Ateneum — private shared-experience app.
+  initAteneumSchema();
+  migrateAteneumSchema();
+  const seedResult = await seedAteneum();
+  log(
+    `ateneum schema ready (${seedResult.seeded ? "seeded " + seedResult.summary : seedResult.summary})`,
+    "ateneum",
+  );
+  registerAteneumRoutes(app);
+  log("ateneum routes registered", "ateneum");
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -69,6 +91,16 @@ app.use((req, res, next) => {
     res.status(status).json({ message });
     throw err;
   });
+
+  // Learning workspace — generated HTML lives outside the Vite bundle.
+  // Mount it before the SPA catch-all so /learn/* resolves from data/learn.
+  app.use(
+    "/learn",
+    express.static(path.resolve(process.cwd(), "data/learn"), {
+      fallthrough: false,
+    }),
+  );
+  log("learn workspace static mounted from data/learn", "learn");
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -95,4 +127,9 @@ app.use((req, res, next) => {
       log(`serving on port ${port}`);
     },
   );
-})();
+}
+
+startServer().catch((error: any) => {
+  console.error("[server] startup failed:", error?.name, error?.message);
+  process.exit(1);
+});

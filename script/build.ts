@@ -1,6 +1,8 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
+import { builtinModules } from "node:module";
+import path from "path";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -24,6 +26,8 @@ const allowlist = [
   "passport",
   "passport-local",
   "pg",
+  "@aws-sdk/client-ses",
+  "@aws-sdk/client-sesv2",
   "stripe",
   "uuid",
   "ws",
@@ -31,6 +35,19 @@ const allowlist = [
   "zod",
   "zod-validation-error",
 ];
+
+async function copyDirectoryContents(source: string, destination: string) {
+  await mkdir(destination, { recursive: true });
+  for (const entry of await readdir(source, { withFileTypes: true })) {
+    const from = path.join(source, entry.name);
+    const to = path.join(destination, entry.name);
+    if (entry.isDirectory()) {
+      await copyDirectoryContents(from, to);
+    } else if (entry.isFile()) {
+      await copyFile(from, to);
+    }
+  }
+}
 
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
@@ -46,7 +63,7 @@ async function buildAll() {
   ];
   const externals = allDeps.filter((dep) => !allowlist.includes(dep));
 
-  await esbuild({
+  const serverBuild = await esbuild({
     entryPoints: ["server/index.ts"],
     platform: "node",
     bundle: true,
@@ -57,8 +74,38 @@ async function buildAll() {
     },
     minify: true,
     external: externals,
+    metafile: true,
     logLevel: "info",
   });
+  await writeFile(
+    "dist/server-metafile.json",
+    JSON.stringify(serverBuild.metafile, null, 2) + "\n",
+  );
+  const packageName = (specifier: string): string => {
+    if (specifier.startsWith("@")) return specifier.split("/").slice(0, 2).join("/");
+    return specifier.split("/", 1)[0];
+  };
+  const runtimeExternals = [
+    ...new Set(
+      Object.values(serverBuild.metafile.outputs)
+        .flatMap((output) => output.imports)
+        .filter(
+          (entry) =>
+            entry.external &&
+            !entry.path.startsWith("node:") &&
+            !builtinModules.includes(entry.path),
+        )
+        .map((entry) => packageName(entry.path)),
+    ),
+  ].sort();
+  await writeFile(
+    "dist/runtime-externals.json",
+    JSON.stringify(runtimeExternals, null, 2) + "\n",
+  );
+  console.log("runtime externals:", runtimeExternals.join(", ") || "none");
+
+  console.log("copying standalone static pages...");
+  await copyDirectoryContents("public-static", "dist/public");
 }
 
 buildAll().catch((err) => {

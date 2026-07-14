@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Suunnitelma — Ateneum</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a6e3a">
+<style>
+  :root {
+    --bg: #fafaf7;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #777;
+    --rule: #e8e8e4;
+    --accent: #0a6e3a;
+    --accent-bg: #e9f4ec;
+    --accent-soft: #f0f7f2;
+    --warn: #c0392b;
+    --henna: #b8478f;
+    --juuso: #2a6cb5;
+    --tag-bg: #f4f4ef;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+  .wrap { max-width: 800px; margin: 0 auto; padding: 1rem 1rem 0; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.6rem 0; margin-bottom: 1rem;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  header h1 { margin: 0; font-size: 1.2rem; font-weight: 600; letter-spacing: -0.01em; }
+  header .who { font-size: 0.85rem; color: var(--muted); }
+  header .who strong { color: var(--ink); font-weight: 600; }
+
+  .back {
+    color: var(--accent); text-decoration: none; font-size: 0.9rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+  }
+  .back:hover { text-decoration: underline; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #f0f7f2 0%, #fafaf7 100%);
+    border: 1px solid var(--rule); border-radius: 12px;
+    padding: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .hero h2 { margin: 0; font-size: 1.5rem; font-weight: 600; min-width: 0; flex: 1 1 14rem; overflow-wrap: anywhere; }
+  .hero-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+  .hero-heading .status-pill { flex: 0 0 auto; }
+  .hero .meta {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.8rem;
+    color: var(--muted); font-size: 0.9rem;
+  }
+  .hero .meta span {
+    background: var(--card); padding: 0.25rem 0.7rem;
+    border-radius: 16px; border: 1px solid var(--rule);
+  }
+  .hero .description { font-size: 1rem; line-height: 1.6; color: #333; }
+
+  .status-pill {
+    display: inline-block; padding: 0.2rem 0.7rem;
+    border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .status-pill.proposed { background: #fff2d2; color: #76530d; }
+  .status-pill.accepted { background: var(--accent-bg); color: var(--accent); }
+  .status-pill.legacy { background: var(--accent-bg); color: var(--accent); }
+  .status-pill.done { background: #d4edda; color: #155724; }
+  .status-pill.skipped { background: #f8d7da; color: #721c24; }
+  .plan-state {
+    width: 100%; padding: 0.75rem 0.85rem; border-radius: 8px;
+    background: rgba(255,255,255,0.75); color: #4b514d; font-size: 0.9rem;
+  }
+  .plan-state strong { color: var(--ink); }
+  .activity-controls .btn { min-height: 44px; }
+  .activity-controls a.btn { display: inline-flex; align-items: center; text-decoration: none; }
+
+  /* Sections */
+  .section {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem;
+  }
+  .section h3 {
+    margin: 0 0 0.8rem; font-size: 1.05rem; font-weight: 600;
+    color: var(--accent); letter-spacing: -0.01em;
+  }
+  .section h3 .icon { margin-right: 0.4rem; }
+
+  /* List items */
+  .item-list { list-style: none; padding: 0; margin: 0; }
+  .item-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: baseline; gap: 0.7rem;
+  }
+  .item-list li:last-child { border-bottom: none; }
+  .item-list .name { font-weight: 600; }
+  .item-list .note { color: var(--muted); font-size: 0.9rem; }
+  .item-list .star { color: #f0a500; }
+
+  /* Wishes (neutral labels; legacy detail keys retained for compatibility) */
+  .wishes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  @media (max-width: 600px) { .wishes-grid { grid-template-columns: 1fr; } }
+  .wish-block { padding: 0.8rem; border-radius: 8px; }
+  .wish-block.henna { background: #fdf2f8; border: 1px solid #f5d0e6; }
+  .wish-block.juuso { background: #eff6ff; border: 1px solid #d0e0f5; }
+  .wish-block .label {
+    font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 0.4rem;
+  }
+  .wish-block.henna .label { color: var(--henna); }
+  .wish-block.juuso .label { color: var(--juuso); }
+  .wish-block ul { margin: 0; padding-left: 1.1rem; }
+  .wish-block li { padding: 0.15rem 0; font-size: 0.95rem; }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 1.5rem; }
+  .timeline::before {
+    content: ""; position: absolute; left: 0.45rem; top: 0.5rem; bottom: 0.5rem;
+    width: 2px; background: var(--rule);
+  }
+  .timeline .event {
+    position: relative; padding: 0.6rem 0; padding-left: 0;
+  }
+  .timeline .event::before {
+    content: ""; position: absolute; left: -1.05rem; top: 0.95rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--card);
+  }
+  .timeline .event .when {
+    font-size: 0.85rem; color: var(--muted); font-weight: 600;
+  }
+  .timeline .event .what { font-size: 1rem; }
+  .timeline .event .where { color: var(--muted); font-size: 0.85rem; }
+
+  /* Tag chips */
+  .tag {
+    display: inline-block; padding: 0.2rem 0.6rem;
+    background: var(--tag-bg); border-radius: 12px;
+    font-size: 0.8rem; margin-right: 0.3rem; margin-bottom: 0.3rem;
+    color: #555;
+  }
+
+  /* Two-column for hotels, restaurants etc. */
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.7rem; }
+  .card-item {
+    border: 1px solid var(--rule); border-radius: 8px;
+    padding: 0.8rem; background: var(--accent-soft);
+  }
+  .card-item .name { font-weight: 600; }
+  .card-item .why { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; }
+
+  /* Priority / importance */
+  .priority {
+    display: inline-block; padding: 0.1rem 0.5rem;
+    border-radius: 8px; font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .priority.must { background: #fee; color: var(--warn); }
+  .priority.high { background: #fff7e0; color: #8a6a00; }
+  .priority.medium { background: var(--accent-bg); color: var(--accent); }
+
+  /* Footer actions */
+  .activity-controls {
+    display: flex; gap: 0.6rem; margin-top: 1rem;
+    flex-wrap: wrap; align-items: center;
+    padding-top: 1rem; border-top: 1px solid rgba(10,110,58,0.15);
+  }
+  .activity-controls .rating-block {
+    display: inline-flex; gap: 0.4rem; align-items: center;
+    padding-right: 0.5rem; margin-right: 0.5rem;
+    border-right: 1px solid rgba(10,110,58,0.15);
+  }
+  .activity-controls .rating-label {
+    font-size: 0.85rem; color: var(--muted); font-weight: 600;
+  }
+  .activity-controls .stars {
+    display: inline-flex; gap: 0.15rem;
+  }
+  .activity-controls .star {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.4rem; color: #ddd; padding: 0; line-height: 1;
+    min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .activity-controls .star.on { color: #f0a500; }
+  .activity-controls .star:hover { transform: scale(1.1); }
+  .actions {
+    display: flex; gap: 0.6rem; margin-top: 1.2rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 0.7rem 1.2rem; border-radius: 8px; font-size: 0.95rem;
+    border: 1px solid var(--rule); background: var(--card); color: var(--ink);
+    cursor: pointer; font: inherit;
+  }
+  .btn:hover { background: var(--accent-bg); }
+  .btn-primary { background: var(--accent); color: white; border-color: var(--accent); }
+  .btn-primary:hover { background: #085a30; }
+
+  /* Login */
+  .login {
+    max-width: 360px; margin: 4rem auto; padding: 2rem;
+    background: var(--card); border: 1px solid var(--rule); border-radius: 8px;
+  }
+  .login h2 { margin: 0 0 1.2rem; font-size: 1.4rem; text-align: center; }
+  .login label { display: block; font-size: 0.85rem; color: var(--muted); margin: 0.8rem 0 0.3rem; }
+  .login input {
+    width: 100%; padding: 0.8rem; font: inherit; font-size: 1rem;
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--bg);
+  }
+  .login button {
+    margin-top: 1.2rem; width: 100%; padding: 0.9rem;
+    background: var(--accent); color: white; border: none;
+    border-radius: 6px; font: inherit; font-size: 1rem; font-weight: 600;
+    cursor: pointer;
+  }
+
+  .loading { text-align: center; padding: 4rem 1rem; color: var(--muted); }
+  .error { background: #fee; color: var(--warn); padding: 1rem; border-radius: 8px; margin: 1rem 0; }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: white; padding: 0.7rem 1.2rem;
+    border-radius: 8px; font-size: 0.9rem; opacity: 0;
+    transition: opacity 0.3s; pointer-events: none; z-index: 100;
+  }
+  .toast.show { opacity: 0.95; }
+
+  /* Tabit */
+  .tabs { margin-top: 1rem; }
+  .tab-bar {
+    display: flex; gap: 0.3rem; overflow-x: auto;
+    padding-bottom: 0.3rem; margin-bottom: 0;
+    border-bottom: 2px solid var(--rule);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+  .tab-btn {
+    flex: 0 0 auto; padding: 0.6rem 0.9rem;
+    background: transparent; border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px; cursor: pointer;
+    font: inherit; font-size: 0.9rem; color: var(--muted);
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--ink); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-panels { padding-top: 1rem; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (max-width: 600px) {
+    .tab-btn { padding: 0.55rem 0.6rem; font-size: 0.82rem; }
+  }
+
+  /* Subsection title (kulttuuri ym.) */
+  .subsection-title {
+    font-weight: 600; font-size: 0.95rem; color: var(--accent);
+    margin: 0.8rem 0 0.4rem; padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* Wine item */
+  .wine-item {
+    padding: 0.6rem 0.8rem; margin-bottom: 0.4rem;
+    background: var(--accent-soft); border-radius: 8px;
+  }
+  .wine-name { font-weight: 600; }
+  .wine-type {
+    font-size: 0.78rem; color: var(--muted);
+    background: white; padding: 0.1rem 0.5rem;
+    border-radius: 8px; margin-left: 0.4rem;
+  }
+  .wine-taste { color: #444; font-size: 0.92rem; margin-top: 0.2rem; }
+  .wine-pairing { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+  /* History era */
+  .history-era {
+    padding: 0.7rem 0.9rem; margin-bottom: 0.6rem;
+    background: linear-gradient(135deg, #f0f7f2 0%, #fffbf0 100%);
+    border-radius: 8px; border-left: 3px solid var(--accent);
+  }
+  .era-name { font-weight: 700; color: var(--accent); margin-bottom: 0.3rem; }
+  .era-visible { color: var(--muted); font-size: 0.85rem; margin-top: 0.3rem; }
+
+  /* Place item (erityispaikat) */
+  .place-item {
+    padding: 0.7rem 0.9rem; margin-bottom: 0.5rem;
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 8px;
+  }
+  .place-item.must-see { border-left: 3px solid #f0a500; background: #fffdf5; }
+  .place-header { display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; margin-bottom: 0.3rem; }
+  .place-name { font-weight: 700; font-size: 1.05rem; }
+  .place-cat {
+    font-size: 0.78rem; color: var(--muted);
+    background: var(--tag-bg); padding: 0.1rem 0.5rem; border-radius: 8px;
+  }
+  .place-dur { font-size: 0.85rem; color: var(--muted); }
+  .place-tip { font-size: 0.9rem; color: #444; margin: 0.3rem 0; line-height: 1.45; }
+  .must-badge {
+    background: #f0a500; color: white; font-size: 0.72rem;
+    padding: 0.1rem 0.5rem; border-radius: 8px; font-weight: 700;
+  }
+
+  /* Emergencies */
+  .emergencies { background: #fff5f5; border-color: #f5d0d0; }
+  .emergencies h3 { color: #c0392b; }
+  .big-number {
+    font-size: 1.5rem; font-weight: 700; color: #c0392b;
+    text-align: center; padding: 0.8rem; background: white;
+    border-radius: 8px; margin: 0.5rem 0 1rem;
+  }
+  .service-item { padding: 0.3rem 0; border-bottom: 1px dashed #f5d0d0; }
+  .service-item:last-child { border-bottom: none; }
+  .service-name { font-weight: 600; }
+  .service-number { font-family: monospace; color: #c0392b; font-weight: 700; margin-left: 0.3rem; }
+  .hospital-item {
+    padding: 0.5rem 0.7rem; margin: 0.3rem 0;
+    background: white; border-radius: 6px;
+    border-left: 3px solid #c0392b;
+  }
+  .hospital-name { font-weight: 600; margin-bottom: 0.2rem; }
+  .emergency-tip {
+    margin-top: 1rem; padding: 0.7rem;
+    background: white; border-radius: 8px;
+    font-size: 0.95rem; line-height: 1.5;
+  }
+
+  /* Data keys tagit (POISTETTU - ei enää näytetä) */
+
+  /* Yleiskatsauksen marginaalit ja tyhjä tila */
+  .overview-summary {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: #333;
+    font-style: italic;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Korttien header-rakenne */
+  .card-item { display: flex; flex-direction: column; gap: 0.3rem; }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: start;
+    gap: 0.5rem; margin-bottom: 0.2rem;
+  }
+  .card-header .name { flex: 1; }
+  .card-links {
+    margin-top: 0.5rem; padding-top: 0.5rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+  }
+  .map-link {
+    display: inline-block;
+    padding: 0.3rem 0.7rem;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border: 1px solid rgba(10,110,58,0.2);
+    transition: all 0.15s;
+  }
+  .map-link:hover { background: var(--accent); color: white; }
+  .place-links {
+    margin-top: 0.5rem; padding-top: 0.5rem;
+    border-top: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* Locale (kieli ja kulttuuri) */
+  .locale-section { background: linear-gradient(135deg, #f0f7f2 0%, #fffbf0 100%); }
+  .phrases { display: flex; flex-direction: column; gap: 0.8rem; }
+  .phrase-cat-header {
+    font-weight: 600; font-size: 0.95rem; color: var(--accent);
+    margin-bottom: 0.4rem; padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .phrase-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  .phrase-table th, .phrase-table td { padding: 0.45rem 0.5rem; text-align: left; }
+  .phrase-table th { background: rgba(10,110,58,0.05); font-size: 0.78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  .phrase-table tr { border-bottom: 1px solid var(--rule); }
+  .phrase-table tr:last-child { border-bottom: none; }
+  .phrase-hr { color: var(--accent); }
+  .phrase-pron { color: var(--muted); font-style: italic; font-size: 0.85rem; }
+
+  /* Kulttuurivinkit */
+  .tip-item { padding: 0.6rem 0; border-bottom: 1px dashed var(--rule); }
+  .tip-item:last-child { border-bottom: none; }
+  .tip-title { font-weight: 600; color: var(--ink); margin-bottom: 0.2rem; }
+  .tip-body { color: #555; font-size: 0.95rem; line-height: 1.5; }
+
+  /* Pakkauslista */
+  .packing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .packing-cat { background: var(--accent-soft); border-radius: 8px; padding: 0.7rem; }
+  .check-list { list-style: none; padding: 0; margin: 0.5rem 0 0; }
+  .check-list li { padding: 0.2rem 0; }
+  .check-list label { display: flex; align-items: baseline; gap: 0.4rem; cursor: pointer; font-size: 0.92rem; }
+  .check-list input { margin-top: 0.2rem; }
+
+  /* Valuutta */
+  .currency-grid { display: grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1rem; font-size: 0.95rem; }
+  .currency-grid dt { font-weight: 600; color: var(--muted); font-size: 0.85rem; text-transform: uppercase; }
+  .currency-grid dd { margin: 0; color: #333; }
+
+  /* Paivaaikataulu */
+  .day-by-day { display: flex; flex-direction: column; gap: 0.7rem; }
+  .day-item { background: var(--accent-soft); border-radius: 8px; padding: 0.7rem 0.9rem; border-left: 3px solid var(--accent); }
+  .day-header { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+  .day-num { font-weight: 700; color: var(--accent); font-size: 0.85rem; text-transform: uppercase; }
+  .day-date { color: var(--muted); font-size: 0.85rem; }
+  .day-title { font-weight: 600; flex: 1; }
+  .day-plan { margin: 0; padding-left: 1.2rem; font-size: 0.92rem; color: #444; }
+  .day-plan li { padding: 0.15rem 0; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading">Ladataan…</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ============================================
+// Ateneum Activity Page
+// ============================================
+
+const API = "/api/ateneum";
+const app = document.getElementById("app");
+const toastEl = document.getElementById("toast");
+
+let me = null;
+let activityId = null;
+let activity = null;
+let activityLoadGeneration = 0;
+let activityRefreshTimer = null;
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add("show");
+  setTimeout(() => toastEl.classList.remove("show"), 2200);
+}
+
+async function api(path, opts = {}) {
+  const headers = { "Content-Type": "application/json", ...(opts.headers || {}) };
+  const res = await fetch(API + path, { credentials: "include", ...opts, headers });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || res.statusText);
+  }
+  return res.json();
+}
+
+function statusPill(activity) {
+  let kind = "legacy";
+  let label = "Suunniteltu";
+  if (activity.status === "done") {
+    kind = "done";
+    label = "Tehty";
+  } else if (activity.status === "skipped") {
+    kind = "skipped";
+    label = "Peruttu";
+  } else if (activity.planningMode === "mutual" && activity.planState === "proposed") {
+    kind = "proposed";
+    label = "Aikaehdotus";
+  } else if (activity.planningMode === "mutual" && activity.planState === "accepted") {
+    kind = "accepted";
+    label = "Yhteinen suunnitelma";
+  }
+  return `<span class="status-pill ${kind}">${escapeHtml(label)}</span>`;
+}
+
+function canWrite() {
+  return Boolean(me && me.role !== "bot");
+}
+
+function priorityPill(p) {
+  const map = {
+    must: { label: "Pakollinen", cls: "must" },
+    high: { label: "Tärkeä", cls: "high" },
+    medium: { label: "Hyvä olla", cls: "medium" },
+  };
+  const v = map[p] || { label: escapeHtml(p), cls: "medium" };
+  return `<span class="priority ${v.cls}">${v.label}</span>`;
+}
+
+function fmtDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleDateString("fi-FI", { weekday: "short", day: "numeric", month: "numeric", year: "numeric" });
+}
+
+function fmtDateTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  return d.toLocaleString("fi-FI", {
+    weekday: "short", day: "numeric", month: "numeric", year: "numeric",
+    hour: "2-digit", minute: "2-digit"
+  });
+}
+
+function renderHeader() {
+  const greeting = me ? `Hei, <strong>${escapeHtml(me.displayName)}</strong>` : "";
+  return `
+    <header>
+      <a class="back" href="/ateneum/">← Takaisin Ateneumiin</a>
+      <div class="who">${greeting}</div>
+    </header>
+  `;
+}
+
+function renderLogin() {
+  app.innerHTML = `
+    <div class="login">
+      <h2>Ateneum</h2>
+      <p style="color: var(--muted); font-size: 0.9rem; text-align: center;">
+        Kirjaudu sisään nähdäksesi aktiviteetin tiedot.
+      </p>
+      <form id="login-form">
+        <label>Sähköposti</label>
+        <input type="email" id="email" required placeholder="esim. nimi@example.com">
+        <button type="submit">Lähetä magic-link</button>
+      </form>
+      <p id="login-msg" style="font-size: 0.85rem; margin-top: 1rem;"></p>
+    </div>
+  `;
+  document.getElementById("login-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const msg = document.getElementById("login-msg");
+    msg.textContent = "Lähetetään…";
+    try {
+      await api("/auth/magic-link/request", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      msg.textContent = "Tarkista sähköposti — linkki voimassa 15 min.";
+    } catch (err) {
+      msg.textContent = "Virhe: " + err.message;
+    }
+  };
+}
+
+
+// ---- Tabien renderöintifunktiot ----
+
+function tabBtn(id, label, icon, active) {
+  return `<button class="tab-btn ${active ? 'active' : ''}" data-tab="${id}">${icon} ${label}</button>`;
+}
+
+function tabContent(id, html, active) {
+  return `<div class="tab-content ${active ? 'active' : ''}" data-tab="${id}">${html}</div>`;
+}
+
+function activateTab(tabId) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.toggle("active", c.dataset.tab === tabId));
+  // Tallenna aktiivinen tab localStorageen
+  try { localStorage.setItem("ateneum_active_tab", tabId); } catch (e) {}
+}
+
+// ---- Yksittäisten tabien sisältö ----
+
+
+function mapsLink(name, address) {
+  // Google Maps -hakulinkki: etsii paikan nimella + osoitteella
+  const q = encodeURIComponent([name, address].filter(Boolean).join(" "));
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+
+function mapsEmbed(name, address) {
+  const q = encodeURIComponent([name, address].filter(Boolean).join(" "));
+  return `https://www.google.com/maps?q=${q}`;
+}
+
+function renderOverviewTab(d, a) {
+  let html = "";
+  // Tiivistelmä hero (selkeasti marginoitu, ei reunoissa kiinni)
+  if (d.summary) {
+    html += `<div class="overview-summary">${escapeHtml(d.summary)}</div>`;
+  }
+  // Lisaa hieman tilaa myos muihin osioihin
+  if (!d.summary && !d.wishes_henna && !d.wishes_juuso && !d.timeline && !d.open_items) {
+    html += `<div class="empty-state">Ei vielä yhteenvetoa tälle aktiviteetille.</div>`;
+  }
+  // Toiveet
+  if (d.wishes_henna || d.wishes_juuso) {
+    html += `<div class="section"><h3><span class="icon">💭</span>Toiveet</h3><div class="wishes-grid">`;
+    if (d.wishes_henna) {
+      html += `<div class="wish-block henna"><div class="label">Kumppani B toivoo</div><ul>${d.wishes_henna.map(w => `<li>${escapeHtml(w)}</li>`).join("")}</ul></div>`;
+    }
+    if (d.wishes_juuso) {
+      html += `<div class="wish-block juuso"><div class="label">Kumppani A toivoo</div><ul>${d.wishes_juuso.map(w => `<li>${escapeHtml(w)}</li>`).join("")}</ul></div>`;
+    }
+    html += `</div></div>`;
+  }
+  // Aikajana
+  if (d.timeline && d.timeline.length) {
+    html += `<div class="section"><h3><span class="icon">📅</span>Aikajana</h3><div class="timeline">`;
+    for (const e2 of d.timeline) {
+      html += `<div class="event"><div class="when">${escapeHtml(e2.when || "")}</div><div class="what">${escapeHtml(e2.what || "")}</div>${e2.where ? `<div class="where">📍 ${escapeHtml(e2.where)}</div>` : ""}</div>`;
+    }
+    html += `</div></div>`;
+  }
+  // Avvoimet
+  if (d.open_items && d.open_items.length) {
+    html += `<div class="section"><h3><span class="icon">❓</span>Selvitetään ennen matkaa</h3><ul class="item-list">${d.open_items.map(o => `<li>${escapeHtml(o)}</li>`).join("")}</ul></div>`;
+  }
+  return html;
+}
+
+function renderLogisticsTab(d) {
+  let html = "";
+  if (d.flights || d.transit) {
+    html += `<div class="section"><h3><span class="icon">✈️</span>Lennot / Matkustaminen</h3>`;
+    if (d.flights) {
+      html += `<div class="card-item"><div class="name">${escapeHtml(d.flights.status || "Lennot")}</div>${d.flights.note ? `<div class="why">${escapeHtml(d.flights.note)}</div>` : ""}</div>`;
+      if (d.flights.checklist && d.flights.checklist.length) {
+        html += `<div style="margin-top:0.6rem;"><strong>Ennen lähtöä:</strong><ul>${d.flights.checklist.map(i => `<li>${escapeHtml(i)}</li>`).join("")}</ul></div>`;
+      }
+    }
+    if (d.transit) html += `<div style="margin-top:0.5rem; color:var(--muted); font-size:0.9rem;">${escapeHtml(d.transit)}</div>`;
+    html += `</div>`;
+  }
+  if (d.accommodation) {
+    const acc = d.accommodation;
+    html += `<div class="section"><h3><span class="icon">🏨</span>Majoitus</h3><div class="card-item">`;
+    html += `<div class="card-header"><div class="name">${escapeHtml(acc.name || "Majoitus")}</div></div>`;
+    if (acc.address) html += `<div class="why">📍 ${escapeHtml(acc.address)}</div>`;
+    if (acc.checkin) html += `<div class="why">Check-in: ${escapeHtml(acc.checkin)}</div>`;
+    if (acc.checkout) html += `<div class="why">Check-out: ${escapeHtml(acc.checkout)}</div>`;
+    html += `<div class="card-links"><a href="${mapsLink(acc.name, acc.address)}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+    html += `</div>`;
+    if (acc.location_notes) html += `<div style="margin-top:0.7rem; font-size:0.95rem;">${escapeHtml(acc.location_notes)}</div>`;
+    if (acc.walking && acc.walking.length) html += `<div style="margin-top:0.7rem;"><strong>Kävellen:</strong><ul style="margin:0.3rem 0 0;padding-left:1.2rem;">${acc.walking.map(w => `<li>${escapeHtml(w)}</li>`).join("")}</ul></div>`;
+    html += `</div>`;
+  }
+  if (d.movement) {
+    html += `<div class="section"><h3><span class="icon">🚶</span>Liikkuminen</h3><div>${escapeHtml(d.movement)}</div></div>`;
+  }
+  if (d.currency) {
+    const cur = d.currency;
+    html += `<div class="section"><h3><span class="icon">💶</span>${escapeHtml(cur.name || "Valuutta")}</h3><dl class="currency-grid">`;
+    const labels = {"card":"Kortti","cash":"Käteinen","atm":"Pankkiautomaatit","tipping":"Tippaaminen","exchange":"Vaihto"};
+    for (const key of Object.keys(labels)) {
+      if (cur[key]) html += `<dt>${labels[key]}</dt><dd>${escapeHtml(cur[key])}</dd>`;
+    }
+    html += `</dl></div>`;
+  }
+  if (d.internet) {
+    const inet = d.internet;
+    html += `<div class="section"><h3><span class="icon">📶</span>Internet</h3>`;
+    if (inet.wifi && inet.wifi.length) {
+      html += `<div class="subsection-title">📡 WiFi</div><ul class="item-list">`;
+      for (const w of inet.wifi) {
+        html += `<li><strong>${escapeHtml(w.where)}</strong>${w.note ? ` — ${escapeHtml(w.note)}` : ""}</li>`;
+      }
+      html += `</ul>`;
+    }
+    if (inet.sim_card && inet.sim_card.length) {
+      html += `<div class="subsection-title">📱 Paikallinen SIM</div><ul class="item-list">`;
+      for (const s of inet.sim_card) {
+        html += `<li><strong>${escapeHtml(s.provider)}</strong>${s.note ? ` — ${escapeHtml(s.note)}` : ""}</li>`;
+      }
+      html += `</ul>`;
+    }
+    if (inet.roaming_eu) html += `<div class="subsection-title">🇪🇺 EU roaming</div><div>${escapeHtml(inet.roaming_eu)}</div>`;
+    if (inet.esim_or_sim && inet.esim_or_sim.length) {
+      html += `<div class="subsection-title">📲 eSIM-vaihtoehdot</div><ul class="item-list">`;
+      for (const e of inet.esim_or_sim) {
+        html += `<li><strong>${escapeHtml(e.name)}</strong>${e.note ? ` — ${escapeHtml(e.note)}` : ""}</li>`;
+      }
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  }
+  if (d.apps && d.apps.length) {
+    html += `<div class="section"><h3><span class="icon">📱</span>Sovellukset</h3><div>${d.apps.map(a => `<span class="tag">${escapeHtml(a)}</span>`).join("")}</div></div>`;
+  }
+  if (d.budget) {
+    html += `<div class="section"><h3><span class="icon">💶</span>Budjetti</h3><div>${escapeHtml(d.budget)}</div></div>`;
+  }
+  return html;
+}
+
+function renderPlacesTab(d) {
+  let html = "";
+  if (d.beaches && d.beaches.length) {
+    html += `<div class="section"><h3><span class="icon">🌊</span>Rannat</h3><div class="cards">`;
+    for (const b of d.beaches) {
+      html += `<div class="card-item">`;
+      html += `<div class="card-header"><div class="name">${escapeHtml(b.name)}</div>${b.priority ? priorityPill(b.priority) : ""}</div>`;
+      if (b.note) html += `<div class="why">${escapeHtml(b.note)}</div>`;
+      html += `<div class="card-links"><a href="${mapsLink(b.name, b.address || "")}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+  }
+  if (d.pool_day) {
+    html += `<div class="section"><h3><span class="icon">🏊</span>Allaspäivä</h3><div class="cards">`;
+    html += `<div class="card-item"><div class="card-header"><div class="name">${escapeHtml(d.pool_day.name || "Hotellin allas")}</div></div>`;
+    if (d.pool_day.includes) html += `<div class="why">${escapeHtml(d.pool_day.includes)}</div>`;
+    html += `<div class="card-links"><a href="${mapsLink(d.pool_day.name, "Split, Croatia")}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+    html += `</div></div></div>`;
+  }
+  if (d.day_trips && d.day_trips.length) {
+    html += `<div class="section"><h3><span class="icon">🚤</span>Päiväretket</h3><div class="cards">`;
+    for (const t of d.day_trips) {
+      html += `<div class="card-item">`;
+      html += `<div class="card-header"><div class="name">${escapeHtml(t.name)}</div>${t.priority ? priorityPill(t.priority) : ""}</div>`;
+      if (t.highlights && t.highlights.length) {
+        html += `<ul style="margin:0.4rem 0 0;padding-left:1.1rem;">${t.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`;
+      }
+      html += `<div class="card-links"><a href="${mapsLink(t.name, "")}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+  }
+  if (d.restaurants && d.restaurants.length) {
+    html += `<div class="section"><h3><span class="icon">🍽️</span>Ravintolat</h3><p style="color:var(--muted);font-size:0.9rem;margin-top:-0.4rem;">Pöytävaraukset suositeltavia.</p><div class="cards">`;
+    for (const r of d.restaurants) {
+      html += `<div class="card-item"><div class="card-header"><div class="name">${escapeHtml(r.name)}</div></div>`;
+      if (r.note) html += `<div class="why">${escapeHtml(r.note)}</div>`;
+      html += `<div class="card-links"><a href="${mapsLink(r.name, "Split, Croatia")}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+  }
+  if (d.bars && d.bars.length) {
+    html += `<div class="section"><h3><span class="icon">🍹</span>Cocktailit / Sunset</h3><div class="cards">`;
+    for (const b of d.bars) {
+      html += `<div class="card-item"><div class="card-header"><div class="name">${escapeHtml(b.name)}</div></div>`;
+      if (b.note) html += `<div class="why">${escapeHtml(b.note)}</div>`;
+      html += `<div class="card-links"><a href="${mapsLink(b.name, "Split, Croatia")}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+      html += `</div>`;
+    }
+    html += `</div></div>`;
+  }
+  if (d.nightlife) {
+    html += `<div class="section"><h3><span class="icon">🎧</span>Iltaelämä</h3><div>${escapeHtml(d.nightlife)}</div></div>`;
+  }
+  return html;
+}
+
+function renderCultureTab(d) {
+  let html = "";
+  // Locale
+  if (d.locale) {
+    const loc = d.locale;
+    html += `<div class="section locale-section"><h3><span class="icon">${escapeHtml(loc.flag || "🌍")}</span>${escapeHtml(loc.language || "Paikallinen kieli")}</h3>`;
+    if (loc.phrases && loc.phrases.length) {
+      for (const cat of loc.phrases) {
+        html += `<div class="phrase-cat-header">${escapeHtml(cat.icon || "•")} ${escapeHtml(cat.category)}</div><table class="phrase-table"><thead><tr><th>Suomi</th><th>${escapeHtml((loc.language || "").split(" ")[0])}</th><th>Ääntäminen</th></tr></thead><tbody>`;
+        for (const p of cat.items) {
+          html += `<tr><td>${escapeHtml(p.fi)}</td><td class="phrase-hr"><strong>${escapeHtml(p.hr)}</strong></td><td class="phrase-pron">${escapeHtml(p.pron)}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+      }
+    }
+    if (loc.cultural_tips && loc.cultural_tips.length) {
+      html += `<div class="phrase-cat-header" style="margin-top:1rem;">💡 Kulttuurivinkit</div>`;
+      for (const tip of loc.cultural_tips) {
+        html += `<div class="tip-item"><div class="tip-title">${escapeHtml(tip.title)}</div><div class="tip-body">${escapeHtml(tip.body)}</div></div>`;
+      }
+    }
+    if (loc.dialect_note) {
+      html += `<div class="dialect-note"><strong>Paikallismurre:</strong> ${escapeHtml(loc.dialect_note)}</div>`;
+    }
+    html += `</div>`;
+  }
+  // Viinikulttuuri
+  if (d.wine_culture) {
+    const wc = d.wine_culture;
+    html += `<div class="section"><h3><span class="icon">🍷</span>Viinikulttuuri</h3>`;
+    if (wc.intro) html += `<div style="margin-bottom:1rem;color:#555;">${escapeHtml(wc.intro)}</div>`;
+    if (wc.must_try && wc.must_try.length) {
+      html += `<div class="subsection-title">🍇 Pakolliset maistettavat</div>`;
+      for (const w of wc.must_try) {
+        html += `<div class="wine-item"><div class="wine-name">${escapeHtml(w.name)} <span class="wine-type">${escapeHtml(w.type)}</span></div><div class="wine-taste">${escapeHtml(w.taste)}</div><div class="wine-pairing">🍽️ ${escapeHtml(w.pairing)}</div></div>`;
+      }
+    }
+    if (wc.wine_bars && wc.wine_bars.length) {
+      html += `<div class="subsection-title">🍷 Viinibaarit</div><div class="cards">`;
+      for (const b of wc.wine_bars) html += `<div class="card-item"><div class="name">${escapeHtml(b.name)}</div>${b.note ? `<div class="why">${escapeHtml(b.note)}</div>` : ""}</div>`;
+      html += `</div>`;
+    }
+    if (wc.wineries && wc.wineries.length) {
+      html += `<div class="subsection-title">🍇 Viinitilat (jos ehditään)</div><ul class="item-list">`;
+      for (const w of wc.wineries) html += `<li><strong>${escapeHtml(w.name)}</strong> — ${escapeHtml(w.location)}${w.note ? ` (${escapeHtml(w.note)})` : ""}</li>`;
+      html += `</ul>`;
+    }
+    if (wc.tips && wc.tips.length) {
+      html += `<div class="subsection-title">💡 Vinkit</div><ul class="item-list">`;
+      for (const t of wc.tips) html += `<li>${escapeHtml(t)}</li>`;
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  }
+  // Musiikki
+  if (d.music_culture) {
+    const m = d.music_culture;
+    html += `<div class="section"><h3><span class="icon">🎵</span>Paikallinen musiikki</h3>`;
+    if (m.intro) html += `<div style="margin-bottom:1rem;color:#555;">${escapeHtml(m.intro)}</div>`;
+    if (m.traditional) {
+      html += `<div class="subsection-title">🎼 ${escapeHtml(m.traditional.name)}</div><div style="margin-bottom:0.5rem;">${escapeHtml(m.traditional.description || "")}</div>`;
+      if (m.traditional.where_to_hear) html += `<div style="margin-bottom:0.5rem;"><strong>Missä kuulla:</strong><ul class="item-list">${m.traditional.where_to_hear.map(w => `<li>${escapeHtml(w)}</li>`).join("")}</ul></div>`;
+      if (m.traditional.famous_groups) html += `<div><strong>Tunnettuja:</strong> ${m.traditional.famous_groups.map(g => escapeHtml(g)).join(", ")}</div>`;
+    }
+    if (m.modern && m.modern.length) {
+      html += `<div class="subsection-title">🎤 Moderni kroatialainen musiikki</div>`;
+      for (const a of m.modern) {
+        html += `<div class="wine-item"><div class="wine-name">${escapeHtml(a.name)} <span class="wine-type">${escapeHtml(a.genre)}</span></div>${a.note ? `<div class="wine-taste">${escapeHtml(a.note)}</div>` : ""}</div>`;
+      }
+    }
+    if (m.where_to_listen && m.where_to_listen.length) {
+      html += `<div class="subsection-title">🎧 Missä kuunnella</div>`;
+      for (const w of m.where_to_listen) {
+        html += `<div class="card-item"><div class="name">${escapeHtml(w.name)}</div>${w.search ? `<div class="why">Hae: ${escapeHtml(w.search)}</div>` : ""}${w.where ? `<div class="why">${escapeHtml(w.where)}</div>` : ""}${w.note ? `<div class="why">${escapeHtml(w.note)}</div>` : ""}</div>`;
+      }
+    }
+    if (m.playlists && m.playlists.length) {
+      html += `<div class="subsection-title">🎵 Soittolistat</div><ul class="item-list">${m.playlists.map(p => `<li>${escapeHtml(p)}</li>`).join("")}</ul>`;
+    }
+    html += `</div>`;
+  }
+  // Historia
+  if (d.history_brief) {
+    const h = d.history_brief;
+    html += `<div class="section"><h3><span class="icon">📜</span>Historia lyhyesti</h3>`;
+    if (h.intro) html += `<div style="margin-bottom:1rem;color:#555;">${escapeHtml(h.intro)}</div>`;
+    if (h.eras && h.eras.length) {
+      for (const era of h.eras) {
+        html += `<div class="history-era"><div class="era-name">${escapeHtml(era.name)}</div>`;
+        if (era.highlights && era.highlights.length) html += `<ul class="item-list">${era.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`;
+        if (era.where_visible) html += `<div class="era-visible"><strong>Näkyy:</strong> ${era.where_visible.map(v => escapeHtml(v)).join(", ")}</div>`;
+        html += `</div>`;
+      }
+    }
+    if (h.key_dates && h.key_dates.length) {
+      html += `<div class="subsection-title">📅 Tärkeimmät päivämäärät</div><ul class="item-list">${h.key_dates.map(d => `<li>${escapeHtml(d)}</li>`).join("")}</ul>`;
+    }
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderPlacesTab2(d) {
+  // Erityispaikat
+  let html = "";
+  if (d.special_places) {
+    const sp = d.special_places;
+    if (sp.intro) html += `<div class="section"><div style="margin-bottom:1rem;color:#555;">${escapeHtml(sp.intro)}</div></div>`;
+    // Kay lapi VAIN alueet, ei 'intro'-tekstia
+    const placeAreas = ["split", "hvar", "krka", "blue_lagoon", "trogir"];
+    for (const area of placeAreas) {
+      const places = sp[area];
+      if (!Array.isArray(places) || !places.length) continue;
+      html += `<div class="section"><h3><span class="icon">📍</span>${escapeHtml(area.charAt(0).toUpperCase() + area.slice(1).replace("_"," "))}</h3>`;
+      for (const p of places) {
+        p.area_key = area.charAt(0).toUpperCase() + area.slice(1).replace("_"," ");
+        html += `<div class="place-item ${p.must_see ? 'must-see' : ''}">`;
+        html += `<div class="place-header">`;
+        if (p.must_see) html += `<span class="must-badge">⭐ Pakollinen</span>`;
+        html += `<span class="place-name">${escapeHtml(p.name)}</span>`;
+        if (p.category) html += `<span class="place-cat">${escapeHtml(p.category)}</span>`;
+        if (p.duration_min) html += `<span class="place-dur">⏱️ ${p.duration_min} min</span>`;
+        html += `</div>`;
+        if (p.tip) html += `<div class="place-tip">💡 ${escapeHtml(p.tip)}</div>`;
+        if (p.highlights && p.highlights.length) html += `<ul class="item-list">${p.highlights.map(h => `<li>${escapeHtml(h)}</li>`).join("")}</ul>`;
+        // Maps-linkki paikkaan (käytä paikkaan tallennettua area_key:tä)
+        const placeArea = p.area_key || "Split, Croatia";
+        html += `<div class="place-links"><a href="${mapsLink(p.name, placeArea)}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div>`;
+        html += `</div>`;
+      }
+      html += `</div>`;
+    }
+  }
+  return html;
+}
+
+function renderPracticalTab(d) {
+  let html = "";
+  // Kuvaus
+  if (d.photo_spots) {
+    const ps = d.photo_spots;
+    html += `<div class="section"><h3><span class="icon">📸</span>Kuvauspaikat</h3>`;
+    if (ps.intro) html += `<div style="margin-bottom:1rem;color:#555;">${escapeHtml(ps.intro)}</div>`;
+    if (ps.categories && ps.categories.length) {
+      for (const cat of ps.categories) {
+        html += `<div class="subsection-title">${escapeHtml(cat.icon || "📷")} ${escapeHtml(cat.name)}</div><ul class="item-list">`;
+        for (const s of cat.spots || []) html += `<li>${escapeHtml(s)}</li>`;
+        html += `</ul>`;
+      }
+    }
+    if (ps.tips && ps.tips.length) {
+      html += `<div class="subsection-title">💡 Kuvausvinkit</div><ul class="item-list">${ps.tips.map(t => `<li>${escapeHtml(t)}</li>`).join("")}</ul>`;
+    }
+    html += `</div>`;
+  }
+  // Pakkauslista
+  if (d.packing_list) {
+    const pl = d.packing_list;
+    html += `<div class="section"><h3><span class="icon">🎒</span>Pakkauslista</h3><div class="packing-grid">`;
+    const labels = {essentials:"Välttämätön", clothing:"Vaatteet", tech:"Tekniikka", extras:"Lisäksi"};
+    for (const key of ["essentials", "clothing", "tech", "extras"]) {
+      if (pl[key] && pl[key].length) {
+        html += `<div class="packing-cat"><div class="phrase-cat-header">${labels[key]}</div><ul class="check-list">`;
+        for (const item of pl[key]) html += `<li><label><input type="checkbox"> ${escapeHtml(item)}</label></li>`;
+        html += `</ul></div>`;
+      }
+    }
+    html += `</div></div>`;
+  }
+  // Hätätilanteet
+  if (d.emergencies) {
+    const em = d.emergencies;
+    html += `<div class="section emergencies"><h3><span class="icon">🆘</span>Hätätilanteet</h3>`;
+    if (em.general_number) html += `<div class="big-number">📞 ${escapeHtml(em.general_number)} <span class="muted">EU yleishätänumero</span></div>`;
+    if (em.services && em.services.length) {
+      html += `<div class="subsection-title">Hätänumerot</div>`;
+      for (const s of em.services) {
+        html += `<div class="service-item"><span class="service-name">${escapeHtml(s.name)}</span> <span class="service-number">${escapeHtml(s.number)}</span>${s.when ? ` <span class="muted">— ${escapeHtml(s.when)}</span>` : ""}</div>`;
+      }
+    }
+    if (em.hospitals && em.hospitals.length) {
+      html += `<div class="subsection-title">🏥 Sairaalat</div>`;
+      for (const h of em.hospitals) {
+        html += `<div class="hospital-item"><div class="hospital-name">${escapeHtml(h.name)}</div><div class="muted">📍 ${escapeHtml(h.address || "")}</div><div>📞 ${escapeHtml(h.phone || "")}</div>${h.note ? `<div class="muted">${escapeHtml(h.note)}</div>` : ""}<div class="place-links"><a href="${mapsLink(h.name, h.address)}" target="_blank" rel="noopener" class="map-link">📍 Avaa Mapsissa</a></div></div>`;
+      }
+    }
+    if (em.pharmacies && em.pharmacies.length) {
+      html += `<div class="subsection-title">💊 Apteekit</div>`;
+      for (const p of em.pharmacies) html += `<div class="hospital-item"><div class="hospital-name">${escapeHtml(p.name)}</div>${p.note ? `<div class="muted">${escapeHtml(p.note)}</div>` : ""}</div>`;
+    }
+    if (em.embassy) {
+      html += `<div class="subsection-title">🏛️ Suurlähetystö</div><div class="hospital-item"><div class="hospital-name">${escapeHtml(em.embassy.name || "")}</div><div class="muted">📍 ${escapeHtml(em.embassy.address || "")}</div><div>📞 ${escapeHtml(em.embassy.phone || "")}</div>${em.embassy.note ? `<div class="muted">${escapeHtml(em.embassy.note)}</div>` : ""}</div>`;
+    }
+    if (em.lost_card) html += `<div class="subsection-title">💳 Kortti kadonnut</div><div>${escapeHtml(em.lost_card)}</div>`;
+    if (em.tip) html += `<div class="emergency-tip">💡 ${escapeHtml(em.tip)}</div>`;
+    html += `</div>`;
+  }
+  return html;
+}
+
+function renderItineraryTab(d) {
+  let html = "";
+  if (d.day_by_day && d.day_by_day.length) {
+    html += `<div class="section"><h3><span class="icon">📅</span>Päiväaikataulu (ehdotus)</h3><div class="day-by-day">`;
+    for (const day of d.day_by_day) {
+      html += `<div class="day-item"><div class="day-header"><span class="day-num">Päivä ${day.day}</span><span class="day-date">${escapeHtml(day.date || "")}</span><span class="day-title">${escapeHtml(day.title || "")}</span></div><ul class="day-plan">`;
+      for (const step of (day.plan || [])) html += `<li>${escapeHtml(step)}</li>`;
+      html += `</ul></div>`;
+    }
+    html += `</div></div>`;
+  }
+  return html;
+}
+
+function renderNotesTab(a, d) {
+  let html = "";
+  if (a.notes) {
+    html += `<div class="section"><h3><span class="icon">📝</span>Muistiinpanot</h3><div style="white-space: pre-wrap;">${escapeHtml(a.notes)}</div></div>`;
+  }
+  return html || '<div class="section"><div style="color:var(--muted);text-align:center;padding:2rem;">Ei muistiinpanoja vielä.</div></div>';
+}
+
+
+function renderActivity() {
+  const a = activity;
+  const d = a.details || {};
+  const scheduled = fmtDateTime(a.scheduledFor);
+  const duration = a.durationMin ? `${a.durationMin} min` : "";
+
+  const isDone = a.status === "done";
+  const isSkipped = a.status === "skipped";
+  const isPlanned = a.status === "planned";
+  const isConnectionMoment = d.source === "connection";
+  const isMutual = a.planningMode === "mutual";
+  const isAccepted = isMutual && a.planState === "accepted";
+  const isProposed = isMutual && a.planState === "proposed";
+  const proposerName = a.proposedBy?.displayName || "Toinen teistä";
+  const updatedByName = a.updatedBy?.displayName || "";
+
+  let planStateHtml = "";
+  if (isMutual) {
+    let message = "";
+    if (isPlanned && isProposed) {
+      const waiting = !canWrite()
+        ? "Odottaa toisen kumppanin vastausta."
+        : a.acceptedByMe
+          ? "Odottaa kumppanin vastausta."
+          : "Odottaa sinun vastaustasi.";
+      message = `<strong>${escapeHtml(proposerName)}</strong> ehdotti tätä aikaa. ${waiting}`;
+    } else if (isPlanned && isAccepted) {
+      message = "Molemmat hyväksyivät tämän version.";
+    } else if (isDone) {
+      message = `Yhteinen suunnitelma on merkitty tehdyksi${updatedByName ? ` käyttäjän <strong>${escapeHtml(updatedByName)}</strong> toimesta` : ""}.`;
+    } else if (isSkipped) {
+      message = `Aikaehdotus tai suunnitelma peruttiin${updatedByName ? ` käyttäjän <strong>${escapeHtml(updatedByName)}</strong> toimesta` : ""}.`;
+    }
+    if (message) planStateHtml = `<div class="plan-state">${message}</div>`;
+  }
+
+  let controlsHtml = "";
+  if (isConnectionMoment) {
+    controlsHtml = '<span style="color:var(--muted);font-size:0.9rem;">Tila ja reflektio käsitellään päivän yhteysnäkymässä.</span>';
+  } else if (canWrite() && isMutual) {
+    if (isPlanned && isProposed) {
+      controlsHtml = `${a.acceptedByMe ? "" : '<button class="btn btn-primary" id="hero-accept">Hyväksy aika</button>'}
+        <a class="btn" href="/ateneum/?editActivity=${encodeURIComponent(a.id)}">Ehdota muutosta</a>
+        <button class="btn" id="hero-skip">${a.proposedBy?.id === me.id ? "Peru ehdotus" : "Ei sovi"}</button>`;
+    } else if (isPlanned && isAccepted) {
+      controlsHtml = `<a class="btn" href="/ateneum/?editActivity=${encodeURIComponent(a.id)}">Ehdota muutosta</a>
+        <button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button>
+        <button class="btn" id="hero-skip">Peru suunnitelma</button>`;
+    } else if (isDone || isSkipped) {
+      controlsHtml = '<button class="btn" id="hero-undo">Ehdota uudelleen</button>';
+    }
+  } else if (canWrite() && !isMutual) {
+    if (isPlanned) {
+      controlsHtml = '<button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button><button class="btn" id="hero-skip">Ei nyt</button><button class="btn" id="hero-delete">Poista pysyvästi</button>';
+    } else if (isDone) {
+      controlsHtml = `<div class="rating-block">
+        <span class="rating-label">Yhteinen legacy-arvio:</span>
+        <div class="stars" id="hero-stars">
+          ${[1,2,3,4,5].map(i => `<button class="star ${(a.rating || 0) >= i ? "on" : ""}" data-rating="${i}" aria-label="${i}/5">★</button>`).join("")}
+        </div>
+      </div><button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>`;
+    } else if (isSkipped) {
+      controlsHtml = '<button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>';
+    }
+  }
+
+  let html = `<div class="wrap">${renderHeader()}<div id="content">`;
+  html += `
+    <div class="hero">
+      <div class="hero-heading">
+        <h2>${escapeHtml(a.title)}</h2>
+        ${statusPill(a)}
+      </div>
+      <div class="meta">
+        ${scheduled ? `<span>📅 ${escapeHtml(scheduled)}</span>` : ""}
+        ${duration ? `<span>⏱️ ${escapeHtml(duration)}</span>` : ""}
+        ${d.destination ? `<span>📍 ${escapeHtml(d.destination)}</span>` : ""}
+        ${d.travelers ? `<span>👥 ${escapeHtml(d.travelers)}</span>` : ""}
+      </div>
+      ${planStateHtml}
+      ${(controlsHtml || isConnectionMoment) ? `<div class="activity-controls">${controlsHtml}</div>` : ""}
+    </div>
+
+    <div class="tabs">
+      <div class="tab-bar">
+        ${tabBtn("overview", "Yleiskatsaus", "📋", true)}
+        ${tabBtn("logistics", "Matka & Käytäntö", "✈️")}
+        ${tabBtn("places", "Paikat", "🌊")}
+        ${tabBtn("culture", "Kulttuuri", "🎭")}
+        ${tabBtn("spots", "Erityispaikat", "📍")}
+        ${tabBtn("practical", "Käytännön", "📸")}
+        ${tabBtn("itinerary", "Aikataulu", "📅")}
+        ${tabBtn("notes", "Muistiinpanot", "📝")}
+      </div>
+      <div class="tab-panels">
+        ${tabContent("overview", renderOverviewTab(d, a), true)}
+        ${tabContent("logistics", renderLogisticsTab(d))}
+        ${tabContent("places", renderPlacesTab(d))}
+        ${tabContent("culture", renderCultureTab(d))}
+        ${tabContent("spots", renderPlacesTab2(d))}
+        ${tabContent("practical", renderPracticalTab(d))}
+        ${tabContent("itinerary", renderItineraryTab(d))}
+        ${tabContent("notes", renderNotesTab(a, d))}
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="/ateneum/">← Takaisin</a>
+    </div>
+  `;
+  html += `</div></div>`;
+  app.innerHTML = html;
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => activateTab(btn.dataset.tab));
+  });
+  try {
+    const saved = localStorage.getItem("ateneum_active_tab");
+    if (saved) activateTab(saved);
+  } catch (e) {}
+
+  async function refreshAfterError(prefix, error) {
+    toast(`${prefix}: ${error.message}`);
+    console.error(prefix, error);
+    await loadActivity();
+  }
+
+  async function setStatus(status, successMessage, confirmation) {
+    if (confirmation && !confirm(confirmation)) return;
+    try {
+      await api(`/activities/${a.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status, expectedVersion: a.version }),
+      });
+      toast(successMessage);
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Tilaa ei voitu päivittää", error);
+    }
+  }
+
+  async function acceptTime() {
+    try {
+      await api(`/activities/${a.id}/accept`, {
+        method: "POST",
+        body: JSON.stringify({ expectedVersion: a.version }),
+      });
+      toast("Aika hyväksytty");
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Aikaa ei voitu hyväksyä", error);
+    }
+  }
+
+  async function setRating(rating) {
+    try {
+      await api(`/activities/${a.id}`, { method: "PATCH", body: JSON.stringify({ rating }) });
+      toast("Arvioitu " + rating + "/5");
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Arviota ei voitu tallentaa", error);
+    }
+  }
+
+  async function deleteLegacyActivity() {
+    if (!confirm("Poistetaanko tämä legacy-aktiviteetti pysyvästi? Tätä ei voi perua.")) return;
+    try {
+      await api(`/activities/${a.id}`, { method: "DELETE" });
+      window.location.assign("/ateneum/");
+    } catch (error) {
+      await refreshAfterError("Aktiviteettia ei voitu poistaa", error);
+    }
+  }
+
+  const acceptButton = document.getElementById("hero-accept");
+  if (acceptButton) acceptButton.onclick = acceptTime;
+  const doneButton = document.getElementById("hero-mark-done");
+  if (doneButton) doneButton.onclick = () => setStatus("done", "Merkitty tehdyksi", "Merkitäänkö yhteinen suunnitelma tehdyksi?");
+  const skipButton = document.getElementById("hero-skip");
+  if (skipButton) skipButton.onclick = () => setStatus("skipped", "Peruttu", "Tämä muuttaa tilan teiltä molemmilta. Jatketaanko?");
+  const undoButton = document.getElementById("hero-undo");
+  if (undoButton) undoButton.onclick = () => setStatus(
+    "planned",
+    isMutual ? "Uusi aikaehdotus avattu — kumppanin hyväksyntä tarvitaan" : "Palautettu suunnitelluksi",
+    isMutual ? "Avataanko tämä uutena aikaehdotuksena? Aiemmat hyväksynnät nollataan ja kumppanin pitää hyväksyä uusi versio." : undefined,
+  );
+  const deleteButton = document.getElementById("hero-delete");
+  if (deleteButton) deleteButton.onclick = deleteLegacyActivity;
+  document.querySelectorAll("#hero-stars .star").forEach(btn => {
+    btn.onclick = () => setRating(Number(btn.dataset.rating));
+  });
+}
+
+async function loadActivity() {
+  const generation = ++activityLoadGeneration;
+  try {
+    const data = await api(`/activities/${activityId}`);
+    if (generation !== activityLoadGeneration) return;
+    activity = data.activity || data;
+    if (!activity) throw new Error("Aktiviteettia ei löytynyt");
+    renderActivity();
+  } catch (err) {
+    if (generation !== activityLoadGeneration) return;
+    app.innerHTML = `<div class="wrap"><div class="error">Virhe ladattaessa aktiviteettia: ${escapeHtml(err.message)}</div><a class="btn" href="/ateneum/">← Takaisin</a></div>`;
+  }
+}
+
+function queueActivityRefresh() {
+  if (!me || !activityId) return;
+  clearTimeout(activityRefreshTimer);
+  activityRefreshTimer = setTimeout(loadActivity, 200);
+}
+window.addEventListener("focus", queueActivityRefresh);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") queueActivityRefresh();
+});
+
+async function init() {
+  const params = new URLSearchParams(location.search);
+  activityId = params.get("id");
+  if (!activityId) {
+    app.innerHTML = `<div class="wrap"><div class="error">Aktiviteetin ID puuttuu.</div></div>`;
+    return;
+  }
+
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  const token = fragment.get("magic");
+  if (token) {
+    window.history.replaceState({}, "", window.location.pathname + window.location.search);
+    try {
+      const verified = await api("/auth/magic-link/verify", {
+        method: "POST",
+        body: JSON.stringify({ token }),
+      });
+      me = verified.user;
+      await loadActivity();
+      return;
+    } catch (error) {
+      renderLogin();
+      document.getElementById("login-msg").textContent = "Linkki ei toimi: " + error.message;
+      return;
+    }
+  }
+
+  try {
+    const auth = await api("/auth/me");
+    me = auth.user;
+    await loadActivity();
+  } catch {
+    renderLogin();
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
