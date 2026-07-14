@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Kokonaisuus — Ateneum</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a6e3a">
+<style>
+  :root {
+    --bg: #fafaf7; --card: #fff; --ink: #1a1a1a; --muted: #70756f;
+    --rule: #e5e8e3; --accent: #0a6e3a; --accent-bg: #e9f4ec;
+    --warn: #9a321f; --draft: #5d6872; --proposal: #76530d;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    min-height: 100vh; padding-bottom: 3rem; color: var(--ink); background: var(--bg);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 1rem; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1rem; }
+  .back { color: var(--accent); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  .who { color: var(--muted); font-size: 0.85rem; }
+  .hero {
+    padding: clamp(1rem, 4vw, 1.6rem); margin-bottom: 1rem; border: 1px solid var(--rule);
+    border-radius: 14px; background: linear-gradient(135deg, #edf6ef 0%, #fffdf8 100%);
+  }
+  .hero-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+  .hero h1 { margin: 0; min-width: 0; flex: 1 1 18rem; font-size: clamp(1.45rem, 5vw, 2rem); line-height: 1.2; overflow-wrap: anywhere; }
+  .status-pill { display: inline-flex; align-items: center; min-height: 28px; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.72rem; font-weight: 750; text-transform: uppercase; letter-spacing: 0.035em; }
+  .status-pill.draft { color: var(--draft); background: #edf0f2; }
+  .status-pill.proposed { color: var(--proposal); background: #fff2d2; }
+  .status-pill.accepted { color: var(--accent); background: var(--accent-bg); }
+  .meta { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.8rem; }
+  .meta span { background: rgba(255,255,255,0.8); border: 1px solid var(--rule); border-radius: 999px; padding: 0.25rem 0.65rem; color: #4f5751; font-size: 0.82rem; }
+  .origin { margin-top: 0.65rem; color: var(--muted); font-size: 0.82rem; }
+  .summary { margin: 0.85rem 0 0; color: #343934; font-size: 1rem; white-space: pre-wrap; }
+  .plan-state { margin-top: 1rem; padding: 0.8rem 0.9rem; border-radius: 9px; background: rgba(255,255,255,0.78); color: #465049; font-size: 0.9rem; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1rem; }
+  .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0.65rem 1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); color: var(--ink); font: inherit; font-weight: 650; cursor: pointer; text-decoration: none; }
+  .btn-primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .btn:disabled { opacity: 0.6; cursor: wait; }
+  .toc { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.2rem 0 0.8rem; margin-bottom: 0.2rem; scrollbar-width: thin; }
+  .toc a { flex: 0 0 auto; min-height: 38px; display: inline-flex; align-items: center; padding: 0.35rem 0.7rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--card); color: var(--accent); font-size: 0.82rem; font-weight: 650; text-decoration: none; }
+  .section { scroll-margin-top: 0.8rem; margin-bottom: 1rem; padding: clamp(1rem, 3vw, 1.3rem); border: 1px solid var(--rule); border-radius: 12px; background: var(--card); }
+  .section h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
+  .section-summary { margin: 0.45rem 0 0; color: #4c534e; white-space: pre-wrap; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .fact { padding: 0.65rem 0.75rem; border-radius: 8px; background: #f5f7f3; }
+  .fact-label { color: var(--muted); font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .fact-value { margin-top: 0.15rem; overflow-wrap: anywhere; }
+  .items { display: grid; gap: 0.65rem; margin-top: 0.9rem; }
+  .item { padding: 0.8rem; border: 1px solid var(--rule); border-radius: 9px; background: #fcfcf9; }
+  .item-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+  .item-title { font-weight: 700; overflow-wrap: anywhere; }
+  .item-status { color: var(--muted); font-size: 0.78rem; }
+  .item-description { margin-top: 0.35rem; color: #4b514d; white-space: pre-wrap; }
+  .priority { display: inline-flex; margin-left: 0.4rem; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.68rem; font-weight: 750; text-transform: uppercase; }
+  .priority.must { background: #fee9e6; color: var(--warn); }
+  .priority.high { background: #fff2d2; color: var(--proposal); }
+  .priority.medium { background: var(--accent-bg); color: var(--accent); }
+  .priority.low { background: #edf0f2; color: var(--draft); }
+  .links { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+  .links a { min-height: 36px; display: inline-flex; align-items: center; color: var(--accent); font-size: 0.82rem; font-weight: 650; }
+  .checklist { list-style: none; padding: 0; margin: 0.9rem 0 0; display: grid; gap: 0.4rem; }
+  .checklist li { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.45rem 0.55rem; border-radius: 7px; background: #f7f7f3; }
+  .checkmark { flex: 0 0 auto; color: var(--muted); font-weight: 700; }
+  .empty, .loading { padding: 3rem 1rem; color: var(--muted); text-align: center; }
+  .error { padding: 1rem; margin-bottom: 1rem; border-radius: 8px; background: #fee; color: var(--warn); }
+  .login { max-width: 360px; margin: 4rem auto; padding: 2rem; border: 1px solid var(--rule); border-radius: 10px; background: var(--card); }
+  .login h1 { margin: 0 0 0.5rem; text-align: center; font-size: 1.4rem; }
+  .login p { color: var(--muted); font-size: 0.9rem; text-align: center; }
+  .login label { display: block; margin: 1rem 0 0.3rem; color: var(--muted); font-size: 0.82rem; }
+  .login input { width: 100%; min-height: 44px; padding: 0.7rem; border: 1px solid var(--rule); border-radius: 7px; background: var(--bg); font: inherit; }
+  .login button { width: 100%; margin-top: 0.8rem; }
+  .toast { position: fixed; left: 50%; bottom: 24px; z-index: 20; transform: translateX(-50%); padding: 0.7rem 1rem; border-radius: 8px; background: var(--ink); color: #fff; opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; max-width: calc(100vw - 2rem); overflow: hidden; text-overflow: ellipsis; }
+  .toast.show { opacity: 0.96; }
+  @media (max-width: 520px) { .actions .btn { flex: 1 1 100%; } .who { display: none; } }
+</style>
+</head>
+<body>
+<div id="app"><div class="loading">Ladataan kokonaisuutta…</div></div>
+<div id="toast" class="toast"></div>
+<script>
+const API = '/api/ateneum';
+const app = document.getElementById('app');
+const toastEl = document.getElementById('toast');
+const TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Kokonaisuus' };
+const STATUS_LABELS = { draft: 'Yksityinen luonnos', proposed: 'Jaettu ehdotus', accepted: 'Yhteinen suunnitelma' };
+const SECTION_ICONS = { overview: '📋', itinerary: '📅', bookings: '🧾', places: '📍', checklist: '✓', budget: '€', notes: '📝', other: '•' };
+const PRIORITY_LABELS = { must: 'Pakollinen', high: 'Tärkeä', medium: 'Hyvä olla', low: 'Valinnainen' };
+let me = null;
+let planId = null;
+let plan = null;
+let loadGeneration = 0;
+let refreshTimer = null;
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
+}
+function toast(message) {
+  toastEl.textContent = message;
+  toastEl.classList.add('show');
+  setTimeout(() => toastEl.classList.remove('show'), 2300);
+}
+async function api(path, options = {}) {
+  const response = await fetch(API + path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', ...(options.headers || {}) },
+    ...options,
+  });
+  const text = await response.text();
+  let body;
+  try { body = JSON.parse(text); } catch { body = { message: response.statusText }; }
+  if (!response.ok) throw new Error(body.message || response.statusText);
+  return body;
+}
+function canWrite() { return Boolean(me && me.role !== 'bot'); }
+function dateLabel(value) {
+  if (!value) return '';
+  return new Date(`${value}T00:00:00`).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric', year: 'numeric' });
+}
+function dateRange(item) {
+  if (item.startDate && item.endDate) return `${dateLabel(item.startDate)}–${dateLabel(item.endDate)}`;
+  return dateLabel(item.startDate || item.endDate) || 'Ajankohta avoin';
+}
+function stateCopy(item) {
+  if (item.status === 'draft') {
+    return item.acceptedVersion
+      ? `Tämä uusi versio näkyy vain sinulle. Yhteinen versio ${item.acceptedVersion} pysyy kumppanin näkyvissä, kunnes jaatte ja hyväksytte uuden.`
+      : 'Tämä luonnos näkyy vain sinulle. Tarkista kokonaisuus rauhassa ennen kuin jaat sen kumppanille.';
+  }
+  if (item.status === 'accepted') return 'Molemmat hyväksyivät tämän version. Tämä on nyt teidän yhteinen suunnitelmanne.';
+  if (!canWrite()) return 'Odottaa toisen kumppanin vastausta.';
+  if (item.acceptedByMe) return 'Olet hyväksynyt tämän version. Odottaa kumppanin vastausta.';
+  return `${item.ownerDisplayName} jakoi tämän version. Se odottaa sinun hyväksyntääsi tai palautusta muokattavaksi.`;
+}
+function renderHeader() {
+  return `<header><a class="back" href="/ateneum/?view=plans">← Kokonaisuudet</a><div class="who">Hei, <strong>${escapeHtml(me.displayName)}</strong></div></header>`;
+}
+function renderLogin(message = '') {
+  app.innerHTML = `<div class="login"><h1>Ateneum</h1><p>Kirjaudu sisään nähdäksesi kokonaisuuden.</p>
+    <form id="login-form"><label for="email">Sähköposti</label><input id="email" type="email" required autocomplete="email"><button class="btn btn-primary" type="submit">Lähetä kirjautumislinkki</button></form>
+    <p id="login-message">${escapeHtml(message)}</p></div>`;
+  document.getElementById('login-form').onsubmit = async event => {
+    event.preventDefault();
+    const output = document.getElementById('login-message');
+    output.textContent = 'Lähetetään…';
+    try {
+      await api('/auth/magic-link/request', { method: 'POST', body: JSON.stringify({ email: document.getElementById('email').value.trim() }) });
+      output.textContent = 'Tarkista sähköposti — linkki on voimassa 15 minuuttia.';
+    } catch (error) { output.textContent = 'Virhe: ' + error.message; }
+  };
+}
+function renderActions(item) {
+  if (!canWrite()) return '';
+  if (item.status === 'draft' && item.isOwner) {
+    return `<button class="btn btn-primary" id="share-plan">Jaa kumppanille</button>`;
+  }
+  if (item.status === 'proposed') {
+    return `${item.acceptedByMe ? '' : '<button class="btn btn-primary" id="accept-plan">Hyväksy versio</button>'}<button class="btn" id="return-plan">Palauta muokattavaksi</button>`;
+  }
+  return '';
+}
+function safeExternalLink(link) {
+  try {
+    const url = new URL(link.url);
+    if (!['http:', 'https:'].includes(url.protocol)) return '';
+    return `<a href="${escapeHtml(url.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.label)} ↗</a>`;
+  } catch { return ''; }
+}
+function renderSection(section) {
+  const facts = Array.isArray(section.facts) && section.facts.length
+    ? `<div class="facts">${section.facts.map(fact => `<div class="fact"><div class="fact-label">${escapeHtml(fact.label)}</div><div class="fact-value">${escapeHtml(fact.value)}</div></div>`).join('')}</div>` : '';
+  const items = Array.isArray(section.items) && section.items.length
+    ? `<div class="items">${section.items.map(item => {
+        const priority = item.priority ? `<span class="priority ${escapeHtml(item.priority)}">${escapeHtml(PRIORITY_LABELS[item.priority] || item.priority)}</span>` : '';
+        const links = Array.isArray(item.links) ? item.links.map(safeExternalLink).filter(Boolean) : [];
+        return `<article class="item"><div class="item-heading"><div class="item-title">${escapeHtml(item.title)}${priority}</div>${item.status ? `<div class="item-status">${escapeHtml(item.status)}</div>` : ''}</div>${item.description ? `<div class="item-description">${escapeHtml(item.description)}</div>` : ''}${links.length ? `<div class="links">${links.join('')}</div>` : ''}</article>`;
+      }).join('')}</div>` : '';
+  const checklist = Array.isArray(section.checklist) && section.checklist.length
+    ? `<ul class="checklist">${section.checklist.map(entry => `<li><span class="checkmark">□</span><span>${escapeHtml(entry)}</span></li>`).join('')}</ul>` : '';
+  return `<section class="section" id="section-${escapeHtml(section.id)}"><h2>${escapeHtml(SECTION_ICONS[section.type] || '•')} ${escapeHtml(section.title)}</h2>${section.summary ? `<p class="section-summary">${escapeHtml(section.summary)}</p>` : ''}${facts}${items}${checklist}</section>`;
+}
+function renderPlan() {
+  const item = plan;
+  const sections = Array.isArray(item.content?.sections) ? item.content.sections : [];
+  const origin = item.draftedBy === 'into' ? `Innon luonnostelema ${item.ownerDisplayName}n pyynnöstä` : `${item.ownerDisplayName}n luonnos`;
+  const toc = sections.length > 1 ? `<nav class="toc" aria-label="Suunnitelman osiot">${sections.map(section => `<a href="#section-${escapeHtml(section.id)}">${escapeHtml(section.title)}</a>`).join('')}</nav>` : '';
+  app.innerHTML = `<div class="wrap">${renderHeader()}<main>
+    <section class="hero"><div class="hero-heading"><h1>${escapeHtml(item.title)}</h1><span class="status-pill ${escapeHtml(item.status)}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></div>
+      <div class="meta"><span>${escapeHtml(TYPE_LABELS[item.planType] || item.planType)}</span><span>${escapeHtml(dateRange(item))}</span><span>Versio ${item.version}</span><span>${sections.length} osiota</span></div>
+      <div class="origin">${escapeHtml(origin)}</div>${item.summary ? `<p class="summary">${escapeHtml(item.summary)}</p>` : ''}<div class="plan-state">${escapeHtml(stateCopy(item))}</div>
+      ${renderActions(item) ? `<div class="actions">${renderActions(item)}</div>` : ''}</section>
+    ${toc}${sections.length ? sections.map(renderSection).join('') : '<div class="empty">Kokonaisuudessa ei ole vielä osioita.</div>'}
+    <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin kokonaisuuksiin</a></div>
+  </main></div>`;
+  const share = document.getElementById('share-plan');
+  if (share) share.onclick = () => runAction(share, 'share', 'Jaetaan…', 'Kokonaisuus jaettu kumppanille', 'Jaetaanko tämä versio kumppanille? Jakaminen toimii omana hyväksyntänäsi.');
+  const accept = document.getElementById('accept-plan');
+  if (accept) accept.onclick = () => runAction(accept, 'accept', 'Hyväksytään…', 'Versio hyväksytty');
+  const returnButton = document.getElementById('return-plan');
+  if (returnButton) returnButton.onclick = () => runAction(returnButton, 'return-to-draft', 'Palautetaan…', 'Palautettu muokattavaksi', 'Palautetaanko tämä versio pyytäjän yksityiseksi luonnokseksi?');
+}
+async function runAction(button, action, pending, success, confirmation) {
+  if (confirmation && !confirm(confirmation)) return;
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = pending;
+  try {
+    await api(`/plans/${encodeURIComponent(plan.id)}/${action}`, { method: 'POST', body: JSON.stringify({ expectedVersion: plan.version }) });
+    toast(success);
+    if (action === 'return-to-draft' && !plan.isOwner) {
+      setTimeout(() => location.assign('/ateneum/?view=plans'), 350);
+      return;
+    }
+    await loadPlan();
+  } catch (error) {
+    toast('Virhe: ' + error.message);
+    button.disabled = false;
+    button.textContent = original;
+    await loadPlan();
+  }
+}
+async function loadPlan() {
+  const generation = ++loadGeneration;
+  try {
+    const body = await api(`/plans/${encodeURIComponent(planId)}`);
+    if (generation !== loadGeneration) return;
+    plan = body.plan;
+    renderPlan();
+  } catch (error) {
+    if (generation !== loadGeneration) return;
+    app.innerHTML = `<div class="wrap">${me ? renderHeader() : ''}<div class="error">Kokonaisuutta ei voitu ladata: ${escapeHtml(error.message)}</div><a class="btn" href="/ateneum/?view=plans">← Kokonaisuudet</a></div>`;
+  }
+}
+function queueRefresh() {
+  if (!me || !planId) return;
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(loadPlan, 200);
+}
+window.addEventListener('focus', queueRefresh);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') queueRefresh(); });
+async function init() {
+  planId = new URLSearchParams(location.search).get('id');
+  if (!planId) { app.innerHTML = '<div class="wrap"><div class="error">Kokonaisuuden ID puuttuu.</div></div>'; return; }
+  const fragment = new URLSearchParams(location.hash.slice(1));
+  const token = fragment.get('magic');
+  if (token) {
+    history.replaceState({}, '', location.pathname + location.search);
+    try {
+      const verified = await api('/auth/magic-link/verify', { method: 'POST', body: JSON.stringify({ token }) });
+      me = verified.user;
+      await loadPlan();
+      return;
+    } catch (error) { renderLogin('Linkki ei toimi: ' + error.message); return; }
+  }
+  try {
+    const auth = await api('/auth/me');
+    me = auth.user;
+    await loadPlan();
+  } catch { renderLogin(); }
+}
+init();
+</script>
+</body>
+</html>

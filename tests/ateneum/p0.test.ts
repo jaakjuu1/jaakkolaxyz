@@ -584,6 +584,43 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
 
+test("plan wholes are conversation-authored and only reviewed in Ateneum", () => {
+  const index = readFileSync(path.resolve("public-static/ateneum/index.html"), "utf8");
+  const detail = readFileSync(path.resolve("public-static/ateneum/plan.html"), "utf8");
+
+  for (const marker of [
+    'id="view-plans"',
+    'data-view="plans"',
+    'id="plans-list"',
+    "function loadPlans(",
+    "function sharePlan(",
+    "function acceptPlan(",
+    "function returnPlanToDraft(",
+    "/ateneum/plan.html?id=",
+    "Innon luonnostelema",
+  ]) {
+    assert.ok(index.includes(marker), `plan list missing: ${marker}`);
+  }
+  for (const marker of [
+    "function renderSection(",
+    "function renderActions(",
+    "function runAction(",
+    "return-to-draft",
+    "expectedVersion: plan.version",
+    "me.role !== 'bot'",
+    "Odottaa toisen kumppanin vastausta",
+    "min-height: 44px",
+  ]) {
+    assert.ok(detail.includes(marker), `plan detail missing: ${marker}`);
+  }
+  assert.match(index, /\/plans\/\$\{encodeURIComponent\(id\)\}\/share/);
+  assert.match(index, /\/plans\/\$\{encodeURIComponent\(id\)\}\/accept/);
+  assert.match(index, /\/plans\/\$\{encodeURIComponent\(id\)\}\/return-to-draft/);
+  assert.match(detail, /api\(`\/plans\/\$\{encodeURIComponent\(plan\.id\)\}\/\$\{action\}`/);
+  assert.doesNotMatch(index, /api\(["'`]\/plans\/drafts/);
+  assert.doesNotMatch(detail, /method:\s*["']PATCH["']/);
+});
+
 test("activity proposal email describes a proposal instead of a shared agreement", () => {
   const source = readFileSync(path.resolve("server/ateneum-email.ts"), "utf8");
   const start = source.indexOf("export async function sendActivityPlanned");
@@ -733,6 +770,285 @@ test("mutual activity proposals require reciprocal acceptance and optimistic ver
     body: { status: "done", expectedVersion: 4 },
   });
   assert.equal(reopenedDone.status, 409);
+});
+
+test("agent-assisted plan drafts stay private until a human shares and both accept one revision", async () => {
+  rawDb.exec(`
+    DROP TABLE ateneum_plan_acceptances;
+    DROP TABLE ateneum_plan_revisions;
+    DROP TABLE ateneum_plans;
+    CREATE TABLE ateneum_plans (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL,
+      latest_version INTEGER NOT NULL DEFAULT 1,
+      accepted_version INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE TABLE ateneum_plan_revisions (
+      id TEXT PRIMARY KEY,
+      plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      start_date TEXT,
+      end_date TEXT,
+      summary TEXT NOT NULL DEFAULT '',
+      content TEXT NOT NULL DEFAULT '{"sections":[]}',
+      status TEXT NOT NULL,
+      drafted_by TEXT NOT NULL,
+      created_by TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(plan_id, version)
+    );
+    INSERT INTO ateneum_plans (id, owner_user_id, plan_type, latest_version)
+      VALUES ('pln_legacy_creator_fk', 'usr_test_juuso', 'trip', 1);
+    INSERT INTO ateneum_plan_revisions
+      (id, plan_id, version, title, status, drafted_by, created_by)
+      VALUES ('prv_legacy_creator_fk', 'pln_legacy_creator_fk', 1,
+              'Legacy creator FK', 'draft', 'human', 'usr_test_henna');
+  `);
+  const { migrateAteneumSchema } = await import("../../server/ateneum-db");
+  migrateAteneumSchema();
+  const creatorColumn = rawDb
+    .prepare("PRAGMA table_info(ateneum_plan_revisions)")
+    .all()
+    .find((column: any) => column.name === "created_by");
+  const creatorForeignKey = rawDb
+    .prepare("PRAGMA foreign_key_list(ateneum_plan_revisions)")
+    .all()
+    .find((foreignKey: any) => foreignKey.from === "created_by");
+  assert.equal(creatorColumn.notnull, 0);
+  assert.equal(creatorForeignKey.on_delete, "SET NULL");
+  assert.equal(
+    rawDb.prepare("SELECT created_by FROM ateneum_plan_revisions WHERE id = ?").get(
+      "prv_legacy_creator_fk",
+    ).created_by,
+    "usr_test_henna",
+  );
+  rawDb.exec("SAVEPOINT plan_creator_delete");
+  try {
+    rawDb.prepare("DELETE FROM ateneum_users WHERE id = ?").run("usr_test_henna");
+    const retained = rawDb
+      .prepare("SELECT created_by FROM ateneum_plan_revisions WHERE id = ?")
+      .get("prv_legacy_creator_fk");
+    assert.ok(retained);
+    assert.equal(retained.created_by, null);
+  } finally {
+    rawDb.exec("ROLLBACK TO plan_creator_delete; RELEASE plan_creator_delete;");
+  }
+  rawDb.prepare("DELETE FROM ateneum_plans WHERE id = ?").run("pln_legacy_creator_fk");
+
+  const issue = await request("/api/ateneum/auth/api-token", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      name: "into-plan-drafts",
+      password: process.env.ATENEUM_JUUSO_PASSWORD,
+      expiresInDays: 7,
+      scopes: ["read", "plans:draft"],
+    },
+  });
+  assert.equal(issue.status, 200);
+  const { token } = (await issue.json()) as { token: string };
+
+  const payload = {
+    title: "Split-tasoinen testimatka",
+    planType: "trip",
+    startDate: "2026-08-01",
+    endDate: "2026-08-08",
+    summary: "Innon keskustelusta kokoama yksityinen luonnos",
+    content: {
+      sections: [
+        {
+          id: "overview",
+          title: "Matkan ydin",
+          type: "overview",
+          facts: [{ label: "Kohde", value: "Split" }],
+          items: [{ title: "Rauhallinen yhteinen päivä", priority: "must" }],
+          checklist: ["Varmista majoitus"],
+        },
+      ],
+    },
+  };
+
+  const unknown = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    bearer: token,
+    body: { ...payload, ownerUserId: "usr_test_henna" },
+  });
+  assert.equal(unknown.status, 400);
+
+  const unsafeLinkPayload = structuredClone(payload) as any;
+  unsafeLinkPayload.content.sections[0].items[0].links = [
+    { label: "Unsafe", url: "data:text/html,<script>alert(1)</script>" },
+  ];
+  const unsafeLink = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    bearer: token,
+    body: unsafeLinkPayload,
+  });
+  assert.equal(unsafeLink.status, 400);
+
+  const create = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    bearer: token,
+    body: payload,
+  });
+  assert.equal(create.status, 200);
+  const created = (await create.json()) as { plan: any };
+  assert.equal(created.plan.status, "draft");
+  assert.equal(created.plan.visibility, "private");
+  assert.equal(created.plan.draftedBy, "into");
+  assert.equal(created.plan.version, 1);
+  const planId = created.plan.id as string;
+
+  const ownerList = await request("/api/ateneum/plans", { bearer: token });
+  assert.equal(ownerList.status, 200);
+  assert.ok(((await ownerList.json()) as any).plans.some((plan: any) => plan.id === planId));
+  for (const cookie of [hennaCookie, botCookie]) {
+    const hidden = await request("/api/ateneum/plans", { cookie });
+    assert.equal(hidden.status, 200);
+    assert.ok(!((await hidden.json()) as any).plans.some((plan: any) => plan.id === planId));
+  }
+
+  const botWrite = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    cookie: botCookie,
+    body: payload,
+  });
+  assert.equal(botWrite.status, 403);
+  for (const attempt of [
+    request(`/api/ateneum/plans/${planId}/draft`, {
+      method: "PATCH",
+      cookie: botCookie,
+      body: { expectedVersion: 1, summary: "bot must not revise" },
+    }),
+    request(`/api/ateneum/plans/${planId}/share`, {
+      method: "POST",
+      cookie: botCookie,
+      body: { expectedVersion: 1 },
+    }),
+    request(`/api/ateneum/plans/${planId}/accept`, {
+      method: "POST",
+      cookie: botCookie,
+      body: { expectedVersion: 1 },
+    }),
+    request(`/api/ateneum/plans/${planId}/return-to-draft`, {
+      method: "POST",
+      cookie: botCookie,
+      body: { expectedVersion: 1 },
+    }),
+  ]) {
+    assert.equal((await attempt).status, 403);
+  }
+
+  const tokenShare = await request(`/api/ateneum/plans/${planId}/share`, {
+    method: "POST",
+    bearer: token,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(tokenShare.status, 403);
+
+  const share = await request(`/api/ateneum/plans/${planId}/share`, {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(share.status, 200);
+  const proposed = ((await share.json()) as any).plan;
+  assert.equal(proposed.status, "proposed");
+  assert.equal(proposed.visibility, "shared");
+  assert.equal(proposed.acceptedByMe, true);
+  assert.equal(proposed.acceptanceCount, 1);
+
+  const partnerProposed = await request(`/api/ateneum/plans/${planId}`, { cookie: hennaCookie });
+  assert.equal(partnerProposed.status, 200);
+  assert.equal(((await partnerProposed.json()) as any).plan.version, 1);
+  const botProposed = await request(`/api/ateneum/plans/${planId}`, { cookie: botCookie });
+  assert.equal(botProposed.status, 200);
+  assert.equal(((await botProposed.json()) as any).plan.status, "proposed");
+
+  const tokenAccept = await request(`/api/ateneum/plans/${planId}/accept`, {
+    method: "POST",
+    bearer: token,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(tokenAccept.status, 403);
+
+  const tokenReturn = await request(`/api/ateneum/plans/${planId}/return-to-draft`, {
+    method: "POST",
+    bearer: token,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(tokenReturn.status, 403);
+
+  const accept = await request(`/api/ateneum/plans/${planId}/accept`, {
+    method: "POST",
+    cookie: hennaCookie,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(accept.status, 200);
+  const accepted = ((await accept.json()) as any).plan;
+  assert.equal(accepted.status, "accepted");
+  assert.equal(accepted.acceptanceCount, 2);
+  assert.equal(accepted.acceptedVersion, 1);
+
+  const revise = await request(`/api/ateneum/plans/${planId}/draft`, {
+    method: "PATCH",
+    bearer: token,
+    body: {
+      expectedVersion: 1,
+      summary: "Innon päivittämä yksityinen versio, jota Henna ei vielä näe",
+    },
+  });
+  assert.equal(revise.status, 200);
+  const privateRevision = ((await revise.json()) as any).plan;
+  assert.equal(privateRevision.version, 2);
+  assert.equal(privateRevision.status, "draft");
+  assert.equal(privateRevision.acceptedVersion, 1);
+
+  const partnerStillAccepted = await request(`/api/ateneum/plans/${planId}`, {
+    cookie: hennaCookie,
+  });
+  assert.equal(partnerStillAccepted.status, 200);
+  const partnerView = ((await partnerStillAccepted.json()) as any).plan;
+  assert.equal(partnerView.version, 1);
+  assert.equal(partnerView.status, "accepted");
+  assert.doesNotMatch(partnerView.summary, /yksityinen versio/);
+
+  const stale = await request(`/api/ateneum/plans/${planId}/draft`, {
+    method: "PATCH",
+    bearer: token,
+    body: { expectedVersion: 1, summary: "vanhentunut kirjoitus" },
+  });
+  assert.equal(stale.status, 409);
+
+  const shareRevision = await request(`/api/ateneum/plans/${planId}/share`, {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { expectedVersion: 2 },
+  });
+  assert.equal(shareRevision.status, 200);
+  assert.equal(((await shareRevision.json()) as any).plan.acceptanceCount, 1);
+
+  const returnToDraft = await request(`/api/ateneum/plans/${planId}/return-to-draft`, {
+    method: "POST",
+    cookie: hennaCookie,
+    body: { expectedVersion: 2 },
+  });
+  assert.equal(returnToDraft.status, 200);
+  const returned = ((await returnToDraft.json()) as any).plan;
+  assert.equal(returned.version, 3);
+  assert.equal(returned.status, "draft");
+  assert.equal(returned.visibility, "private");
+
+  const partnerAfterReturn = await request(`/api/ateneum/plans/${planId}`, {
+    cookie: hennaCookie,
+  });
+  assert.equal(partnerAfterReturn.status, 200);
+  assert.equal(((await partnerAfterReturn.json()) as any).plan.version, 1);
 });
 
 test("legacy activity status and rating keep the shared PATCH contract", async () => {
@@ -1528,9 +1844,25 @@ test("API tokens are session-minted, scoped, expiring, listable and revocable", 
   assert.deepEqual(JSON.parse(stored.scopes), ["read"]);
   assert.ok(stored.expires_at);
   assert.equal(stored.revoked_at, null);
+  const { ateneumTimestampToIso, ateneumTimestampToMs } = await import("../../server/ateneum-auth");
+  assert.equal(ateneumTimestampToMs(stored.expires_at), stored.expires_at * 1_000);
+  assert.equal(ateneumTimestampToIso(null), null);
+  assert.ok(Date.parse(ateneumTimestampToIso(stored.expires_at)!) > Date.now());
+  const listedTokensResponse = await request("/api/ateneum/auth/api-tokens", { cookie: juusoCookie });
+  assert.equal(listedTokensResponse.status, 200);
+  const listedTokens = (await listedTokensResponse.json()) as {
+    tokens: Array<{ id: string; expires_at: string; revoked_at: string | null }>;
+  };
+  const listedIssued = listedTokens.tokens.find((token) => token.id === issued.id);
+  assert.ok(listedIssued);
+  assert.ok(Date.parse(listedIssued.expires_at) > Date.now());
+  assert.equal(listedIssued.revoked_at, null);
 
   const readable = await request("/api/ateneum/ideas", { bearer: issued.token });
   assert.equal(readable.status, 200);
+  const bearerMe = await request("/api/ateneum/auth/me", { bearer: issued.token });
+  assert.equal(bearerMe.status, 200);
+  assert.equal(((await bearerMe.json()) as { user: { username: string } }).user.username, "juuso");
   const tokenConnection = await request("/api/ateneum/connection/today", {
     bearer: issued.token,
   });

@@ -105,6 +105,47 @@ export function initAteneumSchema(): void {
       UNIQUE(activity_id, user_id)
     );
 
+    CREATE TABLE IF NOT EXISTS ateneum_plans (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
+      latest_version INTEGER NOT NULL DEFAULT 1 CHECK (latest_version >= 1),
+      accepted_version INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      CHECK (accepted_version IS NULL OR accepted_version >= 1)
+    );
+
+    CREATE TABLE IF NOT EXISTS ateneum_plan_revisions (
+      id TEXT PRIMARY KEY,
+      plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL CHECK (version >= 1),
+      title TEXT NOT NULL,
+      start_date TEXT,
+      end_date TEXT,
+      summary TEXT NOT NULL DEFAULT '',
+      content TEXT NOT NULL DEFAULT '{"sections":[]}',
+      status TEXT NOT NULL CHECK (status IN ('draft','proposed','accepted','superseded')),
+      drafted_by TEXT NOT NULL CHECK (drafted_by IN ('into','human')),
+      created_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(plan_id, version)
+    );
+
+    CREATE TABLE IF NOT EXISTS ateneum_plan_acceptances (
+      id TEXT PRIMARY KEY,
+      plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL CHECK (version >= 1),
+      accepted_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(plan_id, version, user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_ateneum_plan_revisions_plan_status
+      ON ateneum_plan_revisions(plan_id, status, version);
+    CREATE INDEX IF NOT EXISTS idx_ateneum_plan_acceptances_user
+      ON ateneum_plan_acceptances(user_id);
+
     CREATE TABLE IF NOT EXISTS ateneum_wishes (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
@@ -388,6 +429,91 @@ export function migrateAteneumSchema(): void {
         ON ateneum_connection_reflections(user_id);
     `);
 
+    ateneumRawDb.exec(`
+      CREATE TABLE IF NOT EXISTS ateneum_plans (
+        id TEXT PRIMARY KEY,
+        owner_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
+        latest_version INTEGER NOT NULL DEFAULT 1 CHECK (latest_version >= 1),
+        accepted_version INTEGER,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        CHECK (accepted_version IS NULL OR accepted_version >= 1)
+      );
+      CREATE TABLE IF NOT EXISTS ateneum_plan_revisions (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+        version INTEGER NOT NULL CHECK (version >= 1),
+        title TEXT NOT NULL,
+        start_date TEXT,
+        end_date TEXT,
+        summary TEXT NOT NULL DEFAULT '',
+        content TEXT NOT NULL DEFAULT '{"sections":[]}',
+        status TEXT NOT NULL CHECK (status IN ('draft','proposed','accepted','superseded')),
+        drafted_by TEXT NOT NULL CHECK (drafted_by IN ('into','human')),
+        created_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(plan_id, version)
+      );
+      CREATE TABLE IF NOT EXISTS ateneum_plan_acceptances (
+        id TEXT PRIMARY KEY,
+        plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        version INTEGER NOT NULL CHECK (version >= 1),
+        accepted_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(plan_id, version, user_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_plan_revisions_plan_status
+        ON ateneum_plan_revisions(plan_id, status, version);
+      CREATE INDEX IF NOT EXISTS idx_ateneum_plan_acceptances_user
+        ON ateneum_plan_acceptances(user_id);
+    `);
+
+    const revisionCreatedBy = columnInfo("ateneum_plan_revisions").find(
+      (column) => column.name === "created_by",
+    );
+    const revisionCreatedByForeignKey = (
+      ateneumRawDb.pragma("foreign_key_list(ateneum_plan_revisions)") as Array<{
+        from: string;
+        on_delete: string;
+      }>
+    ).find((foreignKey) => foreignKey.from === "created_by");
+    if (
+      revisionCreatedBy?.notnull === 1 ||
+      revisionCreatedByForeignKey?.on_delete.toUpperCase() !== "SET NULL"
+    ) {
+      ateneumRawDb.exec(`
+        DROP TABLE IF EXISTS ateneum_plan_revisions__new;
+        CREATE TABLE ateneum_plan_revisions__new (
+          id TEXT PRIMARY KEY,
+          plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+          version INTEGER NOT NULL CHECK (version >= 1),
+          title TEXT NOT NULL,
+          start_date TEXT,
+          end_date TEXT,
+          summary TEXT NOT NULL DEFAULT '',
+          content TEXT NOT NULL DEFAULT '{"sections":[]}',
+          status TEXT NOT NULL CHECK (status IN ('draft','proposed','accepted','superseded')),
+          drafted_by TEXT NOT NULL CHECK (drafted_by IN ('into','human')),
+          created_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
+          created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+          UNIQUE(plan_id, version)
+        );
+        INSERT INTO ateneum_plan_revisions__new
+          (id, plan_id, version, title, start_date, end_date, summary, content,
+           status, drafted_by, created_by, created_at, updated_at)
+        SELECT id, plan_id, version, title, start_date, end_date, summary, content,
+               status, drafted_by, created_by, created_at, updated_at
+        FROM ateneum_plan_revisions;
+        DROP TABLE ateneum_plan_revisions;
+        ALTER TABLE ateneum_plan_revisions__new RENAME TO ateneum_plan_revisions;
+        CREATE INDEX idx_ateneum_plan_revisions_plan_status
+          ON ateneum_plan_revisions(plan_id, status, version);
+      `);
+    }
+
     const tokenMigration = "api_token_scopes_v1";
     const migrationApplied = Boolean(
       ateneumRawDb
@@ -523,6 +649,31 @@ export function migrateAteneumSchema(): void {
       "updated_at",
     ],
     ateneum_activity_acceptances: ["activity_id", "user_id", "version", "accepted_at"],
+    ateneum_plans: [
+      "id",
+      "owner_user_id",
+      "plan_type",
+      "latest_version",
+      "accepted_version",
+      "created_at",
+      "updated_at",
+    ],
+    ateneum_plan_revisions: [
+      "id",
+      "plan_id",
+      "version",
+      "title",
+      "start_date",
+      "end_date",
+      "summary",
+      "content",
+      "status",
+      "drafted_by",
+      "created_by",
+      "created_at",
+      "updated_at",
+    ],
+    ateneum_plan_acceptances: ["id", "plan_id", "user_id", "version", "accepted_at"],
     ateneum_api_tokens: [
       "id",
       "token_hash",
@@ -612,6 +763,37 @@ export function migrateAteneumSchema(): void {
   )?.sql ?? "";
   if (!/UNIQUE\s*\(activity_id,\s*user_id\)/i.test(acceptanceTableSql)) {
     throw new Error("Ateneum activity acceptance uniqueness constraint is missing");
+  }
+  const planRevisionSql = (
+    ateneumRawDb
+      .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'ateneum_plan_revisions'")
+      .get() as { sql?: string } | undefined
+  )?.sql ?? "";
+  if (!/UNIQUE\s*\(plan_id,\s*version\)/i.test(planRevisionSql)) {
+    throw new Error("Ateneum plan revision uniqueness constraint is missing");
+  }
+  const planRevisionCreatedBy = columnInfo("ateneum_plan_revisions").find(
+    (column) => column.name === "created_by",
+  );
+  const planRevisionCreatedByForeignKey = (
+    ateneumRawDb.pragma("foreign_key_list(ateneum_plan_revisions)") as Array<{
+      from: string;
+      on_delete: string;
+    }>
+  ).find((foreignKey) => foreignKey.from === "created_by");
+  if (
+    planRevisionCreatedBy?.notnull !== 0 ||
+    planRevisionCreatedByForeignKey?.on_delete.toUpperCase() !== "SET NULL"
+  ) {
+    throw new Error("Ateneum plan revision creator retention constraint is invalid");
+  }
+  const planAcceptanceSql = (
+    ateneumRawDb
+      .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'ateneum_plan_acceptances'")
+      .get() as { sql?: string } | undefined
+  )?.sql ?? "";
+  if (!/UNIQUE\s*\(plan_id,\s*version,\s*user_id\)/i.test(planAcceptanceSql)) {
+    throw new Error("Ateneum plan acceptance version uniqueness constraint is missing");
   }
   const tokenInfo = new Map(
     columnInfo("ateneum_api_tokens").map((column) => [column.name, column]),
