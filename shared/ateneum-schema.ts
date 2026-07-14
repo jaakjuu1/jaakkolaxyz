@@ -137,6 +137,13 @@ export const ateneumWeeklySuggestions = sqliteTable("ateneum_weekly_suggestions"
 export const ateneumConnectionCycles = sqliteTable("ateneum_connection_cycles", {
   cycleKey: text("cycle_key").primaryKey(),
   suggestionIds: text("suggestion_ids").notNull().default("[]"),
+  committedIdeaId: text("committed_idea_id").references(() => ateneumIdeas.id, {
+    onDelete: "set null",
+  }),
+  activityId: text("activity_id").references(() => ateneumActivities.id, {
+    onDelete: "set null",
+  }),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -175,6 +182,61 @@ export const ateneumConnectionCheckIns = sqliteTable(
   },
   (table) => ({
     cycleUserUnique: uniqueIndex("idx_ateneum_connection_checkins_cycle_user").on(
+      table.cycleKey,
+      table.userId,
+    ),
+  }),
+);
+
+export const ateneumConnectionCommitments = sqliteTable(
+  "ateneum_connection_commitments",
+  {
+    id: text("id").primaryKey(),
+    cycleKey: text("cycle_key")
+      .notNull()
+      .references(() => ateneumConnectionCycles.cycleKey, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    choice: text("choice", { enum: ["choose", "later"] }).notNull(),
+    ideaId: text("idea_id").references(() => ateneumIdeas.id, { onDelete: "set null" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    cycleUserUnique: uniqueIndex("idx_ateneum_connection_commitments_cycle_user").on(
+      table.cycleKey,
+      table.userId,
+    ),
+  }),
+);
+
+export const ateneumConnectionReflections = sqliteTable(
+  "ateneum_connection_reflections",
+  {
+    id: text("id").primaryKey(),
+    cycleKey: text("cycle_key")
+      .notNull()
+      .references(() => ateneumConnectionCycles.cycleKey, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    impact: text("impact", { enum: ["closer", "same", "farther"] }).notNull(),
+    note: text("note").notNull().default(""),
+    allowLearning: integer("allow_learning", { mode: "boolean" }).notNull().default(false),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    cycleUserUnique: uniqueIndex("idx_ateneum_connection_reflections_cycle_user").on(
       table.cycleKey,
       table.userId,
     ),
@@ -301,6 +363,8 @@ export type InsertAteneumWish = z.infer<typeof insertAteneumWishSchema>;
 export type AteneumWeeklySuggestion = typeof ateneumWeeklySuggestions.$inferSelect;
 export type AteneumConnectionCycle = typeof ateneumConnectionCycles.$inferSelect;
 export type AteneumConnectionCheckIn = typeof ateneumConnectionCheckIns.$inferSelect;
+export type AteneumConnectionCommitment = typeof ateneumConnectionCommitments.$inferSelect;
+export type AteneumConnectionReflection = typeof ateneumConnectionReflections.$inferSelect;
 export type AteneumEmailToken = typeof ateneumEmailTokens.$inferSelect;
 export type AteneumNotificationPrefs = typeof ateneumNotificationPrefs.$inferSelect;
 export type AteneumEmailLog = typeof ateneumEmailLog.$inferSelect;

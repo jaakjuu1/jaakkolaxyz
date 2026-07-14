@@ -76,6 +76,8 @@ export const SEED_IDEAS: SeedIdea[] = [
   { title: "Retki saaristoon", description: "Laivalla tai veneellä saaristoon, retkieväät mukana.", category: "outdoor", tags: ["meri", "yhdessä", "kesä", "retki"], energyCost: "medium", budgetCost: "moderate", socialMode: "together", durationMin: 360 },
 
   // low-effort together
+  { title: "Kolmen hengityksen pysähdys", description: "Pysähtykää vierekkäin kolmen rauhallisen hengityksen ajaksi. Mitään ei tarvitse ratkaista.", category: "wellness", tags: ["yhdessä", "läsnäolo", "rauha", "mikrohetki"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 3 },
+  { title: "Yksi hyvä asia", description: "Kertokaa vuorotellen yksi pieni asia, jota arvostitte tänään toisessa tai yhteisessä arjessa.", category: "wellness", tags: ["yhdessä", "kiitollisuus", "arki-ilta", "mikrohetki"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 5 },
   { title: "Kymmenen minuutin yhteys", description: "Istukaa hetkeksi vierekkäin ilman puhelimia. Kumpikin saa sanoa yhden asian päivästä — tai olla vain hiljaa.", category: "wellness", tags: ["yhdessä", "läsnäolo", "arki-ilta", "rauha"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 10 },
   { title: "Yhdessä pelaaminen", description: "Korttipeli, lautapeli tai yhteinen videopeli hetki.", category: "indoor", tags: ["pelit", "yhdessä", "arki-ilta"], energyCost: "low", budgetCost: "free", socialMode: "together", durationMin: 60 },
   { title: "Kahvit terassilla", description: "Heti aamusta tai iltapäivästä, kahvit ja sanomalehti yhdessä.", category: "culinary", tags: ["kahvi", "yhdessä", "arki-aamu", "arki-ilta"], energyCost: "low", budgetCost: "cheap", socialMode: "together", durationMin: 45 },

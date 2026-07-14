@@ -111,6 +111,9 @@ export function initAteneumSchema(): void {
     CREATE TABLE IF NOT EXISTS ateneum_connection_cycles (
       cycle_key TEXT PRIMARY KEY,
       suggestion_ids TEXT NOT NULL DEFAULT '[]',
+      committed_idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE SET NULL,
+      activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE SET NULL,
+      completed_at INTEGER,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch())
     );
@@ -129,6 +132,35 @@ export function initAteneumSchema(): void {
       updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
       UNIQUE(cycle_key, user_id)
     );
+
+    CREATE TABLE IF NOT EXISTS ateneum_connection_commitments (
+      id TEXT PRIMARY KEY,
+      cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      choice TEXT NOT NULL CHECK (choice IN ('choose','later')),
+      idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE SET NULL,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      CHECK ((choice = 'later' AND idea_id IS NULL) OR (choice = 'choose' AND idea_id IS NOT NULL)),
+      UNIQUE(cycle_key, user_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS ateneum_connection_reflections (
+      id TEXT PRIMARY KEY,
+      cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      impact TEXT NOT NULL CHECK (impact IN ('closer','same','farther')),
+      note TEXT NOT NULL DEFAULT '',
+      allow_learning INTEGER NOT NULL DEFAULT 0 CHECK (allow_learning IN (0,1)),
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(cycle_key, user_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_ateneum_connection_commitments_user
+      ON ateneum_connection_commitments(user_id);
+    CREATE INDEX IF NOT EXISTS idx_ateneum_connection_reflections_user
+      ON ateneum_connection_reflections(user_id);
 
     CREATE INDEX IF NOT EXISTS idx_ateneum_sessions_user ON ateneum_sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_activities_scheduled ON ateneum_activities(scheduled_for);
@@ -231,6 +263,9 @@ export function migrateAteneumSchema(): void {
       CREATE TABLE IF NOT EXISTS ateneum_connection_cycles (
         cycle_key TEXT PRIMARY KEY,
         suggestion_ids TEXT NOT NULL DEFAULT '[]',
+        committed_idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE SET NULL,
+        activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE SET NULL,
+        completed_at INTEGER,
         created_at INTEGER NOT NULL DEFAULT (unixepoch()),
         updated_at INTEGER NOT NULL DEFAULT (unixepoch())
       );
@@ -250,6 +285,51 @@ export function migrateAteneumSchema(): void {
       );
       CREATE INDEX IF NOT EXISTS idx_ateneum_connection_checkins_user
         ON ateneum_connection_checkins(user_id);
+    `);
+
+    const connectionCycleColumns = columnNames("ateneum_connection_cycles");
+    if (!connectionCycleColumns.has("committed_idea_id")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_connection_cycles ADD COLUMN committed_idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE SET NULL`,
+      );
+    }
+    if (!connectionCycleColumns.has("activity_id")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_connection_cycles ADD COLUMN activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE SET NULL`,
+      );
+    }
+    if (!connectionCycleColumns.has("completed_at")) {
+      ateneumRawDb.exec(`ALTER TABLE ateneum_connection_cycles ADD COLUMN completed_at INTEGER`);
+    }
+    ateneumRawDb.exec(`
+      CREATE TABLE IF NOT EXISTS ateneum_connection_commitments (
+        id TEXT PRIMARY KEY,
+        cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        choice TEXT NOT NULL CHECK (choice IN ('choose','later')),
+        idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE SET NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        CHECK ((choice = 'later' AND idea_id IS NULL) OR (choice = 'choose' AND idea_id IS NOT NULL)),
+        UNIQUE(cycle_key, user_id)
+      );
+      CREATE TABLE IF NOT EXISTS ateneum_connection_reflections (
+        id TEXT PRIMARY KEY,
+        cycle_key TEXT NOT NULL REFERENCES ateneum_connection_cycles(cycle_key) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        impact TEXT NOT NULL CHECK (impact IN ('closer','same','farther')),
+        note TEXT NOT NULL DEFAULT '',
+        allow_learning INTEGER NOT NULL DEFAULT 0 CHECK (allow_learning IN (0,1)),
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(cycle_key, user_id)
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_connection_cycles_activity
+        ON ateneum_connection_cycles(activity_id) WHERE activity_id IS NOT NULL;
+      CREATE INDEX IF NOT EXISTS idx_ateneum_connection_commitments_user
+        ON ateneum_connection_commitments(user_id);
+      CREATE INDEX IF NOT EXISTS idx_ateneum_connection_reflections_user
+        ON ateneum_connection_reflections(user_id);
     `);
 
     const tokenMigration = "api_token_scopes_v1";
@@ -389,7 +469,14 @@ export function migrateAteneumSchema(): void {
     ateneum_email_tokens: ["id", "email", "token_hash", "purpose", "expires_at"],
     ateneum_email_claims: ["id", "to_email", "kind", "week_key", "status"],
     ateneum_weekly_suggestions: ["week_key", "idea_id"],
-    ateneum_connection_cycles: ["cycle_key", "suggestion_ids", "updated_at"],
+    ateneum_connection_cycles: [
+      "cycle_key",
+      "suggestion_ids",
+      "committed_idea_id",
+      "activity_id",
+      "completed_at",
+      "updated_at",
+    ],
     ateneum_connection_checkins: [
       "id",
       "cycle_key",
@@ -402,12 +489,52 @@ export function migrateAteneumSchema(): void {
       "note_visibility",
       "updated_at",
     ],
+    ateneum_connection_commitments: [
+      "id",
+      "cycle_key",
+      "user_id",
+      "choice",
+      "idea_id",
+      "updated_at",
+    ],
+    ateneum_connection_reflections: [
+      "id",
+      "cycle_key",
+      "user_id",
+      "impact",
+      "note",
+      "allow_learning",
+      "updated_at",
+    ],
   };
   for (const [table, required] of Object.entries(requiredColumns)) {
     const actual = columnNames(table);
     const missing = required.filter((column) => !actual.has(column));
     if (missing.length > 0) {
       throw new Error(`Ateneum schema validation failed: ${table} missing ${missing.join(", ")}`);
+    }
+  }
+  const connectionActivityIndex = ateneumRawDb
+    .prepare(
+      `SELECT 1 FROM sqlite_master
+       WHERE type = 'index' AND name = 'idx_ateneum_connection_cycles_activity'`,
+    )
+    .get();
+  if (!connectionActivityIndex) {
+    throw new Error("Ateneum connection activity uniqueness index is missing");
+  }
+  for (const table of [
+    "ateneum_connection_checkins",
+    "ateneum_connection_commitments",
+    "ateneum_connection_reflections",
+  ]) {
+    const tableSql = (
+      ateneumRawDb
+        .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?")
+        .get(table) as { sql?: string } | undefined
+    )?.sql ?? "";
+    if (!/UNIQUE\s*\(cycle_key,\s*user_id\)/i.test(tableSql)) {
+      throw new Error(`Ateneum connection uniqueness constraint is missing: ${table}`);
     }
   }
   const tokenInfo = new Map(

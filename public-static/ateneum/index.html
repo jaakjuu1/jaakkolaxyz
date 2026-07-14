@@ -106,6 +106,20 @@
   .connection-suggestions { display: grid; gap: 0.65rem; margin-top: 0.9rem; }
   .connection-suggestion { margin: 0; padding: 0.85rem; background: var(--bg); }
   .connection-suggestion .actions { margin-top: 0.65rem; }
+  .connection-suggestion.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .connection-badges { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.55rem 0 0; }
+  .connection-badge {
+    display: inline-flex; align-items: center; min-height: 26px; padding: 0.2rem 0.55rem;
+    border-radius: 999px; background: #ece7dc; color: #5f5749; font-size: 0.75rem; font-weight: 650;
+  }
+  .connection-badge.own { background: var(--accent-bg); color: var(--accent); }
+  .connection-moment { margin-top: 0.9rem; padding: 1rem; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); }
+  .connection-moment h3 { margin: 0 0 0.3rem; font-size: 1.05rem; }
+  .connection-moment p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+  .connection-moment .actions { margin-top: 0.8rem; }
+  .reflection-form { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--rule); }
+  .reflection-form h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+  .reflection-form .intro { margin-bottom: 0.8rem; }
   @media (max-width: 420px) {
     .choice-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
@@ -508,6 +522,15 @@ function showView(name) {
 
 // === Home: yhteyssilmukka + viikkoehdotus ===
 let connectionState = null;
+const CONNECTION_NEEDS = {
+  rest: 'Lepoa',
+  closeness: 'Läheisyyttä',
+  talk: 'Juttelua',
+  play: 'Leikkiä ja keveyttä',
+  adventure: 'Pientä seikkailua',
+  practical_support: 'Käytännön tukea',
+  space: 'Omaa tilaa'
+};
 
 function connectionChoices(field, options, selected, compact = false) {
   return `<div class="choice-grid ${compact ? 'compact' : ''}" data-field="${field}">${options.map(([value, label]) => `
@@ -592,22 +615,98 @@ function renderConnectionCard(state, edit = false) {
   card.innerHTML = renderConnectionSynthesis(state, false);
 }
 
+function renderConnectionCommitment(state, readOnly) {
+  const commitment = state.commitment || { status: 'none' };
+  if (commitment.activity) {
+    const agreed = commitment.agreedIdea || commitment.activity;
+    const completed = commitment.status === 'completed';
+    return `
+      <div class="connection-moment">
+        <div class="connection-badges"><span class="connection-badge own">${completed ? 'Tehty' : 'Molemmat valitsivat tämän'}</span></div>
+        <h3>${escapeHtml(agreed.title)}</h3>
+        <p>${escapeHtml(String(agreed.durationMin))} min · ${completed ? 'Yhteinen hetki on tallennettu.' : 'Yhteinen hetki on sovittu. Tehkää se silloin kun tuntuu hyvältä.'}</p>
+        ${readOnly || completed ? '' : '<div class="actions"><button class="btn btn-primary btn-block" onclick="completeConnectionMoment(this)">Tehtiin tämä</button></div>'}
+      </div>
+      ${completed ? renderConnectionReflection(state, readOnly) : ''}
+    `;
+  }
+
+  const own = commitment.ownChoice;
+  const partner = commitment.partnerChoice;
+  const statusCopy = {
+    none: ['Valitkaa pieni yhteinen hetki', 'Kumpikin valitsee itsenäisesti. Hetki sovitaan vasta, kun valinta osuu samaan.'],
+    waiting: own
+      ? ['Valintasi on lähetetty', 'Kumppani voi hyväksyä saman tai ehdottaa toista vaihtoehtoa.']
+      : ['Kumppani on tehnyt valinnan', 'Valitse rauhassa sama tai jokin toinen pieni vaihtoehto.'],
+    adjusting: ['Valitsitte eri vaihtoehdot', 'Ei haittaa. Kumpikin näkee ehdotukset ja voi vaihtaa valintaansa.'],
+    later: ['Tänään ei tarvitse sopia mitään', 'Kumpikin voi vielä muuttaa valintaansa. Myös “ei nyt” on kelvollinen vastaus.']
+  }[commitment.status] || ['Valitkaa pieni yhteinen hetki', 'Valinta syntyy vasta molempien suostumuksesta.'];
+
+  const suggestions = state.suggestions?.length
+    ? `<div class="connection-suggestions">${state.suggestions.map(suggestion => {
+        const ownSelected = own?.choice === 'choose' && own.ideaId === suggestion.id;
+        const partnerSelected = partner?.choice === 'choose' && partner.ideaId === suggestion.id;
+        return `<div class="connection-suggestion idea ${ownSelected ? 'selected' : ''}">
+          <h4>${escapeHtml(suggestion.title)}</h4>
+          <p>${escapeHtml(suggestion.description)}</p>
+          <div class="meta"><span class="chip">${escapeHtml(String(suggestion.durationMin))} min</span><span class="chip">Hyvin kevyt</span></div>
+          ${(ownSelected || partnerSelected) ? `<div class="connection-badges">
+            ${ownSelected ? '<span class="connection-badge own">Oma valintasi</span>' : ''}
+            ${partnerSelected ? '<span class="connection-badge">Kumppanin valinta</span>' : ''}
+          </div>` : ''}
+          ${readOnly ? '' : `<div class="actions"><button class="btn ${ownSelected ? 'btn-secondary' : 'btn-primary'} btn-block" data-idea-id="${escapeHtml(suggestion.id)}" onclick="submitConnectionCommitment(this)" ${ownSelected ? 'disabled' : ''}>${ownSelected ? 'Valittu' : partnerSelected ? 'Valitse sama' : 'Valitse tämä'}</button></div>`}
+        </div>`;
+      }).join('')}</div>`
+    : '<div class="connection-state waiting"><p>Sopivaa pientä ehdotusta ei juuri nyt löytynyt.</p></div>';
+
+  return `
+    <div class="connection-state ${commitment.status === 'later' ? 'space' : 'waiting'}" style="margin-top:0.8rem">
+      <h3>${escapeHtml(statusCopy[0])}</h3><p>${escapeHtml(statusCopy[1])}</p>
+    </div>
+    ${suggestions}
+    ${readOnly ? '' : `<button class="btn btn-secondary btn-block" style="margin-top:0.7rem" onclick="submitConnectionLater(this)" ${own?.choice === 'later' ? 'disabled' : ''}>${own?.choice === 'later' ? 'Valitsit: ei nyt' : 'Ei nyt'}</button>`}
+  `;
+}
+
+function renderConnectionReflection(state, readOnly) {
+  const reflection = state.reflection || {};
+  const shared = reflection.sharedImpact
+    ? `<div class="connection-state" style="margin-top:0.9rem"><h3>Yhteinen jälki</h3><p>${escapeHtml(reflection.sharedImpact.message)}</p>${reflection.learningEligible ? '<div class="connection-badges"><span class="connection-badge own">Molemmat sallivat oppimisen tästä palautteesta</span></div>' : ''}</div>`
+    : reflection.partnerResponded
+      ? '<div class="connection-state waiting" style="margin-top:0.9rem"><p>Kumppani on jo reflektoinut. Yhteinen näkymä valmistuu, kun vastaat omassa rauhassa.</p></div>'
+      : reflection.own
+        ? '<div class="connection-state waiting" style="margin-top:0.9rem"><p>Oma reflektiosi on tallennettu. Odotetaan kumppanin vastausta.</p></div>'
+        : '';
+  if (readOnly) {
+    return shared || '<div class="connection-state waiting" style="margin-top:0.9rem"><p>Odotetaan molempien reflektioita.</p></div>';
+  }
+  const own = reflection.own || { impact: '', note: '', allowLearning: false };
+  return `
+    ${shared}
+    <div class="reflection-form">
+      <h3>Miltä yhteinen hetki tuntui sinusta?</h3>
+      <p class="intro">Vaikutusarvio yhdistetään yhteiseen näkymään vasta, kun molemmat ovat vastanneet. Vapaa teksti pysyy vain sinun nähtävänäsi.</p>
+      ${connectionChoices('reflectionImpact', [['closer','Läheisemmältä'],['same','Samalta'],['farther','Etäisemmältä']], own.impact)}
+      <div class="field" style="margin-top:0.8rem">
+        <label for="reflection-note">Oma huomio <span class="muted">Vapaaehtoinen ja yksityinen</span></label>
+        <textarea id="reflection-note" maxlength="500" placeholder="Mikä auttoi tai mitä olisi hyvä säätää ensi kerralla?">${escapeHtml(own.note)}</textarea>
+      </div>
+      <label class="privacy-row">
+        <input id="reflection-learning" type="checkbox" ${own.allowLearning ? 'checked' : ''}>
+        <span>Ateneum saa käyttää tätä palautetta tulevien ehdotusten parantamiseen. Oppiminen aktivoituu vain, jos molemmat sallivat sen.</span>
+      </label>
+      <button class="btn btn-primary btn-block" style="margin-top:0.8rem" onclick="submitConnectionReflection(this)">${reflection.own ? 'Päivitä reflektiota' : 'Tallenna reflektio'}</button>
+    </div>
+  `;
+}
+
 function renderConnectionSynthesis(state, readOnly) {
   const synthesis = state.synthesis;
   const notes = !readOnly && state.sharedNotes?.length
     ? `<div class="connection-state" style="margin-top:0.7rem">${state.sharedNotes.map(item => `<p><strong>${escapeHtml(item.displayName)}:</strong> ${escapeHtml(item.note)}</p>`).join('')}</div>`
     : '';
-  const suggestions = synthesis.mode === 'connect' && state.suggestions?.length
-    ? `<div class="connection-suggestions">${state.suggestions.map(suggestion => {
-        const duration = suggestion.durationMin >= 60 ? `${Math.round(suggestion.durationMin / 60)} h` : `${suggestion.durationMin} min`;
-        return `<div class="connection-suggestion idea">
-          <h4>${escapeHtml(suggestion.title)}</h4>
-          <p>${escapeHtml(suggestion.description)}</p>
-          <div class="meta"><span class="chip">${duration}</span><span class="chip">${escapeHtml(suggestion.energyCost)}</span></div>
-          ${readOnly ? '' : `<div class="actions"><button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(suggestion))}" onclick="openPlanner(this)">Suunnittele tämä</button></div>`}
-        </div>`;
-      }).join('')}</div>`
-    : '';
+  const commitment = synthesis.mode === 'connect' ? renderConnectionCommitment(state, readOnly) : '';
+  const canEditCheckIn = !readOnly && !state.commitment?.activity;
   return `
     <div class="eyebrow">Tämän päivän yhteys</div>
     <h2>${synthesis.mode === 'space' ? 'Tänään tila on yhteyttä' : 'Teidän yhteinen tilanteenne'}</h2>
@@ -615,8 +714,8 @@ function renderConnectionSynthesis(state, readOnly) {
       <h3>${escapeHtml(synthesis.message)}</h3>
     </div>
     ${notes}
-    ${suggestions}
-    ${readOnly ? '' : '<button class="btn btn-secondary btn-block" style="margin-top:0.7rem" onclick="showCheckInForm()">Muokkaa omaa vastaustani</button>'}
+    ${commitment}
+    ${canEditCheckIn ? '<button class="btn btn-secondary btn-block" style="margin-top:0.7rem" onclick="showCheckInForm()">Muokkaa omaa vastaustani</button>' : ''}
   `;
 }
 
@@ -650,6 +749,73 @@ async function submitConnectionCheckIn(button) {
     button.disabled = false;
     button.textContent = 'Tallenna tämän päivän vastaus';
   }
+}
+
+async function runConnectionAction(button, path, body, pendingLabel, successMessage) {
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = pendingLabel;
+  try {
+    const state = await api(path, { method: 'POST', body: JSON.stringify(body) });
+    renderConnectionCard(state);
+    toast(successMessage);
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
+async function submitConnectionCommitment(button) {
+  const ideaId = button.dataset.ideaId;
+  if (!ideaId) return;
+  await runConnectionAction(
+    button,
+    '/connection/commitment',
+    { choice: 'choose', ideaId },
+    'Tallennetaan…',
+    'Valintasi tallennettu'
+  );
+}
+
+async function submitConnectionLater(button) {
+  await runConnectionAction(
+    button,
+    '/connection/commitment',
+    { choice: 'later' },
+    'Tallennetaan…',
+    'Ei kiirettä — valintaa voi muuttaa myöhemmin'
+  );
+}
+
+async function completeConnectionMoment(button) {
+  await runConnectionAction(
+    button,
+    '/connection/complete',
+    {},
+    'Tallennetaan…',
+    'Yhteinen hetki tallennettu'
+  );
+}
+
+async function submitConnectionReflection(button) {
+  const card = document.getElementById('connection-card');
+  const impact = card.querySelector('.choice-grid[data-field="reflectionImpact"] .choice.selected')?.dataset.value;
+  if (!impact) {
+    toast('Valitse ensin miltä hetki tuntui');
+    return;
+  }
+  await runConnectionAction(
+    button,
+    '/connection/reflection',
+    {
+      impact,
+      note: document.getElementById('reflection-note').value.trim(),
+      allowLearning: document.getElementById('reflection-learning').checked
+    },
+    'Tallennetaan…',
+    'Reflektiosi tallennettu'
+  );
 }
 
 async function loadConnection() {
@@ -732,8 +898,9 @@ function renderActivity(a) {
   const dateStr = date.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' });
   const isDone = a.status === 'done';
   const isSkipped = a.status === 'skipped';
+  const isConnectionMoment = a.details?.source === 'connection';
   let feedbackHtml = '';
-  if (isDone) {
+  if (isDone && !isConnectionMoment) {
     feedbackHtml = `<div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px solid var(--rule);">
       <div style="font-size:0.85rem; color:var(--muted); margin-bottom:0.3rem;">Palaute:</div>
       ${renderStars(a.id, a.rating)}
@@ -752,14 +919,14 @@ function renderActivity(a) {
           ${hasDetails ? `
             <a class="btn" href="/ateneum/activity.html?id=${a.id}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background: var(--accent); color: white; border-color: var(--accent);">📋 Suunnitelma</a>
           ` : ''}
-          ${a.status === 'planned' ? `
+          ${!isConnectionMoment && a.status === 'planned' ? `
             <button class="btn btn-primary" onclick="markDone('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;">✓ Tehty</button>
             <button class="btn" onclick="skipActivity('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Siirrä myöhemmäksi">⏸ Ei nyt</button>
           ` : ''}
-          ${a.status === 'done' ? `
+          ${!isConnectionMoment && a.status === 'done' ? `
             <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Peruuta</button>
           ` : ''}
-          ${a.status === 'skipped' ? `
+          ${!isConnectionMoment && a.status === 'skipped' ? `
             <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Palauta</button>
           ` : ''}
         </div>

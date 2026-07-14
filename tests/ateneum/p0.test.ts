@@ -494,6 +494,11 @@ test("frontend defines every Ateneum action it invokes", () => {
   for (const required of ["loadIdeas", "rotateWeeklySuggestion"]) {
     assert.ok(declarations.has(required), `${required} is invoked but not defined`);
   }
+  assert.match(
+    html,
+    /const\s+CONNECTION_NEEDS\s*=\s*\{/,
+    "the personal check-in must define its need labels without exposing them in shared synthesis",
+  );
 });
 
 test("frontend API contracts and activity detail DOM stay aligned", () => {
@@ -507,6 +512,11 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.doesNotMatch(index, /api\(["']\/auth\/unsubscribe["']/);
   assert.doesNotMatch(index, /value=["']hopeful["']/);
   assert.match(index, /w\.userId\s*===\s*currentUser\.id/);
+  assert.match(index, /const\s+isConnectionMoment\s*=\s*a\.details\?\.source\s*===\s*'connection'/);
+  assert.match(index, /!isConnectionMoment\s*&&\s*a\.status\s*===\s*'done'/);
+  assert.match(detail, /const\s+isConnectionMoment\s*=\s*d\.source\s*===\s*"connection"/);
+  assert.match(detail, /!isConnectionMoment\s*&&\s*isPlanned/);
+  assert.match(detail, /Tila ja reflektio käsitellään päivän yhteysnäkymässä/);
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
 
@@ -968,6 +978,245 @@ test("connection check-ins stay private while both partners receive one shared s
   assert.equal(countCheckIns(), 2, "same-day check-in must upsert instead of duplicate");
 });
 
+test("connection choices create one mutual commitment and keep reflections personal", async () => {
+  rawDb
+    .prepare(
+      `INSERT OR IGNORE INTO ateneum_ideas
+        (id, title, description, category, tags, energy_cost, budget_cost, social_mode, duration_min, is_active, created_by)
+       VALUES (?, ?, ?, 'wellness', '["yhdessä"]', 'low', 'free', 'together', 5, 1, ?)`,
+    )
+    .run(
+      "idea_test_safe_alt",
+      "Viiden minuutin pysähdys",
+      "Olkaa hetki vierekkäin ilman tavoitetta.",
+      "usr_test_juuso",
+    );
+
+  const connectBody = {
+    energy: "medium",
+    need: "closeness",
+    capacityMin: 30,
+    togetherness: "together",
+    note: "",
+    noteVisibility: "private",
+  };
+  for (const cookie of [juusoCookie, hennaCookie]) {
+    const response = await request("/api/ateneum/connection/check-in", {
+      method: "POST",
+      cookie,
+      body: connectBody,
+    });
+    assert.equal(response.status, 200);
+  }
+
+  const ready = await (
+    await request("/api/ateneum/connection/today", { cookie: juusoCookie })
+  ).json();
+  assert.ok(ready.suggestions.length >= 2, "adjustment needs at least two safe choices");
+  const [firstIdea, secondIdea] = ready.suggestions as Array<{ id: string }>;
+
+  const botWrite = await request("/api/ateneum/connection/commitment", {
+    method: "POST",
+    cookie: botCookie,
+    body: { choice: "choose", ideaId: firstIdea.id },
+  });
+  assert.equal(botWrite.status, 403);
+
+  const invalidChoice = await request("/api/ateneum/connection/commitment", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { choice: "choose", ideaId: "idea_not_in_cycle", unexpected: true },
+  });
+  assert.equal(invalidChoice.status, 400);
+
+  const juusoChoice = await request("/api/ateneum/connection/commitment", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { choice: "choose", ideaId: firstIdea.id },
+  });
+  assert.equal(juusoChoice.status, 200);
+  const waiting = await juusoChoice.json();
+  assert.equal(waiting.commitment.status, "waiting");
+  assert.equal(waiting.commitment.ownChoice.ideaId, firstIdea.id);
+  assert.equal(waiting.commitment.partnerResponded, false);
+
+  const hennaAdjustment = await request("/api/ateneum/connection/commitment", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: { choice: "choose", ideaId: secondIdea.id },
+  });
+  assert.equal(hennaAdjustment.status, 200);
+  const adjusting = await hennaAdjustment.json();
+  assert.equal(adjusting.commitment.status, "adjusting");
+  assert.equal(adjusting.commitment.ownChoice.ideaId, secondIdea.id);
+  assert.equal(adjusting.commitment.partnerChoice.ideaId, firstIdea.id);
+  assert.equal(adjusting.commitment.activity, null);
+
+  const aligned = await Promise.all([
+    request("/api/ateneum/connection/commitment", {
+      method: "POST",
+      cookie: juusoCookie,
+      body: { choice: "choose", ideaId: secondIdea.id },
+    }),
+    request("/api/ateneum/connection/commitment", {
+      method: "POST",
+      cookie: hennaCookie,
+      body: { choice: "choose", ideaId: secondIdea.id },
+    }),
+  ]);
+  assert.deepEqual(aligned.map((response) => response.status), [200, 200]);
+
+  const committed = await (
+    await request("/api/ateneum/connection/today", { cookie: juusoCookie })
+  ).json();
+  assert.equal(committed.commitment.status, "committed");
+  assert.equal(committed.commitment.agreedIdea.id, secondIdea.id);
+  assert.equal(committed.commitment.activity.status, "planned");
+  assert.equal(
+    rawDb
+      .prepare("SELECT count(*) FROM ateneum_activities WHERE id = ?")
+      .pluck()
+      .get(committed.commitment.activity.id),
+    1,
+    "concurrent alignment must create exactly one activity",
+  );
+
+  const genericConnectionPatch = await request(
+    `/api/ateneum/activities/${committed.commitment.activity.id}`,
+    {
+      method: "PATCH",
+      cookie: juusoCookie,
+      body: { status: "done" },
+    },
+  );
+  assert.equal(
+    genericConnectionPatch.status,
+    409,
+    "connection activity status must change only through the connection transition",
+  );
+  const genericConnectionDelete = await request(
+    `/api/ateneum/activities/${committed.commitment.activity.id}`,
+    { method: "DELETE", cookie: juusoCookie },
+  );
+  assert.equal(genericConnectionDelete.status, 409);
+  assert.equal(
+    rawDb
+      .prepare("SELECT status FROM ateneum_activities WHERE id = ?")
+      .pluck()
+      .get(committed.commitment.activity.id),
+    "planned",
+  );
+
+  const lockedCheckIn = await request("/api/ateneum/connection/check-in", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { ...connectBody, need: "space", togetherness: "space" },
+  });
+  assert.equal(lockedCheckIn.status, 409, "a committed moment must not be invalidated by editing check-in");
+
+  const completed = await Promise.all([
+    request("/api/ateneum/connection/complete", {
+      method: "POST",
+      cookie: juusoCookie,
+      body: {},
+    }),
+    request("/api/ateneum/connection/complete", {
+      method: "POST",
+      cookie: hennaCookie,
+      body: {},
+    }),
+  ]);
+  assert.deepEqual(completed.map((response) => response.status), [200, 200]);
+  const completedState = await completed[0].json();
+  assert.equal(completedState.commitment.status, "completed");
+  assert.equal(completedState.commitment.activity.status, "done");
+
+  const invalidReflection = await request("/api/ateneum/connection/reflection", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { impact: "closer", note: "", allowLearning: true, unexpected: true },
+  });
+  assert.equal(invalidReflection.status, 400);
+
+  const juusoReflection = await request("/api/ateneum/connection/reflection", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      impact: "closer",
+      note: "Juuson henkilökohtainen reflektio",
+      allowLearning: true,
+    },
+  });
+  assert.equal(juusoReflection.status, 200);
+
+  const hennaBeforeReflectionText = await (
+    await request("/api/ateneum/connection/today", { cookie: hennaCookie })
+  ).text();
+  assert.doesNotMatch(hennaBeforeReflectionText, /Juuson henkilökohtainen reflektio/);
+  const hennaBeforeReflection = JSON.parse(hennaBeforeReflectionText);
+  assert.equal(hennaBeforeReflection.reflection.own, null);
+  assert.equal(hennaBeforeReflection.reflection.partnerResponded, true);
+  assert.equal(hennaBeforeReflection.reflection.sharedImpact, null);
+
+  const hennaReflection = await request("/api/ateneum/connection/reflection", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: {
+      impact: "same",
+      note: "Hennan henkilökohtainen reflektio",
+      allowLearning: false,
+    },
+  });
+  assert.equal(hennaReflection.status, 200);
+
+  const [juusoFinalResponse, hennaFinalResponse, botFinalResponse] = await Promise.all([
+    request("/api/ateneum/connection/today", { cookie: juusoCookie }),
+    request("/api/ateneum/connection/today", { cookie: hennaCookie }),
+    request("/api/ateneum/connection/today", { cookie: botCookie }),
+  ]);
+  const juusoFinalText = await juusoFinalResponse.text();
+  const hennaFinalText = await hennaFinalResponse.text();
+  const botFinalText = await botFinalResponse.text();
+  assert.doesNotMatch(juusoFinalText, /Hennan henkilökohtainen reflektio/);
+  assert.doesNotMatch(hennaFinalText, /Juuson henkilökohtainen reflektio/);
+  assert.doesNotMatch(botFinalText, /henkilökohtainen reflektio/);
+  const juusoFinal = JSON.parse(juusoFinalText);
+  const hennaFinal = JSON.parse(hennaFinalText);
+  const botFinal = JSON.parse(botFinalText);
+  assert.equal(juusoFinal.reflection.own.note, "Juuson henkilökohtainen reflektio");
+  assert.equal(hennaFinal.reflection.own.note, "Hennan henkilökohtainen reflektio");
+  assert.equal(botFinal.reflection.own, null);
+  assert.deepEqual(juusoFinal.reflection.sharedImpact, hennaFinal.reflection.sharedImpact);
+  assert.equal(botFinal.reflection.sharedImpact, null);
+  assert.equal(juusoFinal.reflection.sharedImpact.status, "mixed");
+  assert.equal(juusoFinal.reflection.learningEligible, false);
+  assert.equal(botFinal.reflection.learningEligible, false);
+
+  const confirmedLearning = await request("/api/ateneum/connection/reflection", {
+    method: "POST",
+    cookie: hennaCookie,
+    body: {
+      impact: "closer",
+      note: "Hennan henkilökohtainen reflektio",
+      allowLearning: true,
+    },
+  });
+  assert.equal(confirmedLearning.status, 200);
+  const learnedState = await confirmedLearning.json();
+  assert.equal(learnedState.reflection.sharedImpact.status, "closer");
+  assert.equal(learnedState.reflection.learningEligible, true);
+  const botLearnedState = await (
+    await request("/api/ateneum/connection/today", { cookie: botCookie })
+  ).json();
+  assert.equal(botLearnedState.reflection.sharedImpact.status, "closer");
+  assert.equal(botLearnedState.reflection.learningEligible, true);
+  assert.equal(
+    rawDb.prepare("SELECT count(*) FROM ateneum_connection_reflections").pluck().get(),
+    2,
+    "reflection updates must upsert instead of duplicate",
+  );
+});
+
 test("seed source contains no hardcoded personal credentials", () => {
   const seed = readFileSync(path.resolve("server/ateneum-seed-data.ts"), "utf8");
   assert.doesNotMatch(seed, /password\s*:\s*["'][^"']+["']/i);
@@ -1074,8 +1323,27 @@ test("API tokens are session-minted, scoped, expiring, listable and revocable", 
   });
   assert.equal(tokenConnection.status, 200);
   const tokenConnectionText = await tokenConnection.text();
-  assert.doesNotMatch(tokenConnectionText, /yksityinen huomio/);
-  assert.equal(JSON.parse(tokenConnectionText).ownCheckIn, null);
+  assert.doesNotMatch(tokenConnectionText, /yksityinen huomio|juuso-private-reflection|henna-private-reflection/);
+  const tokenConnectionBody = JSON.parse(tokenConnectionText);
+  assert.equal(tokenConnectionBody.ownCheckIn, null);
+  assert.equal(tokenConnectionBody.commitment.ownChoice, null);
+  assert.equal(tokenConnectionBody.commitment.partnerChoice, null);
+  assert.equal(tokenConnectionBody.reflection.own, null);
+  for (const [path, body] of [
+    ["/api/ateneum/connection/commitment", { choice: "later" }],
+    ["/api/ateneum/connection/complete", {}],
+    [
+      "/api/ateneum/connection/reflection",
+      { impact: "closer", note: "must not be written", allowLearning: true },
+    ],
+  ] as const) {
+    const deniedConnectionWrite = await request(path, {
+      method: "POST",
+      bearer: issued.token,
+      body,
+    });
+    assert.equal(deniedConnectionWrite.status, 403);
+  }
   const deniedWrite = await request("/api/ateneum/wishes", {
     method: "POST",
     bearer: issued.token,

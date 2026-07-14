@@ -119,6 +119,21 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
         user_id TEXT NOT NULL, name TEXT NOT NULL, expires_at INTEGER,
         last_used_at INTEGER, created_at INTEGER NOT NULL DEFAULT (unixepoch())
       );
+      CREATE TABLE ateneum_connection_cycles (
+        cycle_key TEXT PRIMARY KEY,
+        suggestion_ids TEXT NOT NULL DEFAULT '[]',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+      CREATE TABLE ateneum_connection_checkins (
+        id TEXT PRIMARY KEY, cycle_key TEXT NOT NULL, user_id TEXT NOT NULL,
+        energy TEXT NOT NULL, need TEXT NOT NULL, capacity_min INTEGER NOT NULL,
+        togetherness TEXT NOT NULL, note TEXT NOT NULL DEFAULT '',
+        note_visibility TEXT NOT NULL DEFAULT 'private',
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(cycle_key, user_id)
+      );
       INSERT INTO ateneum_users (id,username,display_name,password_hash,email,role) VALUES
         ('legacy-a','legacy-a','Legacy A','x','a@example.test','juuso'),
         ('legacy-b','legacy-b','Legacy B','x','b@example.test','wife'),
@@ -189,7 +204,7 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
       .get("api_token_scopes_v1");
     const connectionTables = migrated
       .prepare(
-        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('ateneum_connection_cycles','ateneum_connection_checkins') ORDER BY name",
+        "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('ateneum_connection_cycles','ateneum_connection_checkins','ateneum_connection_commitments','ateneum_connection_reflections') ORDER BY name",
       )
       .pluck()
       .all();
@@ -197,6 +212,18 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
       .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_connection_checkins'")
       .pluck()
       .get() as string;
+    const commitmentSql = migrated
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_connection_commitments'")
+      .pluck()
+      .get() as string;
+    const reflectionSql = migrated
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_connection_reflections'")
+      .pluck()
+      .get() as string;
+    const cycleColumns = migrated
+      .prepare("PRAGMA table_info(ateneum_connection_cycles)")
+      .all()
+      .map((column: any) => column.name);
     migrated.close();
 
     assert.deepEqual(roles, ["partner_a", "partner_b", "bot"]);
@@ -213,9 +240,16 @@ test("migration neutralizes legacy roles and removes raw sessions", () => {
     assert.equal(markerCount, 1);
     assert.deepEqual(connectionTables, [
       "ateneum_connection_checkins",
+      "ateneum_connection_commitments",
       "ateneum_connection_cycles",
+      "ateneum_connection_reflections",
     ]);
     assert.match(checkInSql, /UNIQUE\s*\(cycle_key,\s*user_id\)/i);
+    assert.match(commitmentSql, /UNIQUE\s*\(cycle_key,\s*user_id\)/i);
+    assert.match(reflectionSql, /UNIQUE\s*\(cycle_key,\s*user_id\)/i);
+    for (const column of ["committed_idea_id", "activity_id", "completed_at"]) {
+      assert.ok(cycleColumns.includes(column), `connection cycle migration must add ${column}`);
+    }
   } finally {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }

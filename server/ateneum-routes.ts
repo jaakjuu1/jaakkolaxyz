@@ -147,8 +147,52 @@ const connectionCheckInBodySchema = z
   })
   .strict();
 
+const connectionCommitmentBodySchema = z.discriminatedUnion("choice", [
+  z.object({ choice: z.literal("choose"), ideaId: z.string().trim().min(1).max(200) }).strict(),
+  z.object({ choice: z.literal("later") }).strict(),
+]);
+
+const connectionReflectionBodySchema = z
+  .object({
+    impact: z.enum(["closer", "same", "farther"]),
+    note: z.string().trim().max(500).default(""),
+    allowLearning: z.boolean().default(false),
+  })
+  .strict();
+
 type ConnectionCheckIn = typeof ateneumConnectionCheckIns.$inferSelect;
 type ConnectionCheckInInput = z.infer<typeof connectionCheckInBodySchema>;
+type ConnectionCommitmentInput = z.infer<typeof connectionCommitmentBodySchema>;
+type ConnectionReflectionInput = z.infer<typeof connectionReflectionBodySchema>;
+type ConnectionCommitmentRow = {
+  user_id: string;
+  choice: "choose" | "later";
+  idea_id: string | null;
+};
+type ConnectionReflectionRow = {
+  user_id: string;
+  impact: "closer" | "same" | "farther";
+  note: string;
+  allow_learning: number;
+  updated_at: number;
+};
+
+class ConnectionTransitionError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+function respondConnectionError(res: Response, error: unknown) {
+  if (error instanceof ConnectionTransitionError) {
+    return res.status(error.status).json({ message: error.message });
+  }
+  console.error("[ateneum] connection transition failed", error);
+  return res.status(500).json({ message: "Yhteystilan tallennus epäonnistui" });
+}
 
 function connectionCycleKey(now = new Date()): string {
   const parts = new Intl.DateTimeFormat("en", {
@@ -206,6 +250,16 @@ const saveConnectionCheckIn = ateneumRawDb.transaction(
          ON CONFLICT(cycle_key) DO NOTHING`,
       )
       .run(cycleKey);
+    const cycle = ateneumRawDb
+      .prepare("SELECT activity_id FROM ateneum_connection_cycles WHERE cycle_key = ?")
+      .get(cycleKey) as { activity_id: string | null };
+    if (cycle.activity_id) {
+      throw new ConnectionTransitionError(
+        409,
+        "Sovittua yhteistä hetkeä ei voi enää muuttaa check-inin kautta",
+      );
+    }
+
     ateneumRawDb
       .prepare(
         `INSERT INTO ateneum_connection_checkins
@@ -246,15 +300,228 @@ const saveConnectionCheckIn = ateneumRawDb.transaction(
             .pluck()
             .all() as string[])
         : [];
+
+    // A changed private input invalidates all not-yet-mutual proposals. Once an
+    // activity exists the edit is rejected above, so no orphan activity can form.
+    ateneumRawDb
+      .prepare("DELETE FROM ateneum_connection_commitments WHERE cycle_key = ?")
+      .run(cycleKey);
+    ateneumRawDb
+      .prepare("DELETE FROM ateneum_connection_reflections WHERE cycle_key = ?")
+      .run(cycleKey);
     ateneumRawDb
       .prepare(
         `UPDATE ateneum_connection_cycles
-         SET suggestion_ids = ?, updated_at = unixepoch()
+         SET suggestion_ids = ?, committed_idea_id = NULL, completed_at = NULL,
+             updated_at = unixepoch()
          WHERE cycle_key = ?`,
       )
       .run(JSON.stringify(suggestionIds), cycleKey);
   },
 );
+
+const saveConnectionCommitment = ateneumRawDb.transaction(
+  (
+    cycleKey: string,
+    userId: string,
+    id: string,
+    activityId: string,
+    input: ConnectionCommitmentInput,
+  ) => {
+    const cycle = ateneumRawDb
+      .prepare(
+        `SELECT suggestion_ids, committed_idea_id, activity_id
+         FROM ateneum_connection_cycles WHERE cycle_key = ?`,
+      )
+      .get(cycleKey) as
+      | { suggestion_ids: string; committed_idea_id: string | null; activity_id: string | null }
+      | undefined;
+    if (!cycle) {
+      throw new ConnectionTransitionError(409, "Molempien check-in tarvitaan ennen valintaa");
+    }
+
+    const ideaId = input.choice === "choose" ? input.ideaId : null;
+    if (cycle.activity_id) {
+      const existing = ateneumRawDb
+        .prepare(
+          `SELECT choice, idea_id FROM ateneum_connection_commitments
+           WHERE cycle_key = ? AND user_id = ?`,
+        )
+        .get(cycleKey, userId) as { choice: string; idea_id: string | null } | undefined;
+      if (existing?.choice === input.choice && existing.idea_id === ideaId) return;
+      throw new ConnectionTransitionError(409, "Yhteinen hetki on jo sovittu");
+    }
+
+    const checkIns = ateneumRawDb
+      .prepare("SELECT need, togetherness FROM ateneum_connection_checkins WHERE cycle_key = ?")
+      .all(cycleKey) as Array<Pick<ConnectionCheckIn, "need" | "togetherness">>;
+    if (checkIns.length < 2 || connectionSynthesis(checkIns).mode !== "connect") {
+      throw new ConnectionTransitionError(409, "Yhteinen ehdotus ei ole vielä valittavissa");
+    }
+
+    const storedIds = parseTags(cycle.suggestion_ids);
+    const safeIds = storedIds.length
+      ? (ateneumRawDb
+          .prepare(
+            `SELECT id FROM ateneum_ideas
+             WHERE id IN (${storedIds.map(() => "?").join(",")})
+               AND is_active = 1 AND social_mode = 'together'
+               AND energy_cost = 'low' AND duration_min <= 10`,
+          )
+          .pluck()
+          .all(...storedIds) as string[])
+      : [];
+    if (input.choice === "choose" && !safeIds.includes(input.ideaId)) {
+      throw new ConnectionTransitionError(400, "Valitse tämän päivän turvallisista ehdotuksista");
+    }
+
+    const staleRows = ateneumRawDb
+      .prepare(
+        `SELECT user_id, choice, idea_id FROM ateneum_connection_commitments
+         WHERE cycle_key = ?`,
+      )
+      .all(cycleKey) as ConnectionCommitmentRow[];
+    for (const stale of staleRows) {
+      if (stale.choice === "choose" && (!stale.idea_id || !safeIds.includes(stale.idea_id))) {
+        ateneumRawDb
+          .prepare(
+            "DELETE FROM ateneum_connection_commitments WHERE cycle_key = ? AND user_id = ?",
+          )
+          .run(cycleKey, stale.user_id);
+      }
+    }
+
+    ateneumRawDb
+      .prepare(
+        `INSERT INTO ateneum_connection_commitments
+          (id, cycle_key, user_id, choice, idea_id)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT(cycle_key, user_id) DO UPDATE SET
+           choice = excluded.choice, idea_id = excluded.idea_id, updated_at = unixepoch()`,
+      )
+      .run(id, cycleKey, userId, input.choice, ideaId);
+
+    const commitments = ateneumRawDb
+      .prepare(
+        `SELECT user_id, choice, idea_id FROM ateneum_connection_commitments
+         WHERE cycle_key = ? ORDER BY user_id`,
+      )
+      .all(cycleKey) as ConnectionCommitmentRow[];
+    const agreedIdeaId =
+      commitments.length === 2 &&
+      commitments.every(
+        (commitment) =>
+          commitment.choice === "choose" && commitment.idea_id === commitments[0].idea_id,
+      )
+        ? commitments[0].idea_id
+        : null;
+    if (!agreedIdeaId) {
+      ateneumRawDb
+        .prepare(
+          `UPDATE ateneum_connection_cycles
+           SET committed_idea_id = NULL, updated_at = unixepoch()
+           WHERE cycle_key = ?`,
+        )
+        .run(cycleKey);
+      return;
+    }
+
+    const idea = ateneumRawDb
+      .prepare(
+        `SELECT id, title, duration_min FROM ateneum_ideas
+         WHERE id = ? AND is_active = 1 AND social_mode = 'together'
+           AND energy_cost = 'low' AND duration_min <= 10`,
+      )
+      .get(agreedIdeaId) as { id: string; title: string; duration_min: number } | undefined;
+    if (!idea) {
+      throw new ConnectionTransitionError(409, "Ehdotus ei ole enää käytettävissä");
+    }
+    ateneumRawDb
+      .prepare(
+        `INSERT INTO ateneum_activities
+          (id, idea_id, title, scheduled_for, duration_min, status, notes, details, created_by)
+         VALUES (?, ?, ?, unixepoch(), ?, 'planned', '', ?, ?)`,
+      )
+      .run(
+        activityId,
+        idea.id,
+        idea.title,
+        idea.duration_min,
+        JSON.stringify({ source: "connection", cycleKey }),
+        userId,
+      );
+    ateneumRawDb
+      .prepare(
+        `UPDATE ateneum_connection_cycles
+         SET committed_idea_id = ?, activity_id = ?, updated_at = unixepoch()
+         WHERE cycle_key = ?`,
+      )
+      .run(idea.id, activityId, cycleKey);
+  },
+);
+
+const completeConnectionMoment = ateneumRawDb.transaction((cycleKey: string) => {
+  const cycle = ateneumRawDb
+    .prepare("SELECT activity_id FROM ateneum_connection_cycles WHERE cycle_key = ?")
+    .get(cycleKey) as { activity_id: string | null } | undefined;
+  if (!cycle?.activity_id) {
+    throw new ConnectionTransitionError(409, "Yhteistä hetkeä ei ole vielä sovittu");
+  }
+  ateneumRawDb
+    .prepare(
+      `UPDATE ateneum_activities
+       SET status = 'done', completed_at = COALESCE(completed_at, unixepoch())
+       WHERE id = ?`,
+    )
+    .run(cycle.activity_id);
+  ateneumRawDb
+    .prepare(
+      `UPDATE ateneum_connection_cycles
+       SET completed_at = COALESCE(completed_at, unixepoch()), updated_at = unixepoch()
+       WHERE cycle_key = ?`,
+    )
+    .run(cycleKey);
+});
+
+const saveConnectionReflection = ateneumRawDb.transaction(
+  (cycleKey: string, userId: string, id: string, input: ConnectionReflectionInput) => {
+    const cycle = ateneumRawDb
+      .prepare("SELECT completed_at FROM ateneum_connection_cycles WHERE cycle_key = ?")
+      .get(cycleKey) as { completed_at: number | null } | undefined;
+    if (!cycle?.completed_at) {
+      throw new ConnectionTransitionError(409, "Reflektio avautuu yhteisen hetken jälkeen");
+    }
+    ateneumRawDb
+      .prepare(
+        `INSERT INTO ateneum_connection_reflections
+          (id, cycle_key, user_id, impact, note, allow_learning)
+         VALUES (?, ?, ?, ?, ?, ?)
+         ON CONFLICT(cycle_key, user_id) DO UPDATE SET
+           impact = excluded.impact, note = excluded.note,
+           allow_learning = excluded.allow_learning, updated_at = unixepoch()`,
+      )
+      .run(id, cycleKey, userId, input.impact, input.note, input.allowLearning ? 1 : 0);
+  },
+);
+
+function sharedReflectionImpact(reflections: ConnectionReflectionRow[]) {
+  if (reflections.length < 2) return null;
+  const impacts = reflections.map((reflection) => reflection.impact);
+  const status = impacts.every((impact) => impact === "closer")
+    ? "closer"
+    : impacts.every((impact) => impact === "same")
+      ? "same"
+      : impacts.every((impact) => impact === "farther")
+        ? "farther"
+        : "mixed";
+  const messages = {
+    closer: "Molemmat kokivat olevansa hetken jälkeen lähempänä toisiaan.",
+    same: "Hetki tuntui molemmista neutraalilta. Arviota voi vielä muuttaa.",
+    farther: "Hetki ei tällä kertaa tuonut yhteyttä lähemmäs. Arviota voi vielä muuttaa.",
+    mixed: "Kokemukset olivat erilaiset. Yksittäisiä arvioita ei näytetä.",
+  } as const;
+  return { status, message: messages[status] };
+}
 
 async function readConnectionState(
   actor: { id: string; role: string },
@@ -323,6 +590,85 @@ async function readConnectionState(
     }
   }
 
+  const commitmentRows = cycle
+    ? (ateneumRawDb
+        .prepare(
+          `SELECT user_id, choice, idea_id FROM ateneum_connection_commitments
+           WHERE cycle_key = ? ORDER BY user_id`,
+        )
+        .all(cycleKey) as ConnectionCommitmentRow[])
+    : [];
+  const visibleIdeaIds = new Set(suggestions.map((suggestion) => suggestion.id));
+  const effectiveCommitments = cycle?.activityId
+    ? commitmentRows
+    : commitmentRows.filter(
+        (commitment) =>
+          commitment.choice === "later" ||
+          Boolean(commitment.idea_id && visibleIdeaIds.has(commitment.idea_id)),
+      );
+  const [activityRow] = cycle?.activityId
+    ? await ateneumDb
+        .select()
+        .from(ateneumActivities)
+        .where(eq(ateneumActivities.id, cycle.activityId))
+        .limit(1)
+    : [];
+  const activity = activityRow ? serializeActivity(activityRow) : null;
+  const commitmentStatus = activity
+    ? activity.status === "done" || cycle?.completedAt
+      ? "completed"
+      : "committed"
+    : effectiveCommitments.some((commitment) => commitment.choice === "later")
+      ? "later"
+      : effectiveCommitments.length === 0
+        ? "none"
+        : effectiveCommitments.length === 1
+          ? "waiting"
+          : effectiveCommitments[0].idea_id === effectiveCommitments[1].idea_id
+            ? "waiting"
+            : "adjusting";
+  const serializeCommitment = (commitment: ConnectionCommitmentRow | undefined) =>
+    commitment
+      ? {
+          choice: commitment.choice,
+          ideaId: commitment.idea_id,
+          idea: commitment.idea_id
+            ? suggestions.find((suggestion) => suggestion.id === commitment.idea_id) ?? null
+            : null,
+        }
+      : null;
+  const ownCommitment = isHumanSession
+    ? effectiveCommitments.find((commitment) => commitment.user_id === actor.id)
+    : undefined;
+  const partnerCommitment = isHumanSession
+    ? effectiveCommitments.find((commitment) => commitment.user_id !== actor.id)
+    : undefined;
+  const agreedIdea = activity
+    ? {
+        id: cycle?.committedIdeaId ?? activity.ideaId,
+        title: activity.title,
+        durationMin: activity.durationMin,
+      }
+    : null;
+
+  const reflectionRows = cycle
+    ? (ateneumRawDb
+        .prepare(
+          `SELECT user_id, impact, note, allow_learning, updated_at
+           FROM ateneum_connection_reflections WHERE cycle_key = ? ORDER BY user_id`,
+        )
+        .all(cycleKey) as ConnectionReflectionRow[])
+    : [];
+  const ownReflection = isHumanSession
+    ? reflectionRows.find((reflection) => reflection.user_id === actor.id)
+    : undefined;
+  const partnerReflected = isHumanSession
+    ? reflectionRows.some((reflection) => reflection.user_id !== actor.id)
+    : reflectionRows.length >= 2;
+  const learningEligible =
+    reflectionRows.length === 2 &&
+    reflectionRows.every((reflection) => Boolean(reflection.allow_learning));
+
   return {
     cycleKey,
     ownCheckIn: own ? serializeConnectionCheckIn(own) : null,
@@ -331,6 +677,30 @@ async function readConnectionState(
     synthesis,
     suggestions,
     sharedNotes,
+    commitment: {
+      status: commitmentStatus,
+      ownChoice: serializeCommitment(ownCommitment),
+      partnerChoice: serializeCommitment(partnerCommitment),
+      partnerResponded: isHumanSession
+        ? Boolean(partnerCommitment)
+        : effectiveCommitments.length >= 2,
+      agreedIdea,
+      activity,
+    },
+    reflection: {
+      own: ownReflection
+        ? {
+            impact: ownReflection.impact,
+            note: ownReflection.note,
+            allowLearning: Boolean(ownReflection.allow_learning),
+            updatedAt: new Date(ownReflection.updated_at * 1_000).toISOString(),
+          }
+        : null,
+      partnerResponded: partnerReflected,
+      sharedImpact:
+        isHumanSession || learningEligible ? sharedReflectionImpact(reflectionRows) : null,
+      learningEligible,
+    },
   };
 }
 
@@ -1045,20 +1415,86 @@ export function registerAteneumRoutes(app: Express): void {
       if (!parsed.success) {
         return res.status(400).json({ message: fromZodError(parsed.error).message });
       }
-      const cycleKey = connectionCycleKey();
-      saveConnectionCheckIn(
-        cycleKey,
-        req.ateneumUser!.id,
-        newId("checkin"),
-        parsed.data,
-      );
-      res.setHeader("Cache-Control", "no-store");
-      return res.json(
-        await readConnectionState(
-          req.ateneumUser!,
-          req.ateneumAuth?.kind === "session",
-        ),
-      );
+      try {
+        saveConnectionCheckIn(
+          connectionCycleKey(),
+          req.ateneumUser!.id,
+          newId("checkin"),
+          parsed.data,
+        );
+        res.setHeader("Cache-Control", "no-store");
+        return res.json(await readConnectionState(req.ateneumUser!, true));
+      } catch (error) {
+        return respondConnectionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/connection/commitment",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = connectionCommitmentBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        saveConnectionCommitment(
+          connectionCycleKey(),
+          req.ateneumUser!.id,
+          newId("commitment"),
+          newId("activity"),
+          parsed.data,
+        );
+        res.setHeader("Cache-Control", "no-store");
+        return res.json(await readConnectionState(req.ateneumUser!, true));
+      } catch (error) {
+        return respondConnectionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/connection/complete",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = z.object({}).strict().safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        completeConnectionMoment(connectionCycleKey());
+        res.setHeader("Cache-Control", "no-store");
+        return res.json(await readConnectionState(req.ateneumUser!, true));
+      } catch (error) {
+        return respondConnectionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/connection/reflection",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = connectionReflectionBodySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        saveConnectionReflection(
+          connectionCycleKey(),
+          req.ateneumUser!.id,
+          newId("reflection"),
+          parsed.data,
+        );
+        res.setHeader("Cache-Control", "no-store");
+        return res.json(await readConnectionState(req.ateneumUser!, true));
+      } catch (error) {
+        return respondConnectionError(res, error);
+      }
     },
   );
 
@@ -1297,6 +1733,14 @@ export function registerAteneumRoutes(app: Express): void {
         if (!parsed.success) {
           return res.status(400).json({ message: "Invalid activity update" });
         }
+        const connectionCycle = ateneumRawDb
+          .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
+          .get(id);
+        if (connectionCycle) {
+          return res.status(409).json({
+            message: "Yhteyshetkeä päivitetään vain yhteyssilmukan kautta",
+          });
+        }
         const update: any = { ...parsed.data };
         if (parsed.data.status !== undefined) {
           if (parsed.data.status === "done") update.completedAt = new Date();
@@ -1328,6 +1772,14 @@ export function registerAteneumRoutes(app: Express): void {
     requireHumanWrite,
     async (req: AteneumAuthedRequest, res: Response) => {
       const id = req.params.id;
+      const connectionCycle = ateneumRawDb
+        .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
+        .get(id);
+      if (connectionCycle) {
+        return res.status(409).json({
+          message: "Yhteyshetkeä ei voi poistaa aktiviteettilistasta",
+        });
+      }
       const deleted = await ateneumDb
         .delete(ateneumActivities)
         .where(eq(ateneumActivities.id, id))

@@ -971,6 +971,7 @@ function renderActivity() {
   const isDone = a.status === "done";
   const isSkipped = a.status === "skipped";
   const isPlanned = a.status === "planned";
+  const isConnectionMoment = d.source === "connection";
 
   let html = `<div class="wrap">${renderHeader()}<div id="content">`;
 
@@ -989,12 +990,15 @@ function renderActivity() {
       </div>
 
       <div class="activity-controls">
-        ${isPlanned ? `
+        ${isConnectionMoment ? `
+          <span style="color:var(--muted);font-size:0.9rem;">Tila ja reflektio käsitellään päivän yhteysnäkymässä.</span>
+        ` : ""}
+        ${!isConnectionMoment && isPlanned ? `
           <button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button>
           <button class="btn" id="hero-skip">⏸ Ei nyt</button>
           <button class="btn" id="hero-cancel" style="color: #c0392b;">✕ Peruuta</button>
         ` : ""}
-        ${isDone ? `
+        ${!isConnectionMoment && isDone ? `
           <div class="rating-block">
             <span class="rating-label">Arvio:</span>
             <div class="stars" id="hero-stars">
@@ -1003,7 +1007,7 @@ function renderActivity() {
           </div>
           <button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>
         ` : ""}
-        ${isSkipped ? `
+        ${!isConnectionMoment && isSkipped ? `
           <button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>
         ` : ""}
       </div>
