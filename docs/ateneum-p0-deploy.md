@@ -76,6 +76,7 @@ test -s dist/runtime-externals.json
 test -s dist/public/ateneum/index.html
 test -s dist/public/ateneum/activity.html
 grep -q 'ateneum_weekly_suggestions' dist/index.cjs
+grep -q 'learn workspace static mounted from data/learn' dist/index.cjs
 node --check dist/index.cjs
 cmp public-static/ateneum/index.html dist/public/ateneum/index.html
 cmp public-static/ateneum/activity.html dist/public/ateneum/activity.html
@@ -126,7 +127,8 @@ ssh teppo-server '
 
 curl -fsSI https://jaakkola.xyz/ateneum/
 curl -sS -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/api/ateneum/auth/me
-# Odotus: sivu 200, auth/me 401 ilman sessiota.
+curl -fsS https://jaakkola.xyz/learn/ | grep -Fq '<title>Oppimispolut — itseopiskeltavia työkaluja</title>'
+# Odotus: Ateneum 200, auth/me 401 ilman sessiota ja /learn/ palauttaa oppimispolkujen oikean HTML:n.
 ```
 
 Jos tiedostot, käyttäjätilanne, paketit tai git-drift ovat muuttuneet, pysähdy ja tee uusi diff. Älä ylikirjoita sokkona.

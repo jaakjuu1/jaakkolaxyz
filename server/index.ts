@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import cookieParser from "cookie-parser";
+import path from "path";
 import { initAteneumSchema, migrateAteneumSchema } from "./ateneum-db";
 import { seedAteneum } from "./ateneum-seed";
 import { registerAteneumRoutes } from "./ateneum-routes";
@@ -90,6 +91,16 @@ async function startServer() {
     res.status(status).json({ message });
     throw err;
   });
+
+  // Learning workspace — generated HTML lives outside the Vite bundle.
+  // Mount it before the SPA catch-all so /learn/* resolves from data/learn.
+  app.use(
+    "/learn",
+    express.static(path.resolve(process.cwd(), "data/learn"), {
+      fallthrough: false,
+    }),
+  );
+  log("learn workspace static mounted from data/learn", "learn");
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route

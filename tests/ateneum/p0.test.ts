@@ -1579,6 +1579,17 @@ test("magic-link request and verify limits are layered and memory bounded", asyn
   assert.ok(email.rateLimitEntryCount() <= 2048);
 });
 
+test("production entrypoint mounts the learning workspace before the SPA fallback", () => {
+  const serverIndex = readFileSync(path.resolve("server/index.ts"), "utf8");
+  assert.match(
+    serverIndex,
+    /app\.use\(\s*["']\/learn["']\s*,\s*express\.static\(\s*path\.resolve\(process\.cwd\(\),\s*["']data\/learn["']\)\s*,\s*\{\s*fallthrough:\s*false,?\s*\}\s*\),?\s*\)/s,
+  );
+  const learnMount = serverIndex.indexOf('"/learn"');
+  const spaFallback = serverIndex.indexOf("serveStatic(app)");
+  assert.ok(learnMount >= 0 && spaFallback > learnMount, "the SPA fallback must not swallow /learn/*");
+});
+
 test("Ateneum API response bodies are excluded from request logs", () => {
   const serverIndex = readFileSync(path.resolve("server/index.ts"), "utf8");
   assert.match(
