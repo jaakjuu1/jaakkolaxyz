@@ -20,7 +20,7 @@ export interface AteneumAuthedRequest extends Request {
     | { kind: "api_token"; tokenId: string; scopes: AteneumApiTokenScope[] };
 }
 
-export const ATENEUM_API_TOKEN_SCOPES = ["read", "write", "notifications:send"] as const;
+export const ATENEUM_API_TOKEN_SCOPES = ["read", "write", "plans:draft", "notifications:send"] as const;
 export type AteneumApiTokenScope = (typeof ATENEUM_API_TOKEN_SCOPES)[number];
 
 export async function hashPassword(plain: string): Promise<string> {
@@ -141,6 +141,22 @@ export async function issueAteneumApiToken(
   return { id, rawToken, expiresAt };
 }
 
+export function ateneumTimestampToMs(value: unknown): number {
+  if (value === null || value === undefined || value === "") return Number.NaN;
+  if (value instanceof Date) return value.getTime();
+  const numeric = Number(value);
+  if (Number.isFinite(numeric)) {
+    // better-sqlite3 may expose Drizzle timestamp columns as epoch seconds in a bundled build.
+    return Math.abs(numeric) < 1_000_000_000_000 ? numeric * 1_000 : numeric;
+  }
+  return Date.parse(String(value));
+}
+
+export function ateneumTimestampToIso(value: unknown): string | null {
+  const milliseconds = ateneumTimestampToMs(value);
+  return Number.isFinite(milliseconds) ? new Date(milliseconds).toISOString() : null;
+}
+
 /**
  * Look up a user by raw API token. Returns null if invalid / expired.
  * Side effect: updates last_used_at on hit.
@@ -163,8 +179,7 @@ export async function getAuthByApiToken(
   const hit = rows[0];
   if (!hit) return null;
   if (hit.token.revokedAt || !hit.token.expiresAt) return null;
-  const exp = hit.token.expiresAt;
-  const expMs = exp instanceof Date ? exp.getTime() : Number(exp);
+  const expMs = ateneumTimestampToMs(hit.token.expiresAt);
   if (!Number.isFinite(expMs) || expMs <= Date.now()) return null;
   let scopes: AteneumApiTokenScope[];
   try {

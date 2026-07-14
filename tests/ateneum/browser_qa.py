@@ -14,6 +14,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.request
@@ -177,7 +178,7 @@ class Page:
         selector_json = json.dumps(selector)
         self.eval(
             f"""(() => {{
-              const card = [...document.querySelectorAll('.idea, .activity')]
+              const card = [...document.querySelectorAll('.idea, .activity, .plan-card')]
                 .find(node => node.textContent.includes({title_json}));
               if (!card) throw new Error('missing card: ' + {title_json});
               const element = card.querySelector({selector_json});
@@ -207,7 +208,7 @@ class Page:
         value_json = json.dumps(value)
         self.eval(
             f"""(() => {{
-              const card = [...document.querySelectorAll('.idea, .activity')]
+              const card = [...document.querySelectorAll('.idea, .activity, .plan-card')]
                 .find(node => node.textContent.includes({title_json}));
               if (!card) throw new Error('missing card: ' + {title_json});
               const element = card.querySelector({selector_json});
@@ -260,6 +261,32 @@ def create_page(cdp: CDP, base_url: str, width: int, height: int) -> Page:
     return page
 
 
+def run_plan_client(base_url: str, token: str, *args: str) -> Any:
+    client = Path.home() / ".hermes" / "skills" / "ateneum" / "scripts" / "ateneum_client.py"
+    if not client.is_file():
+        raise AssertionError(f"Ateneum conversation client missing: {client}")
+    env = os.environ.copy()
+    env["ATENEUM_API_URL"] = base_url.rstrip("/") + "/api/ateneum"
+    env["ATENEUM_API_TOKEN"] = token
+    env.pop("ATENEUM_USERNAME", None)
+    env.pop("ATENEUM_PASSWORD", None)
+    result = subprocess.run(
+        [sys.executable, str(client), "--json", "--quiet", *args],
+        cwd=ROOT,
+        env=env,
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"Ateneum conversation client failed ({result.returncode}): "
+            f"stdout={result.stdout!r} stderr={result.stderr!r}"
+        )
+    return json.loads(result.stdout)
+
+
 def visible_controls_expression(title: str) -> str:
     return f"""(() => {{
       const card = [...document.querySelectorAll('.activity')]
@@ -285,6 +312,180 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         a.login("juuso-qa", "qa-juuso-password")
         b.login("henna-qa", "qa-henna-password")
         bot.login("ateneum-bot", "qa-bot-password")
+        cdp.errors.clear()
+        cdp.responses.clear()
+        cdp.requests.clear()
+
+        # Conversation client creates a private Split-level plan draft with a narrowly scoped token.
+        token_result = a.eval(
+            """fetch('/api/ateneum/auth/api-token', {
+              method: 'POST', credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: 'browser-qa-into-plan', password: 'qa-juuso-password',
+                expiresInDays: 1, scopes: ['read', 'plans:draft']
+              })
+            }).then(async response => ({ status: response.status, body: await response.json() }))""",
+            await_promise=True,
+        )
+        assert token_result["status"] == 200, f"plan token issuance failed: {token_result}"
+        plan_token = token_result["body"]["token"]
+        plan_marker = f"QA-Split-kokonaisuus-{int(time.time())}"
+        original_summary = "Agentin luonnostelema viikon yhteinen QA-matka."
+        revised_summary = "Uusi yksityinen revisio: päiväretki lisätty."
+        with tempfile.TemporaryDirectory(prefix="ateneum-plan-client-") as plan_temp:
+            content_path = Path(plan_temp) / "plan-v1.json"
+            content_path.write_text(
+                json.dumps(
+                    {
+                        "sections": [
+                            {
+                                "id": "overview",
+                                "title": "Yleiskatsaus",
+                                "type": "overview",
+                                "summary": "Matkan yhteinen suunta.",
+                                "facts": [{"label": "Kesto", "value": "7 yötä"}],
+                                "items": [],
+                                "checklist": ["Tarkista passit"],
+                            },
+                            {
+                                "id": "itinerary",
+                                "title": "Päiväohjelma",
+                                "type": "itinerary",
+                                "facts": [],
+                                "items": [
+                                    {
+                                        "title": "Saapuminen ja rauhallinen ilta",
+                                        "description": "Ei suorittamista ensimmäiselle päivälle.",
+                                        "priority": "high",
+                                    }
+                                ],
+                                "checklist": [],
+                            },
+                        ]
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            created_plan = run_plan_client(
+                base_url,
+                plan_token,
+                "create-plan-draft",
+                "--title",
+                plan_marker,
+                "--plan-type",
+                "trip",
+                "--start-date",
+                "2026-08-03",
+                "--end-date",
+                "2026-08-10",
+                "--summary",
+                original_summary,
+                "--content-file",
+                str(content_path),
+            )
+            plan_id = created_plan["id"]
+            assert created_plan["status"] == "draft"
+            assert created_plan["visibility"] == "private"
+            assert created_plan["draftedBy"] == "into"
+            assert created_plan["ownerDisplayName"] == "Juuso QA"
+
+            # Only the requesting human sees the private draft.
+            a.eval("showView('plans')")
+            a.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].draft')")
+            private_text = a.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]').textContent")
+            assert "Luonnos näkyy vain sinulle" in private_text
+            assert "Innon luonnostelema Juuso QAn pyynnöstä" in private_text
+            plan_tap_heights = a.eval(
+                f"[...document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]').querySelectorAll('button, a.btn')].map(node => node.getBoundingClientRect().height)"
+            )
+            assert plan_tap_heights and min(plan_tap_heights) >= 44, f"plan tap target below 44px: {plan_tap_heights}"
+            assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile plan list overflows"
+
+            b.eval("showView('plans')")
+            b.wait("document.getElementById('plans-count').textContent === '(0)'")
+            assert not b.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]')")
+            bot.eval("showView('plans')")
+            bot.wait("document.getElementById('plans-count').textContent === '(0)'")
+            assert not bot.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]')")
+
+            # The owner shares from UI; partner and bot then see the proposal, but bot has no controls.
+            a.eval("window.confirm = () => true")
+            a.click_in_card(plan_marker, 'button[onclick^="sharePlan"]')
+            a.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].proposed')")
+            b.eval("showView('plans')")
+            b.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].proposed')")
+            partner_plan_text = b.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]').textContent")
+            assert "odottaa sinun vastaustasi" in partner_plan_text.lower()
+            assert "Hyväksy versio" in partner_plan_text
+
+            bot.eval("showView('plans')")
+            bot.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].proposed')")
+            bot_plan_text = bot.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]').textContent")
+            assert "Odottaa toisen kumppanin vastausta" in bot_plan_text
+            assert not bot.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}] button')"), "bot sees plan write controls"
+            bot.navigate(f"/ateneum/plan.html?id={plan_id}")
+            bot.wait("document.querySelector('.status-pill.proposed')")
+            assert not bot.eval("document.querySelector('#share-plan, #accept-plan, #return-plan')"), "bot sees plan detail controls"
+            assert "Odottaa toisen kumppanin vastausta" in bot.eval("document.querySelector('.plan-state').textContent")
+
+            # Partner accepts on the detail page; the exact same revision becomes mutual.
+            b.navigate(f"/ateneum/plan.html?id={plan_id}")
+            b.wait("document.querySelector('.status-pill.proposed') && document.getElementById('accept-plan')")
+            assert b.eval("document.querySelectorAll('.section').length") == 2
+            b.click("#accept-plan")
+            b.wait("document.querySelector('.status-pill.accepted') && !document.getElementById('accept-plan')")
+            assert "Molemmat hyväksyivät" in b.eval("document.querySelector('.plan-state').textContent")
+            a.eval("showView('plans')")
+            a.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].accepted')")
+            bot.eval("window.dispatchEvent(new Event('focus'))")
+            bot.wait("document.querySelector('.status-pill.accepted')")
+
+            # Into creates revision 2 privately. Partner and bot retain accepted revision 1.
+            revised_path = Path(plan_temp) / "plan-v2.json"
+            revised_content = json.loads(content_path.read_text(encoding="utf-8"))
+            revised_content["sections"][1]["items"].append(
+                {"title": "Päiväretki saarelle", "description": "Vaihtoehto sään mukaan.", "priority": "medium"}
+            )
+            revised_path.write_text(json.dumps(revised_content, ensure_ascii=False), encoding="utf-8")
+            revised_plan = run_plan_client(
+                base_url,
+                plan_token,
+                "revise-plan-draft",
+                plan_id,
+                "--expected-version",
+                "1",
+                "--summary",
+                revised_summary,
+                "--content-file",
+                str(revised_path),
+            )
+            assert revised_plan["version"] == 2
+            assert revised_plan["status"] == "draft"
+            assert revised_plan["acceptedVersion"] == 1
+            listed_plans = run_plan_client(base_url, plan_token, "list-plans")
+            assert any(item["id"] == plan_id and item["version"] == 2 for item in listed_plans)
+
+            a.eval("window.dispatchEvent(new Event('focus'))")
+            a.wait(
+                f"(() => {{ const card = document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].draft'); return Boolean(card && card.textContent.includes('versio 2') && card.textContent.includes('Viimeksi hyväksytty versio 1')); }})()"
+            )
+            b.eval("window.dispatchEvent(new Event('focus'))")
+            b.wait("document.querySelector('.status-pill.accepted') && document.querySelector('.meta').textContent.includes('Versio 1')")
+            assert original_summary in b.eval("document.querySelector('.summary').textContent")
+            assert revised_summary not in b.eval("document.body.textContent")
+            bot.eval("window.dispatchEvent(new Event('focus'))")
+            bot.wait("document.querySelector('.status-pill.accepted') && document.querySelector('.meta').textContent.includes('Versio 1')")
+
+        plan_http_errors = [response for response in cdp.responses if int(response.get("status", 0)) >= 400]
+        assert not plan_http_errors, f"unexpected plan browser HTTP failures: {plan_http_errors}"
+        assert not cdp.errors, f"plan browser console/runtime failures: {cdp.errors}"
+
+        # Return all contexts to the main application for the existing activity QA.
+        for page, username in ((a, "juuso-qa"), (b, "henna-qa"), (bot, "ateneum-bot")):
+            page.navigate("/ateneum/")
+            page.wait(f"typeof currentUser !== 'undefined' && currentUser && currentUser.username === {json.dumps(username)}")
         cdp.errors.clear()
         cdp.responses.clear()
         cdp.requests.clear()
@@ -458,6 +659,9 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         return {
             "activityId": activity_id,
             "ideaTitle": marker,
+            "planId": plan_id,
+            "planRevision": 2,
+            "planClient": "create+list+revise",
             "expected409": expected_conflicts,
             "counterproposalPatchKeys": sorted(patch_body),
             "mobileWidth": 390,

@@ -28,6 +28,7 @@ import {
   readSessionCookie,
   requireAteneumAuth,
   issueAteneumApiToken,
+  ateneumTimestampToIso,
   ATENEUM_API_TOKEN_SCOPES,
   type AteneumAuthedRequest,
   type AteneumApiTokenScope,
@@ -62,6 +63,23 @@ export function requireHumanWrite(
     !req.ateneumAuth.scopes.includes("write")
   ) {
     return res.status(403).json({ message: "API token lacks write scope" });
+  }
+  return next();
+}
+
+export function requirePlanDraftWrite(
+  req: AteneumAuthedRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  if (req.ateneumUser?.role === "bot") {
+    return res.status(403).json({ message: "Bot access is read-only" });
+  }
+  if (
+    req.ateneumAuth?.kind === "api_token" &&
+    !req.ateneumAuth.scopes.includes("plans:draft")
+  ) {
+    return res.status(403).json({ message: "API token lacks plans:draft scope" });
   }
   return next();
 }
@@ -153,6 +171,74 @@ const activityPatchBodySchema = z
     message: "At least one activity field is required",
   });
 const activityAcceptBodySchema = z
+  .object({ expectedVersion: z.number().int().min(1) })
+  .strict();
+
+const planDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/)
+  .refine((value) => {
+    const date = new Date(`${value}T00:00:00Z`);
+    return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+  }, "Invalid calendar date");
+const planFactSchema = z
+  .object({
+    label: z.string().trim().min(1).max(120),
+    value: z.string().trim().min(1).max(1_000),
+  })
+  .strict();
+const planLinkSchema = z
+  .object({
+    label: z.string().trim().min(1).max(120),
+    url: z.string().url().max(2_000),
+  })
+  .strict();
+const planItemSchema = z
+  .object({
+    title: z.string().trim().min(1).max(300),
+    description: z.string().trim().max(5_000).optional(),
+    status: z.string().trim().max(120).optional(),
+    priority: z.enum(["must", "high", "medium", "low"]).optional(),
+    links: z.array(planLinkSchema).max(10).optional(),
+  })
+  .strict();
+const planSectionSchema = z
+  .object({
+    id: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,63}$/),
+    title: z.string().trim().min(1).max(200),
+    type: z.enum(["overview", "itinerary", "bookings", "places", "checklist", "budget", "notes", "other"]),
+    summary: z.string().trim().max(5_000).optional(),
+    facts: z.array(planFactSchema).max(50).default([]),
+    items: z.array(planItemSchema).max(100).default([]),
+    checklist: z.array(z.string().trim().min(1).max(500)).max(100).default([]),
+  })
+  .strict();
+const planContentSchema = z
+  .object({ sections: z.array(planSectionSchema).min(1).max(40) })
+  .strict()
+  .refine((content) => JSON.stringify(content).length <= 100_000, "Plan content is too large");
+const planDraftFieldsObject = z
+  .object({
+    title: z.string().trim().min(1).max(300),
+    planType: z.enum(["trip", "event", "project", "other"]),
+    startDate: planDateSchema.nullable().optional(),
+    endDate: planDateSchema.nullable().optional(),
+    summary: z.string().trim().max(10_000).default(""),
+    content: planContentSchema,
+  })
+  .strict();
+const planDraftFieldsSchema = planDraftFieldsObject.refine(
+  (value) => !value.startDate || !value.endDate || value.startDate <= value.endDate,
+  { message: "End date must not precede start date", path: ["endDate"] },
+);
+const planDraftPatchSchema = planDraftFieldsObject
+  .partial()
+  .extend({ expectedVersion: z.number().int().min(1) })
+  .strict()
+  .refine((value) => Object.keys(value).some((key) => key !== "expectedVersion"), {
+    message: "At least one plan field is required",
+  });
+const planVersionActionSchema = z
   .object({ expectedVersion: z.number().int().min(1) })
   .strict();
 
@@ -1150,6 +1236,159 @@ async function findUserByUsernameOrEmail(identifier: string) {
   return rows[0] ?? null;
 }
 
+type RawPlan = {
+  id: string;
+  ownerUserId: string;
+  planType: "trip" | "event" | "project" | "other";
+  latestVersion: number;
+  acceptedVersion: number | null;
+  createdAt: number;
+  updatedAt: number;
+};
+
+type RawPlanRevision = {
+  id: string;
+  planId: string;
+  version: number;
+  title: string;
+  startDate: string | null;
+  endDate: string | null;
+  summary: string;
+  content: string;
+  status: "draft" | "proposed" | "accepted" | "superseded";
+  draftedBy: "into" | "human";
+  createdBy: string;
+  createdAt: number;
+  updatedAt: number;
+};
+
+class PlanTransitionError extends Error {
+  constructor(public readonly statusCode: number, message: string) {
+    super(message);
+    this.name = "PlanTransitionError";
+  }
+}
+
+function respondPlanTransitionError(res: Response, error: unknown) {
+  if (error instanceof PlanTransitionError) {
+    return res.status(error.statusCode).json({ message: error.message });
+  }
+  console.error("[ateneum] plan transition:", error);
+  return res.status(500).json({ message: "Plan transition failed" });
+}
+
+function readRawPlan(id: string): RawPlan {
+  const plan = ateneumRawDb
+    .prepare(
+      `SELECT id, owner_user_id AS ownerUserId, plan_type AS planType,
+              latest_version AS latestVersion, accepted_version AS acceptedVersion,
+              created_at AS createdAt, updated_at AS updatedAt
+       FROM ateneum_plans WHERE id = ?`,
+    )
+    .get(id) as RawPlan | undefined;
+  if (!plan) throw new PlanTransitionError(404, "Kokonaisuutta ei löytynyt");
+  return plan;
+}
+
+function readRawPlanRevision(planId: string, version: number): RawPlanRevision {
+  const revision = ateneumRawDb
+    .prepare(
+      `SELECT id, plan_id AS planId, version, title, start_date AS startDate,
+              end_date AS endDate, summary, content, status, drafted_by AS draftedBy,
+              created_by AS createdBy, created_at AS createdAt, updated_at AS updatedAt
+       FROM ateneum_plan_revisions WHERE plan_id = ? AND version = ?`,
+    )
+    .get(planId, version) as RawPlanRevision | undefined;
+  if (!revision) throw new PlanTransitionError(404, "Suunnitelmaversiota ei löytynyt");
+  return revision;
+}
+
+function visiblePlanRevision(
+  plan: RawPlan,
+  viewer: { id: string; role: string },
+): RawPlanRevision | null {
+  if (viewer.id === plan.ownerUserId && viewer.role !== "bot") {
+    return readRawPlanRevision(plan.id, plan.latestVersion);
+  }
+  return (ateneumRawDb
+    .prepare(
+      `SELECT id, plan_id AS planId, version, title, start_date AS startDate,
+              end_date AS endDate, summary, content, status, drafted_by AS draftedBy,
+              created_by AS createdBy, created_at AS createdAt, updated_at AS updatedAt
+       FROM ateneum_plan_revisions
+       WHERE plan_id = ? AND status IN ('proposed','accepted')
+       ORDER BY version DESC LIMIT 1`,
+    )
+    .get(plan.id) as RawPlanRevision | undefined) ?? null;
+}
+
+function serializePlanForViewer(
+  plan: RawPlan,
+  viewer: { id: string; role: string },
+): Record<string, unknown> | null {
+  const revision = visiblePlanRevision(plan, viewer);
+  if (!revision) return null;
+  let content: unknown = { sections: [] };
+  try {
+    content = JSON.parse(revision.content);
+  } catch {
+    throw new PlanTransitionError(500, "Suunnitelman sisältö on vioittunut");
+  }
+  const acceptanceRows = ateneumRawDb
+    .prepare(
+      `SELECT a.user_id AS userId
+       FROM ateneum_plan_acceptances a
+       JOIN ateneum_users u ON u.id = a.user_id
+       WHERE a.plan_id = ? AND a.version = ?
+         AND u.role IN ('partner_a','partner_b')`,
+    )
+    .all(plan.id, revision.version) as Array<{ userId: string }>;
+  const owner = ateneumRawDb
+    .prepare("SELECT display_name AS displayName FROM ateneum_users WHERE id = ?")
+    .get(plan.ownerUserId) as { displayName: string } | undefined;
+  return {
+    id: plan.id,
+    ownerUserId: plan.ownerUserId,
+    ownerDisplayName: owner?.displayName ?? "Käyttäjä",
+    isOwner: viewer.id === plan.ownerUserId,
+    planType: plan.planType,
+    version: revision.version,
+    acceptedVersion: plan.acceptedVersion,
+    title: revision.title,
+    startDate: revision.startDate,
+    endDate: revision.endDate,
+    summary: revision.summary,
+    content,
+    status: revision.status,
+    visibility: revision.status === "draft" ? "private" : "shared",
+    draftedBy: revision.draftedBy,
+    acceptanceCount: acceptanceRows.length,
+    acceptedByMe: acceptanceRows.some((row) => row.userId === viewer.id),
+    createdAt: new Date(Number(revision.createdAt) * 1000).toISOString(),
+    updatedAt: new Date(Number(revision.updatedAt) * 1000).toISOString(),
+  };
+}
+
+function listPlansForViewer(viewer: { id: string; role: string }) {
+  const plans = ateneumRawDb
+    .prepare(
+      `SELECT id, owner_user_id AS ownerUserId, plan_type AS planType,
+              latest_version AS latestVersion, accepted_version AS acceptedVersion,
+              created_at AS createdAt, updated_at AS updatedAt
+       FROM ateneum_plans ORDER BY updated_at DESC`,
+    )
+    .all() as RawPlan[];
+  return plans
+    .map((plan) => serializePlanForViewer(plan, viewer))
+    .filter((plan): plan is Record<string, unknown> => Boolean(plan));
+}
+
+function assertPlanOwner(plan: RawPlan, userId: string) {
+  if (plan.ownerUserId !== userId) {
+    throw new PlanTransitionError(403, "Vain luonnoksen pyytäjä voi jakaa tai päivittää sen");
+  }
+}
+
 export function selectHumanPartner<
   T extends { id: string; role: string },
 >(users: T[], actor: { id: string; role: string }): T | null {
@@ -1287,22 +1526,22 @@ export function registerAteneumRoutes(app: Express): void {
     return res.json({ ok: true });
   });
 
-  app.get("/api/ateneum/auth/me", async (req: AteneumAuthedRequest, res: Response) => {
-    const sid = readSessionCookie(req);
-    const user = await getUserBySession(sid);
-    if (!user) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-    return res.json({
-      user: {
-        id: user.id,
-        username: user.username,
-        displayName: user.displayName,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  });
+  app.get(
+    "/api/ateneum/auth/me",
+    requireAteneumAuth,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const user = req.ateneumUser!;
+      return res.json({
+        user: {
+          id: user.id,
+          username: user.username,
+          displayName: user.displayName,
+          email: user.email,
+          role: user.role,
+        },
+      });
+    },
+  );
 
   // ============================================
   // MAGIC LINK
@@ -1904,6 +2143,376 @@ export function registerAteneumRoutes(app: Express): void {
         return res.status(404).json({ message: "Idea not found" });
       }
       return res.json({ ok: true });
+    },
+  );
+
+  // Agent-assisted plan wholes: private draft -> human share -> reciprocal acceptance.
+  app.get(
+    "/api/ateneum/plans",
+    requireAteneumAuth,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      try {
+        return res.json({ plans: listPlansForViewer(req.ateneumUser!) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plans/drafts",
+    requireAteneumAuth,
+    requirePlanDraftWrite,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planDraftFieldsSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      const planId = newId("pln");
+      const revisionId = newId("prv");
+      const draftedBy = req.ateneumAuth?.kind === "api_token" ? "into" : "human";
+      try {
+        const create = ateneumRawDb.transaction(() => {
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plans
+                (id, owner_user_id, plan_type, latest_version, accepted_version, created_at, updated_at)
+               VALUES (?, ?, ?, 1, NULL, unixepoch(), unixepoch())`,
+            )
+            .run(planId, user.id, parsed.data.planType);
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_revisions
+                (id, plan_id, version, title, start_date, end_date, summary, content,
+                 status, drafted_by, created_by, created_at, updated_at)
+               VALUES (?, ?, 1, ?, ?, ?, ?, ?, 'draft', ?, ?, unixepoch(), unixepoch())`,
+            )
+            .run(
+              revisionId,
+              planId,
+              parsed.data.title,
+              parsed.data.startDate ?? null,
+              parsed.data.endDate ?? null,
+              parsed.data.summary,
+              JSON.stringify(parsed.data.content),
+              draftedBy,
+              user.id,
+            );
+        });
+        create();
+        return res.json({ plan: serializePlanForViewer(readRawPlan(planId), user) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.patch(
+    "/api/ateneum/plans/:id/draft",
+    requireAteneumAuth,
+    requirePlanDraftWrite,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planDraftPatchSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      try {
+        const revise = ateneumRawDb.transaction(() => {
+          const plan = readRawPlan(req.params.id);
+          assertPlanOwner(plan, user.id);
+          if (Number(plan.latestVersion) !== Number(parsed.data.expectedVersion)) {
+            throw new PlanTransitionError(
+              409,
+              "Luonnos muuttui. Hae uusin versio ennen päivittämistä.",
+            );
+          }
+          const current = readRawPlanRevision(plan.id, plan.latestVersion);
+          if (current.status === "proposed") {
+            throw new PlanTransitionError(
+              409,
+              "Jaettu ehdotus pitää palauttaa luonnokseksi ennen Innon muutoksia.",
+            );
+          }
+          if (current.status === "superseded") {
+            throw new PlanTransitionError(409, "Suunnitelmaversio ei ole enää muokattavissa");
+          }
+          let currentContent: unknown;
+          try {
+            currentContent = JSON.parse(current.content);
+          } catch {
+            throw new PlanTransitionError(500, "Suunnitelman sisältö on vioittunut");
+          }
+          const has = (key: string) => Object.prototype.hasOwnProperty.call(req.body ?? {}, key);
+          const merged = {
+            title: has("title") ? parsed.data.title! : current.title,
+            planType: has("planType") ? parsed.data.planType! : plan.planType,
+            startDate: has("startDate") ? (parsed.data.startDate ?? null) : current.startDate,
+            endDate: has("endDate") ? (parsed.data.endDate ?? null) : current.endDate,
+            summary: has("summary") ? (parsed.data.summary ?? "") : current.summary,
+            content: has("content") ? parsed.data.content! : currentContent,
+          };
+          const validated = planDraftFieldsSchema.safeParse(merged);
+          if (!validated.success) {
+            throw new PlanTransitionError(400, fromZodError(validated.error).message);
+          }
+          const nextVersion = Number(plan.latestVersion) + 1;
+          if (current.status === "draft") {
+            ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plan_revisions
+                 SET status = 'superseded', updated_at = unixepoch()
+                 WHERE plan_id = ? AND version = ? AND status = 'draft'`,
+              )
+              .run(plan.id, current.version);
+          }
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_revisions
+                (id, plan_id, version, title, start_date, end_date, summary, content,
+                 status, drafted_by, created_by, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, unixepoch(), unixepoch())`,
+            )
+            .run(
+              newId("prv"),
+              plan.id,
+              nextVersion,
+              validated.data.title,
+              validated.data.startDate ?? null,
+              validated.data.endDate ?? null,
+              validated.data.summary,
+              JSON.stringify(validated.data.content),
+              req.ateneumAuth?.kind === "api_token" ? "into" : "human",
+              user.id,
+            );
+          ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plans
+               SET plan_type = ?, latest_version = ?, updated_at = unixepoch()
+               WHERE id = ? AND latest_version = ?`,
+            )
+            .run(validated.data.planType, nextVersion, plan.id, plan.latestVersion);
+          return nextVersion;
+        });
+        revise();
+        return res.json({ plan: serializePlanForViewer(readRawPlan(req.params.id), user) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plans/:id/share",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planVersionActionSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      try {
+        const share = ateneumRawDb.transaction(() => {
+          const plan = readRawPlan(req.params.id);
+          assertPlanOwner(plan, user.id);
+          if (Number(plan.latestVersion) !== Number(parsed.data.expectedVersion)) {
+            throw new PlanTransitionError(409, "Luonnos muuttui. Hae uusin versio ennen jakamista.");
+          }
+          const revision = readRawPlanRevision(plan.id, plan.latestVersion);
+          if (revision.status !== "draft") {
+            throw new PlanTransitionError(409, "Vain yksityisen luonnoksen voi jakaa ehdotukseksi");
+          }
+          const changed = ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plan_revisions
+               SET status = 'proposed', updated_at = unixepoch()
+               WHERE plan_id = ? AND version = ? AND status = 'draft'`,
+            )
+            .run(plan.id, revision.version);
+          if (changed.changes !== 1) {
+            throw new PlanTransitionError(409, "Luonnos ehti muuttua ennen jakamista");
+          }
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_acceptances
+                (id, plan_id, user_id, version, accepted_at)
+               VALUES (?, ?, ?, ?, unixepoch())
+               ON CONFLICT(plan_id, version, user_id) DO UPDATE SET
+                 accepted_at = excluded.accepted_at`,
+            )
+            .run(newId("pac"), plan.id, user.id, revision.version);
+          ateneumRawDb
+            .prepare("UPDATE ateneum_plans SET updated_at = unixepoch() WHERE id = ?")
+            .run(plan.id);
+        });
+        share();
+        return res.json({ plan: serializePlanForViewer(readRawPlan(req.params.id), user) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plans/:id/accept",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planVersionActionSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      try {
+        const accept = ateneumRawDb.transaction(() => {
+          const plan = readRawPlan(req.params.id);
+          if (Number(plan.latestVersion) !== Number(parsed.data.expectedVersion)) {
+            throw new PlanTransitionError(409, "Ehdotus muuttui. Hae uusin versio ennen hyväksymistä.");
+          }
+          const revision = readRawPlanRevision(plan.id, plan.latestVersion);
+          if (revision.status !== "proposed" && revision.status !== "accepted") {
+            throw new PlanTransitionError(409, "Vain jaetun ehdotuksen voi hyväksyä");
+          }
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_acceptances
+                (id, plan_id, user_id, version, accepted_at)
+               VALUES (?, ?, ?, ?, unixepoch())
+               ON CONFLICT(plan_id, version, user_id) DO UPDATE SET
+                 accepted_at = excluded.accepted_at`,
+            )
+            .run(newId("pac"), plan.id, user.id, revision.version);
+          const count = Number(
+            ateneumRawDb
+              .prepare(
+                `SELECT COUNT(DISTINCT u.role)
+                 FROM ateneum_plan_acceptances a
+                 JOIN ateneum_users u ON u.id = a.user_id
+                 WHERE a.plan_id = ? AND a.version = ?
+                   AND u.role IN ('partner_a','partner_b')`,
+              )
+              .pluck()
+              .get(plan.id, revision.version),
+          );
+          if (count >= 2 && revision.status !== "accepted") {
+            if (plan.acceptedVersion && Number(plan.acceptedVersion) !== revision.version) {
+              ateneumRawDb
+                .prepare(
+                  `UPDATE ateneum_plan_revisions
+                   SET status = 'superseded', updated_at = unixepoch()
+                   WHERE plan_id = ? AND version = ? AND status = 'accepted'`,
+                )
+                .run(plan.id, plan.acceptedVersion);
+            }
+            ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plan_revisions
+                 SET status = 'accepted', updated_at = unixepoch()
+                 WHERE plan_id = ? AND version = ? AND status = 'proposed'`,
+              )
+              .run(plan.id, revision.version);
+            ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plans
+                 SET accepted_version = ?, updated_at = unixepoch() WHERE id = ?`,
+              )
+              .run(revision.version, plan.id);
+          }
+        });
+        accept();
+        return res.json({ plan: serializePlanForViewer(readRawPlan(req.params.id), user) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plans/:id/return-to-draft",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planVersionActionSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      try {
+        const nextVersion = ateneumRawDb.transaction(() => {
+          const plan = readRawPlan(req.params.id);
+          if (Number(plan.latestVersion) !== Number(parsed.data.expectedVersion)) {
+            throw new PlanTransitionError(409, "Ehdotus muuttui. Hae uusin versio.");
+          }
+          const revision = readRawPlanRevision(plan.id, plan.latestVersion);
+          if (revision.status !== "proposed") {
+            throw new PlanTransitionError(409, "Vain avoimen ehdotuksen voi palauttaa luonnokseksi");
+          }
+          const version = Number(plan.latestVersion) + 1;
+          ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plan_revisions
+               SET status = 'superseded', updated_at = unixepoch()
+               WHERE plan_id = ? AND version = ? AND status = 'proposed'`,
+            )
+            .run(plan.id, revision.version);
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_revisions
+                (id, plan_id, version, title, start_date, end_date, summary, content,
+                 status, drafted_by, created_by, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', 'human', ?, unixepoch(), unixepoch())`,
+            )
+            .run(
+              newId("prv"),
+              plan.id,
+              version,
+              revision.title,
+              revision.startDate,
+              revision.endDate,
+              revision.summary,
+              revision.content,
+              user.id,
+            );
+          ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plans
+               SET latest_version = ?, updated_at = unixepoch()
+               WHERE id = ? AND latest_version = ?`,
+            )
+            .run(version, plan.id, plan.latestVersion);
+          return { version, ownerUserId: plan.ownerUserId };
+        })();
+        const plan = readRawPlan(req.params.id);
+        if (user.id === nextVersion.ownerUserId) {
+          return res.json({ plan: serializePlanForViewer(plan, user) });
+        }
+        return res.json({
+          plan: {
+            id: plan.id,
+            version: nextVersion.version,
+            status: "draft",
+            visibility: "private",
+          },
+        });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.get(
+    "/api/ateneum/plans/:id",
+    requireAteneumAuth,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      try {
+        const plan = serializePlanForViewer(readRawPlan(req.params.id), req.ateneumUser!);
+        if (!plan) return res.status(404).json({ message: "Kokonaisuutta ei löytynyt" });
+        return res.json({ plan });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
     },
   );
 
@@ -2697,10 +3306,10 @@ export function registerAteneumRoutes(app: Express): void {
           id: row.id,
           name: row.name,
           scopes: JSON.parse(row.scopes),
-          expires_at: row.expiresAt.toISOString(),
-          revoked_at: row.revokedAt?.toISOString() ?? null,
-          last_used_at: row.lastUsedAt?.toISOString() ?? null,
-          created_at: row.createdAt.toISOString(),
+          expires_at: ateneumTimestampToIso(row.expiresAt),
+          revoked_at: ateneumTimestampToIso(row.revokedAt),
+          last_used_at: ateneumTimestampToIso(row.lastUsedAt),
+          created_at: ateneumTimestampToIso(row.createdAt),
         })),
       });
     },

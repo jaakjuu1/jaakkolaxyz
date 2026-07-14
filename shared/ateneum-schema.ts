@@ -141,6 +141,81 @@ export const ateneumActivityAcceptances = sqliteTable(
   }),
 );
 
+export const ateneumPlans = sqliteTable("ateneum_plans", {
+  id: text("id").primaryKey(),
+  ownerUserId: text("owner_user_id")
+    .notNull()
+    .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+  planType: text("plan_type", { enum: ["trip", "event", "project", "other"] }).notNull(),
+  latestVersion: integer("latest_version").notNull().default(1),
+  acceptedVersion: integer("accepted_version"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+export const ateneumPlanRevisions = sqliteTable(
+  "ateneum_plan_revisions",
+  {
+    id: text("id").primaryKey(),
+    planId: text("plan_id")
+      .notNull()
+      .references(() => ateneumPlans.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    title: text("title").notNull(),
+    startDate: text("start_date"),
+    endDate: text("end_date"),
+    summary: text("summary").notNull().default(""),
+    content: text("content").notNull().default('{"sections":[]}'),
+    status: text("status", {
+      enum: ["draft", "proposed", "accepted", "superseded"],
+    }).notNull(),
+    draftedBy: text("drafted_by", { enum: ["into", "human"] }).notNull(),
+    createdBy: text("created_by")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    planVersionUnique: uniqueIndex("idx_ateneum_plan_revisions_plan_version").on(
+      table.planId,
+      table.version,
+    ),
+  }),
+);
+
+export const ateneumPlanAcceptances = sqliteTable(
+  "ateneum_plan_acceptances",
+  {
+    id: text("id").primaryKey(),
+    planId: text("plan_id")
+      .notNull()
+      .references(() => ateneumPlans.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    acceptedAt: integer("accepted_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    planVersionUserUnique: uniqueIndex("idx_ateneum_plan_acceptances_plan_version_user").on(
+      table.planId,
+      table.version,
+      table.userId,
+    ),
+  }),
+);
+
 export const ateneumWishes = sqliteTable("ateneum_wishes", {
   id: text("id").primaryKey(),
   userId: text("user_id")
@@ -399,6 +474,9 @@ export type InsertAteneumIdea = z.infer<typeof insertAteneumIdeaSchema>;
 export type AteneumActivity = typeof ateneumActivities.$inferSelect;
 export type InsertAteneumActivity = z.infer<typeof insertAteneumActivitySchema>;
 export type AteneumActivityAcceptance = typeof ateneumActivityAcceptances.$inferSelect;
+export type AteneumPlan = typeof ateneumPlans.$inferSelect;
+export type AteneumPlanRevision = typeof ateneumPlanRevisions.$inferSelect;
+export type AteneumPlanAcceptance = typeof ateneumPlanAcceptances.$inferSelect;
 export type AteneumWish = typeof ateneumWishes.$inferSelect;
 export type InsertAteneumWish = z.infer<typeof insertAteneumWishSchema>;
 export type AteneumWeeklySuggestion = typeof ateneumWeeklySuggestions.$inferSelect;

@@ -190,6 +190,24 @@
   .optional-fields summary { cursor: pointer; color: var(--accent); font-size: 0.86rem; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
   body.read-only .human-write { display: none !important; }
 
+  /* Plan wholes */
+  .plan-card {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 1rem; margin-bottom: 0.75rem;
+  }
+  .plan-card.draft { border-left: 4px solid #7b8794; }
+  .plan-card.proposed { border-left: 4px solid #b8872f; }
+  .plan-card.accepted { border-left: 4px solid var(--accent); }
+  .plan-card h3 { margin: 0; font-size: 1.05rem; overflow-wrap: anywhere; }
+  .plan-card .plan-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.6rem; }
+  .plan-card .plan-meta { color: var(--muted); font-size: 0.82rem; margin-top: 0.3rem; }
+  .plan-card .plan-summary { color: #444; font-size: 0.9rem; margin: 0.65rem 0 0; }
+  .plan-card .plan-state { background: var(--bg); border-radius: 7px; padding: 0.65rem 0.75rem; margin-top: 0.7rem; font-size: 0.84rem; color: #4c534e; }
+  .plan-card .plan-actions { display: flex; gap: 0.45rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .plan-card .plan-actions .btn, .plan-card .plan-actions a { min-height: 44px; display: inline-flex; align-items: center; text-decoration: none; }
+  .status-chip.draft { color: #4c5661; background: #edf0f2; }
+  .plan-origin { color: var(--muted); font-size: 0.78rem; margin-top: 0.35rem; }
+
   /* Star rating */
   .stars { display: inline-flex; gap: 0.2rem; font-size: 1.4rem; }
   .stars button {
@@ -445,6 +463,13 @@
     <div id="wishes-list"></div>
   </section>
 
+  <!-- Kokonaisuudet -->
+  <section id="view-plans" class="hidden">
+    <h2>Kokonaisuudet <small id="plans-count"></small></h2>
+    <p class="section-lead">Kokonaisuus syntyy keskustelussa Innon kanssa. Luonnos näkyy ensin vain pyytäjälle ja tulee yhteiseksi vasta, kun molemmat hyväksyvät saman version.</p>
+    <div id="plans-list"><div class="loading">Ladataan…</div></div>
+  </section>
+
   <!-- Asetukset -->
   <section id="view-settings" class="hidden">
     <h2>Asetukset</h2>
@@ -481,6 +506,9 @@
   <button data-view="wishes" onclick="showView('wishes')">
     <span class="ico">⭐</span><span>Toiveet</span>
   </button>
+  <button data-view="plans" onclick="showView('plans')">
+    <span class="ico">🗺️</span><span>Kokon.</span>
+  </button>
   <button data-view="settings" onclick="showView('settings')">
     <span class="ico">⚙️</span><span>Aset.</span>
   </button>
@@ -492,7 +520,7 @@
 // === API ===
 const API_BASE = '/api/ateneum';
 let currentUser = null;
-const loadGenerations = { connection: 0, weekly: 0, activities: 0, ideas: 0, wishes: 0, settings: 0 };
+const loadGenerations = { connection: 0, weekly: 0, activities: 0, ideas: 0, wishes: 0, plans: 0, settings: 0 };
 let activityDeepLinkHandled = false;
 function canWrite() { return currentUser && currentUser.role !== 'bot'; }
 function beginLoad(key) { loadGenerations[key] = (loadGenerations[key] || 0) + 1; return loadGenerations[key]; }
@@ -616,7 +644,7 @@ function enterApp(user) {
   const requestedView = params.get('view');
   showView(params.get('editActivity')
     ? 'home'
-    : ['home', 'ideas', 'wishes', 'settings'].includes(requestedView) ? requestedView : 'home');
+    : ['home', 'ideas', 'wishes', 'plans', 'settings'].includes(requestedView) ? requestedView : 'home');
 }
 
 // Enter-näppäin lähettää lomakkeen
@@ -628,7 +656,7 @@ document.addEventListener('keydown', e => {
 
 // === View switching ===
 function showView(name) {
-  for (const v of ['home', 'ideas', 'wishes', 'settings']) {
+  for (const v of ['home', 'ideas', 'wishes', 'plans', 'settings']) {
     document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
   }
   for (const b of document.querySelectorAll('nav.tabs button')) {
@@ -637,13 +665,14 @@ function showView(name) {
   if (name === 'home') loadHome();
   if (name === 'ideas') loadIdeas();
   if (name === 'wishes') loadWishes();
+  if (name === 'plans') loadPlans();
   if (name === 'settings') loadSettings();
 }
 
 let focusRefreshTimer = null;
 function refreshVisibleView() {
   if (!currentUser || document.getElementById('app-view').classList.contains('hidden')) return;
-  const visible = ['home', 'ideas', 'wishes', 'settings']
+  const visible = ['home', 'ideas', 'wishes', 'plans', 'settings']
     .find(view => !document.getElementById('view-' + view).classList.contains('hidden'));
   if (visible) showView(visible);
 }
@@ -1018,6 +1047,111 @@ async function rotateWeeklySuggestion() {
   } catch (e) {
     toast('Vaihto epäonnistui: ' + e.message);
   }
+}
+
+// === Kokonaisuudet ===
+const PLAN_TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Kokonaisuus' };
+const PLAN_STATUS_LABELS = { draft: 'yksityinen luonnos', proposed: 'jaettu ehdotus', accepted: 'yhteinen suunnitelma' };
+
+function formatPlanDate(date) {
+  if (!date) return '';
+  return new Date(`${date}T00:00:00`).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric', year: 'numeric' });
+}
+
+function formatPlanDateRange(plan) {
+  if (plan.startDate && plan.endDate) return `${formatPlanDate(plan.startDate)}–${formatPlanDate(plan.endDate)}`;
+  return formatPlanDate(plan.startDate || plan.endDate) || 'Ajankohta avoin';
+}
+
+function planStateCopy(plan) {
+  if (plan.status === 'draft') {
+    const oldVersion = plan.acceptedVersion
+      ? ` Viimeksi hyväksytty versio ${plan.acceptedVersion} pysyy kumppanin näkyvissä.`
+      : '';
+    return `Luonnos näkyy vain sinulle. Tarkista kokonaisuus rauhassa ennen jakamista.${oldVersion}`;
+  }
+  if (plan.status === 'accepted') return 'Molemmat hyväksyivät tämän version. Tämä on nyt teidän yhteinen suunnitelmanne.';
+  if (!canWrite()) return 'Odottaa toisen kumppanin vastausta.';
+  if (plan.acceptedByMe) return 'Olet hyväksynyt tämän version. Odottaa kumppanin vastausta.';
+  return `${escapeHtml(plan.ownerDisplayName)} jakoi tämän version. Se odottaa sinun vastaustasi.`;
+}
+
+function renderPlanCard(plan) {
+  const sections = Array.isArray(plan.content?.sections) ? plan.content.sections.length : 0;
+  const origin = plan.draftedBy === 'into'
+    ? `Innon luonnostelema ${escapeHtml(plan.ownerDisplayName)}n pyynnöstä`
+    : `${escapeHtml(plan.ownerDisplayName)}n luonnos`;
+  let actions = `<a class="btn" href="/ateneum/plan.html?id=${encodeURIComponent(plan.id)}">Avaa kokonaisuus</a>`;
+  if (canWrite() && plan.status === 'draft' && plan.isOwner) {
+    actions += `<button class="btn btn-primary human-write" onclick="sharePlan('${escapeHtml(plan.id)}', ${plan.version}, this)">Jaa kumppanille</button>`;
+  } else if (canWrite() && plan.status === 'proposed') {
+    if (!plan.acceptedByMe) {
+      actions += `<button class="btn btn-primary human-write" onclick="acceptPlan('${escapeHtml(plan.id)}', ${plan.version}, this)">Hyväksy versio</button>`;
+    }
+    actions += `<button class="btn human-write" onclick="returnPlanToDraft('${escapeHtml(plan.id)}', ${plan.version}, this)">Palauta muokattavaksi</button>`;
+  }
+  return `
+    <article class="plan-card ${escapeHtml(plan.status)}" data-plan-id="${escapeHtml(plan.id)}">
+      <div class="plan-heading">
+        <h3>${escapeHtml(plan.title)}</h3>
+        <span class="status-chip ${escapeHtml(plan.status)}">${escapeHtml(PLAN_STATUS_LABELS[plan.status] || plan.status)}</span>
+      </div>
+      <div class="plan-meta">${escapeHtml(PLAN_TYPE_LABELS[plan.planType] || plan.planType)} · ${escapeHtml(formatPlanDateRange(plan))} · ${sections} osiota · versio ${plan.version}</div>
+      <div class="plan-origin">${origin}</div>
+      ${plan.summary ? `<p class="plan-summary">${escapeHtml(plan.summary)}</p>` : ''}
+      <div class="plan-state">${planStateCopy(plan)}</div>
+      <div class="plan-actions">${actions}</div>
+    </article>`;
+}
+
+async function loadPlans() {
+  const generation = beginLoad('plans');
+  const list = document.getElementById('plans-list');
+  list.innerHTML = '<div class="loading">Ladataan kokonaisuuksia…</div>';
+  try {
+    const { plans = [] } = await api('/plans');
+    if (!isLatestLoad('plans', generation)) return;
+    document.getElementById('plans-count').textContent = `(${plans.length})`;
+    list.innerHTML = plans.length
+      ? plans.map(renderPlanCard).join('')
+      : '<div class="empty">Ei vielä kokonaisuuksia. Pyydä Innolta keskustelussa esimerkiksi matkan, juhlan tai muun yhteisen kokonaisuuden luonnos.</div>';
+  } catch (e) {
+    if (isLatestLoad('plans', generation)) {
+      list.innerHTML = `<div class="empty">Kokonaisuuksien lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+}
+
+async function runPlanAction(button, path, pending, success) {
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = pending;
+  try {
+    await api(path, { method: 'POST', body: JSON.stringify({ expectedVersion: Number(button.dataset.version) }) });
+    toast(success);
+    await loadPlans();
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+    button.disabled = false;
+    button.textContent = original;
+  }
+}
+
+async function sharePlan(id, version, button) {
+  if (!confirm('Jaetaanko tämä versio kumppanille? Jakaminen toimii omana hyväksyntänäsi.')) return;
+  button.dataset.version = version;
+  await runPlanAction(button, `/plans/${encodeURIComponent(id)}/share`, 'Jaetaan…', 'Kokonaisuus jaettu kumppanille');
+}
+
+async function acceptPlan(id, version, button) {
+  button.dataset.version = version;
+  await runPlanAction(button, `/plans/${encodeURIComponent(id)}/accept`, 'Hyväksytään…', 'Versio hyväksytty');
+}
+
+async function returnPlanToDraft(id, version, button) {
+  if (!confirm('Palautetaanko tämä versio yksityiseksi luonnokseksi? Pyytäjä voi jatkaa sen työstämistä Innon kanssa.')) return;
+  button.dataset.version = version;
+  await runPlanAction(button, `/plans/${encodeURIComponent(id)}/return-to-draft`, 'Palautetaan…', 'Palautettu muokattavaksi');
 }
 
 // === Activities ===
