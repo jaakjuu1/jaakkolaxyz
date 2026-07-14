@@ -478,26 +478,30 @@ export async function sendActivityPlanned(opts: {
     weekday: "long",
     day: "numeric",
     month: "numeric",
+    year: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
-  const dur = opts.activity.durationMin >= 60
-    ? `${Math.round(opts.activity.durationMin / 60)} h`
-    : `${opts.activity.durationMin} min`;
+  const hours = Math.floor(opts.activity.durationMin / 60);
+  const minutes = opts.activity.durationMin % 60;
+  const dur = hours > 0
+    ? `${hours} h${minutes > 0 ? ` ${minutes} min` : ""}`
+    : `${minutes} min`;
   const body = `
     <p>Hei ${escapeHtml(opts.toUser.displayName)},</p>
-    <p><strong>${escapeHtml(opts.fromUser.displayName)}</strong> suunnitteli uuden aktiviteetin:</p>
+    <p><strong>${escapeHtml(opts.fromUser.displayName)}</strong> ehdotti yhteistä aikaa:</p>
     <div style="background: #e9f4ec; border-radius: 6px; padding: 16px; margin: 16px 0;">
       <div style="font-size: 16px; font-weight: 600;">${escapeHtml(opts.activity.title)}</div>
       <div style="font-size: 14px; color: #555; margin-top: 4px;">${escapeHtml(whenStr)} · ${dur}</div>
     </div>
-    ${button(`${PUBLIC_URL}/ateneum/?view=home`, "Avaa Ateneum")}
+    <p>Aikaehdotuksesta tulee yhteinen suunnitelma vasta, kun hyväksyt saman version Ateneumissa.</p>
+    ${button(`${PUBLIC_URL}/ateneum/?view=activities`, "Katso aikaehdotus")}
   `;
   const unsub = await buildUnsubscribeUrl(opts.toUser);
   return sendEmail({
     to: opts.toUser.email,
-    subject: `Uusi aktiviteetti: ${opts.activity.title}`,
-    html: layout({ title: "Aktiviteetti suunniteltu", body, unsubscribeUrl: unsub }),
+    subject: `Aikaehdotus: ${opts.activity.title}`,
+    html: layout({ title: "Uusi aikaehdotus", body, unsubscribeUrl: unsub }),
     kind: "activity_planned",
     meta: { activityId: opts.activity.id, fromUserId: opts.fromUser.id },
   });

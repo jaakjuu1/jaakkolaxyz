@@ -10,6 +10,7 @@
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "test:ateneum": "tsx --test tests/ateneum/*.test.ts",
+    "test:ateneum:browser": "python3 tests/ateneum/browser_qa.py",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {

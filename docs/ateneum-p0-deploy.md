@@ -36,6 +36,9 @@ public-static/ateneum/index.html
 public-static/ateneum/activity.html
 tests/ateneum/p0.test.ts
 tests/ateneum/seed.test.ts
+tests/ateneum/browser_qa.py
+tests/ateneum/migration_qa.py
+docs/ateneum-p0-deploy.md
 dist/index.cjs
 dist/server-metafile.json
 dist/runtime-externals.json
@@ -48,7 +51,7 @@ Muita tuotantotiedostoja, dashboardia tai salaista `.env`-tiedostoa ei korvata.
 ## Esiehdot
 
 - PR on hyväksytty ja merge-SHA on muuttujassa `MERGE_SHA`.
-- `npm ci`, `npm run check`, `npm run test:ateneum` ja `npm run build` menevät läpi puhtaassa release-worktreessä.
+- `npm ci`, `npm run check`, `npm run test:ateneum`, `npm run build` ja `npm run test:ateneum:browser` menevät läpi puhtaassa release-worktreessä.
 - Release-bundle sisältää `ateneum_weekly_suggestions`-skeeman.
 - `dist/runtime-externals.json` on johdettu esbuild-metafilesta. Jokainen vaadittu external-paketti täsmää release-lockiin ja tuotantoon; native-moduulit `argon2` ja `better-sqlite3` myös smoke-loadataan. `pg-native` on `pg`:n valinnainen importti ja saa puuttua vain, jos bundle käynnistyy ilman sitä.
 - Release-portti käynnistää ensin uuden ja sitten vanhan live-bundlen samalla tuotanto-DB:n kopiolla. Näin rollback vanhaan koodiin uuden migraation jälkeen todistetaan ennen live-stoppiä.
@@ -66,9 +69,14 @@ ARTIFACT=/tmp/jaakkolaxyz-ateneum-p0-${MERGE_SHA}.tar.gz
 git worktree add --detach "$RELEASE_DIR" "$MERGE_SHA"
 cd "$RELEASE_DIR"
 npm ci
+python3 -c 'import websockets'
+CHROME_BIN=${CHROME_BIN:-$(command -v google-chrome || command -v chromium)}
+test -x "$CHROME_BIN"
+export CHROME_BIN
 npm run check
 npm run test:ateneum
 npm run build
+npm run test:ateneum:browser
 
 test -s dist/index.cjs
 test -s dist/server-metafile.json
@@ -87,7 +95,9 @@ tar -czf "$ARTIFACT" \
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts \
   shared/ateneum-schema.ts public-static/ateneum/index.html \
   public-static/ateneum/activity.html tests/ateneum/p0.test.ts \
-  tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json \
+  tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py \
+  tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md \
+  dist/index.cjs dist/server-metafile.json \
   dist/runtime-externals.json dist/public/ateneum/index.html \
   dist/public/ateneum/activity.html
 sha256sum "$ARTIFACT"
@@ -110,10 +120,10 @@ ssh teppo-server '
     const Database=require("better-sqlite3");
     const db=new Database("data/ateneum.db", {readonly:true});
     const users=db.prepare(
-      "SELECT role, username, email FROM ateneum_users WHERE role IN (?,?) ORDER BY role"
-    ).all("juuso", "wife");
+      "SELECT role, username, CASE WHEN email IS NOT NULL AND trim(email) <> ? THEN 1 ELSE 0 END AS hasEmail FROM ateneum_users WHERE role IN (?,?) ORDER BY role"
+    ).all("", "partner_a", "partner_b");
     console.log(users);
-    if (users.length !== 2 || users.some(u => !u.email)) process.exit(2);
+    if (users.length !== 2 || users.some(u => !u.hasEmail)) process.exit(2);
     db.close();
   '\''
   node -e '\''
@@ -132,6 +142,34 @@ curl -fsS https://jaakkola.xyz/learn/ | grep -Fq '<title>Oppimispolut — itseop
 ```
 
 Jos tiedostot, käyttäjätilanne, paketit tai git-drift ovat muuttuneet, pysähdy ja tee uusi diff. Älä ylikirjoita sokkona.
+
+## 2.1 Harjoittele migraatio tuotantokannan kopiolla
+
+SQLite-kopio tehdään Online Backup API:lla. Testi käynnistää ensin release-bundlen ja sitten nykyisen live-bundlen samalla jo migroidulla kopiolla. Se vaatii vanhojen aktiviteettien säilyvän `legacy`-tilassa sekä `quick_check`- ja FK-tarkistusten menevän läpi molempien käynnistysten jälkeen.
+
+```bash
+set -euo pipefail
+TS=$(date +%Y%m%d-%H%M%S)
+REMOTE_COPY="/tmp/ateneum-release-qa-$TS.db"
+LOCAL_COPY="/tmp/ateneum-release-qa-$TS.db"
+OLD_BUNDLE="/tmp/jaakkolaxyz-live-before-release-$TS.cjs"
+
+ssh teppo-server "cd /home/clawdbot/jaakkolaxyz && node -e '
+  const Database=require(\"better-sqlite3\");
+  (async()=>{
+    const src=new Database(\"data/ateneum.db\");
+    await src.backup(process.argv[1]);
+    src.close();
+  })().catch(error=>{console.error(error);process.exit(1)})
+' '$REMOTE_COPY' && sha256sum '$REMOTE_COPY'"
+scp "teppo-server:$REMOTE_COPY" "$LOCAL_COPY"
+ssh teppo-server "node -e 'require(\"fs\").unlinkSync(process.argv[1])' '$REMOTE_COPY'"
+scp teppo-server:/home/clawdbot/jaakkolaxyz/dist/index.cjs "$OLD_BUNDLE"
+node --check "$OLD_BUNDLE"
+python3 tests/ateneum/migration_qa.py "$LOCAL_COPY" "$OLD_BUNDLE"
+```
+
+Odotus: `ATENEUM_MIGRATION_QA=PASS`. Testi ei saa tulostaa käyttäjien sisältöä, vain määrät ja eheyden.
 
 ## 3. Upload, release ja validoitu backup
 
@@ -162,7 +200,9 @@ ssh teppo-server '
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
     public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-    tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+    tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
+    tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
+    dist/index.cjs dist/server-metafile.json
     dist/runtime-externals.json dist/public/ateneum/index.html
     dist/public/ateneum/activity.html
   )
@@ -265,7 +305,9 @@ ssh teppo-server '
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
     public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-    tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+    tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
+    tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
+    dist/index.cjs dist/server-metafile.json
     dist/runtime-externals.json dist/public/ateneum/index.html
     dist/public/ateneum/activity.html
   )
@@ -365,7 +407,9 @@ FILES=(
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
   shared/ateneum-schema.ts public-static/ateneum/index.html
   public-static/ateneum/activity.html tests/ateneum/p0.test.ts
-  tests/ateneum/seed.test.ts dist/index.cjs dist/server-metafile.json
+  tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
+    tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
+    dist/index.cjs dist/server-metafile.json
   dist/runtime-externals.json dist/public/ateneum/index.html
   dist/public/ateneum/activity.html
 )
@@ -421,10 +465,17 @@ Lisäksi selaimessa molemmilla oikeilla rooleilla:
 - reload ei vaihda ehdotusta
 - yksityinen QA-toive näkyy vain omistajalleen
 - omistaja näkee “Toteutui”-painikkeen, kumppani ei
-- aktiviteetin done/skip/undo/rating toimivat sekä listassa että detail-sivulla
+- käyttäjän jakama idea näkyy tekijän nimellä ja sallii enintään 10 080 minuutin keston
+- yhden käyttäjän aikaehdotus näkyy ehdotuksena, ei yhteisenä suunnitelmana
+- ehdottaja hyväksyy oman versionsa automaattisesti; kumppani näkee `Hyväksy aika` -toiminnon
+- `Tehty` tulee näkyviin vasta molempien hyväksynnän jälkeen
+- muutosehdotus lähettää vain muuttuneet kentät ja `expectedVersion`-arvon; vanha välilehti saa 409:n eikä ylikirjoita
+- peruminen näkyy molemmille ja uudelleenavaus on uusi ehdotus, ei vanhojen hyväksyntöjen palautus
+- mutual-aktiviteetilla ei näytetä yhteistä tähtiarviota
+- botin listat ovat luettavissa mutta kaikki kirjoittavat kontrollit ovat piilossa ja backend palauttaa kirjoitusyritykseen 403
 - footer-unsubscribe sammuttaa kaikki oman käyttäjän ilmoitukset
 - Ideat-välilehti latautuu ilman JS-virheitä
-- 390×844-mobiilinäkymässä neljä alavalikon kohtaa ja detail-wrapper näkyvät ilman vaakaylivuotoa
+- 390×844-mobiilinäkymässä neljä alavalikon kohtaa, planner ja detail-wrapper näkyvät ilman vaakaylivuotoa
 
 ## 7. Rollback
 

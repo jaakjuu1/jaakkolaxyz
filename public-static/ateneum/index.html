@@ -61,6 +61,15 @@
   /* Section */
   h2 { font-size: 1.05rem; margin: 1.5rem 0 0.6rem; font-weight: 600; }
   h2 small { font-weight: 400; color: var(--muted); font-size: 0.85rem; margin-left: 0.4rem; }
+  .section-lead { margin: -0.25rem 0 0.8rem; color: var(--muted); font-size: 0.88rem; }
+  .section-actions { display: flex; gap: 0.5rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .section-actions .btn { flex: 1 1 180px; }
+  .form-card {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 1rem; margin-bottom: 1rem;
+  }
+  .form-card h3 { margin: 0 0 0.25rem; font-size: 1.05rem; }
+  .form-card .form-intro { margin: 0 0 0.9rem; color: var(--muted); font-size: 0.85rem; }
 
   /* Hero card (viikkoehdotus) */
   .hero {
@@ -124,7 +133,7 @@
     .choice-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   .btn {
-    padding: 0.7rem 1rem; font: inherit; font-size: 0.92rem; font-weight: 600;
+    min-height: 44px; padding: 0.7rem 1rem; font: inherit; font-size: 0.92rem; font-weight: 600;
     border-radius: 6px; cursor: pointer; border: 1px solid var(--rule);
     background: var(--card); color: var(--ink);
   }
@@ -162,8 +171,24 @@
     padding: 1rem; margin-bottom: 0.6rem;
   }
   .activity.done { opacity: 0.7; }
+  .activity.proposed { border-left: 4px solid #b8872f; }
+  .activity.accepted { border-left: 4px solid var(--accent); }
   .activity .row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
   .activity .status { font-size: 0.78rem; color: var(--muted); }
+  .activity-plan-state { margin-top: 0.45rem; font-size: 0.82rem; color: #555; }
+  .activity-plan-state strong { color: var(--ink); }
+  .status-chip {
+    display: inline-flex; align-items: center; padding: 0.12rem 0.48rem; border-radius: 999px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .status-chip.proposed { color: #76530d; background: #fff2d2; }
+  .status-chip.accepted { color: var(--accent); background: var(--accent-bg); }
+  .status-chip.done { color: #155724; background: #d4edda; }
+  .status-chip.skipped { color: #721c24; background: #f8d7da; }
+  .idea-author { margin: 0.4rem 0 0.55rem; color: var(--muted); font-size: 0.8rem; }
+  .optional-fields { margin: 0.3rem 0 0.9rem; border-top: 1px solid var(--rule); padding-top: 0.55rem; }
+  .optional-fields summary { cursor: pointer; color: var(--accent); font-size: 0.86rem; font-weight: 600; min-height: 40px; display: flex; align-items: center; }
+  body.read-only .human-write { display: none !important; }
 
   /* Star rating */
   .stars { display: inline-flex; gap: 0.2rem; font-size: 1.4rem; }
@@ -196,20 +221,32 @@
     border: 1px solid var(--rule); border-radius: 6px;
     display: flex; flex-direction: column; gap: 0.7rem;
   }
+  .planner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
   .planner-row {
     display: flex; flex-direction: column; gap: 0.3rem;
   }
+  .planner-row.full { grid-column: 1 / -1; }
   .planner-row label {
     font-size: 0.78rem; color: var(--muted); font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .planner-row select, .planner-row input[type="time"], .planner-row input[type="date"] {
-    width: 100%; padding: 0.6rem; font: inherit; font-size: 0.95rem;
+  .planner-row select,
+  .planner-row input[type="time"],
+  .planner-row input[type="date"],
+  .planner-row input[type="number"],
+  .planner-row input[type="text"],
+  .planner-row textarea {
+    width: 100%; min-height: 44px; padding: 0.6rem; font: inherit; font-size: 0.95rem;
     border: 1px solid var(--rule); border-radius: 6px; background: var(--card);
   }
-  .planner-row select:focus, .planner-row input:focus {
+  .planner-row textarea { min-height: 72px; resize: vertical; }
+  .planner-row select:focus, .planner-row input:focus, .planner-row textarea:focus {
     outline: 2px solid var(--accent); outline-offset: -1px;
   }
+  .planner-sharing { margin: 0; color: var(--muted); font-size: 0.8rem; }
+  .activity-history { margin-top: 1rem; border-top: 1px solid var(--rule); padding-top: 0.7rem; }
+  .activity-history summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+  @media (max-width: 420px) { .planner-grid { grid-template-columns: 1fr; } .planner-row.full { grid-column: auto; } }
   .planner-summary {
     padding: 0.6rem 0.8rem; background: var(--accent-bg); border-radius: 6px;
     font-size: 0.92rem; color: var(--accent); font-weight: 600;
@@ -290,29 +327,94 @@
       <div class="loading">Ladataan ehdotusta…</div>
     </div>
 
-    <h2>Viikon aktiviteetit</h2>
+    <h2>Aikaehdotukset ja suunnitelmat</h2>
+    <p class="section-lead">Valitse valmis idea tai luo oma. Ehdottamasi aika näkyy teille molemmille, mutta siitä tulee yhteinen suunnitelma vasta kumppanin hyväksynnällä.</p>
+    <div class="section-actions human-write">
+      <button class="btn btn-primary" onclick="showView('ideas')">+ Ehdota aikaa</button>
+      <button class="btn" onclick="startNewIdeaFlow()">Jaa oma idea</button>
+    </div>
     <div id="activities-list"></div>
 
     <h2>Pikatoiminnot</h2>
     <div style="display: grid; gap: 0.5rem; grid-template-columns: 1fr 1fr;">
       <button class="btn" onclick="showView('ideas')">📋 Selaa ideoita</button>
       <button class="btn" onclick="showView('wishes')">⭐ Toiveet</button>
-      <button class="btn" onclick="addWish()">+ Lisää toive</button>
-      <button class="btn" onclick="rotateWeeklySuggestion()">🔄 Uusi ehdotus</button>
+      <button class="btn human-write" onclick="addWish()">+ Lisää toive</button>
+      <button class="btn human-write" onclick="rotateWeeklySuggestion()">🔄 Uusi ehdotus</button>
     </div>
   </section>
 
   <!-- Ideat -->
   <section id="view-ideas" class="hidden">
     <h2>Ideat <small id="ideas-count"></small></h2>
+    <p class="section-lead">Idea näkyy teille molemmille, mutta sille ei ole vielä sovittu aikaa. Kortissa näkyy, kumpi idean jakoi.</p>
+    <button class="btn btn-primary btn-block human-write" onclick="showIdeaForm()" style="margin-bottom: 1rem;">+ Jaa uusi idea</button>
+    <div id="idea-form" class="form-card hidden human-write">
+      <h3>Jaa uusi idea</h3>
+      <p class="form-intro">Idea tulee yhteiseen ideapankkiin omalla nimelläsi. Aikaa voi ehdottaa heti tai myöhemmin.</p>
+      <div class="field">
+        <label for="if-title">Otsikko</label>
+        <input id="if-title" maxlength="200" placeholder="esim. Iltakävely ja jäätelö">
+      </div>
+      <div class="field">
+        <label for="if-description">Mitä tehtäisiin?</label>
+        <textarea id="if-description" maxlength="5000" placeholder="Lyhyt kuvaus, joka auttaa muistamaan idean"></textarea>
+      </div>
+      <details class="optional-fields">
+        <summary>Lisätiedot (valinnainen)</summary>
+        <div class="planner-grid">
+          <div class="field">
+            <label for="if-category">Tyyppi</label>
+            <select id="if-category">
+              <option value="indoor">Sisällä</option>
+              <option value="outdoor">Ulkona</option>
+              <option value="culinary">Ruoka ja juoma</option>
+              <option value="culture">Kulttuuri</option>
+              <option value="wellness">Hyvinvointi</option>
+              <option value="creative">Luova tekeminen</option>
+              <option value="social">Yhdessä muiden kanssa</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="if-duration">Arvioitu kesto (min)</label>
+            <input id="if-duration" type="number" min="5" max="10080" step="5" value="90" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label for="if-energy">Tarvittava energia</label>
+            <select id="if-energy">
+              <option value="low">Kevyt</option>
+              <option value="medium" selected>Keskitaso</option>
+              <option value="high">Paljon energiaa</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="if-budget">Budjetti</label>
+            <select id="if-budget">
+              <option value="free">Ilmainen</option>
+              <option value="cheap" selected>Edullinen</option>
+              <option value="moderate">Kohtalainen</option>
+              <option value="splurge">Erityinen panostus</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="if-tags">Hakusanat <span class="muted">(pilkuilla)</span></label>
+          <input id="if-tags" maxlength="300" placeholder="esim. rauhallinen, ulkoilu, ilta">
+        </div>
+      </details>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn btn-primary" style="flex:1;" onclick="submitIdea(this)">Jaa idea</button>
+        <button class="btn btn-secondary" style="flex:1;" onclick="hideIdeaForm()">Peruuta</button>
+      </div>
+    </div>
     <div id="ideas-list"></div>
   </section>
 
   <!-- Toiveet -->
   <section id="view-wishes" class="hidden">
     <h2>Toiveet <small id="wishes-count"></small></h2>
-    <button class="btn btn-primary btn-block" onclick="showWishForm()" style="margin-bottom: 1rem;">+ Lisää uusi toive</button>
-    <div id="wish-form" class="hidden" style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+    <button class="btn btn-primary btn-block human-write" onclick="showWishForm()" style="margin-bottom: 1rem;">+ Lisää uusi toive</button>
+    <div id="wish-form" class="hidden human-write" style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
       <div class="field">
         <label>Toive</label>
         <textarea id="wf-title" placeholder="esim. Toivon että sinä laittaisit yllätysaamiaisen sänkyyn"></textarea>
@@ -349,21 +451,21 @@
       <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 0.6rem;">Sähköposti-ilmoitukset</div>
       <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Valitse mitä haluat saada sähköpostiisi.</div>
       <div id="settings-prefs" class="loading">Ladataan…</div>
-      <button class="btn btn-primary btn-block" onclick="savePrefs()" style="margin-top: 1rem;">Tallenna asetukset</button>
+      <button class="btn btn-primary btn-block human-write" onclick="savePrefs()" style="margin-top: 1rem;">Tallenna asetukset</button>
       <div id="settings-msg" style="font-size: 0.85rem; color: var(--accent); margin-top: 0.5rem; text-align: center;"></div>
     </div>
 
     <div style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
       <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 0.4rem;">Testaa viikkoehdotus</div>
       <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Lähettää sinulle viikon ehdotuksen heti testiä varten.</div>
-      <button class="btn btn-block" onclick="testWeeklySend()">Lähetä minulle nyt</button>
+      <button class="btn btn-block human-write" onclick="testWeeklySend()">Lähetä minulle nyt</button>
       <div id="settings-test-msg" style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; text-align: center;"></div>
     </div>
   </section>
 </div>
 
 <!-- Footer unsubscribe linkki -->
-<div id="app-footer" class="wrap hidden" style="padding: 1rem 1rem 0; text-align: center;">
+<div id="app-footer" class="wrap hidden human-write" style="padding: 1rem 1rem 0; text-align: center;">
   <a href="#" id="footer-unsubscribe" style="font-size: 0.78rem; color: var(--muted); text-decoration: underline;">Lopeta sähköposti-ilmoitukset</a>
 </div>
 
@@ -389,6 +491,16 @@
 // === API ===
 const API_BASE = '/api/ateneum';
 let currentUser = null;
+const loadGenerations = { connection: 0, weekly: 0, activities: 0, ideas: 0, wishes: 0 };
+function canWrite() { return currentUser && currentUser.role !== 'bot'; }
+function beginLoad(key) { loadGenerations[key] = (loadGenerations[key] || 0) + 1; return loadGenerations[key]; }
+function isLatestLoad(key, generation) { return loadGenerations[key] === generation; }
+const IDEA_CATEGORY_LABELS = {
+  indoor: 'Sisällä', outdoor: 'Ulkona', culinary: 'Ruoka ja juoma', culture: 'Kulttuuri',
+  wellness: 'Hyvinvointi', creative: 'Luova', social: 'Yhdessä muiden kanssa',
+};
+const IDEA_ENERGY_LABELS = { low: 'Kevyt', medium: 'Keskitaso', high: 'Paljon energiaa' };
+const IDEA_BUDGET_LABELS = { free: 'Ilmainen', cheap: 'Edullinen', moderate: 'Kohtalainen', splurge: 'Erityinen panostus' };
 
 async function api(path, opts = {}) {
   const r = await fetch(API_BASE + path, {
@@ -464,6 +576,7 @@ async function verifyMagicLinkToken(token) {
 async function doLogout() {
   try { await api('/auth/logout', { method: 'POST' }); } catch {}
   currentUser = null;
+  document.body.classList.remove('read-only');
   document.getElementById('app-view').classList.add('hidden');
   document.getElementById('app-footer').classList.add('hidden');
   document.getElementById('login-view').classList.remove('hidden');
@@ -473,6 +586,7 @@ async function doLogout() {
 
 function enterApp(user) {
   currentUser = user;
+  document.body.classList.toggle('read-only', user.role === 'bot');
   document.getElementById('login-view').classList.add('hidden');
   document.getElementById('app-view').classList.remove('hidden');
   document.getElementById('app-footer').classList.remove('hidden');
@@ -497,7 +611,6 @@ function enterApp(user) {
     }
   };
   showView('home');
-  loadHome();
 }
 
 // Enter-näppäin lähettää lomakkeen
@@ -515,10 +628,27 @@ function showView(name) {
   for (const b of document.querySelectorAll('nav.tabs button')) {
     b.classList.toggle('on', b.dataset.view === name);
   }
-  if (name === 'ideas' && !document.getElementById('ideas-list').dataset.loaded) loadIdeas();
-  if (name === 'wishes' && !document.getElementById('wishes-list').dataset.loaded) loadWishes();
+  if (name === 'home') loadHome();
+  if (name === 'ideas') loadIdeas();
+  if (name === 'wishes') loadWishes();
   if (name === 'settings') loadSettings();
 }
+
+let focusRefreshTimer = null;
+function refreshVisibleView() {
+  if (!currentUser || document.getElementById('app-view').classList.contains('hidden')) return;
+  const visible = ['home', 'ideas', 'wishes', 'settings']
+    .find(view => !document.getElementById('view-' + view).classList.contains('hidden'));
+  if (visible) showView(visible);
+}
+function queueVisibleRefresh() {
+  clearTimeout(focusRefreshTimer);
+  focusRefreshTimer = setTimeout(refreshVisibleView, 200);
+}
+window.addEventListener('focus', queueVisibleRefresh);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') queueVisibleRefresh();
+});
 
 // === Home: yhteyssilmukka + viikkoehdotus ===
 let connectionState = null;
@@ -819,12 +949,16 @@ async function submitConnectionReflection(button) {
 }
 
 async function loadConnection() {
+  const generation = beginLoad('connection');
   const card = document.getElementById('connection-card');
   card.innerHTML = '<div class="loading">Ladataan tämän päivän yhteyttä…</div>';
   try {
-    renderConnectionCard(await api('/connection/today'));
+    const state = await api('/connection/today');
+    if (isLatestLoad('connection', generation)) renderConnectionCard(state);
   } catch (e) {
-    card.innerHTML = `<div class="empty">Yhteystilan lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('connection', generation)) {
+      card.innerHTML = `<div class="empty">Yhteystilan lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
+    }
   }
 }
 
@@ -834,36 +968,39 @@ async function loadHome() {
 }
 
 async function loadWeeklySuggestion() {
+  const generation = beginLoad('weekly');
   const hero = document.getElementById('hero');
   hero.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
     let weekly = await api('/suggestions/weekly');
-    if (weekly.suggestion && !weekly.persisted && currentUser?.role !== 'bot') {
+    if (weekly.suggestion && !weekly.persisted && canWrite()) {
       weekly = await api('/suggestions/weekly/select', { method: 'POST' });
     }
+    if (!isLatestLoad('weekly', generation)) return;
     const suggestion = weekly.suggestion;
     if (!suggestion) {
       hero.innerHTML = '<div class="empty">Ei ehdotusta tällä viikolla — kokeile ladata uudestaan.</div>';
       return;
     }
-    const dur = suggestion.durationMin >= 60 ? `${Math.round(suggestion.durationMin/60)}h` : `${suggestion.durationMin}min`;
     hero.innerHTML = `
       <div class="label">Tämän viikon ehdotus</div>
       <h3>${escapeHtml(suggestion.title)}</h3>
       <p>${escapeHtml(suggestion.description)}</p>
       <div class="meta">
-        <span class="chip cat">${escapeHtml(suggestion.category)}</span>
-        <span class="chip">⚡ ${escapeHtml(suggestion.energyCost)}</span>
-        <span class="chip">💶 ${escapeHtml(suggestion.budgetCost)}</span>
-        <span class="chip">⏱ ${dur}</span>
+        <span class="chip cat">${escapeHtml(IDEA_CATEGORY_LABELS[suggestion.category] || suggestion.category)}</span>
+        <span class="chip">${escapeHtml(IDEA_ENERGY_LABELS[suggestion.energyCost] || suggestion.energyCost)}</span>
+        <span class="chip">${escapeHtml(IDEA_BUDGET_LABELS[suggestion.budgetCost] || suggestion.budgetCost)}</span>
+        <span class="chip">${formatDuration(suggestion.durationMin)}</span>
       </div>
-      <div class="actions">
-        <button class="btn btn-primary" data-suggestion='${JSON.stringify(suggestion).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}' onclick="openPlanner(this)">Suunnittele</button>
-        <button class="btn" onclick="rotateWeeklySuggestion()">Vaihda</button>
-      </div>
+      ${canWrite() ? `<div class="actions human-write">
+        <button class="btn btn-primary" data-suggestion='${JSON.stringify(suggestion).replace(/'/g, "&apos;").replace(/"/g, "&quot;")}' onclick="openPlanner(this)">Ehdota aikaa</button>
+        <button class="btn" onclick="rotateWeeklySuggestion()">Vaihda ehdotus</button>
+      </div>` : ''}
     `;
   } catch (e) {
-    hero.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('weekly', generation)) {
+      hero.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    }
   }
 }
 
@@ -878,58 +1015,134 @@ async function rotateWeeklySuggestion() {
 }
 
 // === Activities ===
+function formatDuration(minutes) {
+  const value = Number(minutes || 0);
+  if (value >= 60 && value % 60 === 0) return `${value / 60} h`;
+  if (value >= 60) return `${Math.floor(value / 60)} h ${value % 60} min`;
+  return `${value} min`;
+}
+
 async function loadActivities() {
+  const generation = beginLoad('activities');
   const el = document.getElementById('activities-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
-    const { activities } = await api('/activities');
-    if (!activities || activities.length === 0) {
-      el.innerHTML = '<div class="empty">Ei aktiviteetteja vielä. Suunnittele viikon ehdotus!</div>';
-      return;
-    }
-    el.innerHTML = activities.map(a => renderActivity(a)).join('');
+    const { activities = [] } = await api('/activities');
+    if (!isLatestLoad('activities', generation)) return;
+    const planned = activities
+      .filter(a => a.status === 'planned')
+      .sort((a, b) => new Date(a.scheduledFor) - new Date(b.scheduledFor));
+    const history = activities
+      .filter(a => a.status !== 'planned')
+      .sort((a, b) => new Date(b.scheduledFor) - new Date(a.scheduledFor));
+
+    const plannedHtml = `<h3 style="margin:0 0 0.65rem;font-size:0.95rem;">Tulevat aikaehdotukset ja yhteiset suunnitelmat</h3>${planned.length
+      ? planned.map(a => renderActivity(a)).join('')
+      : '<div class="empty">Ei avoimia aikaehdotuksia tai tulevia suunnitelmia. Valitse idea ja ehdota ensimmäinen aika.</div>'}`;
+    const historyHtml = history.length
+      ? `<details class="activity-history"><summary>Aiemmat aktiviteetit (${history.length})</summary>${history.map(a => renderActivity(a)).join('')}</details>`
+      : '';
+    el.innerHTML = plannedHtml + historyHtml;
   } catch (e) {
-    el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    if (isLatestLoad('activities', generation)) {
+      el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+    }
   }
 }
 
 function renderActivity(a) {
   const date = new Date(a.scheduledFor);
-  const dateStr = date.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' });
+  const dateStr = date.toLocaleDateString('fi-FI', {
+    weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
+  });
+  const timeStr = date.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
   const isDone = a.status === 'done';
   const isSkipped = a.status === 'skipped';
   const isConnectionMoment = a.details?.source === 'connection';
+  const isMutual = a.planningMode === 'mutual';
+  const isProposed = isMutual && a.status === 'planned' && a.planState === 'proposed';
+  const isAccepted = isMutual && a.status === 'planned' && a.planState === 'accepted';
+  const statusKey = isDone ? 'done' : isSkipped ? 'skipped' : isProposed ? 'proposed' : 'accepted';
+  const statusLabel = isDone
+    ? 'tehty'
+    : isSkipped
+      ? 'peruttu'
+      : isProposed
+        ? 'aikaehdotus'
+        : isMutual
+          ? 'yhteinen suunnitelma'
+          : 'suunniteltu';
+  const proposer = a.proposedBy?.displayName || a.creator?.displayName || 'Tuntematon';
+  const updater = a.updatedBy?.displayName || proposer;
+  let planStateHtml = '';
+  if (isProposed) {
+    const waiting = a.acceptedByMe ? 'Odottaa kumppanin vastausta.' : 'Odottaa sinun vastaustasi.';
+    planStateHtml = `<div class="activity-plan-state"><strong>${escapeHtml(proposer)}</strong> ehdotti tätä aikaa. ${waiting}</div>`;
+  } else if (isAccepted) {
+    planStateHtml = '<div class="activity-plan-state"><strong>Molemmat hyväksyivät tämän ajan.</strong></div>';
+  } else if (isMutual && a.status !== 'planned') {
+    planStateHtml = `<div class="activity-plan-state">Viimeksi päivitti <strong>${escapeHtml(updater)}</strong>.</div>`;
+  }
+
   let feedbackHtml = '';
-  if (isDone && !isConnectionMoment) {
+  if (isDone && !isConnectionMoment && !isMutual && canWrite()) {
     feedbackHtml = `<div style="margin-top:0.6rem; padding-top:0.6rem; border-top:1px solid var(--rule);">
-      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:0.3rem;">Palaute:</div>
-      ${renderStars(a.id, a.rating)}
-      ${a.notes ? `<div style="font-size:0.85rem; margin-top:0.3rem; color:#444; font-style:italic;">"${escapeHtml(a.notes)}"</div>` : ''}
+      <div style="font-size:0.85rem; color:var(--muted); margin-bottom:0.3rem;">Yhteinen legacy-arvio:</div>
+      ${renderStars(a.id, a.rating, a.version)}
     </div>`;
   }
   const hasDetails = a.details && Object.keys(a.details).length > 0;
+  const editablePlan = escapeHtml(JSON.stringify({
+    id: a.id,
+    title: a.title,
+    scheduledFor: a.scheduledFor,
+    durationMin: a.durationMin,
+    notes: a.notes || '',
+    version: a.version,
+    planningMode: a.planningMode,
+  }));
+
+  let actionsHtml = '';
+  if (canWrite() && !isConnectionMoment) {
+    if (a.status === 'planned' && isProposed) {
+      const cancelLabel = a.acceptedByMe ? 'Peru ehdotus' : 'Ei sovi';
+      actionsHtml = `
+        ${!a.acceptedByMe ? `<button class="btn btn-primary" onclick="acceptActivity('${a.id}', ${a.version})">Hyväksy aika</button>` : ''}
+        <button class="btn" data-activity="${editablePlan}" onclick="openActivityEditor(this)">${a.acceptedByMe ? 'Muokkaa ehdotusta' : 'Ehdota muutosta'}</button>
+        <button class="btn" onclick="skipActivity('${a.id}', ${a.version}, '${cancelLabel}')">${cancelLabel}</button>`;
+    } else if (a.status === 'planned' && isAccepted) {
+      actionsHtml = `
+        <button class="btn" data-activity="${editablePlan}" onclick="openActivityEditor(this)">Ehdota muutosta</button>
+        <button class="btn btn-primary" onclick="markDone('${a.id}', ${a.version})">✓ Tehty</button>
+        <button class="btn" onclick="skipActivity('${a.id}', ${a.version}, 'Peru suunnitelma')">Peru suunnitelma</button>`;
+    } else if (a.status === 'planned' && !isMutual) {
+      actionsHtml = `
+        <button class="btn" data-activity="${editablePlan}" onclick="openActivityEditor(this)">Muokkaa suunnitelmaa</button>
+        <button class="btn btn-primary" onclick="markDone('${a.id}', ${a.version})">✓ Tehty</button>
+        <button class="btn" onclick="skipActivity('${a.id}', ${a.version}, 'Ei nyt')">Ei nyt</button>`;
+    } else if (isSkipped && isMutual) {
+      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version})">Ehdota uudelleen</button>`;
+    } else if (!isMutual && (isDone || isSkipped)) {
+      actionsHtml = `<button class="btn" onclick="markPlanned('${a.id}', ${a.version})">↩ Palauta suunnitelmiin</button>`;
+    }
+  }
+
   return `
-    <div class="activity ${isDone ? 'done' : ''}" data-aid="${a.id}">
+    <div class="activity ${isDone ? 'done' : ''} ${isProposed ? 'proposed' : ''} ${isAccepted ? 'accepted' : ''}" data-aid="${escapeHtml(a.id)}">
       <div class="row">
-        <div style="flex: 1;">
-          <div style="font-weight:600;">${escapeHtml(a.title)}</div>
-          <div class="status">${dateStr} · ${escapeHtml(a.category || '')} · ${escapeHtml(a.status)}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+            <div style="font-weight:600;">${escapeHtml(a.title)}</div>
+            <span class="status-chip ${statusKey}">${escapeHtml(statusLabel)}</span>
+          </div>
+          <div class="status">${dateStr} klo ${timeStr} · ${formatDuration(a.durationMin)}</div>
+          ${planStateHtml}
+          ${a.notes ? `<div style="font-size:0.85rem; margin-top:0.4rem; color:#444;"><strong>Muistiinpano:</strong> ${escapeHtml(a.notes)}</div>` : ''}
         </div>
-        <div style="display:flex; gap:0.3rem; flex-wrap: wrap; align-items: center;">
-          ${hasDetails ? `
-            <a class="btn" href="/ateneum/activity.html?id=${a.id}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background: var(--accent); color: white; border-color: var(--accent);">📋 Suunnitelma</a>
-          ` : ''}
-          ${!isConnectionMoment && a.status === 'planned' ? `
-            <button class="btn btn-primary" onclick="markDone('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;">✓ Tehty</button>
-            <button class="btn" onclick="skipActivity('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Siirrä myöhemmäksi">⏸ Ei nyt</button>
-          ` : ''}
-          ${!isConnectionMoment && a.status === 'done' ? `
-            <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Peruuta</button>
-          ` : ''}
-          ${!isConnectionMoment && a.status === 'skipped' ? `
-            <button class="btn" onclick="markPlanned('${a.id}')" style="padding:0.4rem 0.7rem; font-size:0.85rem;" title="Palauta takaisin suunnitelluksi">↩ Palauta</button>
-          ` : ''}
-        </div>
+      </div>
+      <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.7rem; align-items:center;">
+        ${hasDetails ? `<a class="btn" href="/ateneum/activity.html?id=${encodeURIComponent(a.id)}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background:var(--accent); color:white; border-color:var(--accent);">Avaa suunnitelma</a>` : ''}
+        ${actionsHtml}
       </div>
       ${feedbackHtml}
     </div>
@@ -979,121 +1192,244 @@ async function rateActivity(id, rating) {
   }
 }
 
+function localDateInputValue(date) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 function openPlanner(btn) {
   const card = btn.closest('.hero, .idea');
-  if (!card) return;
-  // Älä avaa kahta kertaa
-  if (card.querySelector('.planner-panel')) return;
+  if (!card || card.querySelector('.planner-panel')) return;
 
-  // Hae suggestion data-attribuutista
   let suggestion;
   try {
-    const raw = btn.getAttribute('data-suggestion') || '';
-    // JSON.parse ei ymmärrä HTML-entiteettejä, palauta '&apos;' -> '
-    const decoded = raw.replace(/&apos;/g, "'");
-    suggestion = JSON.parse(decoded);
-  } catch (e) {
+    suggestion = JSON.parse(btn.getAttribute('data-suggestion') || '');
+  } catch {
     toast('Ehdotuksen lukeminen epäonnistui');
     return;
   }
 
   const titleSafe = escapeHtml(suggestion.title || '');
-  const descSafe = escapeHtml(suggestion.description || '');
-
-  // Piilota alkuperäinen toimintorivi ja lisää laajennus actions-alueen alle
   const actions = card.querySelector('.actions');
   if (actions) actions.style.display = 'none';
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const minDate = localDateInputValue(new Date());
+  const defaultDate = localDateInputValue(tomorrow);
+  const proposedDuration = Number(suggestion.durationMin || 90);
+  const duration = Number.isInteger(proposedDuration) && proposedDuration > 0 ? proposedDuration : 90;
 
   const panel = document.createElement('div');
   panel.className = 'planner-panel';
   panel.dataset.suggestionId = suggestion.id || '';
   panel.innerHTML = `
-    <div style="font-size:0.85rem; color:var(--muted); margin-bottom:-0.2rem;">Suunnittele <strong>${titleSafe}</strong></div>
-    <div class="planner-row">
-      <label for="pp-day-${suggestion.id}">Päivä</label>
-      <select id="pp-day-${suggestion.id}" class="pp-day">
-        <option value="tomorrow" selected>Huomenna</option>
-        <option value="weekend">Tänä viikonloppuna</option>
-        <option value="next-week">Ensi viikolla</option>
-        <option value="custom">Valitse päivä…</option>
-      </select>
-      <input type="date" id="pp-date-${suggestion.id}" class="pp-date hidden" style="margin-top:0.4rem;">
+    <div>
+      <div style="font-size:0.82rem; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">Ehdota aikaa</div>
+      <div style="font-size:1rem; margin-top:0.15rem;"><strong>${titleSafe}</strong></div>
     </div>
-    <div class="planner-row">
-      <label for="pp-time-${suggestion.id}">Aika</label>
-      <input type="time" id="pp-time-${suggestion.id}" class="pp-time" value="18:00">
+    <p class="planner-sharing">Päivä, aika ja muistiinpano näkyvät teille molemmille aikaehdotuksena. Siitä tulee yhteinen suunnitelma vasta kumppanin hyväksynnällä.</p>
+    <div class="planner-grid">
+      <div class="planner-row">
+        <label>Päivä</label>
+        <input type="date" class="pp-date" min="${minDate}" value="${defaultDate}">
+      </div>
+      <div class="planner-row">
+        <label>Kellonaika</label>
+        <input type="time" class="pp-time" value="18:00">
+      </div>
+      <div class="planner-row">
+        <label>Kesto (min)</label>
+        <input type="number" class="pp-duration" min="1" max="10080" step="5" value="${duration}" inputmode="numeric">
+      </div>
+      <div class="planner-row full">
+        <label>Mitä olisi hyvä tietää? <span style="text-transform:none; letter-spacing:0; font-weight:400;">(valinnainen)</span></label>
+        <textarea class="pp-notes" maxlength="5000" placeholder="esim. Lähtö kotoa klo 17.45"></textarea>
+      </div>
     </div>
-    <div class="planner-summary pp-preview" id="pp-preview-${suggestion.id}">→ Ladataan…</div>
+    <div class="planner-summary pp-preview">Ladataan yhteenveto…</div>
     <div style="display:flex; gap:0.5rem;">
       <button class="btn btn-secondary" style="flex:1;" onclick="closePlanner(this)">Peruuta</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="confirmPlan(this)">✓ Vahvista</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="confirmPlan(this)">Lähetä aikaehdotus</button>
     </div>
   `;
 
-  // Lisää paneeli: hero-kortissa actions-alueen jälkeen, idea-kortissa loppuun
-  if (actions) {
-    actions.insertAdjacentElement('afterend', panel);
-  } else {
-    card.appendChild(panel);
-  }
+  if (actions) actions.insertAdjacentElement('afterend', panel);
+  else card.appendChild(panel);
 
-  // Kuuntele muutoksia esikatselua varten
-  const daySel = panel.querySelector('.pp-day');
-  const dateInp = panel.querySelector('.pp-date');
-  const timeInp = panel.querySelector('.pp-time');
-  daySel.addEventListener('change', () => {
-    if (daySel.value === 'custom') {
-      dateInp.classList.remove('hidden');
-      // Aseta minimipäiväksi tänään
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      dateInp.min = `${yyyy}-${mm}-${dd}`;
-      if (!dateInp.value) dateInp.value = dateInp.min;
-    } else {
-      dateInp.classList.add('hidden');
-    }
-    updatePlannerPreview(panel);
+  panel.querySelectorAll('.pp-date, .pp-time, .pp-duration').forEach(input => {
+    input.addEventListener('input', () => updatePlannerPreview(panel));
   });
-  dateInp.addEventListener('change', () => updatePlannerPreview(panel));
-  timeInp.addEventListener('change', () => updatePlannerPreview(panel));
-
   updatePlannerPreview(panel);
 }
 
 
-async function markDone(id) {
+async function acceptActivity(id, version) {
   try {
-    await api(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'done' }) });
-    toast('Merkitty tehdyksi — anna palaute');
+    await api(`/activities/${id}/accept`, {
+      method: 'POST',
+      body: JSON.stringify({ expectedVersion: version }),
+    });
+    toast('Aika hyväksytty — tästä tuli yhteinen suunnitelma');
     await loadActivities();
   } catch (e) {
-    toast('Virhe: ' + e.message);
+    toast('Hyväksyminen epäonnistui: ' + e.message, 4500);
+    await loadActivities();
   }
 }
-async function markPlanned(id) {
+
+async function markDone(id, version) {
+  if (!confirm('Merkitäänkö tämä yhteinen suunnitelma tehdyksi?')) return;
   try {
     await api(`/activities/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status: "planned" })
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'done', expectedVersion: version }),
     });
-    toast("Palautettu suunnitelluksi");
+    toast('Merkitty tehdyksi');
     await loadActivities();
   } catch (e) {
-    toast("Virhe: " + e.message);
-    console.error("markPlanned failed:", e);
+    toast('Virhe: ' + e.message, 4500);
+    await loadActivities();
+  }
+}
+async function markPlanned(id, version) {
+  try {
+    await api(`/activities/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'planned', expectedVersion: version })
+    });
+    toast('Aikaehdotus avattu uudelleen');
+    await loadActivities();
+  } catch (e) {
+    toast('Virhe: ' + e.message, 4500);
+    await loadActivities();
   }
 }
 
-
-async function skipActivity(id) {
+async function skipActivity(id, version, label = 'Peru') {
+  if (!confirm(`${label}? Tämä siirtää aktiviteetin historiaan molemmilta.`)) return;
   try {
-    await api(`/activities/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'skipped' }) });
-    toast('Ohitettu');
+    await api(`/activities/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'skipped', expectedVersion: version }),
+    });
+    toast('Siirretty aiempiin aktiviteetteihin');
     await loadActivities();
   } catch (e) {
-    toast('Virhe: ' + e.message);
+    toast('Virhe: ' + e.message, 4500);
+    await loadActivities();
+  }
+}
+
+function openActivityEditor(btn) {
+  const card = btn.closest('.activity');
+  if (!card || card.querySelector('.activity-editor')) return;
+
+  let activity;
+  try {
+    activity = JSON.parse(btn.getAttribute('data-activity') || '');
+  } catch {
+    toast('Suunnitelman lukeminen epäonnistui');
+    return;
+  }
+
+  const when = new Date(activity.scheduledFor);
+  const isMutual = activity.planningMode === 'mutual';
+  const panel = document.createElement('div');
+  panel.className = 'planner-panel activity-editor';
+  panel.dataset.activityId = activity.id;
+  panel.dataset.original = JSON.stringify(activity);
+  panel.innerHTML = `
+    <div style="font-size:0.82rem; color:var(--accent); font-weight:700; text-transform:uppercase; letter-spacing:0.04em;">${isMutual ? 'Ehdota muutosta' : 'Muokkaa suunnitelmaa'}</div>
+    <p class="planner-sharing">${isMutual ? 'Muutos avaa uuden aikaehdotuksen. Nykyiset hyväksynnät nollautuvat, koska ne koskivat vanhaa versiota.' : 'Muutokset näkyvät teille molemmille.'}</p>
+    <div class="planner-grid">
+      <div class="planner-row full">
+        <label>Aktiviteetin nimi</label>
+        <input type="text" class="ae-title" maxlength="300" value="${escapeHtml(activity.title || '')}">
+      </div>
+      <div class="planner-row">
+        <label>Päivä</label>
+        <input type="date" class="ae-date" value="${localDateInputValue(when)}">
+      </div>
+      <div class="planner-row">
+        <label>Kellonaika</label>
+        <input type="time" class="ae-time" value="${String(when.getHours()).padStart(2, '0')}:${String(when.getMinutes()).padStart(2, '0')}">
+      </div>
+      <div class="planner-row">
+        <label>Kesto (min)</label>
+        <input type="number" class="ae-duration" min="1" max="10080" step="5" value="${Number(activity.durationMin || 60)}" inputmode="numeric">
+      </div>
+      <div class="planner-row full">
+        <label>Mitä olisi hyvä tietää? <span style="text-transform:none; letter-spacing:0; font-weight:400;">(valinnainen)</span></label>
+        <textarea class="ae-notes" maxlength="5000">${escapeHtml(activity.notes || '')}</textarea>
+      </div>
+    </div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="btn btn-secondary" style="flex:1;" onclick="closeActivityEditor(this)">Peruuta</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveActivityEdit(this)">${isMutual ? 'Lähetä muutosehdotus' : 'Tallenna muutokset'}</button>
+    </div>
+  `;
+  card.appendChild(panel);
+  panel.querySelector('.ae-title').focus();
+}
+
+function closeActivityEditor(btn) {
+  const panel = btn.closest('.activity-editor');
+  if (panel) panel.remove();
+}
+
+async function saveActivityEdit(btn) {
+  const panel = btn.closest('.activity-editor');
+  if (!panel) return;
+  const id = panel.dataset.activityId;
+  let original;
+  try { original = JSON.parse(panel.dataset.original || ''); }
+  catch { toast('Alkuperäisen version lukeminen epäonnistui'); return; }
+  const title = panel.querySelector('.ae-title').value.trim();
+  const date = panel.querySelector('.ae-date').value;
+  const time = panel.querySelector('.ae-time').value;
+  const durationMin = Number(panel.querySelector('.ae-duration').value);
+  const notes = panel.querySelector('.ae-notes').value.trim();
+  if (!title) { toast('Anna aktiviteetille nimi'); return; }
+  if (!date || !time) { toast('Valitse päivä ja kellonaika'); return; }
+  if (!Number.isInteger(durationMin) || durationMin < 1 || durationMin > 10080) {
+    toast('Keston pitää olla 1–10080 minuuttia');
+    return;
+  }
+  const scheduledFor = new Date(`${date}T${time}:00`);
+  if (Number.isNaN(scheduledFor.getTime())) { toast('Tarkista päivämäärä ja aika'); return; }
+
+  const payload = { expectedVersion: Number(original.version) };
+  if (title !== original.title) payload.title = title;
+  if (scheduledFor.toISOString() !== new Date(original.scheduledFor).toISOString()) {
+    payload.scheduledFor = scheduledFor.toISOString();
+  }
+  if (durationMin !== Number(original.durationMin)) payload.durationMin = durationMin;
+  if (notes !== (original.notes || '')) payload.notes = notes;
+  if (Object.keys(payload).length === 1) {
+    toast('Et muuttanut mitään');
+    return;
+  }
+
+  const originalLabel = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Tallennetaan…';
+  try {
+    await api(`/activities/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    toast(original.planningMode === 'mutual'
+      ? 'Muutosehdotus lähetetty — kumppanin hyväksyntä tarvitaan'
+      : 'Suunnitelma päivitetty', 4000);
+    await loadActivities();
+  } catch (e) {
+    toast('Virhe: ' + e.message, 5000);
+    await loadActivities();
+    btn.disabled = false;
+    btn.textContent = originalLabel;
   }
 }
 
@@ -1107,56 +1443,25 @@ function closePlanner(btn) {
 }
 
 function computeScheduledFor(panel) {
-  const day = panel.querySelector('.pp-day').value;
-  const time = panel.querySelector('.pp-time').value || '18:00';
-  const [hh, mm] = time.split(':').map(Number);
-
-  let date;
-  if (day === 'custom') {
-    const dateStr = panel.querySelector('.pp-date').value;
-    if (!dateStr) return null;
-    date = new Date(`${dateStr}T${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:00`);
-    return date;
-  }
-
-  const now = new Date();
-  if (day === 'tomorrow') {
-    date = new Date(now);
-    date.setDate(date.getDate() + 1);
-  } else if (day === 'weekend') {
-    date = new Date(now);
-    // 0=su, 6=la — seuraava lauantai
-    const dow = now.getDay();
-    let addDays = (6 - dow + 7) % 7;
-    if (addDays === 0 && now.getHours() >= 20) addDays = 7;
-    date.setDate(date.getDate() + addDays);
-  } else if (day === 'next-week') {
-    date = new Date(now);
-    // Ensi viikon maanantai
-    const dow = now.getDay();
-    // distance to next Monday: (1 - dow + 7) % 7, with 0 → 7
-    let addDays = (1 - dow + 7) % 7;
-    if (addDays === 0) addDays = 7;
-    date.setDate(date.getDate() + addDays);
-  } else {
-    date = new Date(now);
-    date.setDate(date.getDate() + 1);
-  }
-  date.setHours(hh, mm, 0, 0);
-  return date;
+  const dateStr = panel.querySelector('.pp-date').value;
+  const time = panel.querySelector('.pp-time').value;
+  if (!dateStr || !time) return null;
+  const date = new Date(`${dateStr}T${time}:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 function updatePlannerPreview(panel) {
   const preview = panel.querySelector('.pp-preview');
   if (!preview) return;
   const when = computeScheduledFor(panel);
-  if (!when) {
-    preview.textContent = '→ Valitse päivämäärä';
+  const durationMin = Number(panel.querySelector('.pp-duration').value);
+  if (!when || !Number.isInteger(durationMin) || durationMin < 1 || durationMin > 10080) {
+    preview.textContent = 'Valitse päivä, aika ja kelvollinen kesto';
     return;
   }
   const dateStr = when.toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' });
-  const timeStr = when.toTimeString().slice(0, 5);
-  preview.textContent = `→ ${dateStr} klo ${timeStr}`;
+  const timeStr = when.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+  preview.textContent = `${dateStr} klo ${timeStr} · ${formatDuration(durationMin)}`;
 }
 
 async function confirmPlan(btn) {
@@ -1164,69 +1469,156 @@ async function confirmPlan(btn) {
   if (!panel) return;
   const card = panel.closest('.hero, .idea');
   const when = computeScheduledFor(panel);
-  if (!when) { toast('Valitse päivämäärä'); return; }
+  const durationMin = Number(panel.querySelector('.pp-duration').value);
+  const notes = panel.querySelector('.pp-notes').value.trim();
+  if (!when) { toast('Valitse päivä ja kellonaika'); return; }
+  if (!Number.isInteger(durationMin) || durationMin < 1 || durationMin > 10080) {
+    toast('Keston pitää olla 1–10080 minuuttia');
+    return;
+  }
 
-  // Hae suggestion takaisin paneelin data-attribuutista (turvallisempi kuin globaali)
   const btnOrig = card.querySelector('[data-suggestion]');
   let suggestion;
   try {
-    const raw = btnOrig ? (btnOrig.getAttribute('data-suggestion') || '') : '';
-    const decoded = raw.replace(/&apos;/g, "'");
-    suggestion = JSON.parse(decoded);
+    suggestion = JSON.parse(btnOrig ? (btnOrig.getAttribute('data-suggestion') || '') : '');
   } catch {
     toast('Ehdotuksen lukeminen epäonnistui');
     return;
   }
 
   btn.disabled = true;
-  btn.textContent = 'Tallennetaan…';
+  btn.textContent = 'Lähetetään…';
 
   try {
-    const created = await api('/activities', {
+    await api('/activities', {
       method: 'POST',
       body: JSON.stringify({
         ideaId: suggestion.id,
         title: suggestion.title,
         scheduledFor: when.toISOString(),
-        durationMin: suggestion.durationMin || 120,
-        status: 'planned',
+        durationMin,
+        notes,
       }),
     });
-    showSuccessState(suggestion, when, card);
-    toast(`📅 ${suggestion.title} — ${when.toLocaleDateString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' })} klo ${when.toTimeString().slice(0, 5)}`, 4000);
-    loadActivities();
-
-    // Skrollaa aktiviteettilistaan jos mahdollista
-    setTimeout(() => {
-      const list = document.getElementById('activities-list');
-      if (list) list.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 300);
+    showSuccessState(suggestion, when, durationMin, card);
+    toast('Aikaehdotus lähetetty kumppanille', 4000);
+    await loadActivities();
   } catch (e) {
     toast('Virhe: ' + e.message);
     btn.disabled = false;
-    btn.textContent = '✓ Vahvista';
+    btn.textContent = 'Lähetä aikaehdotus';
   }
 }
 
-function showSuccessState(suggestion, when, sourceCard = null) {
-  const hero = sourceCard?.closest('#connection-card') || document.getElementById('hero');
-  if (!hero) return;
-  const dateStr = when.toLocaleDateString('fi-FI', { weekday: 'long', day: 'numeric', month: 'numeric' });
-  const timeStr = when.toTimeString().slice(0, 5);
-  hero.innerHTML = `
+function showSuccessState(suggestion, when, durationMin, sourceCard = null) {
+  const target = sourceCard?.classList.contains('idea')
+    ? sourceCard
+    : sourceCard?.closest('#connection-card') || document.getElementById('hero');
+  if (!target) return;
+  const dateStr = when.toLocaleDateString('fi-FI', {
+    weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
+  });
+  const timeStr = when.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' });
+  target.innerHTML = `
     <div class="success-card">
       <span class="success-icon">✓</span>
-      <h3>Suunniteltu: ${escapeHtml(suggestion.title)}</h3>
-      <div class="when">📅 ${dateStr} klo ${timeStr}</div>
-      <div class="notify">Toinen saa ilmoituksen.</div>
+      <h3>Aikaehdotus lähetetty: ${escapeHtml(suggestion.title)}</h3>
+      <div class="when">${dateStr} klo ${timeStr} · ${formatDuration(durationMin)}</div>
+      <div class="notify">Ehdotus näkyy nyt teille molemmille ja odottaa kumppanin hyväksyntää.</div>
       <div class="actions">
-        <button class="btn btn-primary" onclick="loadHome()">🔄 Uusi ehdotus</button>
+        <button class="btn btn-primary" onclick="showView('home')">Näytä aikaehdotukset</button>
+        <button class="btn" onclick="continueBrowsingIdeas()">Jatka ideoiden selaamista</button>
       </div>
     </div>
   `;
 }
 
 // === Ideas ===
+function continueBrowsingIdeas() {
+  document.getElementById('ideas-list').dataset.loaded = '';
+  showView('ideas');
+}
+
+function startNewIdeaFlow() {
+  showView('ideas');
+  showIdeaForm();
+}
+
+function showIdeaForm() {
+  const form = document.getElementById('idea-form');
+  form.classList.remove('hidden');
+  form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('if-title').focus();
+}
+
+function hideIdeaForm() {
+  document.getElementById('idea-form').classList.add('hidden');
+}
+
+function resetIdeaForm() {
+  document.getElementById('if-title').value = '';
+  document.getElementById('if-description').value = '';
+  document.getElementById('if-category').value = 'indoor';
+  document.getElementById('if-duration').value = '90';
+  document.getElementById('if-energy').value = 'medium';
+  document.getElementById('if-budget').value = 'cheap';
+  document.getElementById('if-tags').value = '';
+}
+
+async function submitIdea(btn) {
+  const title = document.getElementById('if-title').value.trim();
+  const description = document.getElementById('if-description').value.trim();
+  const category = document.getElementById('if-category').value;
+  const durationMin = Number(document.getElementById('if-duration').value);
+  const energyCost = document.getElementById('if-energy').value;
+  const budgetCost = document.getElementById('if-budget').value;
+  const tags = [...new Set(document.getElementById('if-tags').value
+    .split(',')
+    .map(tag => tag.trim())
+    .filter(Boolean))];
+
+  if (!title) { toast('Anna idealle otsikko'); return; }
+  if (!Number.isInteger(durationMin) || durationMin < 1 || durationMin > 10080) {
+    toast('Keston pitää olla 1–10080 minuuttia');
+    return;
+  }
+  if (tags.length > 30 || tags.some(tag => tag.length > 64)) {
+    toast('Hakusanoja voi olla enintään 30, korkeintaan 64 merkkiä kukin');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Tallennetaan…';
+  try {
+    const { idea } = await api('/ideas', {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        description,
+        category,
+        tags,
+        energyCost,
+        budgetCost,
+        socialMode: 'together',
+        durationMin,
+      }),
+    });
+    resetIdeaForm();
+    btn.disabled = false;
+    btn.textContent = 'Jaa idea';
+    hideIdeaForm();
+    document.getElementById('ideas-list').dataset.loaded = '';
+    await loadIdeas();
+    toast('Idea lisätty — valitse sille ajankohta, kun haluat tehdä suunnitelman');
+    const card = [...document.querySelectorAll('.idea')].find(el => el.dataset.ideaId === idea.id);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } catch (e) {
+    toast('Virhe: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Jaa idea';
+  }
+}
+
 async function loadIdeas() {
   const el = document.getElementById('ideas-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
@@ -1234,27 +1626,25 @@ async function loadIdeas() {
     const { ideas = [] } = await api('/ideas');
     document.getElementById('ideas-count').textContent = `(${ideas.length})`;
     if (!ideas.length) {
-      el.innerHTML = '<div class="empty">Ei ideoita.</div>';
+      el.innerHTML = '<div class="empty">Ei ideoita vielä. Luo ensimmäinen yhteinen idea.</div>';
       return;
     }
-    el.innerHTML = ideas.map(i => {
-      const dur = i.durationMin >= 60 ? `${Math.round(i.durationMin / 60)}h` : `${i.durationMin}min`;
-      return `
-        <div class="idea">
-          <h4>${escapeHtml(i.title)}</h4>
-          <p>${escapeHtml(i.description)}</p>
-          <div class="meta">
-            <span class="chip cat">${escapeHtml(i.category)}</span>
-            <span class="chip">⚡ ${escapeHtml(i.energyCost)}</span>
-            <span class="chip">💶 ${escapeHtml(i.budgetCost)}</span>
-            <span class="chip">⏱ ${dur}</span>
-          </div>
-          <div style="margin-top:0.6rem;">
-            <button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(i))}" onclick="openPlanner(this)">Suunnittele</button>
-          </div>
+    el.innerHTML = ideas.map(i => `
+      <div class="idea" data-idea-id="${escapeHtml(i.id)}">
+        <h4>${escapeHtml(i.title)}</h4>
+        ${i.description ? `<p>${escapeHtml(i.description)}</p>` : ''}
+        ${i.creator?.displayName ? `<div class="idea-author">Jakanut ${escapeHtml(i.creator.displayName)}</div>` : ''}
+        <div class="meta">
+          <span class="chip cat">${escapeHtml(IDEA_CATEGORY_LABELS[i.category] || i.category)}</span>
+          <span class="chip">${escapeHtml(IDEA_ENERGY_LABELS[i.energyCost] || i.energyCost)}</span>
+          <span class="chip">${escapeHtml(IDEA_BUDGET_LABELS[i.budgetCost] || i.budgetCost)}</span>
+          <span class="chip">${formatDuration(i.durationMin)}</span>
         </div>
-      `;
-    }).join('');
+        <div class="actions human-write" style="margin-top:0.7rem;">
+          <button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(i))}" onclick="openPlanner(this)">Suunnittele ajankohta</button>
+        </div>
+      </div>
+    `).join('');
     el.dataset.loaded = '1';
   } catch (e) {
     el.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;

@@ -104,7 +104,42 @@ export const ateneumActivities = sqliteTable("ateneum_activities", {
     .default(sql`(unixepoch())`),
   completedAt: integer("completed_at", { mode: "timestamp" }),
   details: text("details"),
+  planningMode: text("planning_mode", { enum: ["legacy", "mutual"] })
+    .notNull()
+    .default("legacy"),
+  version: integer("version").notNull().default(1),
+  proposedBy: text("proposed_by").references(() => ateneumUsers.id, {
+    onDelete: "set null",
+  }),
+  updatedBy: text("updated_by").references(() => ateneumUsers.id, {
+    onDelete: "set null",
+  }),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
 });
+
+export const ateneumActivityAcceptances = sqliteTable(
+  "ateneum_activity_acceptances",
+  {
+    activityId: text("activity_id")
+      .notNull()
+      .references(() => ateneumActivities.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    version: integer("version").notNull(),
+    acceptedAt: integer("accepted_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    activityUserUnique: uniqueIndex("idx_ateneum_activity_acceptances_activity_user").on(
+      table.activityId,
+      table.userId,
+    ),
+  }),
+);
 
 export const ateneumWishes = sqliteTable("ateneum_wishes", {
   id: text("id").primaryKey(),
@@ -337,6 +372,11 @@ export const insertAteneumActivitySchema = createInsertSchema(ateneumActivities)
   id: true,
   createdAt: true,
   completedAt: true,
+  planningMode: true,
+  version: true,
+  proposedBy: true,
+  updatedBy: true,
+  updatedAt: true,
 });
 
 export const insertAteneumWishSchema = createInsertSchema(ateneumWishes).omit({
@@ -358,6 +398,7 @@ export type AteneumIdea = typeof ateneumIdeas.$inferSelect;
 export type InsertAteneumIdea = z.infer<typeof insertAteneumIdeaSchema>;
 export type AteneumActivity = typeof ateneumActivities.$inferSelect;
 export type InsertAteneumActivity = z.infer<typeof insertAteneumActivitySchema>;
+export type AteneumActivityAcceptance = typeof ateneumActivityAcceptances.$inferSelect;
 export type AteneumWish = typeof ateneumWishes.$inferSelect;
 export type InsertAteneumWish = z.infer<typeof insertAteneumWishSchema>;
 export type AteneumWeeklySuggestion = typeof ateneumWeeklySuggestions.$inferSelect;

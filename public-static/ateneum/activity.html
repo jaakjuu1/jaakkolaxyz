@@ -68,9 +68,18 @@
     border-radius: 12px; font-size: 0.75rem; font-weight: 600;
     text-transform: uppercase; letter-spacing: 0.04em;
   }
-  .status-pill.planned { background: var(--accent-bg); color: var(--accent); }
+  .status-pill.proposed { background: #fff2d2; color: #76530d; }
+  .status-pill.accepted { background: var(--accent-bg); color: var(--accent); }
+  .status-pill.legacy { background: var(--accent-bg); color: var(--accent); }
   .status-pill.done { background: #d4edda; color: #155724; }
   .status-pill.skipped { background: #f8d7da; color: #721c24; }
+  .plan-state {
+    width: 100%; padding: 0.75rem 0.85rem; border-radius: 8px;
+    background: rgba(255,255,255,0.75); color: #4b514d; font-size: 0.9rem;
+  }
+  .plan-state strong { color: var(--ink); }
+  .activity-controls .btn { min-height: 44px; }
+  .activity-controls a.btn { display: inline-flex; align-items: center; text-decoration: none; }
 
   /* Sections */
   .section {
@@ -465,10 +474,27 @@ async function api(path, opts = {}) {
   return res.json();
 }
 
-function statusPill(status) {
-  const labels = { planned: "Suunniteltu", done: "Tehty", skipped: "Ohitettu" };
-  const safeStatus = Object.hasOwn(labels, status) ? status : "planned";
-  return `<span class="status-pill ${safeStatus}">${escapeHtml(labels[status] || status)}</span>`;
+function statusPill(activity) {
+  let kind = "legacy";
+  let label = "Suunniteltu";
+  if (activity.status === "done") {
+    kind = "done";
+    label = "Tehty";
+  } else if (activity.status === "skipped") {
+    kind = "skipped";
+    label = "Peruttu";
+  } else if (activity.planningMode === "mutual" && activity.planState === "proposed") {
+    kind = "proposed";
+    label = "Aikaehdotus";
+  } else if (activity.planningMode === "mutual" && activity.planState === "accepted") {
+    kind = "accepted";
+    label = "Yhteinen suunnitelma";
+  }
+  return `<span class="status-pill ${kind}">${escapeHtml(label)}</span>`;
+}
+
+function canWrite() {
+  return Boolean(me && me.role !== "bot");
 }
 
 function priorityPill(p) {
@@ -491,7 +517,7 @@ function fmtDateTime(iso) {
   if (!iso) return "";
   const d = new Date(iso);
   return d.toLocaleString("fi-FI", {
-    weekday: "short", day: "numeric", month: "numeric",
+    weekday: "short", day: "numeric", month: "numeric", year: "numeric",
     hour: "2-digit", minute: "2-digit"
   });
 }
@@ -965,22 +991,70 @@ function renderNotesTab(a, d) {
 function renderActivity() {
   const a = activity;
   const d = a.details || {};
-  const scheduled = fmtDate(a.scheduledFor);
+  const scheduled = fmtDateTime(a.scheduledFor);
   const duration = a.durationMin ? `${a.durationMin} min` : "";
 
   const isDone = a.status === "done";
   const isSkipped = a.status === "skipped";
   const isPlanned = a.status === "planned";
   const isConnectionMoment = d.source === "connection";
+  const isMutual = a.planningMode === "mutual";
+  const isAccepted = isMutual && a.planState === "accepted";
+  const isProposed = isMutual && a.planState === "proposed";
+  const proposerName = a.proposedBy?.displayName || "Toinen teistä";
+  const updatedByName = a.updatedBy?.displayName || "";
+
+  let planStateHtml = "";
+  if (isMutual) {
+    let message = "";
+    if (isPlanned && isProposed) {
+      message = `<strong>${escapeHtml(proposerName)}</strong> ehdotti tätä aikaa. ${a.acceptedByMe ? "Odottaa kumppanin vastausta." : "Odottaa sinun vastaustasi."}`;
+    } else if (isPlanned && isAccepted) {
+      message = "Molemmat hyväksyivät tämän version.";
+    } else if (isDone) {
+      message = `Yhteinen suunnitelma on merkitty tehdyksi${updatedByName ? ` käyttäjän <strong>${escapeHtml(updatedByName)}</strong> toimesta` : ""}.`;
+    } else if (isSkipped) {
+      message = `Aikaehdotus tai suunnitelma peruttiin${updatedByName ? ` käyttäjän <strong>${escapeHtml(updatedByName)}</strong> toimesta` : ""}.`;
+    }
+    if (message) planStateHtml = `<div class="plan-state">${message}</div>`;
+  }
+
+  let controlsHtml = "";
+  if (isConnectionMoment) {
+    controlsHtml = '<span style="color:var(--muted);font-size:0.9rem;">Tila ja reflektio käsitellään päivän yhteysnäkymässä.</span>';
+  } else if (canWrite() && isMutual) {
+    if (isPlanned && isProposed) {
+      controlsHtml = `${a.acceptedByMe ? "" : '<button class="btn btn-primary" id="hero-accept">Hyväksy aika</button>'}
+        <a class="btn" href="/ateneum/?view=activities">Ehdota muutosta</a>
+        <button class="btn" id="hero-skip">${a.proposedBy?.id === me.id ? "Peru ehdotus" : "Ei sovi"}</button>`;
+    } else if (isPlanned && isAccepted) {
+      controlsHtml = `<a class="btn" href="/ateneum/?view=activities">Ehdota muutosta</a>
+        <button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button>
+        <button class="btn" id="hero-skip">Peru suunnitelma</button>`;
+    } else if (isSkipped) {
+      controlsHtml = '<button class="btn" id="hero-undo">Ehdota uudelleen</button>';
+    }
+  } else if (canWrite() && !isMutual) {
+    if (isPlanned) {
+      controlsHtml = '<button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button><button class="btn" id="hero-skip">Ei nyt</button>';
+    } else if (isDone) {
+      controlsHtml = `<div class="rating-block">
+        <span class="rating-label">Yhteinen legacy-arvio:</span>
+        <div class="stars" id="hero-stars">
+          ${[1,2,3,4,5].map(i => `<button class="star ${(a.rating || 0) >= i ? "on" : ""}" data-rating="${i}" aria-label="${i}/5">★</button>`).join("")}
+        </div>
+      </div><button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>`;
+    } else if (isSkipped) {
+      controlsHtml = '<button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>';
+    }
+  }
 
   let html = `<div class="wrap">${renderHeader()}<div id="content">`;
-
-  // Hero (sisaltaa hallintapainikkeet)
   html += `
     <div class="hero">
       <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 0.5rem;">
         <h2>${escapeHtml(a.title)}</h2>
-        ${statusPill(a.status)}
+        ${statusPill(a)}
       </div>
       <div class="meta">
         ${scheduled ? `<span>📅 ${escapeHtml(scheduled)}</span>` : ""}
@@ -988,29 +1062,8 @@ function renderActivity() {
         ${d.destination ? `<span>📍 ${escapeHtml(d.destination)}</span>` : ""}
         ${d.travelers ? `<span>👥 ${escapeHtml(d.travelers)}</span>` : ""}
       </div>
-
-      <div class="activity-controls">
-        ${isConnectionMoment ? `
-          <span style="color:var(--muted);font-size:0.9rem;">Tila ja reflektio käsitellään päivän yhteysnäkymässä.</span>
-        ` : ""}
-        ${!isConnectionMoment && isPlanned ? `
-          <button class="btn btn-primary" id="hero-mark-done">✓ Tehty</button>
-          <button class="btn" id="hero-skip">⏸ Ei nyt</button>
-          <button class="btn" id="hero-cancel" style="color: #c0392b;">✕ Peruuta</button>
-        ` : ""}
-        ${!isConnectionMoment && isDone ? `
-          <div class="rating-block">
-            <span class="rating-label">Arvio:</span>
-            <div class="stars" id="hero-stars">
-              ${[1,2,3,4,5].map(i => `<button class="star ${(a.rating || 0) >= i ? 'on' : ''}" data-rating="${i}" aria-label="${i}/5">★</button>`).join("")}
-            </div>
-          </div>
-          <button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>
-        ` : ""}
-        ${!isConnectionMoment && isSkipped ? `
-          <button class="btn" id="hero-undo">↩ Palauta suunnitelluksi</button>
-        ` : ""}
-      </div>
+      ${planStateHtml}
+      ${(controlsHtml || isConnectionMoment) ? `<div class="activity-controls">${controlsHtml}</div>` : ""}
     </div>
 
     <div class="tabs">
@@ -1041,46 +1094,70 @@ function renderActivity() {
     </div>
   `;
   html += `</div></div>`;
-
   app.innerHTML = html;
 
-  // Tab-klikkausten kasittely
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.addEventListener("click", () => activateTab(btn.dataset.tab));
   });
-
-  // Palauta aktiivinen tab localStoragesta
   try {
     const saved = localStorage.getItem("ateneum_active_tab");
     if (saved) activateTab(saved);
   } catch (e) {}
 
-  // Hook up actions (samat kuin ennen)
-  async function setStatus(status, msg) {
+  async function refreshAfterError(prefix, error) {
+    toast(`${prefix}: ${error.message}`);
+    console.error(prefix, error);
+    await loadActivity();
+  }
+
+  async function setStatus(status, successMessage, confirmation) {
+    if (confirmation && !confirm(confirmation)) return;
     try {
-      await api(`/activities/${a.id}`, { method: "PATCH", body: JSON.stringify({ status }) });
-      toast(msg);
-      setTimeout(() => location.reload(), 600);
-    } catch (e) { toast("Virhe: " + e.message); console.error("status update failed:", e); }
+      await api(`/activities/${a.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status, expectedVersion: a.version }),
+      });
+      toast(successMessage);
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Tilaa ei voitu päivittää", error);
+    }
+  }
+
+  async function acceptTime() {
+    try {
+      await api(`/activities/${a.id}/accept`, {
+        method: "POST",
+        body: JSON.stringify({ expectedVersion: a.version }),
+      });
+      toast("Aika hyväksytty");
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Aikaa ei voitu hyväksyä", error);
+    }
   }
 
   async function setRating(rating) {
     try {
       await api(`/activities/${a.id}`, { method: "PATCH", body: JSON.stringify({ rating }) });
       toast("Arvioitu " + rating + "/5");
-      document.querySelectorAll("#hero-stars .star").forEach((btn, idx) => btn.classList.toggle("on", idx < rating));
-    } catch (e) { toast("Virhe: " + e.message); }
+      await loadActivity();
+    } catch (error) {
+      await refreshAfterError("Arviota ei voitu tallentaa", error);
+    }
   }
 
-  document.querySelectorAll("[id^='hero-mark-done']").forEach(btn => btn.onclick = () => setStatus("done", "Merkattu tehdyksi"));
-  document.querySelectorAll("[id^='hero-skip']").forEach(btn => btn.onclick = () => setStatus("skipped", "Siirretty tulevaisuuteen"));
-  document.querySelectorAll("[id^='hero-cancel']").forEach(btn => btn.onclick = async () => {
-    if (!confirm("Peruutetaanko aktiviteetti kokonaan?")) return;
-    try { await api(`/activities/${a.id}`, { method: "DELETE" }); toast("Peruutettu"); setTimeout(() => location.href = "/ateneum/", 600); } catch (e) { toast("Virhe: " + e.message); }
+  const acceptButton = document.getElementById("hero-accept");
+  if (acceptButton) acceptButton.onclick = acceptTime;
+  const doneButton = document.getElementById("hero-mark-done");
+  if (doneButton) doneButton.onclick = () => setStatus("done", "Merkitty tehdyksi", "Merkitäänkö yhteinen suunnitelma tehdyksi?");
+  const skipButton = document.getElementById("hero-skip");
+  if (skipButton) skipButton.onclick = () => setStatus("skipped", "Peruttu", "Tämä muuttaa tilan teiltä molemmilta. Jatketaanko?");
+  const undoButton = document.getElementById("hero-undo");
+  if (undoButton) undoButton.onclick = () => setStatus("planned", isMutual ? "Aikaehdotus avattu uudelleen" : "Palautettu suunnitelluksi");
+  document.querySelectorAll("#hero-stars .star").forEach(btn => {
+    btn.onclick = () => setRating(Number(btn.dataset.rating));
   });
-  document.querySelectorAll("[id^='hero-undo']").forEach(btn => btn.onclick = () => setStatus("planned", "Palautettu suunnitelluksi"));
-
-  document.querySelectorAll("#hero-stars .star").forEach(btn => btn.onclick = () => setRating(Number(btn.dataset.rating)));
 }
 
 async function loadActivity() {

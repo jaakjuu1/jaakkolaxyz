@@ -89,7 +89,20 @@ export function initAteneumSchema(): void {
       details TEXT,
       created_by TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
-      completed_at INTEGER
+      completed_at INTEGER,
+      planning_mode TEXT NOT NULL DEFAULT 'legacy' CHECK (planning_mode IN ('legacy','mutual')),
+      version INTEGER NOT NULL DEFAULT 1,
+      proposed_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
+      updated_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+
+    CREATE TABLE IF NOT EXISTS ateneum_activity_acceptances (
+      activity_id TEXT NOT NULL REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL,
+      accepted_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(activity_id, user_id)
     );
 
     CREATE TABLE IF NOT EXISTS ateneum_wishes (
@@ -165,6 +178,7 @@ export function initAteneumSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_ateneum_sessions_user ON ateneum_sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_activities_scheduled ON ateneum_activities(scheduled_for);
     CREATE INDEX IF NOT EXISTS idx_ateneum_activities_status ON ateneum_activities(status);
+    CREATE INDEX IF NOT EXISTS idx_ateneum_activity_acceptances_user ON ateneum_activity_acceptances(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_wishes_user ON ateneum_wishes(user_id);
     CREATE INDEX IF NOT EXISTS idx_ateneum_ideas_active ON ateneum_ideas(is_active);
     CREATE INDEX IF NOT EXISTS idx_ateneum_connection_checkins_user ON ateneum_connection_checkins(user_id);
@@ -194,9 +208,51 @@ export function migrateAteneumSchema(): void {
       `CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_users_email ON ateneum_users(email)`,
     );
 
-    if (!columnNames("ateneum_activities").has("details")) {
+    const activityColumns = columnNames("ateneum_activities");
+    if (!activityColumns.has("details")) {
       ateneumRawDb.exec(`ALTER TABLE ateneum_activities ADD COLUMN details TEXT`);
     }
+    if (!activityColumns.has("planning_mode")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN planning_mode TEXT NOT NULL DEFAULT 'legacy' CHECK (planning_mode IN ('legacy','mutual'))`,
+      );
+    }
+    if (!activityColumns.has("version")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN version INTEGER NOT NULL DEFAULT 1`,
+      );
+    }
+    if (!activityColumns.has("proposed_by")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN proposed_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL`,
+      );
+    }
+    if (!activityColumns.has("updated_by")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN updated_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL`,
+      );
+    }
+    if (!activityColumns.has("updated_at")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0`,
+      );
+    }
+    ateneumRawDb.exec(`
+      UPDATE ateneum_activities
+      SET proposed_by = COALESCE(proposed_by, created_by),
+          updated_by = COALESCE(updated_by, created_by),
+          updated_at = CASE WHEN updated_at = 0 THEN created_at ELSE updated_at END;
+
+      CREATE TABLE IF NOT EXISTS ateneum_activity_acceptances (
+        activity_id TEXT NOT NULL REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+        user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        version INTEGER NOT NULL,
+        accepted_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(activity_id, user_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_activity_acceptances_user
+        ON ateneum_activity_acceptances(user_id);
+    `);
 
     ateneumRawDb.exec(`
       CREATE TABLE IF NOT EXISTS ateneum_email_tokens (
@@ -456,7 +512,17 @@ export function migrateAteneumSchema(): void {
 
   const requiredColumns: Record<string, string[]> = {
     ateneum_users: ["id", "username", "display_name", "password_hash", "email", "role"],
-    ateneum_activities: ["id", "details", "status"],
+    ateneum_activities: [
+      "id",
+      "details",
+      "status",
+      "planning_mode",
+      "version",
+      "proposed_by",
+      "updated_by",
+      "updated_at",
+    ],
+    ateneum_activity_acceptances: ["activity_id", "user_id", "version", "accepted_at"],
     ateneum_api_tokens: [
       "id",
       "token_hash",
@@ -536,6 +602,16 @@ export function migrateAteneumSchema(): void {
     if (!/UNIQUE\s*\(cycle_key,\s*user_id\)/i.test(tableSql)) {
       throw new Error(`Ateneum connection uniqueness constraint is missing: ${table}`);
     }
+  }
+  const acceptanceTableSql = (
+    ateneumRawDb
+      .prepare(
+        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'ateneum_activity_acceptances'",
+      )
+      .get() as { sql?: string } | undefined
+  )?.sql ?? "";
+  if (!/UNIQUE\s*\(activity_id,\s*user_id\)/i.test(acceptanceTableSql)) {
+    throw new Error("Ateneum activity acceptance uniqueness constraint is missing");
   }
   const tokenInfo = new Map(
     columnInfo("ateneum_api_tokens").map((column) => [column.name, column]),

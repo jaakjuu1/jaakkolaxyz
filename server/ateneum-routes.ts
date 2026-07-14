@@ -15,7 +15,6 @@ import {
   ateneumNotificationPrefs,
   ateneumApiTokens,
   insertAteneumPreferencesSchema,
-  insertAteneumActivitySchema,
   insertAteneumWishSchema,
 } from "@shared/ateneum-schema";
 import {
@@ -108,6 +107,7 @@ const ideaEnergySchema = z.enum(["low", "medium", "high"]);
 const ideaBudgetSchema = z.enum(["free", "cheap", "moderate", "splurge"]);
 const ideaSocialModeSchema = z.enum(["solo", "together", "with-friends"]);
 const ideaTagsSchema = z.array(z.string().trim().min(1).max(64)).max(30);
+const MAX_ACTIVITY_DURATION_MIN = 10_080;
 const ideaCreateBodySchema = z
   .object({
     title: z.string().trim().min(1).max(200),
@@ -117,7 +117,7 @@ const ideaCreateBodySchema = z
     energyCost: ideaEnergySchema.default("medium"),
     budgetCost: ideaBudgetSchema.default("cheap"),
     socialMode: ideaSocialModeSchema.default("together"),
-    durationMin: z.number().int().min(1).max(1_440).default(90),
+    durationMin: z.number().int().min(1).max(MAX_ACTIVITY_DURATION_MIN).default(90),
   })
   .strict();
 const ideaUpdateBodySchema = ideaCreateBodySchema
@@ -127,6 +127,34 @@ const ideaUpdateBodySchema = ideaCreateBodySchema
   .refine((body) => Object.keys(body).length > 0, {
     message: "At least one field is required",
   });
+
+const activityCreateBodySchema = z
+  .object({
+    ideaId: z.string().trim().min(1).max(200).nullable().optional(),
+    title: z.string().trim().min(1).max(300),
+    scheduledFor: z.coerce.date(),
+    durationMin: z.number().int().min(1).max(MAX_ACTIVITY_DURATION_MIN).default(60),
+    notes: z.string().max(5_000).default(""),
+  })
+  .strict();
+const activityPatchBodySchema = z
+  .object({
+    expectedVersion: z.number().int().min(1).optional(),
+    title: z.string().trim().min(1).max(300).optional(),
+    scheduledFor: z.coerce.date().optional(),
+    durationMin: z.number().int().min(1).max(MAX_ACTIVITY_DURATION_MIN).optional(),
+    status: z.enum(["planned", "done", "skipped"]).optional(),
+    rating: z.number().int().min(1).max(5).nullable().optional(),
+    notes: z.string().max(5_000).optional(),
+    ideaId: z.string().min(1).max(200).nullable().optional(),
+  })
+  .strict()
+  .refine((value) => Object.keys(value).some((key) => key !== "expectedVersion"), {
+    message: "At least one activity field is required",
+  });
+const activityAcceptBodySchema = z
+  .object({ expectedVersion: z.number().int().min(1) })
+  .strict();
 
 const connectionCheckInBodySchema = z
   .object({
@@ -439,8 +467,9 @@ const saveConnectionCommitment = ateneumRawDb.transaction(
     ateneumRawDb
       .prepare(
         `INSERT INTO ateneum_activities
-          (id, idea_id, title, scheduled_for, duration_min, status, notes, details, created_by)
-         VALUES (?, ?, ?, unixepoch(), ?, 'planned', '', ?, ?)`,
+          (id, idea_id, title, scheduled_for, duration_min, status, notes, details, created_by,
+           planning_mode, version, proposed_by, updated_by, updated_at)
+         VALUES (?, ?, ?, unixepoch(), ?, 'planned', '', ?, ?, 'legacy', 1, ?, ?, unixepoch())`,
       )
       .run(
         activityId,
@@ -448,6 +477,8 @@ const saveConnectionCommitment = ateneumRawDb.transaction(
         idea.title,
         idea.duration_min,
         JSON.stringify({ source: "connection", cycleKey }),
+        userId,
+        userId,
         userId,
       );
     ateneumRawDb
@@ -567,7 +598,7 @@ async function readConnectionState(
   const suggestions = ids
     .map((id) => ideasById.get(id))
     .filter((idea): idea is NonNullable<typeof idea> => Boolean(idea))
-    .map(serializeIdea);
+    .map((idea) => serializeIdea(idea));
 
   let sharedNotes: Array<{ displayName: string; note: string }> = [];
   if (isHumanSession) {
@@ -746,7 +777,10 @@ function parseTags(s: string | null | undefined): string[] {
   }
 }
 
-function serializeIdea(row: any) {
+function serializeIdea(
+  row: any,
+  creator: { id: string; displayName: string; role: string } | null = null,
+) {
   return {
     id: row.id,
     title: row.title,
@@ -759,6 +793,7 @@ function serializeIdea(row: any) {
     durationMin: row.durationMin,
     isActive: row.isActive,
     createdBy: row.createdBy,
+    creator,
     createdAt:
       row.createdAt instanceof Date
         ? row.createdAt.toISOString()
@@ -789,7 +824,264 @@ function serializeActivity(row: any) {
       row.completedAt instanceof Date
         ? row.completedAt.toISOString()
         : row.completedAt,
+    planningMode: row.planningMode ?? "legacy",
+    version: Number(row.version ?? 1),
+    proposedById: row.proposedBy ?? row.createdBy,
+    updatedById: row.updatedBy ?? row.createdBy,
+    updatedAt:
+      row.updatedAt instanceof Date
+        ? row.updatedAt.toISOString()
+        : row.updatedAt ?? row.createdAt,
   };
+}
+
+type ActivityViewer = { id: string; role: string };
+type ActivityPerson = { id: string; displayName: string; role: string };
+
+function serializeActivitiesForViewer(rows: any[], viewer: ActivityViewer) {
+  if (rows.length === 0) return [];
+  const people = ateneumRawDb
+    .prepare(
+      `SELECT id, display_name AS displayName, role
+       FROM ateneum_users
+       WHERE role IN ('partner_a','partner_b')`,
+    )
+    .all() as ActivityPerson[];
+  const peopleById = new Map(people.map((person) => [person.id, person]));
+  const mutualIds = rows
+    .filter((row) => (row.planningMode ?? "legacy") === "mutual")
+    .map((row) => row.id);
+  const acceptanceRows = mutualIds.length
+    ? (ateneumRawDb
+        .prepare(
+          `SELECT activity_id AS activityId, user_id AS userId, version
+           FROM ateneum_activity_acceptances
+           WHERE activity_id IN (${mutualIds.map(() => "?").join(",")})`,
+        )
+        .all(...mutualIds) as Array<{ activityId: string; userId: string; version: number }>)
+    : [];
+  const acceptancesByActivity = new Map<string, Array<{ userId: string; version: number }>>();
+  for (const acceptance of acceptanceRows) {
+    const values = acceptancesByActivity.get(acceptance.activityId) ?? [];
+    values.push({ userId: acceptance.userId, version: acceptance.version });
+    acceptancesByActivity.set(acceptance.activityId, values);
+  }
+  const partnerRole =
+    viewer.role === "partner_a" ? "partner_b" : viewer.role === "partner_b" ? "partner_a" : null;
+  const partner = partnerRole ? people.find((person) => person.role === partnerRole) ?? null : null;
+
+  return rows.map((row) => {
+    const base = serializeActivity(row);
+    const version = base.version;
+    const planningMode = base.planningMode;
+    const acceptedPeople =
+      planningMode === "mutual"
+        ? (acceptancesByActivity.get(row.id) ?? [])
+            .filter(
+              (acceptance) =>
+                acceptance.version === version && peopleById.has(acceptance.userId),
+            )
+            .map((acceptance) => peopleById.get(acceptance.userId)!)
+        : [];
+    const acceptedIds = new Set(acceptedPeople.map((person) => person.id));
+    const planState =
+      planningMode === "legacy"
+        ? "legacy"
+        : new Set(acceptedPeople.map((person) => person.role)).size >= 2
+          ? "accepted"
+          : "proposed";
+    return {
+      ...base,
+      planState,
+      acceptedByMe: planningMode === "legacy" ? true : acceptedIds.has(viewer.id),
+      acceptedByPartner:
+        planningMode === "legacy" ? true : Boolean(partner && acceptedIds.has(partner.id)),
+      acceptedBy: acceptedPeople,
+      creator: peopleById.get(row.createdBy) ?? null,
+      proposedBy: peopleById.get(base.proposedById) ?? null,
+      updatedBy: peopleById.get(base.updatedById) ?? null,
+    };
+  });
+}
+
+function serializeActivityForViewer(row: any, viewer: ActivityViewer) {
+  return serializeActivitiesForViewer([row], viewer)[0];
+}
+
+type RawActivityState = {
+  id: string;
+  planningMode: "legacy" | "mutual";
+  version: number;
+  status: "planned" | "done" | "skipped";
+};
+
+class ActivityTransitionError extends Error {
+  constructor(
+    readonly statusCode: number,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+function readRawActivityState(id: string): RawActivityState {
+  const row = ateneumRawDb
+    .prepare(
+      `SELECT id, planning_mode AS planningMode, version, status
+       FROM ateneum_activities WHERE id = ?`,
+    )
+    .get(id) as RawActivityState | undefined;
+  if (!row) throw new ActivityTransitionError(404, "Activity not found");
+  return row;
+}
+
+function hasBothActivityAcceptances(activityId: string, version: number): boolean {
+  const count = ateneumRawDb
+    .prepare(
+      `SELECT COUNT(DISTINCT u.role)
+       FROM ateneum_activity_acceptances a
+       JOIN ateneum_users u ON u.id = a.user_id
+       WHERE a.activity_id = ? AND a.version = ?
+         AND u.role IN ('partner_a','partner_b')`,
+    )
+    .pluck()
+    .get(activityId, version) as number;
+  return Number(count) >= 2;
+}
+
+function updateActivityState(
+  id: string,
+  actor: ActivityViewer,
+  authKind: "session" | "api_token",
+  input: z.infer<typeof activityPatchBodySchema>,
+): void {
+  const transition = ateneumRawDb.transaction(() => {
+    const current = readRawActivityState(id);
+    const connectionCycle = ateneumRawDb
+      .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
+      .get(id);
+    if (connectionCycle) {
+      throw new ActivityTransitionError(
+        409,
+        "Yhteyshetkeä päivitetään vain yhteyssilmukan kautta",
+      );
+    }
+    if (current.planningMode === "mutual" && authKind !== "session") {
+      throw new ActivityTransitionError(403, "A human browser session is required");
+    }
+    if (current.planningMode === "mutual" && input.expectedVersion === undefined) {
+      throw new ActivityTransitionError(400, "expectedVersion is required");
+    }
+    if (
+      input.expectedVersion !== undefined &&
+      Number(input.expectedVersion) !== Number(current.version)
+    ) {
+      throw new ActivityTransitionError(
+        409,
+        "Suunnitelma muuttui toisessa istunnossa. Lataa uusin versio.",
+      );
+    }
+
+    const contentKeys = ["title", "scheduledFor", "durationMin", "notes", "ideaId"] as const;
+    const contentChanged = contentKeys.some((key) => input[key] !== undefined);
+    const reopensProposal =
+      current.planningMode === "mutual" &&
+      current.status !== "planned" &&
+      input.status === "planned";
+    const startsNewProposal = contentChanged || reopensProposal;
+    const stateChanged = input.status !== undefined || input.rating !== undefined;
+    if (contentChanged && stateChanged) {
+      throw new ActivityTransitionError(400, "Content and status must be updated separately");
+    }
+    if (current.planningMode === "mutual" && input.rating !== undefined) {
+      throw new ActivityTransitionError(409, "Yhteisen aktiviteetin arviot ovat henkilökohtaisia");
+    }
+    if (
+      current.planningMode === "mutual" &&
+      input.status === "done" &&
+      !hasBothActivityAcceptances(id, current.version)
+    ) {
+      throw new ActivityTransitionError(
+        409,
+        "Aikaehdotus pitää hyväksyä yhdessä ennen toteutuksen merkitsemistä",
+      );
+    }
+
+    const assignments: string[] = [];
+    const values: unknown[] = [];
+    const add = (column: string, value: unknown) => {
+      assignments.push(`${column} = ?`);
+      values.push(value);
+    };
+    if (input.title !== undefined) add("title", input.title);
+    if (input.scheduledFor !== undefined) {
+      add("scheduled_for", Math.floor(input.scheduledFor.getTime() / 1000));
+    }
+    if (input.durationMin !== undefined) add("duration_min", input.durationMin);
+    if (input.notes !== undefined) add("notes", input.notes);
+    if (input.ideaId !== undefined) add("idea_id", input.ideaId);
+    if (input.rating !== undefined) add("rating", input.rating);
+    if (input.status !== undefined) {
+      add("status", input.status);
+      if (input.status === "done") assignments.push("completed_at = unixepoch()");
+      else assignments.push("completed_at = NULL");
+    }
+
+    const nextVersion = Number(current.version) + 1;
+    if (startsNewProposal && current.planningMode === "mutual") {
+      assignments.push("status = 'planned'", "completed_at = NULL", "rating = NULL");
+      add("proposed_by", actor.id);
+    }
+    add("version", nextVersion);
+    add("updated_by", actor.id);
+    assignments.push("updated_at = unixepoch()");
+    const requireVersion =
+      current.planningMode === "mutual" || input.expectedVersion !== undefined;
+    const result = ateneumRawDb
+      .prepare(
+        `UPDATE ateneum_activities SET ${assignments.join(", ")}
+         WHERE id = ?${requireVersion ? " AND version = ?" : ""}`,
+      )
+      .run(...values, id, ...(requireVersion ? [current.version] : []));
+    if (result.changes !== 1) {
+      throw new ActivityTransitionError(
+        409,
+        "Suunnitelma muuttui toisessa istunnossa. Lataa uusin versio.",
+      );
+    }
+
+    if (current.planningMode === "mutual") {
+      if (startsNewProposal) {
+        ateneumRawDb
+          .prepare("DELETE FROM ateneum_activity_acceptances WHERE activity_id = ?")
+          .run(id);
+        ateneumRawDb
+          .prepare(
+            `INSERT INTO ateneum_activity_acceptances
+              (activity_id, user_id, version, accepted_at)
+             VALUES (?, ?, ?, unixepoch())`,
+          )
+          .run(id, actor.id, nextVersion);
+      } else {
+        ateneumRawDb
+          .prepare(
+            `UPDATE ateneum_activity_acceptances
+             SET version = ? WHERE activity_id = ? AND version = ?`,
+          )
+          .run(nextVersion, id, current.version);
+      }
+    }
+  });
+  transition();
+}
+
+function respondActivityTransitionError(res: Response, error: unknown) {
+  if (error instanceof ActivityTransitionError) {
+    return res.status(error.statusCode).json({ message: error.message });
+  }
+  const err = error as any;
+  console.error("[ateneum] activity transition:", err);
+  return res.status(500).json({ message: err?.message || "Activity transition failed" });
 }
 
 function parseDetails(raw: string | null | undefined): any {
@@ -1509,7 +1801,17 @@ export function registerAteneumRoutes(app: Express): void {
         .from(ateneumIdeas)
         .orderBy(desc(ateneumIdeas.createdAt));
       const filtered = includeInactive ? all : all.filter((i) => i.isActive);
-      return res.json({ ideas: filtered.map(serializeIdea) });
+      const people = await ateneumDb
+        .select({
+          id: ateneumUsers.id,
+          displayName: ateneumUsers.displayName,
+          role: ateneumUsers.role,
+        })
+        .from(ateneumUsers);
+      const peopleById = new Map(people.map((person) => [person.id, person]));
+      return res.json({
+        ideas: filtered.map((idea) => serializeIdea(idea, peopleById.get(idea.createdBy ?? "") ?? null)),
+      });
     },
   );
 
@@ -1536,7 +1838,13 @@ export function registerAteneumRoutes(app: Express): void {
             createdBy: user.id,
           })
           .returning();
-        return res.json({ idea: serializeIdea(inserted[0]) });
+        return res.json({
+          idea: serializeIdea(inserted[0], {
+            id: user.id,
+            displayName: user.displayName,
+            role: user.role,
+          }),
+        });
       } catch (err: any) {
         console.error("[ateneum] idea create:", err);
         return res
@@ -1617,51 +1925,66 @@ export function registerAteneumRoutes(app: Express): void {
           .orderBy(desc(ateneumActivities.scheduledFor));
       }
       const rows = await q;
-      return res.json({ activities: rows.map(serializeActivity) });
+      return res.json({
+        activities: serializeActivitiesForViewer(rows, req.ateneumUser!),
+      });
     },
   );
 
   app.post(
     "/api/ateneum/activities",
     requireAteneumAuth,
-    requireHumanWrite,
+    requireHumanSession,
     async (req: AteneumAuthedRequest, res: Response) => {
       const user = req.ateneumUser!;
       try {
-        const raw = req.body ?? {};
-        const parsed = insertAteneumActivitySchema.safeParse({
-          ideaId: raw.ideaId ?? null,
-          title: String(raw.title ?? "").trim(),
-          scheduledFor: new Date(raw.scheduledFor),
-          durationMin: Number(raw.durationMin ?? 60),
-          status: raw.status ?? "planned",
-          rating:
-            raw.rating !== undefined && raw.rating !== null
-              ? Number(raw.rating)
-              : undefined,
-          notes: String(raw.notes ?? ""),
-          createdBy: user.id,
-        });
+        const parsed = activityCreateBodySchema.safeParse(req.body ?? {});
         if (!parsed.success) {
           return res
             .status(400)
             .json({ message: fromZodError(parsed.error).message });
         }
         const id = newId("act");
-        const values: any = { id, ...parsed.data };
-        if (values.status === "done") {
-          values.completedAt = new Date();
-        }
+        const createProposal = ateneumRawDb.transaction(() => {
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_activities
+                (id, idea_id, title, scheduled_for, duration_min, status, rating, notes,
+                 created_by, planning_mode, version, proposed_by, updated_by, updated_at)
+               VALUES (?, ?, ?, ?, ?, 'planned', NULL, ?, ?, 'mutual', 1, ?, ?, unixepoch())`,
+            )
+            .run(
+              id,
+              parsed.data.ideaId ?? null,
+              parsed.data.title,
+              Math.floor(parsed.data.scheduledFor.getTime() / 1000),
+              parsed.data.durationMin,
+              parsed.data.notes,
+              user.id,
+              user.id,
+              user.id,
+            );
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_activity_acceptances
+                (activity_id, user_id, version, accepted_at)
+               VALUES (?, ?, 1, unixepoch())`,
+            )
+            .run(id, user.id);
+        });
+        createProposal();
         const inserted = await ateneumDb
-          .insert(ateneumActivities)
-          .values(values)
-          .returning();
+          .select()
+          .from(ateneumActivities)
+          .where(eq(ateneumActivities.id, id))
+          .limit(1);
+        if (!inserted[0]) {
+          throw new Error("Created activity could not be reloaded");
+        }
 
-        // Email: notify the *other* user
+        // Email: notify the other human that a time was proposed, not agreed.
         try {
-          const others = await ateneumDb
-            .select()
-            .from(ateneumUsers);
+          const others = await ateneumDb.select().from(ateneumUsers);
           const other = selectHumanPartner(others, user);
           if (other) {
             sendActivityPlanned({
@@ -1676,12 +1999,15 @@ export function registerAteneumRoutes(app: Express): void {
           console.error("[ateneum] activity email setup failed:", e);
         }
 
-        return res.json({ activity: serializeActivity(inserted[0]) });
+        return res.json({
+          activity: serializeActivityForViewer(inserted[0], user),
+        });
       } catch (err: any) {
         console.error("[ateneum] activity create:", err);
+        const status = String(err?.code ?? "").startsWith("SQLITE_CONSTRAINT") ? 400 : 500;
         return res
-          .status(500)
-          .json({ message: err.message || "Failed to create activity" });
+          .status(status)
+          .json({ message: status === 400 ? "Invalid activity proposal" : err.message || "Failed to create activity" });
       }
     },
   );
@@ -1700,7 +2026,9 @@ export function registerAteneumRoutes(app: Express): void {
         if (!rows[0]) {
           return res.status(404).json({ message: "Activity not found" });
         }
-        return res.json({ activity: serializeActivity(rows[0]) });
+        return res.json({
+          activity: serializeActivityForViewer(rows[0], req.ateneumUser!),
+        });
       } catch (err: any) {
         console.error("[ateneum] activity get:", err);
         return res
@@ -1715,53 +2043,86 @@ export function registerAteneumRoutes(app: Express): void {
     requireAteneumAuth,
     requireHumanWrite,
     async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = activityPatchBodySchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
       try {
         const id = req.params.id;
-        const parsed = z
-          .object({
-            title: z.string().trim().min(1).max(300).optional(),
-            scheduledFor: z.coerce.date().optional(),
-            durationMin: z.number().int().min(1).max(1440).optional(),
-            status: z.enum(["planned", "done", "skipped"]).optional(),
-            rating: z.number().int().min(1).max(5).nullable().optional(),
-            notes: z.string().max(5000).optional(),
-            ideaId: z.string().min(1).max(200).nullable().optional(),
-          })
-          .strict()
-          .refine((value) => Object.keys(value).length > 0)
-          .safeParse(req.body ?? {});
-        if (!parsed.success) {
-          return res.status(400).json({ message: "Invalid activity update" });
-        }
-        const connectionCycle = ateneumRawDb
-          .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
-          .get(id);
-        if (connectionCycle) {
-          return res.status(409).json({
-            message: "Yhteyshetkeä päivitetään vain yhteyssilmukan kautta",
-          });
-        }
-        const update: any = { ...parsed.data };
-        if (parsed.data.status !== undefined) {
-          if (parsed.data.status === "done") update.completedAt = new Date();
-          if (parsed.data.status === "planned" || parsed.data.status === "skipped") {
-            update.completedAt = null;
-          }
-        }
+        updateActivityState(
+          id,
+          req.ateneumUser!,
+          req.ateneumAuth!.kind,
+          parsed.data,
+        );
         const updated = await ateneumDb
-          .update(ateneumActivities)
-          .set(update)
+          .select()
+          .from(ateneumActivities)
           .where(eq(ateneumActivities.id, id))
-          .returning();
+          .limit(1);
         if (!updated[0]) {
           return res.status(404).json({ message: "Activity not found" });
         }
-        return res.json({ activity: serializeActivity(updated[0]) });
-      } catch (err: any) {
-        console.error("[ateneum] activity update:", err);
-        return res
-          .status(500)
-          .json({ message: err.message || "Failed to update activity" });
+        return res.json({
+          activity: serializeActivityForViewer(updated[0], req.ateneumUser!),
+        });
+      } catch (error) {
+        return respondActivityTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/activities/:id/accept",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = activityAcceptBodySchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      const id = req.params.id;
+      try {
+        const accept = ateneumRawDb.transaction(() => {
+          const current = readRawActivityState(id);
+          if (current.planningMode !== "mutual") {
+            throw new ActivityTransitionError(409, "Vanha aktiviteetti ei käytä hyväksyntäpolkua");
+          }
+          if (current.status !== "planned") {
+            throw new ActivityTransitionError(409, "Vain avoimen aikaehdotuksen voi hyväksyä");
+          }
+          if (Number(current.version) !== Number(parsed.data.expectedVersion)) {
+            throw new ActivityTransitionError(
+              409,
+              "Aikaehdotus muuttui. Lataa uusin versio ennen hyväksymistä.",
+            );
+          }
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_activity_acceptances
+                (activity_id, user_id, version, accepted_at)
+               VALUES (?, ?, ?, unixepoch())
+               ON CONFLICT(activity_id, user_id) DO UPDATE SET
+                 version = excluded.version,
+                 accepted_at = excluded.accepted_at`,
+            )
+            .run(id, user.id, current.version);
+        });
+        accept();
+        const updated = await ateneumDb
+          .select()
+          .from(ateneumActivities)
+          .where(eq(ateneumActivities.id, id))
+          .limit(1);
+        if (!updated[0]) {
+          return res.status(404).json({ message: "Activity not found" });
+        }
+        return res.json({
+          activity: serializeActivityForViewer(updated[0], user),
+        });
+      } catch (error) {
+        return respondActivityTransitionError(res, error);
       }
     },
   );
@@ -1772,6 +2133,17 @@ export function registerAteneumRoutes(app: Express): void {
     requireHumanWrite,
     async (req: AteneumAuthedRequest, res: Response) => {
       const id = req.params.id;
+      const state = ateneumRawDb
+        .prepare("SELECT planning_mode AS planningMode FROM ateneum_activities WHERE id = ?")
+        .get(id) as { planningMode: string } | undefined;
+      if (!state) {
+        return res.status(404).json({ message: "Activity not found" });
+      }
+      if (state.planningMode === "mutual") {
+        return res.status(409).json({
+          message: "Aikaehdotus perutaan tilapäivityksellä, ei poistamalla historiaa",
+        });
+      }
       const connectionCycle = ateneumRawDb
         .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
         .get(id);
@@ -2125,7 +2497,7 @@ export function registerAteneumRoutes(app: Express): void {
         weekKey,
         persisted,
         suggestion: suggestion ? serializeIdea(suggestion) : null,
-        alternates: alternates.map(serializeIdea),
+        alternates: alternates.map((idea) => serializeIdea(idea)),
       });
     },
   );
@@ -2141,7 +2513,7 @@ export function registerAteneumRoutes(app: Express): void {
         weekKey,
         persisted,
         suggestion: suggestion ? serializeIdea(suggestion) : null,
-        alternates: alternates.map(serializeIdea),
+        alternates: alternates.map((idea) => serializeIdea(idea)),
       });
     },
   );
@@ -2155,7 +2527,7 @@ export function registerAteneumRoutes(app: Express): void {
       return res.json({
         weekKey,
         suggestion: suggestion ? serializeIdea(suggestion) : null,
-        alternates: alternates.map(serializeIdea),
+        alternates: alternates.map((idea) => serializeIdea(idea)),
       });
     },
   );

@@ -189,6 +189,7 @@ test("bot is read-only across every shared-data mutation", async () => {
     { method: "DELETE", path: "/api/ateneum/ideas/missing" },
     { method: "POST", path: "/api/ateneum/activities", body: {} },
     { method: "PATCH", path: "/api/ateneum/activities/missing", body: {} },
+    { method: "POST", path: "/api/ateneum/activities/missing/accept", body: { expectedVersion: 1 } },
     { method: "DELETE", path: "/api/ateneum/activities/missing" },
     { method: "POST", path: "/api/ateneum/wishes", body: {} },
     { method: "PATCH", path: "/api/ateneum/wishes/missing", body: {} },
@@ -345,7 +346,6 @@ test("stored weekly suggestion survives planning and idea deactivation", async (
       title: before.suggestion.title,
       scheduledFor: new Date(Date.now() + 86_400_000).toISOString(),
       durationMin: 60,
-      status: "planned",
     },
   });
   assert.equal(planned.status, 200);
@@ -501,6 +501,49 @@ test("frontend defines every Ateneum action it invokes", () => {
   );
 });
 
+test("frontend exposes user-created ideas and explicit editable activity plans", () => {
+  const html = readFileSync(path.resolve("public-static/ateneum/index.html"), "utf8");
+
+  for (const marker of [
+    'id="idea-form"',
+    'id="if-title"',
+    'id="if-description"',
+    'id="if-category"',
+    'id="if-duration"',
+    'id="if-energy"',
+    'id="if-budget"',
+    'class="pp-date"',
+    'class="pp-time"',
+    'class="pp-duration"',
+    'class="pp-notes"',
+    "Jaa uusi idea",
+    "Tulevat aikaehdotukset ja yhteiset suunnitelmat",
+    "Aiemmat aktiviteetit",
+  ]) {
+    assert.match(html, new RegExp(marker));
+  }
+
+  for (const functionName of [
+    "showIdeaForm",
+    "hideIdeaForm",
+    "submitIdea",
+    "continueBrowsingIdeas",
+    "openActivityEditor",
+    "saveActivityEdit",
+  ]) {
+    assert.match(html, new RegExp(`(?:async\\s+)?function\\s+${functionName}\\s*\\(`));
+  }
+
+  assert.match(
+    html,
+    /async function submitIdea[\s\S]*?api\(["']\/ideas["']\s*,\s*\{[\s\S]*?method:\s*["']POST["']/,
+  );
+  assert.match(
+    html,
+    /async function saveActivityEdit[\s\S]*?api\(`\/activities\/\$\{id\}`\s*,\s*\{[\s\S]*?method:\s*["']PATCH["']/,
+  );
+});
+
 test("frontend API contracts and activity detail DOM stay aligned", () => {
   const index = readFileSync(path.resolve("public-static/ateneum/index.html"), "utf8");
   const detail = readFileSync(path.resolve("public-static/ateneum/activity.html"), "utf8");
@@ -513,28 +556,182 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.doesNotMatch(index, /value=["']hopeful["']/);
   assert.match(index, /w\.userId\s*===\s*currentUser\.id/);
   assert.match(index, /const\s+isConnectionMoment\s*=\s*a\.details\?\.source\s*===\s*'connection'/);
-  assert.match(index, /!isConnectionMoment\s*&&\s*a\.status\s*===\s*'done'/);
+  assert.match(index, /const\s+isAccepted\s*=\s*isMutual\s*&&\s*a\.status\s*===\s*'planned'/);
+  assert.match(index, /\/activities\/\$\{id\}\/accept/);
+  assert.match(index, /expectedVersion:\s*version/);
   assert.match(detail, /const\s+isConnectionMoment\s*=\s*d\.source\s*===\s*"connection"/);
-  assert.match(detail, /!isConnectionMoment\s*&&\s*isPlanned/);
+  assert.match(detail, /const\s+isAccepted\s*=\s*isMutual\s*&&\s*a\.planState\s*===\s*"accepted"/);
+  assert.match(detail, /\/activities\/\$\{a\.id\}\/accept/);
+  assert.match(detail, /expectedVersion:\s*a\.version/);
+  assert.match(detail, /me\.role\s*!==\s*"bot"/);
+  assert.doesNotMatch(detail, /method:\s*"DELETE"/);
   assert.match(detail, /Tila ja reflektio käsitellään päivän yhteysnäkymässä/);
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
 
-test("activity status and rating use the shared PATCH contract", async () => {
-  const createdResponse = await request("/api/ateneum/activities", {
+test("activity proposal email describes a proposal instead of a shared agreement", () => {
+  const source = readFileSync(path.resolve("server/ateneum-email.ts"), "utf8");
+  const start = source.indexOf("export async function sendActivityPlanned");
+  const end = source.indexOf("export async function", start + 1);
+  assert.ok(start >= 0 && end > start, "activity email function boundaries missing");
+  const activityEmail = source.slice(start, end);
+  for (const marker of [
+    "Aikaehdotus:",
+    "Uusi aikaehdotus",
+    "ehdotti yhteistä aikaa",
+    "Katso aikaehdotus",
+  ]) {
+    assert.ok(activityEmail.includes(marker), `activity email missing: ${marker}`);
+  }
+  assert.doesNotMatch(activityEmail, /Suunnitelma on nyt tallennettu|Aktiviteetti suunniteltu/);
+});
+
+test("mutual activity proposals require reciprocal acceptance and optimistic versions", async () => {
+  const scheduledFor = new Date(Date.now() + 7 * 86_400_000).toISOString();
+  const create = await request("/api/ateneum/activities", {
     method: "POST",
     cookie: juusoCookie,
     body: {
-      title: "Patch contract test",
-      scheduledFor: new Date(Date.now() + 172_800_000).toISOString(),
-      durationMin: 45,
-      status: "planned",
+      title: "Kahden yön retki",
+      scheduledFor,
+      durationMin: 2_880,
+      notes: "Lähtö perjantaina",
     },
   });
-  assert.equal(createdResponse.status, 200);
-  const created = (await createdResponse.json()) as { activity: { id: string } };
+  assert.equal(create.status, 200);
+  const created = (await create.json()) as any;
+  assert.equal(created.activity.planningMode, "mutual");
+  assert.equal(created.activity.planState, "proposed");
+  assert.equal(created.activity.version, 1);
+  assert.equal(created.activity.durationMin, 2_880);
+  assert.equal(created.activity.acceptedByMe, true);
+  assert.equal(created.activity.acceptedByPartner, false);
+  assert.equal(created.activity.proposedBy.displayName, "Juuso");
+
+  const asHenna = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    cookie: hennaCookie,
+  });
+  assert.equal(asHenna.status, 200);
+  const hennaView = (await asHenna.json()) as any;
+  assert.equal(hennaView.activity.acceptedByMe, false);
+  assert.equal(hennaView.activity.acceptedByPartner, true);
+  assert.equal(hennaView.activity.proposedBy.displayName, "Juuso");
+
+  const prematureDone = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: "done", expectedVersion: 1 },
+  });
+  assert.equal(prematureDone.status, 409);
+
+  const botAccept = await request(`/api/ateneum/activities/${created.activity.id}/accept`, {
+    method: "POST",
+    cookie: botCookie,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(botAccept.status, 403);
+
+  const accepted = await request(`/api/ateneum/activities/${created.activity.id}/accept`, {
+    method: "POST",
+    cookie: hennaCookie,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(accepted.status, 200);
+  const acceptedBody = (await accepted.json()) as any;
+  assert.equal(acceptedBody.activity.planState, "accepted");
+  assert.equal(acceptedBody.activity.acceptedByMe, true);
+  assert.equal(acceptedBody.activity.acceptedByPartner, true);
+
+  const counterproposal = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: hennaCookie,
+    body: {
+      expectedVersion: 1,
+      scheduledFor: new Date(Date.now() + 8 * 86_400_000).toISOString(),
+      notes: "Lähtö lauantaina",
+    },
+  });
+  assert.equal(counterproposal.status, 200);
+  const counterBody = (await counterproposal.json()) as any;
+  assert.equal(counterBody.activity.version, 2);
+  assert.equal(counterBody.activity.planState, "proposed");
+  assert.equal(counterBody.activity.acceptedByMe, true);
+  assert.equal(counterBody.activity.acceptedByPartner, false);
+  assert.equal(counterBody.activity.proposedBy.displayName, "Henna");
+  assert.equal(counterBody.activity.durationMin, 2_880);
+
+  const staleOverwrite = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { expectedVersion: 1, notes: "Vanha välilehti" },
+  });
+  assert.equal(staleOverwrite.status, 409);
+
+  const doneBeforeCounterproposalAcceptance = await request(
+    `/api/ateneum/activities/${created.activity.id}`,
+    {
+      method: "PATCH",
+      cookie: hennaCookie,
+      body: { status: "done", expectedVersion: 2 },
+    },
+  );
+  assert.equal(doneBeforeCounterproposalAcceptance.status, 409);
+
+  const counterAccepted = await request(`/api/ateneum/activities/${created.activity.id}/accept`, {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { expectedVersion: 2 },
+  });
+  assert.equal(counterAccepted.status, 200);
+  assert.equal(((await counterAccepted.json()) as any).activity.planState, "accepted");
 
   const done = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: hennaCookie,
+    body: { status: "done", expectedVersion: 2 },
+  });
+  assert.equal(done.status, 200);
+  const doneBody = (await done.json()) as any;
+  assert.equal(doneBody.activity.status, "done");
+  assert.equal(doneBody.activity.planState, "accepted");
+  assert.equal(doneBody.activity.version, 3);
+  assert.equal(doneBody.activity.updatedBy.displayName, "Henna");
+
+  const reopened = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: "planned", expectedVersion: 3 },
+  });
+  assert.equal(reopened.status, 200);
+  const reopenedBody = (await reopened.json()) as any;
+  assert.equal(reopenedBody.activity.status, "planned");
+  assert.equal(reopenedBody.activity.version, 4);
+  assert.equal(reopenedBody.activity.planState, "proposed");
+  assert.equal(reopenedBody.activity.acceptedByMe, true);
+  assert.equal(reopenedBody.activity.acceptedByPartner, false);
+  assert.equal(reopenedBody.activity.proposedBy.displayName, "Juuso");
+
+  const reopenedDone = await request(`/api/ateneum/activities/${created.activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: "done", expectedVersion: 4 },
+  });
+  assert.equal(reopenedDone.status, 409);
+});
+
+test("legacy activity status and rating keep the shared PATCH contract", async () => {
+  const activityId = `act_legacy_patch_${Date.now()}`;
+  rawDb
+    .prepare(
+      `INSERT INTO ateneum_activities
+        (id, title, scheduled_for, duration_min, status, notes, created_by,
+         planning_mode, version, proposed_by, updated_by, updated_at)
+       VALUES (?, 'Patch contract test', ?, 45, 'planned', '', 'usr_test_juuso',
+               'legacy', 1, 'usr_test_juuso', 'usr_test_juuso', unixepoch())`,
+    )
+    .run(activityId, Math.floor((Date.now() + 172_800_000) / 1000));
+
+  const done = await request(`/api/ateneum/activities/${activityId}`, {
     method: "PATCH",
     cookie: hennaCookie,
     body: { status: "done" },
@@ -542,7 +739,7 @@ test("activity status and rating use the shared PATCH contract", async () => {
   assert.equal(done.status, 200);
   assert.equal(((await done.json()) as any).activity.status, "done");
 
-  const rated = await request(`/api/ateneum/activities/${created.activity.id}`, {
+  const rated = await request(`/api/ateneum/activities/${activityId}`, {
     method: "PATCH",
     cookie: juusoCookie,
     body: { rating: 5 },
@@ -552,14 +749,14 @@ test("activity status and rating use the shared PATCH contract", async () => {
   assert.equal(ratedBody.activity.status, "done");
   assert.equal(ratedBody.activity.rating, 5);
 
-  const invalidStatus = await request(`/api/ateneum/activities/${created.activity.id}`, {
+  const invalidStatus = await request(`/api/ateneum/activities/${activityId}`, {
     method: "PATCH",
     cookie: juusoCookie,
     body: { status: '<img src=x onerror="alert(1)">' },
   });
   assert.equal(invalidStatus.status, 400);
   assert.equal(
-    rawDb.prepare("SELECT status FROM ateneum_activities WHERE id = ?").pluck().get(created.activity.id),
+    rawDb.prepare("SELECT status FROM ateneum_activities WHERE id = ?").pluck().get(activityId),
     "done",
   );
 });
