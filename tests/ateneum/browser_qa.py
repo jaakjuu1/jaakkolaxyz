@@ -262,9 +262,16 @@ def create_page(cdp: CDP, base_url: str, width: int, height: int) -> Page:
 
 
 def run_plan_client(base_url: str, token: str, *args: str) -> Any:
-    client = Path.home() / ".hermes" / "skills" / "ateneum" / "scripts" / "ateneum_client.py"
+    configured_client = os.environ.get("ATENEUM_CLIENT_PATH")
+    client = (
+        Path(configured_client).expanduser().resolve()
+        if configured_client
+        else Path.home() / ".hermes" / "skills" / "ateneum" / "scripts" / "ateneum_client.py"
+    )
     if not client.is_file():
-        raise AssertionError(f"Ateneum conversation client missing: {client}")
+        raise AssertionError(
+            f"Ateneum conversation client missing: {client}; set ATENEUM_CLIENT_PATH"
+        )
     env = os.environ.copy()
     env["ATENEUM_API_URL"] = base_url.rstrip("/") + "/api/ateneum"
     env["ATENEUM_API_TOKEN"] = token

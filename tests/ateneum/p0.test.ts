@@ -773,6 +773,73 @@ test("mutual activity proposals require reciprocal acceptance and optimistic ver
 });
 
 test("agent-assisted plan drafts stay private until a human shares and both accept one revision", async () => {
+  rawDb.exec(`
+    DROP TABLE ateneum_plan_acceptances;
+    DROP TABLE ateneum_plan_revisions;
+    DROP TABLE ateneum_plans;
+    CREATE TABLE ateneum_plans (
+      id TEXT PRIMARY KEY,
+      owner_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL,
+      latest_version INTEGER NOT NULL DEFAULT 1,
+      accepted_version INTEGER,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+    );
+    CREATE TABLE ateneum_plan_revisions (
+      id TEXT PRIMARY KEY,
+      plan_id TEXT NOT NULL REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+      version INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      start_date TEXT,
+      end_date TEXT,
+      summary TEXT NOT NULL DEFAULT '',
+      content TEXT NOT NULL DEFAULT '{"sections":[]}',
+      status TEXT NOT NULL,
+      drafted_by TEXT NOT NULL,
+      created_by TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(plan_id, version)
+    );
+    INSERT INTO ateneum_plans (id, owner_user_id, plan_type, latest_version)
+      VALUES ('pln_legacy_creator_fk', 'usr_test_juuso', 'trip', 1);
+    INSERT INTO ateneum_plan_revisions
+      (id, plan_id, version, title, status, drafted_by, created_by)
+      VALUES ('prv_legacy_creator_fk', 'pln_legacy_creator_fk', 1,
+              'Legacy creator FK', 'draft', 'human', 'usr_test_henna');
+  `);
+  const { migrateAteneumSchema } = await import("../../server/ateneum-db");
+  migrateAteneumSchema();
+  const creatorColumn = rawDb
+    .prepare("PRAGMA table_info(ateneum_plan_revisions)")
+    .all()
+    .find((column: any) => column.name === "created_by");
+  const creatorForeignKey = rawDb
+    .prepare("PRAGMA foreign_key_list(ateneum_plan_revisions)")
+    .all()
+    .find((foreignKey: any) => foreignKey.from === "created_by");
+  assert.equal(creatorColumn.notnull, 0);
+  assert.equal(creatorForeignKey.on_delete, "SET NULL");
+  assert.equal(
+    rawDb.prepare("SELECT created_by FROM ateneum_plan_revisions WHERE id = ?").get(
+      "prv_legacy_creator_fk",
+    ).created_by,
+    "usr_test_henna",
+  );
+  rawDb.exec("SAVEPOINT plan_creator_delete");
+  try {
+    rawDb.prepare("DELETE FROM ateneum_users WHERE id = ?").run("usr_test_henna");
+    const retained = rawDb
+      .prepare("SELECT created_by FROM ateneum_plan_revisions WHERE id = ?")
+      .get("prv_legacy_creator_fk");
+    assert.ok(retained);
+    assert.equal(retained.created_by, null);
+  } finally {
+    rawDb.exec("ROLLBACK TO plan_creator_delete; RELEASE plan_creator_delete;");
+  }
+  rawDb.prepare("DELETE FROM ateneum_plans WHERE id = ?").run("pln_legacy_creator_fk");
+
   const issue = await request("/api/ateneum/auth/api-token", {
     method: "POST",
     cookie: juusoCookie,
@@ -812,6 +879,17 @@ test("agent-assisted plan drafts stay private until a human shares and both acce
     body: { ...payload, ownerUserId: "usr_test_henna" },
   });
   assert.equal(unknown.status, 400);
+
+  const unsafeLinkPayload = structuredClone(payload) as any;
+  unsafeLinkPayload.content.sections[0].items[0].links = [
+    { label: "Unsafe", url: "data:text/html,<script>alert(1)</script>" },
+  ];
+  const unsafeLink = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    bearer: token,
+    body: unsafeLinkPayload,
+  });
+  assert.equal(unsafeLink.status, 400);
 
   const create = await request("/api/ateneum/plans/drafts", {
     method: "POST",
@@ -898,6 +976,13 @@ test("agent-assisted plan drafts stay private until a human shares and both acce
     body: { expectedVersion: 1 },
   });
   assert.equal(tokenAccept.status, 403);
+
+  const tokenReturn = await request(`/api/ateneum/plans/${planId}/return-to-draft`, {
+    method: "POST",
+    bearer: token,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(tokenReturn.status, 403);
 
   const accept = await request(`/api/ateneum/plans/${planId}/accept`, {
     method: "POST",

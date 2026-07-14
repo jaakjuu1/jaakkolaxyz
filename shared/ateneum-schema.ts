@@ -174,9 +174,9 @@ export const ateneumPlanRevisions = sqliteTable(
       enum: ["draft", "proposed", "accepted", "superseded"],
     }).notNull(),
     draftedBy: text("drafted_by", { enum: ["into", "human"] }).notNull(),
-    createdBy: text("created_by")
-      .notNull()
-      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    createdBy: text("created_by").references(() => ateneumUsers.id, {
+      onDelete: "set null",
+    }),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(unixepoch())`),

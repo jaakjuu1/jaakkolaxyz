@@ -190,7 +190,15 @@ const planFactSchema = z
 const planLinkSchema = z
   .object({
     label: z.string().trim().min(1).max(120),
-    url: z.string().url().max(2_000),
+    url: z
+      .string()
+      .trim()
+      .url()
+      .max(2_000)
+      .refine((value) => {
+        const protocol = new URL(value).protocol;
+        return protocol === "http:" || protocol === "https:";
+      }, "Plan links must use HTTP or HTTPS"),
   })
   .strict();
 const planItemSchema = z
@@ -1257,7 +1265,7 @@ type RawPlanRevision = {
   content: string;
   status: "draft" | "proposed" | "accepted" | "superseded";
   draftedBy: "into" | "human";
-  createdBy: string;
+  createdBy: string | null;
   createdAt: number;
   updatedAt: number;
 };
