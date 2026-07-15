@@ -1379,6 +1379,29 @@ function serializePlanRequest(request: RawPlanRequest, includeInput = false) {
   };
 }
 
+function planRequestSourceIsAvailable(request: RawPlanRequest): boolean {
+  if (request.sourceType === "idea") {
+    return Boolean(
+      ateneumRawDb.prepare("SELECT 1 FROM ateneum_ideas WHERE id = ?").get(request.ideaId),
+    );
+  }
+  const activity = ateneumRawDb
+    .prepare("SELECT status FROM ateneum_activities WHERE id = ?")
+    .get(request.activityId) as { status: string } | undefined;
+  return activity?.status === "planned";
+}
+
+function failUnavailablePlanRequest(request: RawPlanRequest): void {
+  ateneumRawDb
+    .prepare(
+      `UPDATE ateneum_plan_requests
+       SET status = 'failed', claim_key = NULL, claimed_at = NULL,
+           last_error = 'Lähde ei ole enää käytettävissä tai avoin.', updated_at = unixepoch()
+       WHERE id = ? AND status IN ('pending','processing')`,
+    )
+    .run(request.id);
+}
+
 function serializeClaimedPlanRequest(request: RawPlanRequest) {
   const requester = ateneumRawDb
     .prepare("SELECT display_name AS displayName FROM ateneum_users WHERE id = ?")
@@ -2485,31 +2508,42 @@ export function registerAteneumRoutes(app: Express): void {
                WHERE status = 'processing' AND claim_key = ?`,
             )
             .get(parsed.data.claimKey) as RawPlanRequest | undefined;
-          if (existing) return serializeClaimedPlanRequest(existing);
-          const candidate = ateneumRawDb
-            .prepare(
-              `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-              idea_id AS ideaId, activity_id AS activityId,
-                      plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
-                      available_at AS availableAt, claimed_at AS claimedAt,
-                      completed_at AS completedAt, result_plan_id AS resultPlanId,
-                      last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
-               FROM ateneum_plan_requests
-               WHERE status = 'pending' AND attempt_count < 3 AND available_at <= unixepoch()
-               ORDER BY created_at ASC LIMIT 1`,
-            )
-            .get() as RawPlanRequest | undefined;
-          if (!candidate) return null;
-          const changed = ateneumRawDb
-            .prepare(
-              `UPDATE ateneum_plan_requests
-               SET status = 'processing', attempt_count = attempt_count + 1,
-                   claim_key = ?, claimed_at = unixepoch(), last_error = NULL, updated_at = unixepoch()
-               WHERE id = ? AND status = 'pending' AND attempt_count = ?`,
-            )
-            .run(parsed.data.claimKey, candidate.id, candidate.attemptCount);
-          if (changed.changes !== 1) return null;
-          return serializeClaimedPlanRequest(readRawPlanRequest(candidate.id));
+          if (existing) {
+            if (planRequestSourceIsAvailable(existing)) {
+              return serializeClaimedPlanRequest(existing);
+            }
+            failUnavailablePlanRequest(existing);
+          }
+          while (true) {
+            const candidate = ateneumRawDb
+              .prepare(
+                `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
+                        idea_id AS ideaId, activity_id AS activityId,
+                        plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+                        available_at AS availableAt, claimed_at AS claimedAt,
+                        completed_at AS completedAt, result_plan_id AS resultPlanId,
+                        last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+                 FROM ateneum_plan_requests
+                 WHERE status = 'pending' AND attempt_count < 3 AND available_at <= unixepoch()
+                 ORDER BY created_at ASC LIMIT 1`,
+              )
+              .get() as RawPlanRequest | undefined;
+            if (!candidate) return null;
+            if (!planRequestSourceIsAvailable(candidate)) {
+              failUnavailablePlanRequest(candidate);
+              continue;
+            }
+            const changed = ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plan_requests
+                 SET status = 'processing', attempt_count = attempt_count + 1,
+                     claim_key = ?, claimed_at = unixepoch(), last_error = NULL, updated_at = unixepoch()
+                 WHERE id = ? AND status = 'pending' AND attempt_count = ?`,
+              )
+              .run(parsed.data.claimKey, candidate.id, candidate.attemptCount);
+            if (changed.changes !== 1) continue;
+            return serializeClaimedPlanRequest(readRawPlanRequest(candidate.id));
+          }
         }).immediate();
         return res.json({ request });
       } catch (error) {

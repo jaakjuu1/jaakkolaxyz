@@ -1098,7 +1098,10 @@ test("plan-request migration preserves existing idea queue rows while adding act
       (id, requester_user_id, idea_id, plan_type, brief)
      VALUES ('plq_legacy_idea', 'usr_test_juuso', ?, 'event', '{"goal":"preserve"}')`,
   ).run(legacyIdeaId);
-  const { migrateAteneumSchema } = await import("../../server/ateneum-db");
+  const { initAteneumSchema, migrateAteneumSchema } = await import("../../server/ateneum-db");
+  initAteneumSchema();
+  migrateAteneumSchema();
+  initAteneumSchema();
   migrateAteneumSchema();
 
   const columns = rawDb.prepare("PRAGMA table_info(ateneum_plan_requests)").all() as any[];
@@ -1301,6 +1304,119 @@ test("an open activity can queue a private rich plan without changing its shared
   assert.equal(activityAfter.planState, "proposed");
   const partnerPlans = await request("/api/ateneum/plans", { cookie: hennaCookie });
   assert.ok(!(await partnerPlans.json() as any).plans.some((plan: any) => plan.id === completed.plan.id));
+});
+
+test("a closed activity request fails terminally without blocking the next queue item", async () => {
+  const activityResponse = await request("/api/ateneum/activities", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      title: `Suljettava jonolähde ${Date.now()}`,
+      scheduledFor: new Date(Date.now() + 10 * 86_400_000).toISOString(),
+      durationMin: 60,
+      notes: "Suljetaan ennen claimia",
+    },
+  });
+  assert.equal(activityResponse.status, 200);
+  const activity = (await activityResponse.json() as any).activity;
+  const queuedActivityResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      activityId: activity.id,
+      planType: "event",
+      brief: { goal: "Tämän ei pidä tukkia jonoa" },
+    },
+  });
+  assert.equal(queuedActivityResponse.status, 202);
+  const queuedActivity = (await queuedActivityResponse.json() as any).request;
+
+  const firstClaim = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST",
+    cookie: botCookie,
+    body: { claimKey: "00000000-0000-4000-8000-000000000003" },
+  });
+  assert.equal(firstClaim.status, 200);
+  assert.equal((await firstClaim.json() as any).request.id, queuedActivity.id);
+
+  const closeResponse = await request(`/api/ateneum/activities/${activity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: "skipped", expectedVersion: activity.version },
+  });
+  assert.equal(closeResponse.status, 200);
+
+  const pendingActivityResponse = await request("/api/ateneum/activities", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      title: `Suljettava pending-lähde ${Date.now()}`,
+      scheduledFor: new Date(Date.now() + 11 * 86_400_000).toISOString(),
+      durationMin: 45,
+      notes: "Suljetaan ennen claimia",
+    },
+  });
+  assert.equal(pendingActivityResponse.status, 200);
+  const pendingActivity = (await pendingActivityResponse.json() as any).activity;
+  const queuedPendingResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      activityId: pendingActivity.id,
+      planType: "event",
+      brief: { goal: "Tämä pending-rivi ohitetaan" },
+    },
+  });
+  assert.equal(queuedPendingResponse.status, 202);
+  const queuedPendingActivity = (await queuedPendingResponse.json() as any).request;
+  const closePendingResponse = await request(`/api/ateneum/activities/${pendingActivity.id}`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { status: "skipped", expectedVersion: pendingActivity.version },
+  });
+  assert.equal(closePendingResponse.status, 200);
+
+  const ideaResponse = await request("/api/ateneum/ideas", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { title: `FIFO jatkuu ${Date.now()}`, description: "Kelvollinen seuraava työ" },
+  });
+  assert.equal(ideaResponse.status, 200);
+  const idea = (await ideaResponse.json() as any).idea;
+  const queuedIdeaResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { ideaId: idea.id, planType: "event", brief: { goal: "Claimaa tämä" } },
+  });
+  assert.equal(queuedIdeaResponse.status, 202);
+  const queuedIdea = (await queuedIdeaResponse.json() as any).request;
+
+  const claimResponse = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST",
+    cookie: botCookie,
+    body: { claimKey: "00000000-0000-4000-8000-000000000003" },
+  });
+  assert.equal(claimResponse.status, 200);
+  assert.equal((await claimResponse.json() as any).request.id, queuedIdea.id);
+
+  const ownerQueue = await request("/api/ateneum/plan-requests", { cookie: juusoCookie });
+  const failedActivity = (await ownerQueue.json() as any).requests.find(
+    (item: any) => item.id === queuedActivity.id,
+  );
+  assert.equal(failedActivity.status, "failed");
+  assert.equal(failedActivity.lastError, "Suunnitelman käsittely epäonnistui.");
+  assert.match(
+    rawDb.prepare("SELECT last_error FROM ateneum_plan_requests WHERE id = ?").pluck().get(queuedActivity.id),
+    /ei ole enää käytettävissä tai avoin/,
+  );
+  assert.equal(
+    rawDb.prepare("SELECT status FROM ateneum_plan_requests WHERE id = ?").pluck().get(queuedPendingActivity.id),
+    "failed",
+  );
+
+  rawDb.prepare("DELETE FROM ateneum_ideas WHERE id = ?").run(idea.id);
+  rawDb.prepare("DELETE FROM ateneum_activities WHERE id = ?").run(activity.id);
+  rawDb.prepare("DELETE FROM ateneum_activities WHERE id = ?").run(pendingActivity.id);
 });
 
 test("legacy activity status and rating keep the shared PATCH contract", async () => {

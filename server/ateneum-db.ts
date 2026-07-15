@@ -169,14 +169,6 @@ export function initAteneumSchema(): void {
         (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL)
       )
     );
-    CREATE INDEX IF NOT EXISTS idx_ateneum_plan_requests_status_created
-      ON ateneum_plan_requests(status, created_at);
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_requester_idea
-      ON ateneum_plan_requests(requester_user_id, idea_id) WHERE source_type = 'idea';
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_requester_activity
-      ON ateneum_plan_requests(requester_user_id, activity_id) WHERE source_type = 'activity';
-    CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_claim_key
-      ON ateneum_plan_requests(claim_key) WHERE claim_key IS NOT NULL;
 
     CREATE TABLE IF NOT EXISTS ateneum_wishes (
       id TEXT PRIMARY KEY,
