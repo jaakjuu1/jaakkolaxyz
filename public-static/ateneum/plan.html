@@ -40,6 +40,15 @@
   .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0.65rem 1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); color: var(--ink); font: inherit; font-weight: 650; cursor: pointer; text-decoration: none; }
   .btn-primary { color: #fff; background: var(--accent); border-color: var(--accent); }
   .btn:disabled { opacity: 0.6; cursor: wait; }
+  .enhance-panel { margin: 1rem 0; padding: clamp(1rem, 3vw, 1.3rem); border: 1px solid #cfe1d3; border-radius: 12px; background: #f2f8f3; }
+  .enhance-panel h2 { margin: 0; color: var(--accent); font-size: 1.15rem; }
+  .enhance-panel p { margin: 0.4rem 0 0; color: #4c574f; }
+  .enhance-panel label { display: block; margin-top: 0.9rem; font-size: 0.85rem; font-weight: 700; }
+  .enhance-panel textarea { width: 100%; min-height: 120px; margin-top: 0.35rem; padding: 0.75rem; resize: vertical; border: 1px solid #b9c9bd; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; line-height: 1.45; }
+  .enhance-panel textarea:focus { outline: 3px solid rgba(10,110,58,0.16); border-color: var(--accent); }
+  .enhance-state { margin-top: 0.8rem; padding: 0.75rem 0.85rem; border-radius: 8px; background: #fff; color: #465049; }
+  .enhance-state.failed { color: var(--warn); background: #fff4f2; }
+  .privacy-note { color: var(--muted); font-size: 0.8rem; }
   .tabs { margin-top: 1rem; }
   .tab-bar { display: flex; gap: 0.3rem; overflow-x: auto; padding-bottom: 0.3rem; border-bottom: 2px solid var(--rule); -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
   .tab-btn { flex: 0 0 auto; min-height: 44px; padding: 0.6rem 0.9rem; margin-bottom: -2px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 0.9rem; white-space: nowrap; }
@@ -108,8 +117,10 @@ const PLAN_TABS = [
 let me = null;
 let planId = null;
 let plan = null;
+let enhancementRequest = null;
 let loadGeneration = 0;
 let refreshTimer = null;
+let enhancementPollTimer = null;
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
@@ -171,12 +182,36 @@ function renderLogin(message = '') {
 function renderActions(item) {
   if (!canWrite()) return '';
   if (item.status === 'draft' && item.isOwner) {
-    return `<button class="btn btn-primary" id="share-plan">Jaa kumppanille</button>`;
+    const enhancementOpen = enhancementRequest && ['pending', 'processing'].includes(enhancementRequest.status);
+    return enhancementOpen
+      ? `<button class="btn btn-primary" id="share-plan" disabled title="Odota, että Innon uusi versio valmistuu">Jakaminen odottaa uutta versiota</button>`
+      : `<button class="btn btn-primary" id="share-plan">Jaa kumppanille</button>`;
   }
   if (item.status === 'proposed') {
     return `${item.acceptedByMe ? '' : '<button class="btn btn-primary" id="accept-plan">Hyväksy versio</button>'}<button class="btn" id="return-plan">Palauta muokattavaksi</button>`;
   }
   return '';
+}
+function renderEnhancement(item) {
+  if (!canWrite() || !item.isOwner) return '';
+  if (item.status === 'proposed') {
+    return `<section class="enhance-panel"><h2>Paranna Innon avulla</h2><p>Into voi parantaa tätä, kun ehdotus on hyväksytty tai palautettu luonnokseksi.</p></section>`;
+  }
+  if (!['draft', 'accepted'].includes(item.status)) return '';
+  const request = enhancementRequest;
+  if (request && ['pending', 'processing'].includes(request.status)) {
+    const copy = request.status === 'processing'
+      ? 'Into tekee suunnitelmasta uutta yksityistä versiota.'
+      : 'Pyyntö on jonossa. Into käsittelee sen ajastetusti, yleensä tunnin sisällä. Voit poistua sivulta.';
+    return `<section class="enhance-panel" data-enhancement-status="${escapeHtml(request.status)}"><h2>Paranna Innon avulla</h2><div class="enhance-state" aria-live="polite">${escapeHtml(copy)}</div><p class="privacy-note">Nykyinen versio säilyy näkyvissä käsittelyn ajan.</p></section>`;
+  }
+  const failed = request?.status === 'failed'
+    ? '<div class="enhance-state failed" aria-live="polite">Uutta versiota ei voitu tehdä. Suunnitelmasi ei muuttunut. Voit lähettää ohjeen uudelleen.</div>'
+    : '';
+  return `<section class="enhance-panel"><h2>Paranna Innon avulla</h2><p>Kerro omin sanoin, mitä haluat muuttaa tai lisätä. Into tekee uuden yksityisen version — mitään ei jaeta automaattisesti.</p>${failed}
+    <form id="enhance-plan-form"><label for="enhance-instruction">Mitä haluat muuttaa tai lisätä?</label><textarea id="enhance-instruction" required minlength="3" maxlength="5000" placeholder="Esim. lisää ajoajat, tarkat lippuhinnat, kaksi ravintolavaihtoehtoa ja varasuunnitelma sateelle."></textarea>
+    <div class="actions"><button class="btn btn-primary" id="enhance-plan" type="submit">Lähetä Innolle</button></div></form>
+    <p class="privacy-note">Vain sinä ja Into näette tämän ohjeen. Kumppani näkee vasta version, jonka jaat.</p></section>`;
 }
 function safeExternalLink(link) {
   try {
@@ -229,6 +264,7 @@ function renderPlan() {
       <div class="meta"><span>${escapeHtml(TYPE_LABELS[item.planType] || item.planType)}</span><span>${escapeHtml(dateRange(item))}</span><span>Versio ${item.version}</span><span>${sections.length} osiota</span></div>
       <div class="origin">${escapeHtml(origin)}</div>${item.summary ? `<p class="summary">${escapeHtml(item.summary)}</p>` : ''}<div class="plan-state">${escapeHtml(stateCopy(item))}</div>
       ${renderActions(item) ? `<div class="actions">${renderActions(item)}</div>` : ''}</section>
+    ${renderEnhancement(item)}
     ${renderPlanTabs(sections, item.planType)}
     <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin suunnitelmiin</a></div>
   </main></div>`;
@@ -238,11 +274,50 @@ function renderPlan() {
   if (accept) accept.onclick = () => runAction(accept, 'accept', 'Hyväksytään…', 'Versio hyväksytty');
   const returnButton = document.getElementById('return-plan');
   if (returnButton) returnButton.onclick = () => runAction(returnButton, 'return-to-draft', 'Palautetaan…', 'Palautettu muokattavaksi', 'Palautetaanko tämä versio pyytäjän yksityiseksi luonnokseksi?');
+  const enhanceForm = document.getElementById('enhance-plan-form');
+  if (enhanceForm) enhanceForm.onsubmit = submitEnhancement;
   document.querySelectorAll('.tab-btn').forEach(button => button.addEventListener('click', () => activateTab(button.dataset.tab)));
   try {
     const saved = localStorage.getItem('ateneum_active_tab');
     if (PLAN_TABS.some(tab => tab.id === saved) && document.querySelector(`.tab-btn[data-tab="${saved}"]`)) activateTab(saved);
   } catch {}
+}
+async function submitEnhancement(event) {
+  event.preventDefault();
+  const input = document.getElementById('enhance-instruction');
+  const button = document.getElementById('enhance-plan');
+  const instruction = input.value.trim();
+  if (instruction.length < 3) { input.focus(); return; }
+  button.disabled = true;
+  button.textContent = 'Lähetetään…';
+  try {
+    const body = await api('/plan-requests', {
+      method: 'POST',
+      body: JSON.stringify({
+        planId: plan.id,
+        baseVersion: plan.version,
+        planType: plan.planType,
+        brief: { goal: instruction },
+      }),
+    });
+    enhancementRequest = body.request;
+    if (enhancementRequest.status === 'completed') {
+      await loadPlan();
+      return;
+    }
+    renderPlan();
+    scheduleEnhancementPoll();
+  } catch (error) {
+    toast('Virhe: ' + error.message);
+    button.disabled = false;
+    button.textContent = 'Lähetä Innolle';
+    await loadPlan();
+  }
+}
+function scheduleEnhancementPoll() {
+  clearTimeout(enhancementPollTimer);
+  if (!enhancementRequest || !['pending', 'processing'].includes(enhancementRequest.status)) return;
+  enhancementPollTimer = setTimeout(loadPlan, 15000);
 }
 async function runAction(button, action, pending, success, confirmation) {
   if (confirmation && !confirm(confirmation)) return;
@@ -266,11 +341,25 @@ async function runAction(button, action, pending, success, confirmation) {
 }
 async function loadPlan() {
   const generation = ++loadGeneration;
+  const previousVersion = Number(plan?.version || 0);
+  const wasWaitingForEnhancement = Boolean(enhancementRequest && ['pending', 'processing'].includes(enhancementRequest.status));
   try {
     const body = await api(`/plans/${encodeURIComponent(planId)}`);
     if (generation !== loadGeneration) return;
     plan = body.plan;
+    enhancementRequest = null;
+    if (canWrite() && plan.isOwner) {
+      const queue = await api('/plan-requests');
+      if (generation !== loadGeneration) return;
+      enhancementRequest = queue.requests.find(request =>
+        request.sourceType === 'plan' && request.planId === plan.id && Number(request.baseVersion) === Number(plan.version)
+      ) || null;
+    }
     renderPlan();
+    if (wasWaitingForEnhancement && Number(plan.version) > previousVersion) {
+      toast(`Uusi yksityinen versio ${plan.version} on valmis`);
+    }
+    scheduleEnhancementPoll();
   } catch (error) {
     if (generation !== loadGeneration) return;
     app.innerHTML = `<div class="wrap">${me ? renderHeader() : ''}<div class="error">Suunnitelmaa ei voitu ladata: ${escapeHtml(error.message)}</div><a class="btn" href="/ateneum/?view=plans">← Suunnitelmat</a></div>`;

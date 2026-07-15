@@ -274,12 +274,20 @@ const planRequestCreateSchema = z
   .object({
     ideaId: z.string().trim().min(1).max(200).optional(),
     activityId: z.string().trim().min(1).max(200).optional(),
+    planId: z.string().trim().min(1).max(200).optional(),
+    baseVersion: z.number().int().min(1).optional(),
     planType: z.enum(["trip", "event", "project", "other"]),
     brief: planRequestBriefSchema,
   })
   .strict()
-  .refine((value) => Boolean(value.ideaId) !== Boolean(value.activityId), {
-    message: "Exactly one of ideaId or activityId is required",
+  .superRefine((value, ctx) => {
+    const sourceCount = [value.ideaId, value.activityId, value.planId].filter(Boolean).length;
+    if (sourceCount !== 1) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Exactly one source is required" });
+    }
+    if (Boolean(value.planId) !== Boolean(value.baseVersion)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "planId and baseVersion are required together" });
+    }
   });
 const planRequestClaimSchema = z
   .object({ claimKey: z.string().uuid() })
@@ -1321,9 +1329,11 @@ type RawPlanRevision = {
 type RawPlanRequest = {
   id: string;
   requesterUserId: string;
-  sourceType: "idea" | "activity";
+  sourceType: "idea" | "activity" | "plan";
   ideaId: string | null;
   activityId: string | null;
+  planId: string | null;
+  baseVersion: number | null;
   planType: "trip" | "event" | "project" | "other";
   brief: string;
   status: "pending" | "processing" | "completed" | "failed";
@@ -1342,7 +1352,7 @@ function readRawPlanRequest(id: string): RawPlanRequest {
   const request = ateneumRawDb
     .prepare(
       `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-              idea_id AS ideaId, activity_id AS activityId,
+              idea_id AS ideaId, activity_id AS activityId, plan_id AS planId, base_version AS baseVersion,
               plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
               available_at AS availableAt, claimed_at AS claimedAt,
               completed_at AS completedAt, result_plan_id AS resultPlanId,
@@ -1368,6 +1378,8 @@ function serializePlanRequest(request: RawPlanRequest, includeInput = false) {
     sourceType: request.sourceType,
     ideaId: request.ideaId,
     activityId: request.activityId,
+    planId: request.planId,
+    baseVersion: request.baseVersion === null ? null : Number(request.baseVersion),
     planType: request.planType,
     status: request.status,
     attemptCount: Number(request.attemptCount),
@@ -1384,6 +1396,19 @@ function planRequestSourceIsAvailable(request: RawPlanRequest): boolean {
     return Boolean(
       ateneumRawDb.prepare("SELECT 1 FROM ateneum_ideas WHERE id = ?").get(request.ideaId),
     );
+  }
+  if (request.sourceType === "plan") {
+    const plan = ateneumRawDb
+      .prepare(
+        `SELECT r.status
+         FROM ateneum_plans p
+         JOIN ateneum_plan_revisions r ON r.plan_id = p.id AND r.version = p.latest_version
+         WHERE p.id = ? AND p.owner_user_id = ? AND p.latest_version = ?`,
+      )
+      .get(request.planId, request.requesterUserId, request.baseVersion) as
+      | { status: string }
+      | undefined;
+    return plan?.status === "draft" || plan?.status === "accepted";
   }
   const activity = ateneumRawDb
     .prepare("SELECT status FROM ateneum_activities WHERE id = ?")
@@ -1421,6 +1446,40 @@ function serializeClaimedPlanRequest(request: RawPlanRequest) {
       source: { type: "idea", idea: { ...idea, tags: parseTags(String(idea.tags ?? "[]")) } },
       idea: { ...idea, tags: parseTags(String(idea.tags ?? "[]")) },
       activity: null,
+      plan: null,
+    };
+  }
+  if (request.sourceType === "plan") {
+    const plan = ateneumRawDb
+      .prepare(
+        `SELECT p.id, p.owner_user_id AS ownerUserId, p.plan_type AS planType,
+                p.latest_version AS version, p.accepted_version AS acceptedVersion,
+                r.title, r.start_date AS startDate, r.end_date AS endDate,
+                r.summary, r.content, r.status, r.drafted_by AS draftedBy
+         FROM ateneum_plans p
+         JOIN ateneum_plan_revisions r ON r.plan_id = p.id AND r.version = p.latest_version
+         WHERE p.id = ? AND p.owner_user_id = ? AND p.latest_version = ?`,
+      )
+      .get(request.planId, request.requesterUserId, request.baseVersion) as
+      | (Record<string, unknown> & { content: string; status: string })
+      | undefined;
+    if (!plan || (plan.status !== "draft" && plan.status !== "accepted")) {
+      throw new PlanTransitionError(409, "Jonopyynnön suunnitelmaversio ei ole enää muokattavissa");
+    }
+    let content: unknown;
+    try {
+      content = JSON.parse(plan.content);
+    } catch {
+      throw new PlanTransitionError(500, "Jonopyynnön suunnitelmasisältö on vioittunut");
+    }
+    const serializedPlan = { ...plan, content };
+    return {
+      ...serializePlanRequest(request, true),
+      requesterDisplayName: requester?.displayName ?? "Käyttäjä",
+      source: { type: "plan", plan: serializedPlan },
+      idea: null,
+      activity: null,
+      plan: serializedPlan,
     };
   }
   const activity = ateneumRawDb
@@ -1467,6 +1526,7 @@ function serializeClaimedPlanRequest(request: RawPlanRequest) {
     source: { type: "activity", activity: serializedActivity },
     idea: null,
     activity: serializedActivity,
+    plan: null,
   };
 }
 
@@ -2364,7 +2424,7 @@ export function registerAteneumRoutes(app: Express): void {
         const rows = ateneumRawDb
           .prepare(
             `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-              idea_id AS ideaId, activity_id AS activityId,
+              idea_id AS ideaId, activity_id AS activityId, plan_id AS planId, base_version AS baseVersion,
                     plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
                     available_at AS availableAt, claimed_at AS claimedAt,
                     completed_at AS completedAt, result_plan_id AS resultPlanId,
@@ -2390,8 +2450,12 @@ export function registerAteneumRoutes(app: Express): void {
         return res.status(400).json({ message: fromZodError(parsed.error).message });
       }
       const user = req.ateneumUser!;
-      const sourceType = parsed.data.activityId ? "activity" : "idea";
-      const sourceId = parsed.data.activityId ?? parsed.data.ideaId!;
+      const sourceType: "idea" | "activity" | "plan" = parsed.data.planId
+        ? "plan"
+        : parsed.data.activityId
+          ? "activity"
+          : "idea";
+      const sourceId = parsed.data.planId ?? parsed.data.activityId ?? parsed.data.ideaId!;
       try {
         const result = ateneumRawDb.transaction(() => {
           if (sourceType === "idea") {
@@ -2399,7 +2463,7 @@ export function registerAteneumRoutes(app: Express): void {
               .prepare("SELECT id FROM ateneum_ideas WHERE id = ? AND is_active = 1")
               .get(sourceId) as { id: string } | undefined;
             if (!idea) throw new PlanTransitionError(404, "Ideaa ei löytynyt");
-          } else {
+          } else if (sourceType === "activity") {
             const activity = ateneumRawDb
               .prepare("SELECT id, status, details FROM ateneum_activities WHERE id = ?")
               .get(sourceId) as { id: string; status: string; details: string | null } | undefined;
@@ -2419,20 +2483,40 @@ export function registerAteneumRoutes(app: Express): void {
             if (Object.keys(details).length > 0) {
               throw new PlanTransitionError(409, "Aktiviteetilla on jo laaja suunnitelma");
             }
+          } else {
+            const plan = readRawPlan(sourceId);
+            assertPlanOwner(plan, user.id);
+            if (Number(plan.latestVersion) !== Number(parsed.data.baseVersion)) {
+              throw new PlanTransitionError(409, "Suunnitelma muuttui. Hae uusin versio ennen parannuspyyntöä.");
+            }
+            if (plan.planType !== parsed.data.planType) {
+              throw new PlanTransitionError(400, "Suunnitelman tyyppi ei vastaa parannuspyyntöä");
+            }
+            const revision = readRawPlanRevision(plan.id, plan.latestVersion);
+            if (revision.status === "proposed") {
+              throw new PlanTransitionError(409, "Jaettu ehdotus pitää palauttaa luonnokseksi ennen parantamista.");
+            }
+            if (revision.status !== "draft" && revision.status !== "accepted") {
+              throw new PlanTransitionError(409, "Suunnitelmaversio ei ole enää parannettavissa");
+            }
           }
-          const sourceColumn = sourceType === "idea" ? "idea_id" : "activity_id";
+          const sourceColumn = sourceType === "idea" ? "idea_id" : sourceType === "activity" ? "activity_id" : "plan_id";
+          const sourceVersionClause = sourceType === "plan" ? " AND base_version = ?" : "";
+          const existingParams = sourceType === "plan"
+            ? [user.id, sourceType, sourceId, parsed.data.baseVersion]
+            : [user.id, sourceType, sourceId];
           const existing = ateneumRawDb
             .prepare(
               `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-                      idea_id AS ideaId, activity_id AS activityId,
+                      idea_id AS ideaId, activity_id AS activityId, plan_id AS planId, base_version AS baseVersion,
                       plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
                       available_at AS availableAt, claimed_at AS claimedAt,
                       completed_at AS completedAt, result_plan_id AS resultPlanId,
                       last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
                FROM ateneum_plan_requests
-               WHERE requester_user_id = ? AND source_type = ? AND ${sourceColumn} = ?`,
+               WHERE requester_user_id = ? AND source_type = ? AND ${sourceColumn} = ?${sourceVersionClause}`,
             )
-            .get(user.id, sourceType, sourceId) as RawPlanRequest | undefined;
+            .get(...existingParams) as RawPlanRequest | undefined;
           if (existing && existing.status !== "failed" && (existing.status !== "completed" || existing.resultPlanId)) {
             return { request: existing, existing: true };
           }
@@ -2452,9 +2536,9 @@ export function registerAteneumRoutes(app: Express): void {
           ateneumRawDb
             .prepare(
               `INSERT INTO ateneum_plan_requests
-                (id, requester_user_id, source_type, idea_id, activity_id, plan_type, brief,
+                (id, requester_user_id, source_type, idea_id, activity_id, plan_id, base_version, plan_type, brief,
                  status, attempt_count, available_at, created_at, updated_at)
-               VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', 0, unixepoch(), unixepoch(), unixepoch())`,
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 0, unixepoch(), unixepoch(), unixepoch())`,
             )
             .run(
               id,
@@ -2462,6 +2546,8 @@ export function registerAteneumRoutes(app: Express): void {
               sourceType,
               sourceType === "idea" ? sourceId : null,
               sourceType === "activity" ? sourceId : null,
+              sourceType === "plan" ? sourceId : null,
+              sourceType === "plan" ? parsed.data.baseVersion! : null,
               parsed.data.planType,
               JSON.stringify(parsed.data.brief),
             );
@@ -2499,7 +2585,7 @@ export function registerAteneumRoutes(app: Express): void {
           const existing = ateneumRawDb
             .prepare(
               `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-              idea_id AS ideaId, activity_id AS activityId,
+              idea_id AS ideaId, activity_id AS activityId, plan_id AS planId, base_version AS baseVersion,
                       plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
                       available_at AS availableAt, claimed_at AS claimedAt,
                       completed_at AS completedAt, result_plan_id AS resultPlanId,
@@ -2518,7 +2604,7 @@ export function registerAteneumRoutes(app: Express): void {
             const candidate = ateneumRawDb
               .prepare(
                 `SELECT id, requester_user_id AS requesterUserId, source_type AS sourceType,
-                        idea_id AS ideaId, activity_id AS activityId,
+                        idea_id AS ideaId, activity_id AS activityId, plan_id AS planId, base_version AS baseVersion,
                         plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
                         available_at AS availableAt, claimed_at AS claimedAt,
                         completed_at AS completedAt, result_plan_id AS resultPlanId,
@@ -2565,7 +2651,12 @@ export function registerAteneumRoutes(app: Express): void {
         const result = ateneumRawDb.transaction(() => {
           const request = readRawPlanRequest(req.params.id);
           if (request.status === "completed" && request.resultPlanId && request.attemptCount === parsed.data.expectedAttempt) {
-            return { request, planId: request.resultPlanId, existing: true };
+            return {
+              request,
+              planId: request.resultPlanId,
+              version: request.sourceType === "plan" ? Number(request.baseVersion) + 1 : 1,
+              existing: true,
+            };
           }
           if (request.status !== "processing" || request.attemptCount !== parsed.data.expectedAttempt) {
             throw new PlanTransitionError(409, "Suunnitelmapyyntö ei ole enää tämän työntekijän käsittelyssä");
@@ -2573,32 +2664,92 @@ export function registerAteneumRoutes(app: Express): void {
           if (parsed.data.planType !== request.planType) {
             throw new PlanTransitionError(400, "Suunnitelman tyyppi ei vastaa jonopyyntöä");
           }
-          const planId = newId("pln");
-          ateneumRawDb
-            .prepare(
-              `INSERT INTO ateneum_plans
-                (id, owner_user_id, plan_type, latest_version, accepted_version, created_at, updated_at)
-               VALUES (?, ?, ?, 1, NULL, unixepoch(), unixepoch())`,
-            )
-            .run(planId, request.requesterUserId, parsed.data.planType);
-          ateneumRawDb
-            .prepare(
-              `INSERT INTO ateneum_plan_revisions
-                (id, plan_id, version, title, start_date, end_date, summary, content,
-                 status, drafted_by, created_by, created_at, updated_at)
-               VALUES (?, ?, 1, ?, ?, ?, ?, ?, 'draft', 'into', ?, unixepoch(), unixepoch())`,
-            )
-            .run(
-              newId("prv"),
-              planId,
-              parsed.data.title,
-              parsed.data.startDate ?? null,
-              parsed.data.endDate ?? null,
-              parsed.data.summary,
-              JSON.stringify(parsed.data.content),
-              req.ateneumUser!.id,
-            );
-          ateneumRawDb
+          let planId: string;
+          let version: number;
+          if (request.sourceType === "plan") {
+            const plan = readRawPlan(request.planId!);
+            assertPlanOwner(plan, request.requesterUserId);
+            if (Number(plan.latestVersion) !== Number(request.baseVersion)) {
+              throw new PlanTransitionError(409, "Suunnitelma muuttui parannuspyynnön jälkeen");
+            }
+            if (plan.planType !== parsed.data.planType) {
+              throw new PlanTransitionError(400, "Suunnitelman tyyppi ei vastaa parannuspyyntöä");
+            }
+            const current = readRawPlanRevision(plan.id, plan.latestVersion);
+            if (current.status !== "draft" && current.status !== "accepted") {
+              throw new PlanTransitionError(409, "Suunnitelmaversio ei ole enää parannettavissa");
+            }
+            planId = plan.id;
+            version = Number(plan.latestVersion) + 1;
+            if (current.status === "draft") {
+              const superseded = ateneumRawDb
+                .prepare(
+                  `UPDATE ateneum_plan_revisions
+                   SET status = 'superseded', updated_at = unixepoch()
+                   WHERE plan_id = ? AND version = ? AND status = 'draft'`,
+                )
+                .run(plan.id, current.version);
+              if (superseded.changes !== 1) {
+                throw new PlanTransitionError(409, "Suunnitelmaluonnos ehti muuttua");
+              }
+            }
+            ateneumRawDb
+              .prepare(
+                `INSERT INTO ateneum_plan_revisions
+                  (id, plan_id, version, title, start_date, end_date, summary, content,
+                   status, drafted_by, created_by, created_at, updated_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft', 'into', ?, unixepoch(), unixepoch())`,
+              )
+              .run(
+                newId("prv"),
+                planId,
+                version,
+                parsed.data.title,
+                parsed.data.startDate ?? null,
+                parsed.data.endDate ?? null,
+                parsed.data.summary,
+                JSON.stringify(parsed.data.content),
+                req.ateneumUser!.id,
+              );
+            const advanced = ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plans
+                 SET latest_version = ?, updated_at = unixepoch()
+                 WHERE id = ? AND latest_version = ?`,
+              )
+              .run(version, planId, request.baseVersion);
+            if (advanced.changes !== 1) {
+              throw new PlanTransitionError(409, "Suunnitelma ehti muuttua ennen tallennusta");
+            }
+          } else {
+            planId = newId("pln");
+            version = 1;
+            ateneumRawDb
+              .prepare(
+                `INSERT INTO ateneum_plans
+                  (id, owner_user_id, plan_type, latest_version, accepted_version, created_at, updated_at)
+                 VALUES (?, ?, ?, 1, NULL, unixepoch(), unixepoch())`,
+              )
+              .run(planId, request.requesterUserId, parsed.data.planType);
+            ateneumRawDb
+              .prepare(
+                `INSERT INTO ateneum_plan_revisions
+                  (id, plan_id, version, title, start_date, end_date, summary, content,
+                   status, drafted_by, created_by, created_at, updated_at)
+                 VALUES (?, ?, 1, ?, ?, ?, ?, ?, 'draft', 'into', ?, unixepoch(), unixepoch())`,
+              )
+              .run(
+                newId("prv"),
+                planId,
+                parsed.data.title,
+                parsed.data.startDate ?? null,
+                parsed.data.endDate ?? null,
+                parsed.data.summary,
+                JSON.stringify(parsed.data.content),
+                req.ateneumUser!.id,
+              );
+          }
+          const completed = ateneumRawDb
             .prepare(
               `UPDATE ateneum_plan_requests
                SET status = 'completed', result_plan_id = ?, completed_at = unixepoch(),
@@ -2606,11 +2757,14 @@ export function registerAteneumRoutes(app: Express): void {
                WHERE id = ? AND status = 'processing' AND attempt_count = ?`,
             )
             .run(planId, request.id, parsed.data.expectedAttempt);
-          return { request: readRawPlanRequest(request.id), planId, existing: false };
+          if (completed.changes !== 1) {
+            throw new PlanTransitionError(409, "Suunnitelmapyyntö ehti muuttua ennen valmistumista");
+          }
+          return { request: readRawPlanRequest(request.id), planId, version, existing: false };
         }).immediate();
         return res.json({
           request: serializePlanRequest(result.request),
-          plan: { id: result.planId, version: 1, status: "draft", visibility: "private" },
+          plan: { id: result.planId, version: result.version, status: "draft", visibility: "private" },
           existing: result.existing,
         });
       } catch (error) {
@@ -2734,6 +2888,16 @@ export function registerAteneumRoutes(app: Express): void {
               "Luonnos muuttui. Hae uusin versio ennen päivittämistä.",
             );
           }
+          const openEnhancement = ateneumRawDb
+            .prepare(
+              `SELECT 1 FROM ateneum_plan_requests
+               WHERE source_type = 'plan' AND plan_id = ? AND base_version = ?
+                 AND requester_user_id = ? AND status IN ('pending','processing')`,
+            )
+            .get(plan.id, plan.latestVersion, user.id);
+          if (openEnhancement) {
+            throw new PlanTransitionError(409, "Odota, että Innon uusi versio valmistuu ennen muita muutoksia.");
+          }
           const current = readRawPlanRevision(plan.id, plan.latestVersion);
           if (current.status === "proposed") {
             throw new PlanTransitionError(
@@ -2825,6 +2989,16 @@ export function registerAteneumRoutes(app: Express): void {
           assertPlanOwner(plan, user.id);
           if (Number(plan.latestVersion) !== Number(parsed.data.expectedVersion)) {
             throw new PlanTransitionError(409, "Luonnos muuttui. Hae uusin versio ennen jakamista.");
+          }
+          const openEnhancement = ateneumRawDb
+            .prepare(
+              `SELECT 1 FROM ateneum_plan_requests
+               WHERE source_type = 'plan' AND plan_id = ? AND base_version = ?
+                 AND requester_user_id = ? AND status IN ('pending','processing')`,
+            )
+            .get(plan.id, plan.latestVersion, user.id);
+          if (openEnhancement) {
+            throw new PlanTransitionError(409, "Odota, että Innon uusi versio valmistuu ennen jakamista.");
           }
           const revision = readRawPlanRevision(plan.id, plan.latestVersion);
           if (revision.status !== "draft") {

@@ -149,9 +149,11 @@ export function initAteneumSchema(): void {
     CREATE TABLE IF NOT EXISTS ateneum_plan_requests (
       id TEXT PRIMARY KEY,
       requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
-      source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity')),
+      source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity','plan')),
       idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
       activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+      plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+      base_version INTEGER CHECK (base_version IS NULL OR base_version >= 1),
       plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
       brief TEXT NOT NULL DEFAULT '{}',
       status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
@@ -165,8 +167,9 @@ export function initAteneumSchema(): void {
       created_at INTEGER NOT NULL DEFAULT (unixepoch()),
       updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
       CHECK (
-        (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL) OR
-        (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL)
+        (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+        (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+        (source_type = 'plan' AND plan_id IS NOT NULL AND base_version >= 1 AND idea_id IS NULL AND activity_id IS NULL)
       )
     );
 
@@ -495,9 +498,11 @@ export function migrateAteneumSchema(): void {
       CREATE TABLE IF NOT EXISTS ateneum_plan_requests (
         id TEXT PRIMARY KEY,
         requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
-        source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity')),
+        source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity','plan')),
         idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
         activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+        plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+        base_version INTEGER CHECK (base_version IS NULL OR base_version >= 1),
         plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
         brief TEXT NOT NULL DEFAULT '{}',
         status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
@@ -511,28 +516,46 @@ export function migrateAteneumSchema(): void {
         created_at INTEGER NOT NULL DEFAULT (unixepoch()),
         updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
         CHECK (
-          (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL) OR
-          (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL)
+          (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+          (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+          (source_type = 'plan' AND plan_id IS NOT NULL AND base_version >= 1 AND idea_id IS NULL AND activity_id IS NULL)
         )
       );
     `);
 
     const requestColumns = columnNames("ateneum_plan_requests");
     const requestIdeaColumn = columnInfo("ateneum_plan_requests").find((column) => column.name === "idea_id");
-    if (!requestColumns.has("source_type") || !requestColumns.has("activity_id") || requestIdeaColumn?.notnull === 1) {
+    const requestTableSql = (
+      ateneumRawDb
+        .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'ateneum_plan_requests'")
+        .get() as { sql?: string } | undefined
+    )?.sql ?? "";
+    if (
+      !requestColumns.has("source_type") ||
+      !requestColumns.has("activity_id") ||
+      !requestColumns.has("plan_id") ||
+      !requestColumns.has("base_version") ||
+      requestIdeaColumn?.notnull === 1 ||
+      !requestTableSql.includes("'plan'")
+    ) {
       const claimKeyExpression = requestColumns.has("claim_key") ? "claim_key" : "NULL";
+      const sourceTypeExpression = requestColumns.has("source_type") ? "source_type" : "'idea'";
+      const activityIdExpression = requestColumns.has("activity_id") ? "activity_id" : "NULL";
       ateneumRawDb.exec(`
         DROP INDEX IF EXISTS idx_ateneum_plan_requests_status_created;
         DROP INDEX IF EXISTS idx_ateneum_plan_requests_claim_key;
         DROP INDEX IF EXISTS idx_ateneum_plan_requests_requester_idea;
         DROP INDEX IF EXISTS idx_ateneum_plan_requests_requester_activity;
+        DROP INDEX IF EXISTS idx_ateneum_plan_requests_requester_plan_version;
         ALTER TABLE ateneum_plan_requests RENAME TO ateneum_plan_requests__legacy;
         CREATE TABLE ateneum_plan_requests (
           id TEXT PRIMARY KEY,
           requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
-          source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity')),
+          source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity','plan')),
           idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
           activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+          plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE CASCADE,
+          base_version INTEGER CHECK (base_version IS NULL OR base_version >= 1),
           plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
           brief TEXT NOT NULL DEFAULT '{}',
           status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
@@ -546,15 +569,18 @@ export function migrateAteneumSchema(): void {
           created_at INTEGER NOT NULL DEFAULT (unixepoch()),
           updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
           CHECK (
-            (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL) OR
-            (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL)
+            (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+            (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL AND plan_id IS NULL AND base_version IS NULL) OR
+            (source_type = 'plan' AND plan_id IS NOT NULL AND base_version >= 1 AND idea_id IS NULL AND activity_id IS NULL)
           )
         );
         INSERT INTO ateneum_plan_requests
-          (id, requester_user_id, source_type, idea_id, activity_id, plan_type, brief, status,
+          (id, requester_user_id, source_type, idea_id, activity_id, plan_id, base_version,
+           plan_type, brief, status,
            attempt_count, claim_key, available_at, claimed_at, completed_at, result_plan_id,
            last_error, created_at, updated_at)
-        SELECT id, requester_user_id, 'idea', idea_id, NULL, plan_type, brief, status,
+        SELECT id, requester_user_id, ${sourceTypeExpression}, idea_id, ${activityIdExpression}, NULL, NULL,
+               plan_type, brief, status,
                attempt_count, ${claimKeyExpression}, available_at, claimed_at, completed_at,
                result_plan_id, last_error, created_at, updated_at
         FROM ateneum_plan_requests__legacy;
@@ -570,6 +596,8 @@ export function migrateAteneumSchema(): void {
         ON ateneum_plan_requests(requester_user_id, idea_id) WHERE source_type = 'idea';
       CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_requester_activity
         ON ateneum_plan_requests(requester_user_id, activity_id) WHERE source_type = 'activity';
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_requester_plan_version
+        ON ateneum_plan_requests(requester_user_id, plan_id, base_version) WHERE source_type = 'plan';
     `);
 
     const revisionCreatedBy = columnInfo("ateneum_plan_revisions").find(
