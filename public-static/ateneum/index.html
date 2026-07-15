@@ -263,6 +263,7 @@
     outline: 2px solid var(--accent); outline-offset: -1px;
   }
   .planner-sharing { margin: 0; color: var(--muted); font-size: 0.8rem; }
+  .plan-request-state { min-height: 44px; display: inline-flex; align-items: center; color: var(--muted); font-size: 0.82rem; }
   .activity-history { margin-top: 1rem; border-top: 1px solid var(--rule); padding-top: 0.7rem; }
   .activity-history summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
   @media (max-width: 420px) { .planner-grid { grid-template-columns: 1fr; } .planner-row.full { grid-column: auto; } }
@@ -1788,12 +1789,86 @@ async function submitIdea(btn) {
   }
 }
 
+function closePlanRequest(button) {
+  button.closest('.plan-request-panel')?.remove();
+}
+
+function openPlanRequest(button) {
+  const card = button.closest('.idea');
+  if (!card || card.querySelector('.plan-request-panel')) return;
+  const panel = document.createElement('div');
+  panel.className = 'planner-panel plan-request-panel';
+  panel.innerHTML = `
+    <div><strong>Laajenna ideasta suunnitelma</strong><p class="planner-sharing">Pyyntö menee Innon työjonoon. Saat ensin vain sinulle näkyvän luonnoksen Suunnitelmat-osioon.</p></div>
+    <div class="planner-row"><label>Mitä tästä pitäisi syntyä? <span aria-hidden="true">*</span><textarea class="pr-goal" maxlength="3000" placeholder="Esim. valmis viikonloppusuunnitelma, jossa on rauhallinen tahti ja muutama hyvä vaihtoehto"></textarea></label></div>
+    <div class="planner-grid">
+      <div class="planner-row"><label>Kokonaisuuden tyyppi<select class="pr-type"><option value="event">Tapahtuma</option><option value="trip">Matka</option><option value="project">Projekti</option><option value="other">Muu</option></select></label></div>
+      <div class="planner-row"><label>Ajankohta tai aikaraja<input class="pr-timing" maxlength="1000" placeholder="Esim. elokuun toinen viikonloppu"></label></div>
+      <div class="planner-row"><label>Budjetti ja muut rajat<input class="pr-budget" maxlength="1000" placeholder="Esim. enintään 800 €"></label></div>
+      <div class="planner-row"><label>Pakolliset toiveet<textarea class="pr-must" maxlength="3000" placeholder="Mitä kokonaisuudessa pitää ehdottomasti olla?"></textarea></label></div>
+    </div>
+    <details class="optional-fields"><summary>Lisätiedot (valinnainen)</summary>
+      <div class="planner-row"><label>Vältettävät asiat<textarea class="pr-avoid" maxlength="2000" placeholder="Mitä ei ainakaan haluta?"></textarea></label></div>
+      <div class="planner-row"><label>Muu taustatieto<textarea class="pr-notes" maxlength="5000" placeholder="Varaukset, linkit, ihmiset tai muu olennainen tieto"></textarea></label></div>
+    </details>
+    <div class="actions"><button class="btn btn-primary" onclick="submitPlanRequest(this)">Lisää Innon työjonoon</button><button class="btn btn-secondary" onclick="closePlanRequest(this)">Peruuta</button></div>`;
+  card.appendChild(panel);
+  panel.querySelector('.pr-goal').focus();
+}
+
+async function submitPlanRequest(button) {
+  const panel = button.closest('.plan-request-panel');
+  const card = button.closest('.idea');
+  const goal = panel.querySelector('.pr-goal').value.trim();
+  if (!goal) { toast('Kerro, mitä suunnitelmasta pitäisi syntyä'); return; }
+  button.disabled = true;
+  button.textContent = 'Lisätään jonoon…';
+  try {
+    await api('/plan-requests', {
+      method: 'POST',
+      body: JSON.stringify({
+        ideaId: card.dataset.ideaId,
+        planType: panel.querySelector('.pr-type').value,
+        brief: {
+          goal,
+          timing: panel.querySelector('.pr-timing').value.trim(),
+          budget: panel.querySelector('.pr-budget').value.trim(),
+          mustHaves: panel.querySelector('.pr-must').value.trim(),
+          avoid: panel.querySelector('.pr-avoid').value.trim(),
+          notes: panel.querySelector('.pr-notes').value.trim(),
+        },
+      }),
+    });
+    toast('Pyyntö lisätty — Into käsittelee jonon kahdesti päivässä');
+    await loadIdeas();
+  } catch (error) {
+    toast('Virhe: ' + error.message);
+    button.disabled = false;
+    button.textContent = 'Lisää Innon työjonoon';
+  }
+}
+
+function renderPlanRequestState(request) {
+  if (!request) return '<button class="btn" onclick="openPlanRequest(this)">Laajenna suunnitelmaksi</button>';
+  if (request.status === 'completed' && request.resultPlanId) {
+    return `<a class="btn" href="/ateneum/plan.html?id=${encodeURIComponent(request.resultPlanId)}">Avaa laaja suunnitelma</a>`;
+  }
+  if (request.status === 'completed') return '<button class="btn" onclick="openPlanRequest(this)">Luo suunnitelma uudelleen</button>';
+  if (request.status === 'processing') return '<span class="plan-request-state">Into rakentaa suunnitelmaa…</span>';
+  if (request.status === 'failed') return '<button class="btn" onclick="openPlanRequest(this)">Yritä laajennusta uudelleen</button>';
+  return '<span class="plan-request-state">Jonossa · Into käsittelee tämän seuraavassa ajossa</span>';
+}
+
 async function loadIdeas() {
   const generation = beginLoad('ideas');
   const el = document.getElementById('ideas-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
-    const { ideas = [] } = await api('/ideas');
+    const [{ ideas = [] }, requestData] = await Promise.all([
+      api('/ideas'),
+      canWrite() ? api('/plan-requests').catch(() => ({ requests: [] })) : Promise.resolve({ requests: [] }),
+    ]);
+    const requestsByIdea = new Map((requestData.requests || []).map(request => [request.ideaId, request]));
     if (!isLatestLoad('ideas', generation)) return;
     document.getElementById('ideas-count').textContent = `(${ideas.length})`;
     if (!ideas.length) {
@@ -1813,6 +1888,7 @@ async function loadIdeas() {
         </div>
         <div class="actions human-write" style="margin-top:0.7rem;">
           <button class="btn btn-primary" data-suggestion="${escapeHtml(JSON.stringify(i))}" onclick="openPlanner(this)">Suunnittele ajankohta</button>
+          ${renderPlanRequestState(requestsByIdea.get(i.id))}
         </div>
       </div>
     `).join('');

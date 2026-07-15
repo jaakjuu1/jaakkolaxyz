@@ -294,6 +294,29 @@ def run_plan_client(base_url: str, token: str, *args: str) -> Any:
     return json.loads(result.stdout)
 
 
+def run_queue_client(base_url: str, *args: str) -> Any:
+    configured_client = os.environ.get("ATENEUM_CLIENT_PATH")
+    client = (
+        Path(configured_client).expanduser().resolve()
+        if configured_client
+        else Path.home() / ".hermes" / "skills" / "ateneum" / "scripts" / "ateneum_client.py"
+    )
+    env = os.environ.copy()
+    env["ATENEUM_API_URL"] = base_url.rstrip("/") + "/api/ateneum"
+    env["ATENEUM_BOT_USERNAME"] = "ateneum-bot"
+    env["ATENEUM_BOT_PASSWORD"] = "qa-bot-password"
+    env.pop("ATENEUM_API_TOKEN", None)
+    result = subprocess.run(
+        [sys.executable, str(client), "--json", "--quiet", *args],
+        cwd=ROOT, env=env, text=True, capture_output=True, timeout=30, check=False,
+    )
+    if result.returncode != 0:
+        raise AssertionError(
+            f"Ateneum queue client failed ({result.returncode}): stdout={result.stdout!r} stderr={result.stderr!r}"
+        )
+    return json.loads(result.stdout)
+
+
 def visible_controls_expression(title: str) -> str:
     return f"""(() => {{
       const card = [...document.querySelectorAll('.activity')]
@@ -526,6 +549,59 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         )
         assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile idea view overflows"
 
+        # A can queue a rich private plan from the idea without starting synchronous agent work.
+        idea_id = a.eval(
+            f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)})).dataset.ideaId"
+        )
+        a.click_in_card(marker, 'button[onclick="openPlanRequest(this)"]')
+        a.wait(f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)}))?.querySelector('.plan-request-panel')")
+        a.set_card_value(marker, ".pr-goal", "Tee rauhallinen kahden yön valmis matkasuunnitelma.")
+        a.set_card_value(marker, ".pr-type", "trip")
+        a.set_card_value(marker, ".pr-timing", future_date)
+        a.set_card_value(marker, ".pr-budget", "800 euroa")
+        a.set_card_value(marker, ".pr-must", "Yksi hyvä illallinen ja väljää aikaa")
+        request_tap_heights = a.eval(
+            f"""(() => {{ const card=[...document.querySelectorAll('.idea')].find(node=>node.textContent.includes({json.dumps(marker)}));
+              return [...card.querySelectorAll('.plan-request-panel button')].map(button=>button.getBoundingClientRect().height); }})()"""
+        )
+        assert request_tap_heights and min(request_tap_heights) >= 44, f"plan request tap target below 44px: {request_tap_heights}"
+        a.click_in_card(marker, 'button[onclick="submitPlanRequest(this)"]')
+        a.wait(f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)}))?.textContent.includes('Jonossa')")
+        assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile plan request overflows"
+
+        b.eval("showView('ideas')")
+        b.wait(f"[...document.querySelectorAll('.idea')].some(node => node.textContent.includes({json.dumps(marker)}))")
+        b_queue_text = b.eval(f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)})).textContent")
+        assert "Jonossa" not in b_queue_text, "another human sees the requester's private queue state"
+        assert b.eval(f"Boolean([...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)})).querySelector('button[onclick=\"openPlanRequest(this)\"]'))")
+
+        queued_request = run_queue_client(base_url, "claim-plan-request")
+        assert queued_request and queued_request["ideaId"] == idea_id
+        with tempfile.TemporaryDirectory(prefix="ateneum-queue-client-") as queue_temp:
+            queue_content = Path(queue_temp) / "content.json"
+            queue_content.write_text(
+                json.dumps({"sections": [{
+                    "id": "overview", "title": "Yleiskatsaus", "type": "overview",
+                    "summary": "Rauhallinen kahden yön kokonaisuus.", "facts": [], "items": [], "checklist": [],
+                }]}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            completed_queue = run_queue_client(
+                base_url,
+                "complete-plan-request",
+                queued_request["id"],
+                "--expected-attempt", str(queued_request["attemptCount"]),
+                "--title", marker,
+                "--plan-type", "trip",
+                "--start-date", future_date,
+                "--end-date", future_date,
+                "--summary", "Jonosta rakennettu yksityinen QA-suunnitelma.",
+                "--content-file", str(queue_content),
+            )
+        queued_plan_id = completed_queue["plan"]["id"]
+        a.eval("showView('ideas')")
+        a.wait(f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)}))?.querySelector('a[href=\"/ateneum/plan.html?id={queued_plan_id}\"]')")
+
         # A proposes an explicit long duration from the idea card.
         a.click_in_card(marker, "button[data-suggestion]")
         a.wait(f"[...document.querySelectorAll('.idea')].find(node => node.textContent.includes({json.dumps(marker)}))?.querySelector('.planner-panel')")
@@ -682,7 +758,7 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             "ideaTitle": marker,
             "planId": plan_id,
             "planRevision": 2,
-            "planClient": "create+list+revise",
+            "planClient": "create+list+revise+queue-claim+queue-complete",
             "expected409": expected_conflicts,
             "counterproposalPatchKeys": sorted(patch_body),
             "mobileWidth": 390,

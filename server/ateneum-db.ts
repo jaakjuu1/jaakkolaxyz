@@ -146,6 +146,29 @@ export function initAteneumSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_ateneum_plan_acceptances_user
       ON ateneum_plan_acceptances(user_id);
 
+    CREATE TABLE IF NOT EXISTS ateneum_plan_requests (
+      id TEXT PRIMARY KEY,
+      requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      idea_id TEXT NOT NULL REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
+      brief TEXT NOT NULL DEFAULT '{}',
+      status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
+      attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+      claim_key TEXT,
+      available_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      claimed_at INTEGER,
+      completed_at INTEGER,
+      result_plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE SET NULL,
+      last_error TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(requester_user_id, idea_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_ateneum_plan_requests_status_created
+      ON ateneum_plan_requests(status, created_at);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_claim_key
+      ON ateneum_plan_requests(claim_key) WHERE claim_key IS NOT NULL;
+
     CREATE TABLE IF NOT EXISTS ateneum_wishes (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
@@ -468,6 +491,34 @@ export function migrateAteneumSchema(): void {
         ON ateneum_plan_revisions(plan_id, status, version);
       CREATE INDEX IF NOT EXISTS idx_ateneum_plan_acceptances_user
         ON ateneum_plan_acceptances(user_id);
+      CREATE TABLE IF NOT EXISTS ateneum_plan_requests (
+        id TEXT PRIMARY KEY,
+        requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+        idea_id TEXT NOT NULL REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
+        plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
+        brief TEXT NOT NULL DEFAULT '{}',
+        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
+        attempt_count INTEGER NOT NULL DEFAULT 0 CHECK (attempt_count >= 0),
+        claim_key TEXT,
+        available_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        claimed_at INTEGER,
+        completed_at INTEGER,
+        result_plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE SET NULL,
+        last_error TEXT,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        UNIQUE(requester_user_id, idea_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_ateneum_plan_requests_status_created
+        ON ateneum_plan_requests(status, created_at);
+    `);
+
+    if (!columnInfo("ateneum_plan_requests").some((column) => column.name === "claim_key")) {
+      ateneumRawDb.exec("ALTER TABLE ateneum_plan_requests ADD COLUMN claim_key TEXT");
+    }
+    ateneumRawDb.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_ateneum_plan_requests_claim_key
+        ON ateneum_plan_requests(claim_key) WHERE claim_key IS NOT NULL;
     `);
 
     const revisionCreatedBy = columnInfo("ateneum_plan_revisions").find(
@@ -674,6 +725,23 @@ export function migrateAteneumSchema(): void {
       "updated_at",
     ],
     ateneum_plan_acceptances: ["id", "plan_id", "user_id", "version", "accepted_at"],
+    ateneum_plan_requests: [
+      "id",
+      "requester_user_id",
+      "idea_id",
+      "plan_type",
+      "brief",
+      "status",
+      "attempt_count",
+      "claim_key",
+      "available_at",
+      "claimed_at",
+      "completed_at",
+      "result_plan_id",
+      "last_error",
+      "created_at",
+      "updated_at",
+    ],
     ateneum_api_tokens: [
       "id",
       "token_hash",
