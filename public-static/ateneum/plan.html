@@ -40,8 +40,14 @@
   .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 0.65rem 1rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--card); color: var(--ink); font: inherit; font-weight: 650; cursor: pointer; text-decoration: none; }
   .btn-primary { color: #fff; background: var(--accent); border-color: var(--accent); }
   .btn:disabled { opacity: 0.6; cursor: wait; }
-  .toc { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.2rem 0 0.8rem; margin-bottom: 0.2rem; scrollbar-width: thin; }
-  .toc a { flex: 0 0 auto; min-height: 38px; display: inline-flex; align-items: center; padding: 0.35rem 0.7rem; border: 1px solid var(--rule); border-radius: 999px; background: var(--card); color: var(--accent); font-size: 0.82rem; font-weight: 650; text-decoration: none; }
+  .tabs { margin-top: 1rem; }
+  .tab-bar { display: flex; gap: 0.3rem; overflow-x: auto; padding-bottom: 0.3rem; border-bottom: 2px solid var(--rule); -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+  .tab-btn { flex: 0 0 auto; min-height: 44px; padding: 0.6rem 0.9rem; margin-bottom: -2px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--muted); cursor: pointer; font: inherit; font-size: 0.9rem; white-space: nowrap; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 650; }
+  .tab-panels { padding-top: 1rem; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; animation: fadeIn 0.2s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
   .section { scroll-margin-top: 0.8rem; margin-bottom: 1rem; padding: clamp(1rem, 3vw, 1.3rem); border: 1px solid var(--rule); border-radius: 12px; background: var(--card); }
   .section h2 { margin: 0; font-size: 1.15rem; color: var(--accent); }
   .section-summary { margin: 0.45rem 0 0; color: #4c534e; white-space: pre-wrap; }
@@ -75,7 +81,7 @@
   .login button { width: 100%; margin-top: 0.8rem; }
   .toast { position: fixed; left: 50%; bottom: 24px; z-index: 20; transform: translateX(-50%); padding: 0.7rem 1rem; border-radius: 8px; background: var(--ink); color: #fff; opacity: 0; pointer-events: none; transition: opacity 0.2s; white-space: nowrap; max-width: calc(100vw - 2rem); overflow: hidden; text-overflow: ellipsis; }
   .toast.show { opacity: 0.96; }
-  @media (max-width: 520px) { .actions .btn { flex: 1 1 100%; } .who { display: none; } }
+  @media (max-width: 520px) { .actions .btn { flex: 1 1 100%; } .who { display: none; } .tab-btn { padding: 0.55rem 0.6rem; font-size: 0.82rem; } }
 </style>
 </head>
 <body>
@@ -89,6 +95,16 @@ const TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', ot
 const STATUS_LABELS = { draft: 'Yksityinen luonnos', proposed: 'Jaettu ehdotus', accepted: 'Yhteinen suunnitelma' };
 const SECTION_ICONS = { overview: '📋', itinerary: '📅', bookings: '🧾', places: '📍', checklist: '✓', budget: '€', notes: '📝', other: '•' };
 const PRIORITY_LABELS = { must: 'Pakollinen', high: 'Tärkeä', medium: 'Hyvä olla', low: 'Valinnainen' };
+const PLAN_TABS = [
+  { id: 'overview', label: 'Yleiskatsaus', icon: '📋', sections: ['overview', 'shared-wishes'] },
+  { id: 'logistics', label: 'Matka & Käytäntö', icon: '✈️', sections: ['accommodation', 'flights'] },
+  { id: 'places', label: 'Paikat', icon: '🌊', sections: ['beaches', 'day-trips', 'food-drink'] },
+  { id: 'culture', label: 'Kulttuuri', icon: '🎭', sections: ['language', 'wine', 'music', 'history'] },
+  { id: 'spots', label: 'Erityispaikat', icon: '📍', sections: ['special-places'] },
+  { id: 'practical', label: 'Käytännön', icon: '📸', sections: ['packing', 'practical', 'photos', 'emergencies', 'open-items'] },
+  { id: 'itinerary', label: 'Aikataulu', icon: '📅', sections: ['itinerary'] },
+  { id: 'notes', label: 'Muistiinpanot', icon: '📝', sections: [] },
+];
 let me = null;
 let planId = null;
 let plan = null;
@@ -182,17 +198,38 @@ function renderSection(section) {
     ? `<ul class="checklist">${section.checklist.map(entry => `<li><span class="checkmark">□</span><span>${escapeHtml(entry)}</span></li>`).join('')}</ul>` : '';
   return `<section class="section" id="section-${escapeHtml(section.id)}"><h2>${escapeHtml(SECTION_ICONS[section.type] || '•')} ${escapeHtml(section.title)}</h2>${section.summary ? `<p class="section-summary">${escapeHtml(section.summary)}</p>` : ''}${facts}${items}${checklist}</section>`;
 }
+function planTabForSection(section) {
+  const explicit = PLAN_TABS.find(tab => tab.sections.includes(section.id));
+  if (explicit) return explicit.id;
+  if (section.type === 'overview') return 'overview';
+  if (section.type === 'bookings') return 'logistics';
+  if (section.type === 'places') return 'places';
+  if (section.type === 'itinerary') return 'itinerary';
+  if (section.type === 'checklist' || section.type === 'budget') return 'practical';
+  return 'notes';
+}
+function activateTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(button => button.classList.toggle('active', button.dataset.tab === tabId));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.toggle('active', content.dataset.tab === tabId));
+  try { localStorage.setItem('ateneum_active_tab', tabId); } catch {}
+}
+function renderPlanTabs(sections) {
+  const grouped = Object.fromEntries(PLAN_TABS.map(tab => [tab.id, []]));
+  sections.forEach(section => grouped[planTabForSection(section)].push(section));
+  const visibleTabs = PLAN_TABS.filter(tab => grouped[tab.id].length);
+  if (!visibleTabs.length) return '<div class="empty">Suunnitelmassa ei ole vielä osioita.</div>';
+  return `<div class="tabs"><div class="tab-bar">${visibleTabs.map((tab, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${tab.icon} ${escapeHtml(tab.label)}</button>`).join('')}</div><div class="tab-panels">${visibleTabs.map((tab, index) => `<div class="tab-content ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${grouped[tab.id].map(renderSection).join('')}</div>`).join('')}</div></div>`;
+}
 function renderPlan() {
   const item = plan;
   const sections = Array.isArray(item.content?.sections) ? item.content.sections : [];
   const origin = item.draftedBy === 'into' ? `Innon luonnostelema ${item.ownerDisplayName}n pyynnöstä` : `${item.ownerDisplayName}n luonnos`;
-  const toc = sections.length > 1 ? `<nav class="toc" aria-label="Suunnitelman osiot">${sections.map(section => `<a href="#section-${escapeHtml(section.id)}">${escapeHtml(section.title)}</a>`).join('')}</nav>` : '';
   app.innerHTML = `<div class="wrap">${renderHeader()}<main>
     <section class="hero"><div class="hero-heading"><h1>${escapeHtml(item.title)}</h1><span class="status-pill ${escapeHtml(item.status)}">${escapeHtml(STATUS_LABELS[item.status] || item.status)}</span></div>
       <div class="meta"><span>${escapeHtml(TYPE_LABELS[item.planType] || item.planType)}</span><span>${escapeHtml(dateRange(item))}</span><span>Versio ${item.version}</span><span>${sections.length} osiota</span></div>
       <div class="origin">${escapeHtml(origin)}</div>${item.summary ? `<p class="summary">${escapeHtml(item.summary)}</p>` : ''}<div class="plan-state">${escapeHtml(stateCopy(item))}</div>
       ${renderActions(item) ? `<div class="actions">${renderActions(item)}</div>` : ''}</section>
-    ${toc}${sections.length ? sections.map(renderSection).join('') : '<div class="empty">Suunnitelmassa ei ole vielä osioita.</div>'}
+    ${renderPlanTabs(sections)}
     <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin suunnitelmiin</a></div>
   </main></div>`;
   const share = document.getElementById('share-plan');
@@ -201,6 +238,11 @@ function renderPlan() {
   if (accept) accept.onclick = () => runAction(accept, 'accept', 'Hyväksytään…', 'Versio hyväksytty');
   const returnButton = document.getElementById('return-plan');
   if (returnButton) returnButton.onclick = () => runAction(returnButton, 'return-to-draft', 'Palautetaan…', 'Palautettu muokattavaksi', 'Palautetaanko tämä versio pyytäjän yksityiseksi luonnokseksi?');
+  document.querySelectorAll('.tab-btn').forEach(button => button.addEventListener('click', () => activateTab(button.dataset.tab)));
+  try {
+    const saved = localStorage.getItem('ateneum_active_tab');
+    if (PLAN_TABS.some(tab => tab.id === saved) && document.querySelector(`.tab-btn[data-tab="${saved}"]`)) activateTab(saved);
+  } catch {}
 }
 async function runAction(button, action, pending, success, confirmation) {
   if (confirmation && !confirm(confirmation)) return;
