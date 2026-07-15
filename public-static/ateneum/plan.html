@@ -213,12 +213,12 @@ function activateTab(tabId) {
   document.querySelectorAll('.tab-content').forEach(content => content.classList.toggle('active', content.dataset.tab === tabId));
   try { localStorage.setItem('ateneum_active_tab', tabId); } catch {}
 }
-function renderPlanTabs(sections) {
+function renderPlanTabs(sections, planType) {
   const grouped = Object.fromEntries(PLAN_TABS.map(tab => [tab.id, []]));
   sections.forEach(section => grouped[planTabForSection(section)].push(section));
-  const visibleTabs = PLAN_TABS.filter(tab => grouped[tab.id].length);
+  const visibleTabs = planType === 'trip' ? PLAN_TABS : PLAN_TABS.filter(tab => grouped[tab.id].length);
   if (!visibleTabs.length) return '<div class="empty">Suunnitelmassa ei ole vielä osioita.</div>';
-  return `<div class="tabs"><div class="tab-bar">${visibleTabs.map((tab, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${tab.icon} ${escapeHtml(tab.label)}</button>`).join('')}</div><div class="tab-panels">${visibleTabs.map((tab, index) => `<div class="tab-content ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${grouped[tab.id].map(renderSection).join('')}</div>`).join('')}</div></div>`;
+  return `<div class="tabs"><div class="tab-bar">${visibleTabs.map((tab, index) => `<button class="tab-btn ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${tab.icon} ${escapeHtml(tab.label)}</button>`).join('')}</div><div class="tab-panels">${visibleTabs.map((tab, index) => `<div class="tab-content ${index === 0 ? 'active' : ''}" data-tab="${tab.id}">${grouped[tab.id].length ? grouped[tab.id].map(renderSection).join('') : '<div class="empty">Ei sisältöä tässä osiossa.</div>'}</div>`).join('')}</div></div>`;
 }
 function renderPlan() {
   const item = plan;
@@ -229,7 +229,7 @@ function renderPlan() {
       <div class="meta"><span>${escapeHtml(TYPE_LABELS[item.planType] || item.planType)}</span><span>${escapeHtml(dateRange(item))}</span><span>Versio ${item.version}</span><span>${sections.length} osiota</span></div>
       <div class="origin">${escapeHtml(origin)}</div>${item.summary ? `<p class="summary">${escapeHtml(item.summary)}</p>` : ''}<div class="plan-state">${escapeHtml(stateCopy(item))}</div>
       ${renderActions(item) ? `<div class="actions">${renderActions(item)}</div>` : ''}</section>
-    ${renderPlanTabs(sections)}
+    ${renderPlanTabs(sections, item.planType)}
     <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin suunnitelmiin</a></div>
   </main></div>`;
   const share = document.getElementById('share-plan');
