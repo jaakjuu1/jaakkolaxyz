@@ -1168,7 +1168,13 @@ async function loadActivities() {
   const el = document.getElementById('activities-list');
   el.innerHTML = '<div class="loading">Ladataan…</div>';
   try {
-    const { activities = [] } = await api('/activities');
+    const [{ activities = [] }, requestData] = await Promise.all([
+      api('/activities'),
+      canWrite() ? api('/plan-requests').catch(() => ({ requests: [] })) : Promise.resolve({ requests: [] }),
+    ]);
+    const requestsByActivity = new Map((requestData.requests || [])
+      .filter(request => request.sourceType === 'activity')
+      .map(request => [request.activityId, request]));
     if (!isLatestLoad('activities', generation)) return;
     const planned = activities
       .filter(a => a.status === 'planned')
@@ -1178,10 +1184,10 @@ async function loadActivities() {
       .sort((a, b) => new Date(b.scheduledFor) - new Date(a.scheduledFor));
 
     const plannedHtml = `<h3 style="margin:0 0 0.65rem;font-size:0.95rem;">Tulevat aikaehdotukset ja yhteiset suunnitelmat</h3>${planned.length
-      ? planned.map(a => renderActivity(a)).join('')
+      ? planned.map(a => renderActivity(a, requestsByActivity.get(a.id))).join('')
       : '<div class="empty">Ei avoimia aikaehdotuksia tai tulevia suunnitelmia. Valitse idea ja ehdota ensimmäinen aika.</div>'}`;
     const historyHtml = history.length
-      ? `<details class="activity-history"><summary>Aiemmat aktiviteetit (${history.length})</summary>${history.map(a => renderActivity(a)).join('')}</details>`
+      ? `<details class="activity-history"><summary>Aiemmat aktiviteetit (${history.length})</summary>${history.map(a => renderActivity(a, requestsByActivity.get(a.id))).join('')}</details>`
       : '';
     el.innerHTML = plannedHtml + historyHtml;
     openDeepLinkedActivity(activities);
@@ -1209,7 +1215,7 @@ function openDeepLinkedActivity(activities) {
   card.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function renderActivity(a) {
+function renderActivity(a, planRequest = null) {
   const date = new Date(a.scheduledFor);
   const dateStr = date.toLocaleDateString('fi-FI', {
     weekday: 'long', day: 'numeric', month: 'numeric', year: 'numeric'
@@ -1255,6 +1261,11 @@ function renderActivity(a) {
     </div>`;
   }
   const hasDetails = a.details && Object.keys(a.details).length > 0;
+  const activityPlanAction = hasDetails
+    ? `<a class="btn" href="/ateneum/activity.html?id=${encodeURIComponent(a.id)}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background:var(--accent); color:white; border-color:var(--accent);">Avaa suunnitelma</a>`
+    : canWrite() && !isConnectionMoment && (a.status === 'planned' || planRequest?.resultPlanId)
+      ? renderPlanRequestState(planRequest, 'activity')
+      : '';
   const editablePlan = escapeHtml(JSON.stringify({
     id: a.id,
     title: a.title,
@@ -1291,7 +1302,10 @@ function renderActivity(a) {
   }
 
   return `
-    <div class="activity ${isDone ? 'done' : ''} ${isProposed ? 'proposed' : ''} ${isAccepted ? 'accepted' : ''}" data-aid="${escapeHtml(a.id)}">
+    <div class="activity ${isDone ? 'done' : ''} ${isProposed ? 'proposed' : ''} ${isAccepted ? 'accepted' : ''}"
+         data-aid="${escapeHtml(a.id)}" data-activity-id="${escapeHtml(a.id)}"
+         data-plan-source-label="${isAccepted ? 'yhteisestä suunnitelmasta laaja kokonaisuus' : 'aikaehdotuksesta kokonaisuus'}"
+         data-plan-timing="${escapeHtml(`${dateStr} klo ${timeStr}`)}">
       <div class="row">
         <div style="flex: 1; min-width: 0;">
           <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
@@ -1304,7 +1318,7 @@ function renderActivity(a) {
         </div>
       </div>
       <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.7rem; align-items:center;">
-        ${hasDetails ? `<a class="btn" href="/ateneum/activity.html?id=${encodeURIComponent(a.id)}" style="padding:0.4rem 0.7rem; font-size:0.85rem; background:var(--accent); color:white; border-color:var(--accent);">Avaa suunnitelma</a>` : ''}
+        ${activityPlanAction}
         ${actionsHtml}
       </div>
       ${feedbackHtml}
@@ -1794,12 +1808,15 @@ function closePlanRequest(button) {
 }
 
 function openPlanRequest(button) {
-  const card = button.closest('.idea');
+  const card = button.closest('.idea, .activity');
   if (!card || card.querySelector('.plan-request-panel')) return;
+  const isActivity = Boolean(card.dataset.activityId);
+  const sourceLabel = card.dataset.planSourceLabel || 'ideasta suunnitelma';
+  const sourceNote = isActivity ? ' Alkuperäinen aika ja hyväksynnät eivät muutu.' : '';
   const panel = document.createElement('div');
   panel.className = 'planner-panel plan-request-panel';
   panel.innerHTML = `
-    <div><strong>Laajenna ideasta suunnitelma</strong><p class="planner-sharing">Pyyntö menee Innon työjonoon. Saat ensin vain sinulle näkyvän luonnoksen Suunnitelmat-osioon.</p></div>
+    <div><strong>Laajenna ${sourceLabel}</strong><p class="planner-sharing">Pyyntö menee Innon työjonoon. Saat ensin vain sinulle näkyvän luonnoksen Suunnitelmat-osioon.${sourceNote}</p></div>
     <div class="planner-row"><label>Mitä tästä pitäisi syntyä? <span aria-hidden="true">*</span><textarea class="pr-goal" maxlength="3000" placeholder="Esim. valmis viikonloppusuunnitelma, jossa on rauhallinen tahti ja muutama hyvä vaihtoehto"></textarea></label></div>
     <div class="planner-grid">
       <div class="planner-row"><label>Kokonaisuuden tyyppi<select class="pr-type"><option value="event">Tapahtuma</option><option value="trip">Matka</option><option value="project">Projekti</option><option value="other">Muu</option></select></label></div>
@@ -1813,12 +1830,14 @@ function openPlanRequest(button) {
     </details>
     <div class="actions"><button class="btn btn-primary" onclick="submitPlanRequest(this)">Lisää Innon työjonoon</button><button class="btn btn-secondary" onclick="closePlanRequest(this)">Peruuta</button></div>`;
   card.appendChild(panel);
+  if (isActivity && card.dataset.planTiming) panel.querySelector('.pr-timing').value = card.dataset.planTiming;
   panel.querySelector('.pr-goal').focus();
 }
 
 async function submitPlanRequest(button) {
   const panel = button.closest('.plan-request-panel');
-  const card = button.closest('.idea');
+  const card = button.closest('.idea, .activity');
+  const isActivity = Boolean(card?.dataset.activityId);
   const goal = panel.querySelector('.pr-goal').value.trim();
   if (!goal) { toast('Kerro, mitä suunnitelmasta pitäisi syntyä'); return; }
   button.disabled = true;
@@ -1827,7 +1846,7 @@ async function submitPlanRequest(button) {
     await api('/plan-requests', {
       method: 'POST',
       body: JSON.stringify({
-        ideaId: card.dataset.ideaId,
+        ...(isActivity ? { activityId: card.dataset.activityId } : { ideaId: card.dataset.ideaId }),
         planType: panel.querySelector('.pr-type').value,
         brief: {
           goal,
@@ -1840,7 +1859,8 @@ async function submitPlanRequest(button) {
       }),
     });
     toast('Pyyntö lisätty — Into käsittelee jonon kahdesti päivässä');
-    await loadIdeas();
+    if (isActivity) await loadActivities();
+    else await loadIdeas();
   } catch (error) {
     toast('Virhe: ' + error.message);
     button.disabled = false;
@@ -1848,12 +1868,13 @@ async function submitPlanRequest(button) {
   }
 }
 
-function renderPlanRequestState(request) {
-  if (!request) return '<button class="btn" onclick="openPlanRequest(this)">Laajenna suunnitelmaksi</button>';
+function renderPlanRequestState(request, sourceType = 'idea') {
+  const expandLabel = sourceType === 'activity' ? 'Laajenna kokonaisuudeksi' : 'Laajenna suunnitelmaksi';
+  if (!request) return `<button class="btn" onclick="openPlanRequest(this)">${expandLabel}</button>`;
   if (request.status === 'completed' && request.resultPlanId) {
     return `<a class="btn" href="/ateneum/plan.html?id=${encodeURIComponent(request.resultPlanId)}">Avaa laaja suunnitelma</a>`;
   }
-  if (request.status === 'completed') return '<button class="btn" onclick="openPlanRequest(this)">Luo suunnitelma uudelleen</button>';
+  if (request.status === 'completed') return `<button class="btn" onclick="openPlanRequest(this)">Luo ${sourceType === 'activity' ? 'kokonaisuus' : 'suunnitelma'} uudelleen</button>`;
   if (request.status === 'processing') return '<span class="plan-request-state">Into rakentaa suunnitelmaa…</span>';
   if (request.status === 'failed') return '<button class="btn" onclick="openPlanRequest(this)">Yritä laajennusta uudelleen</button>';
   return '<span class="plan-request-state">Jonossa · Into käsittelee tämän seuraavassa ajossa</span>';
@@ -1868,7 +1889,9 @@ async function loadIdeas() {
       api('/ideas'),
       canWrite() ? api('/plan-requests').catch(() => ({ requests: [] })) : Promise.resolve({ requests: [] }),
     ]);
-    const requestsByIdea = new Map((requestData.requests || []).map(request => [request.ideaId, request]));
+    const requestsByIdea = new Map((requestData.requests || [])
+      .filter(request => request.sourceType === 'idea')
+      .map(request => [request.ideaId, request]));
     if (!isLatestLoad('ideas', generation)) return;
     document.getElementById('ideas-count').textContent = `(${ideas.length})`;
     if (!ideas.length) {

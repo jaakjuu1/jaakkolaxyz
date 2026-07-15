@@ -632,6 +632,57 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
         )
         assert "aikaehdotus" in a_text.lower() and "Odottaa kumppanin vastausta" in a_text
         assert "✓ Tehty" not in a_text
+        assert "Laajenna kokonaisuudeksi" in a_text, f"activity expansion action missing: {a_text!r}"
+
+        # A can expand the proposed time into a private rich plan without changing the proposal.
+        activity_card = f'.activity[data-aid="{activity_id}"]'
+        a.click(f'{activity_card} button[onclick="openPlanRequest(this)"]')
+        a.wait(f"document.querySelector({json.dumps(activity_card + ' .plan-request-panel')})")
+        assert a.eval(f"document.querySelector({json.dumps(activity_card + ' .pr-timing')}).value"), "activity timing was not prefilled"
+        a.set_value(f"{activity_card} .pr-goal", "Tee aikaehdotuksesta valmis rauhallinen retkikokonaisuus.")
+        a.set_value(f"{activity_card} .pr-type", "event")
+        a.set_value(f"{activity_card} .pr-budget", "300 euroa")
+        a.click(f'{activity_card} button[onclick="submitPlanRequest(this)"]')
+        a.wait(f"document.querySelector({json.dumps(activity_card)})?.textContent.includes('Jonossa')")
+        assert "aikaehdotus" in a.eval(f"document.querySelector({json.dumps(activity_card)}).textContent").lower()
+
+        b.eval("showView('home')")
+        b.wait(f"document.querySelector({json.dumps(activity_card)})")
+        partner_activity_text = b.eval(f"document.querySelector({json.dumps(activity_card)}).textContent")
+        assert "Jonossa" not in partner_activity_text, "partner sees requester's private activity queue state"
+        partner_expand_selector = activity_card + ' button[onclick="openPlanRequest(this)"]'
+        assert b.eval(f"Boolean(document.querySelector({json.dumps(partner_expand_selector)}))")
+
+        activity_request = run_queue_client(base_url, "claim-plan-request")
+        assert activity_request and activity_request["sourceType"] == "activity"
+        assert activity_request["activityId"] == activity_id
+        assert activity_request["activity"]["planState"] == "proposed"
+        with tempfile.TemporaryDirectory(prefix="ateneum-activity-queue-") as activity_queue_temp:
+            activity_content = Path(activity_queue_temp) / "content.json"
+            activity_content.write_text(
+                json.dumps({"sections": [{
+                    "id": "overview", "title": "Retken kokonaisuus", "type": "overview",
+                    "summary": "Aikaehdotuksesta rakennettu kokonaisuus.", "facts": [], "items": [], "checklist": [],
+                }]}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            completed_activity_queue = run_queue_client(
+                base_url,
+                "complete-plan-request",
+                activity_request["id"],
+                "--expected-attempt", str(activity_request["attemptCount"]),
+                "--title", f"{marker} — laaja kokonaisuus",
+                "--plan-type", "event",
+                "--start-date", future_date,
+                "--end-date", future_date,
+                "--summary", "Aikaehdotuksesta rakennettu yksityinen QA-suunnitelma.",
+                "--content-file", str(activity_content),
+            )
+        activity_plan_id = completed_activity_queue["plan"]["id"]
+        activity_plan_link = activity_card + f' a[href="/ateneum/plan.html?id={activity_plan_id}"]'
+        a.eval("showView('home')")
+        a.wait(f"document.querySelector({json.dumps(activity_plan_link)})")
+        assert "aikaehdotus" in a.eval(f"document.querySelector({json.dumps(activity_card)}).textContent").lower()
 
         # B sees the same proposal and accepts it; bot sees data but no write controls.
         b.eval("showView('home')")
@@ -757,8 +808,9 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             "activityId": activity_id,
             "ideaTitle": marker,
             "planId": plan_id,
+            "activityPlanId": activity_plan_id,
             "planRevision": 2,
-            "planClient": "create+list+revise+queue-claim+queue-complete",
+            "planClient": "create+list+revise+idea-queue+activity-queue",
             "expected409": expected_conflicts,
             "counterproposalPatchKeys": sorted(patch_body),
             "mobileWidth": 390,

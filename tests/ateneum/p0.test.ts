@@ -584,7 +584,7 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
 
-test("plan wholes can be queued from ideas and are reviewed in Ateneum", () => {
+test("plan wholes can be queued from ideas and activities and are reviewed in Ateneum", () => {
   const index = readFileSync(path.resolve("public-static/ateneum/index.html"), "utf8");
   const detail = readFileSync(path.resolve("public-static/ateneum/plan.html"), "utf8");
 
@@ -599,6 +599,9 @@ test("plan wholes can be queued from ideas and are reviewed in Ateneum", () => {
     "function openPlanRequest(",
     "function submitPlanRequest(",
     "Laajenna suunnitelmaksi",
+    "Laajenna kokonaisuudeksi",
+    "data-activity-id=",
+    "request.sourceType === 'activity'",
     "/plan-requests",
     "/ateneum/plan.html?id=",
     "Innon luonnostelema",
@@ -1060,6 +1063,62 @@ test("agent-assisted plan drafts stay private until a human shares and both acce
   assert.equal(((await partnerAfterReturn.json()) as any).plan.version, 1);
 });
 
+test("plan-request migration preserves existing idea queue rows while adding activity sources", async () => {
+  const legacyIdeaId = `idea_queue_migration_${Date.now()}`;
+  rawDb.prepare(
+    `INSERT INTO ateneum_ideas
+      (id, title, description, category, tags, energy_cost, budget_cost, social_mode,
+       duration_min, is_active, created_by, created_at)
+     VALUES (?, 'Queue migration', '', 'other', '[]', 'low', 'free', 'together',
+             60, 1, 'usr_test_juuso', unixepoch())`,
+  ).run(legacyIdeaId);
+  rawDb.exec(`
+    DROP TABLE ateneum_plan_requests;
+    CREATE TABLE ateneum_plan_requests (
+      id TEXT PRIMARY KEY,
+      requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      idea_id TEXT NOT NULL REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL,
+      brief TEXT NOT NULL DEFAULT '{}',
+      status TEXT NOT NULL DEFAULT 'pending',
+      attempt_count INTEGER NOT NULL DEFAULT 0,
+      claim_key TEXT,
+      available_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      claimed_at INTEGER,
+      completed_at INTEGER,
+      result_plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE SET NULL,
+      last_error TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      UNIQUE(requester_user_id, idea_id)
+    );
+  `);
+  rawDb.prepare(
+    `INSERT INTO ateneum_plan_requests
+      (id, requester_user_id, idea_id, plan_type, brief)
+     VALUES ('plq_legacy_idea', 'usr_test_juuso', ?, 'event', '{"goal":"preserve"}')`,
+  ).run(legacyIdeaId);
+  const { migrateAteneumSchema } = await import("../../server/ateneum-db");
+  migrateAteneumSchema();
+
+  const columns = rawDb.prepare("PRAGMA table_info(ateneum_plan_requests)").all() as any[];
+  assert.equal(columns.find((column) => column.name === "idea_id")?.notnull, 0);
+  assert.ok(columns.some((column) => column.name === "source_type"));
+  assert.ok(columns.some((column) => column.name === "activity_id"));
+  const migrated = rawDb.prepare(
+    "SELECT source_type, idea_id, activity_id, brief FROM ateneum_plan_requests WHERE id = 'plq_legacy_idea'",
+  ).get() as any;
+  assert.deepEqual(migrated, {
+    source_type: "idea",
+    idea_id: legacyIdeaId,
+    activity_id: null,
+    brief: '{"goal":"preserve"}',
+  });
+  assert.deepEqual(rawDb.pragma("foreign_key_check"), []);
+  rawDb.prepare("DELETE FROM ateneum_plan_requests WHERE id = 'plq_legacy_idea'").run();
+  rawDb.prepare("DELETE FROM ateneum_ideas WHERE id = ?").run(legacyIdeaId);
+});
+
 test("human plan requests are private, atomically claimed by the bot, and completed once", async () => {
   const ideaResponse = await request("/api/ateneum/ideas", {
     method: "POST",
@@ -1154,6 +1213,94 @@ test("human plan requests are private, atomically claimed by the bot, and comple
   });
   assert.equal(duplicate.status, 200);
   assert.equal((await duplicate.json() as any).request.resultPlanId, completed.plan.id);
+});
+
+test("an open activity can queue a private rich plan without changing its shared state", async () => {
+  const scheduledFor = new Date(Date.now() + 9 * 86_400_000).toISOString();
+  const activityResponse = await request("/api/ateneum/activities", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      title: `Laajennettava aikaehdotus ${Date.now()}`,
+      scheduledFor,
+      durationMin: 180,
+      notes: "Pidetään tahti rauhallisena",
+    },
+  });
+  assert.equal(activityResponse.status, 200);
+  const activity = (await activityResponse.json() as any).activity;
+  assert.equal(activity.planState, "proposed");
+
+  const brief = {
+    goal: "Rakenna tästä valmis yhteinen ilta.",
+    timing: scheduledFor,
+    budget: "Enintään 150 euroa",
+    mustHaves: "Illallinen ja väljää aikaa",
+    avoid: "Ei kiirettä",
+    notes: "Alkuperäinen aika säilyy",
+  };
+  const ambiguous = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { ideaId: "idea", activityId: activity.id, planType: "event", brief },
+  });
+  assert.equal(ambiguous.status, 400);
+
+  const queuedResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { activityId: activity.id, planType: "event", brief },
+  });
+  assert.equal(queuedResponse.status, 202);
+  const queued = (await queuedResponse.json() as any).request;
+  assert.equal(queued.sourceType, "activity");
+  assert.equal(queued.activityId, activity.id);
+  assert.equal(queued.ideaId, null);
+
+  const partnerQueue = await request("/api/ateneum/plan-requests", { cookie: hennaCookie });
+  assert.ok(!(await partnerQueue.json() as any).requests.some((item: any) => item.id === queued.id));
+
+  const claimResponse = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST",
+    cookie: botCookie,
+    body: { claimKey: "00000000-0000-4000-8000-000000000002" },
+  });
+  assert.equal(claimResponse.status, 200);
+  const claimed = (await claimResponse.json() as any).request;
+  assert.equal(claimed.id, queued.id);
+  assert.equal(claimed.source.type, "activity");
+  assert.equal(claimed.activity.id, activity.id);
+  assert.equal(claimed.activity.notes, "Pidetään tahti rauhallisena");
+  assert.equal(claimed.activity.planState, "proposed");
+  assert.equal(claimed.activity.acceptanceCount, 1);
+
+  const completion = await request(`/api/ateneum/plan-requests/${queued.id}/complete`, {
+    method: "POST",
+    cookie: botCookie,
+    body: {
+      expectedAttempt: claimed.attemptCount,
+      title: activity.title,
+      planType: "event",
+      startDate: scheduledFor.slice(0, 10),
+      endDate: scheduledFor.slice(0, 10),
+      summary: "Jonosta rakennettu yksityinen iltakokonaisuus.",
+      content: { sections: [{
+        id: "overview", title: "Illan rakenne", type: "overview",
+        summary: "Rauhallinen kokonaisuus.", facts: [], items: [], checklist: [],
+      }] },
+    },
+  });
+  assert.equal(completion.status, 200);
+  const completed = await completion.json() as any;
+  assert.equal(completed.plan.visibility, "private");
+
+  const activityAfter = (await (await request(`/api/ateneum/activities/${activity.id}`, {
+    cookie: hennaCookie,
+  })).json() as any).activity;
+  assert.equal(activityAfter.version, activity.version);
+  assert.equal(activityAfter.planState, "proposed");
+  const partnerPlans = await request("/api/ateneum/plans", { cookie: hennaCookie });
+  assert.ok(!(await partnerPlans.json() as any).plans.some((plan: any) => plan.id === completed.plan.id));
 });
 
 test("legacy activity status and rating keep the shared PATCH contract", async () => {
