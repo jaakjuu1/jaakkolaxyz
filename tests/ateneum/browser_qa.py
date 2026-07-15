@@ -441,6 +441,10 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             a.eval("document.querySelector('.tab-btn[data-tab=itinerary]').click()")
             a.wait("document.querySelector('.tab-content[data-tab=itinerary]').classList.contains('active')")
             assert "Saapuminen ja rauhallinen ilta" in a.eval("document.querySelector('.tab-content[data-tab=itinerary]').textContent")
+            assert a.eval("Boolean(document.getElementById('enhance-plan-form') && document.getElementById('enhance-instruction'))")
+            assert "Vain sinä ja Into" in a.eval("document.querySelector('.enhance-panel').textContent")
+            enhancement_controls = a.eval("[...document.querySelectorAll('#enhance-instruction, #enhance-plan')].map(node => node.getBoundingClientRect().height)")
+            assert enhancement_controls and min(enhancement_controls) >= 44, f"enhancement control below 44px: {enhancement_controls}"
             detail_tap_heights = a.eval("[...document.querySelectorAll('.tab-btn')].map(node => node.getBoundingClientRect().height)")
             assert detail_tap_heights and min(detail_tap_heights) >= 44, f"plan detail tab below 44px: {detail_tap_heights}"
             assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile plan detail overflows"
@@ -472,6 +476,7 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             bot.navigate(f"/ateneum/plan.html?id={plan_id}")
             bot.wait("document.querySelector('.status-pill.proposed')")
             assert not bot.eval("document.querySelector('#share-plan, #accept-plan, #return-plan')"), "bot sees plan detail controls"
+            assert not bot.eval("document.querySelector('.enhance-panel')"), "bot sees private enhancement UI"
             assert "Odottaa toisen kumppanin vastausta" in bot.eval("document.querySelector('.plan-state').textContent")
 
             # Partner accepts on the detail page; the exact same revision becomes mutual.
@@ -481,40 +486,61 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             b.click("#accept-plan")
             b.wait("document.querySelector('.status-pill.accepted') && !document.getElementById('accept-plan')")
             assert "Molemmat hyväksyivät" in b.eval("document.querySelector('.plan-state').textContent")
+            assert not b.eval("document.querySelector('.enhance-panel')"), "partner sees owner's enhancement UI"
             a.eval("showView('plans')")
             a.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].accepted')")
             bot.eval("window.dispatchEvent(new Event('focus'))")
             bot.wait("document.querySelector('.status-pill.accepted')")
 
-            # Into creates revision 2 privately. Partner and bot retain accepted revision 1.
+            # Owner asks Into for a revision in the UI. The worker completes it into private version 2.
             revised_path = Path(plan_temp) / "plan-v2.json"
             revised_content = json.loads(content_path.read_text(encoding="utf-8"))
             revised_content["sections"][1]["items"].append(
                 {"title": "Päiväretki saarelle", "description": "Vaihtoehto sään mukaan.", "priority": "medium"}
             )
             revised_path.write_text(json.dumps(revised_content, ensure_ascii=False), encoding="utf-8")
-            revised_plan = run_plan_client(
+            a.navigate(f"/ateneum/plan.html?id={plan_id}")
+            a.wait("document.querySelector('.status-pill.accepted') && document.getElementById('enhance-instruction')")
+            a.eval("document.getElementById('enhance-instruction').value = 'x'.repeat(3001); document.getElementById('enhance-plan-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))")
+            a.wait("!document.getElementById('enhance-error').hidden")
+            assert "enintään 3 000" in a.eval("document.getElementById('enhance-error').textContent")
+            assert a.eval("document.getElementById('enhance-instruction').value.length") == 3001
+            a.set_value("#enhance-instruction", "Lisää päiväretki ja pidä hyväksytty versio kumppanin näkyvissä.")
+            a.click("#enhance-plan")
+            a.wait("document.querySelector('.enhance-panel[data-enhancement-status=pending]')")
+            assert "tunnin sisällä" in a.eval("document.querySelector('.enhance-panel').textContent")
+
+            enhancement_request = run_queue_client(base_url, "claim-plan-request")
+            assert enhancement_request and enhancement_request["sourceType"] == "plan"
+            assert enhancement_request["planId"] == plan_id
+            assert enhancement_request["baseVersion"] == 1
+            assert enhancement_request["plan"]["version"] == 1
+            assert enhancement_request["brief"]["goal"].startswith("Lisää päiväretki")
+            a.eval("window.dispatchEvent(new Event('focus'))")
+            a.wait("document.querySelector('.enhance-panel[data-enhancement-status=processing]')")
+
+            completed_enhancement = run_queue_client(
                 base_url,
-                plan_token,
-                "revise-plan-draft",
-                plan_id,
-                "--expected-version",
-                "1",
+                "complete-plan-request",
+                enhancement_request["id"],
+                "--expected-attempt", str(enhancement_request["attemptCount"]),
+                "--title", plan_marker,
+                "--plan-type", "trip",
+                "--start-date", "2026-08-03",
+                "--end-date", "2026-08-10",
                 "--summary",
                 revised_summary,
                 "--content-file",
                 str(revised_path),
             )
-            assert revised_plan["version"] == 2
-            assert revised_plan["status"] == "draft"
-            assert revised_plan["acceptedVersion"] == 1
+            assert completed_enhancement["plan"]["id"] == plan_id
+            assert completed_enhancement["plan"]["version"] == 2
             listed_plans = run_plan_client(base_url, plan_token, "list-plans")
             assert any(item["id"] == plan_id and item["version"] == 2 for item in listed_plans)
 
             a.eval("window.dispatchEvent(new Event('focus'))")
-            a.wait(
-                f"(() => {{ const card = document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].draft'); return Boolean(card && card.textContent.includes('versio 2') && card.textContent.includes('Viimeksi hyväksytty versio 1')); }})()"
-            )
+            a.wait("document.querySelector('.status-pill.draft') && document.querySelector('.meta').textContent.includes('Versio 2') && document.getElementById('enhance-instruction')")
+            assert "näkyy vain sinulle" in a.eval("document.querySelector('.plan-state').textContent")
             b.eval("window.dispatchEvent(new Event('focus'))")
             b.wait("document.querySelector('.status-pill.accepted') && document.querySelector('.meta').textContent.includes('Versio 1')")
             assert original_summary in b.eval("document.querySelector('.summary').textContent")
@@ -810,7 +836,7 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             "planId": plan_id,
             "activityPlanId": activity_plan_id,
             "planRevision": 2,
-            "planClient": "create+list+revise+idea-queue+activity-queue",
+            "planClient": "create+list+plan-enhancement-queue+idea-queue+activity-queue",
             "expected409": expected_conflicts,
             "counterproposalPatchKeys": sorted(patch_body),
             "mobileWidth": 390,

@@ -223,12 +223,14 @@ export const ateneumPlanRequests = sqliteTable(
     requesterUserId: text("requester_user_id")
       .notNull()
       .references(() => ateneumUsers.id, { onDelete: "cascade" }),
-    sourceType: text("source_type", { enum: ["idea", "activity"] }).notNull().default("idea"),
+    sourceType: text("source_type", { enum: ["idea", "activity", "plan"] }).notNull().default("idea"),
     ideaId: text("idea_id")
       .references(() => ateneumIdeas.id, { onDelete: "cascade" }),
     activityId: text("activity_id").references(() => ateneumActivities.id, {
       onDelete: "cascade",
     }),
+    planId: text("plan_id").references(() => ateneumPlans.id, { onDelete: "cascade" }),
+    baseVersion: integer("base_version"),
     planType: text("plan_type", { enum: ["trip", "event", "project", "other"] }).notNull(),
     brief: text("brief").notNull().default("{}"),
     status: text("status", {
@@ -255,8 +257,9 @@ export const ateneumPlanRequests = sqliteTable(
   (table) => ({
     sourceCheck: check(
       "chk_ateneum_plan_requests_source",
-      sql`(${table.sourceType} = 'idea' AND ${table.ideaId} IS NOT NULL AND ${table.activityId} IS NULL)
-        OR (${table.sourceType} = 'activity' AND ${table.activityId} IS NOT NULL AND ${table.ideaId} IS NULL)`,
+      sql`(${table.sourceType} = 'idea' AND ${table.ideaId} IS NOT NULL AND ${table.activityId} IS NULL AND ${table.planId} IS NULL AND ${table.baseVersion} IS NULL)
+        OR (${table.sourceType} = 'activity' AND ${table.activityId} IS NOT NULL AND ${table.ideaId} IS NULL AND ${table.planId} IS NULL AND ${table.baseVersion} IS NULL)
+        OR (${table.sourceType} = 'plan' AND ${table.planId} IS NOT NULL AND ${table.baseVersion} >= 1 AND ${table.ideaId} IS NULL AND ${table.activityId} IS NULL)`,
     ),
     requesterIdeaUnique: uniqueIndex("idx_ateneum_plan_requests_requester_idea")
       .on(
@@ -267,6 +270,9 @@ export const ateneumPlanRequests = sqliteTable(
     requesterActivityUnique: uniqueIndex("idx_ateneum_plan_requests_requester_activity")
       .on(table.requesterUserId, table.activityId)
       .where(sql`${table.sourceType} = 'activity'`),
+    requesterPlanVersionUnique: uniqueIndex("idx_ateneum_plan_requests_requester_plan_version")
+      .on(table.requesterUserId, table.planId, table.baseVersion)
+      .where(sql`${table.sourceType} = 'plan'`),
   }),
 );
 

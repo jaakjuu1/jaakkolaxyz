@@ -616,6 +616,14 @@ test("plan wholes can be queued from ideas and activities and are reviewed in At
     "function activateTab(",
     "data-tab=",
     "function renderActions(",
+    "function renderEnhancement(",
+    "function submitEnhancement(",
+    'id="enhance-instruction"',
+    'maxlength="3000"',
+    'id="enhance-error"',
+    "Paranna Innon avulla",
+    "sourceType === 'plan'",
+    "baseVersion: plan.version",
     "function runAction(",
     "return-to-draft",
     "expectedVersion: plan.version",
@@ -1063,7 +1071,7 @@ test("agent-assisted plan drafts stay private until a human shares and both acce
   assert.equal(((await partnerAfterReturn.json()) as any).plan.version, 1);
 });
 
-test("plan-request migration preserves existing idea queue rows while adding activity sources", async () => {
+test("plan-request migration preserves existing idea queue rows while adding activity and plan sources", async () => {
   const legacyIdeaId = `idea_queue_migration_${Date.now()}`;
   rawDb.prepare(
     `INSERT INTO ateneum_ideas
@@ -1108,18 +1116,139 @@ test("plan-request migration preserves existing idea queue rows while adding act
   assert.equal(columns.find((column) => column.name === "idea_id")?.notnull, 0);
   assert.ok(columns.some((column) => column.name === "source_type"));
   assert.ok(columns.some((column) => column.name === "activity_id"));
+  assert.ok(columns.some((column) => column.name === "plan_id"));
+  assert.ok(columns.some((column) => column.name === "base_version"));
   const migrated = rawDb.prepare(
-    "SELECT source_type, idea_id, activity_id, brief FROM ateneum_plan_requests WHERE id = 'plq_legacy_idea'",
+    "SELECT source_type, idea_id, activity_id, plan_id, base_version, brief FROM ateneum_plan_requests WHERE id = 'plq_legacy_idea'",
   ).get() as any;
   assert.deepEqual(migrated, {
     source_type: "idea",
     idea_id: legacyIdeaId,
     activity_id: null,
+    plan_id: null,
+    base_version: null,
     brief: '{"goal":"preserve"}',
   });
   assert.deepEqual(rawDb.pragma("foreign_key_check"), []);
   rawDb.prepare("DELETE FROM ateneum_plan_requests WHERE id = 'plq_legacy_idea'").run();
   rawDb.prepare("DELETE FROM ateneum_ideas WHERE id = ?").run(legacyIdeaId);
+});
+
+test("plan-request migration preserves the current production idea and activity queue shape", async () => {
+  const suffix = Date.now();
+  const ideaId = `idea_queue_current_${suffix}`;
+  const activityId = `act_queue_current_${suffix}`;
+  rawDb.prepare(
+    `INSERT INTO ateneum_ideas
+      (id, title, description, category, tags, energy_cost, budget_cost, social_mode,
+       duration_min, is_active, created_by, created_at)
+     VALUES (?, 'Current queue idea', '', 'other', '[]', 'low', 'free', 'together',
+             60, 1, 'usr_test_juuso', unixepoch())`,
+  ).run(ideaId);
+  rawDb.prepare(
+    `INSERT INTO ateneum_activities
+      (id, title, scheduled_for, duration_min, status, notes, created_by,
+       planning_mode, version, proposed_by, updated_by, updated_at)
+     VALUES (?, 'Current queue activity', unixepoch() + 86400, 60, 'planned', '', 'usr_test_juuso',
+             'legacy', 1, 'usr_test_juuso', 'usr_test_juuso', unixepoch())`,
+  ).run(activityId);
+  rawDb.exec(`
+    DROP TABLE ateneum_plan_requests;
+    CREATE TABLE ateneum_plan_requests (
+      id TEXT PRIMARY KEY,
+      requester_user_id TEXT NOT NULL REFERENCES ateneum_users(id) ON DELETE CASCADE,
+      source_type TEXT NOT NULL DEFAULT 'idea' CHECK (source_type IN ('idea','activity')),
+      idea_id TEXT REFERENCES ateneum_ideas(id) ON DELETE CASCADE,
+      activity_id TEXT REFERENCES ateneum_activities(id) ON DELETE CASCADE,
+      plan_type TEXT NOT NULL CHECK (plan_type IN ('trip','event','project','other')),
+      brief TEXT NOT NULL DEFAULT '{}',
+      status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','processing','completed','failed')),
+      attempt_count INTEGER NOT NULL DEFAULT 0,
+      claim_key TEXT,
+      available_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      claimed_at INTEGER,
+      completed_at INTEGER,
+      result_plan_id TEXT REFERENCES ateneum_plans(id) ON DELETE SET NULL,
+      last_error TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      CHECK (
+        (source_type = 'idea' AND idea_id IS NOT NULL AND activity_id IS NULL) OR
+        (source_type = 'activity' AND activity_id IS NOT NULL AND idea_id IS NULL)
+      )
+    );
+    CREATE UNIQUE INDEX idx_ateneum_plan_requests_requester_idea
+      ON ateneum_plan_requests(requester_user_id, idea_id) WHERE source_type = 'idea';
+    CREATE UNIQUE INDEX idx_ateneum_plan_requests_requester_activity
+      ON ateneum_plan_requests(requester_user_id, activity_id) WHERE source_type = 'activity';
+    CREATE INDEX idx_ateneum_plan_requests_status_created
+      ON ateneum_plan_requests(status, available_at, created_at);
+    CREATE UNIQUE INDEX idx_ateneum_plan_requests_claim_key
+      ON ateneum_plan_requests(claim_key) WHERE claim_key IS NOT NULL;
+  `);
+  rawDb.prepare(
+    `INSERT INTO ateneum_plan_requests
+      (id, requester_user_id, source_type, idea_id, plan_type, brief, status, attempt_count)
+     VALUES ('plq_current_idea', 'usr_test_juuso', 'idea', ?, 'trip', '{"goal":"idea"}', 'pending', 0)`,
+  ).run(ideaId);
+  rawDb.prepare(
+    `INSERT INTO ateneum_plan_requests
+      (id, requester_user_id, source_type, activity_id, plan_type, brief, status,
+       attempt_count, claim_key, claimed_at)
+     VALUES ('plq_current_activity', 'usr_test_juuso', 'activity', ?, 'event',
+             '{"goal":"activity"}', 'processing', 2,
+             '00000000-0000-4000-8000-000000000099', unixepoch())`,
+  ).run(activityId);
+
+  const { initAteneumSchema, migrateAteneumSchema } = await import("../../server/ateneum-db");
+  initAteneumSchema();
+  migrateAteneumSchema();
+  initAteneumSchema();
+  migrateAteneumSchema();
+
+  const rows = rawDb.prepare(
+    `SELECT id, source_type, idea_id, activity_id, plan_id, base_version, status,
+            attempt_count, claim_key, brief
+     FROM ateneum_plan_requests ORDER BY id`,
+  ).all() as any[];
+  assert.deepEqual(rows, [
+    {
+      id: "plq_current_activity", source_type: "activity", idea_id: null,
+      activity_id: activityId, plan_id: null, base_version: null,
+      status: "processing", attempt_count: 2,
+      claim_key: "00000000-0000-4000-8000-000000000099", brief: '{"goal":"activity"}',
+    },
+    {
+      id: "plq_current_idea", source_type: "idea", idea_id: ideaId,
+      activity_id: null, plan_id: null, base_version: null,
+      status: "pending", attempt_count: 0, claim_key: null, brief: '{"goal":"idea"}',
+    },
+  ]);
+  const migratedActivity = rawDb.prepare(
+    `SELECT available_at AS availableAt, claimed_at AS claimedAt,
+            completed_at AS completedAt, result_plan_id AS resultPlanId, last_error AS lastError
+     FROM ateneum_plan_requests WHERE id = 'plq_current_activity'`,
+  ).get() as any;
+  assert.ok(migratedActivity.availableAt > 0);
+  assert.ok(migratedActivity.claimedAt > 0);
+  assert.equal(migratedActivity.completedAt, null);
+  assert.equal(migratedActivity.resultPlanId, null);
+  assert.equal(migratedActivity.lastError, null);
+  const indexes = new Set(
+    (rawDb.prepare("PRAGMA index_list(ateneum_plan_requests)").all() as any[]).map((index) => index.name),
+  );
+  for (const name of [
+    "idx_ateneum_plan_requests_status_created",
+    "idx_ateneum_plan_requests_claim_key",
+    "idx_ateneum_plan_requests_requester_idea",
+    "idx_ateneum_plan_requests_requester_activity",
+    "idx_ateneum_plan_requests_requester_plan_version",
+  ]) assert.ok(indexes.has(name), `missing migrated queue index: ${name}`);
+  assert.equal(rawDb.pragma("quick_check", { simple: true }), "ok");
+  assert.deepEqual(rawDb.pragma("foreign_key_check"), []);
+  rawDb.prepare("DELETE FROM ateneum_plan_requests WHERE id IN ('plq_current_idea','plq_current_activity')").run();
+  rawDb.prepare("DELETE FROM ateneum_ideas WHERE id = ?").run(ideaId);
+  rawDb.prepare("DELETE FROM ateneum_activities WHERE id = ?").run(activityId);
 });
 
 test("human plan requests are private, atomically claimed by the bot, and completed once", async () => {
@@ -1216,6 +1345,193 @@ test("human plan requests are private, atomically claimed by the bot, and comple
   });
   assert.equal(duplicate.status, 200);
   assert.equal((await duplicate.json() as any).request.resultPlanId, completed.plan.id);
+});
+
+test("a plan owner can iteratively enhance a plan while accepted versions stay partner-visible", async () => {
+  const originalContent = { sections: [{
+    id: "overview", title: "Yleiskatsaus", type: "overview",
+    summary: "Ensimmäinen versio.", facts: [], items: [], checklist: [],
+  }] };
+  const createdResponse = await request("/api/ateneum/plans/drafts", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      title: `Parannettava suunnitelma ${Date.now()}`,
+      planType: "trip",
+      startDate: null,
+      endDate: null,
+      summary: "Alkuperäinen yksityinen luonnos.",
+      content: originalContent,
+    },
+  });
+  assert.equal(createdResponse.status, 200);
+  const original = (await createdResponse.json() as any).plan;
+
+  const ambiguous = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      ideaId: "idea",
+      planId: original.id,
+      baseVersion: original.version,
+      planType: original.planType,
+      brief: { goal: "Ei saa hyväksyä kahta lähdettä" },
+    },
+  });
+  assert.equal(ambiguous.status, 400);
+
+  const tooLongInstruction = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      planId: original.id,
+      baseVersion: original.version,
+      planType: original.planType,
+      brief: { goal: "x".repeat(3_001) },
+    },
+  });
+  assert.equal(tooLongInstruction.status, 400);
+  const maxInstruction = "x".repeat(3_000);
+  const firstQueuedResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      planId: original.id,
+      baseVersion: original.version,
+      planType: original.planType,
+      brief: { goal: maxInstruction },
+    },
+  });
+  assert.equal(firstQueuedResponse.status, 202);
+  const firstQueued = (await firstQueuedResponse.json() as any).request;
+  assert.equal(firstQueued.sourceType, "plan");
+  assert.equal(firstQueued.planId, original.id);
+  assert.equal(firstQueued.baseVersion, 1);
+  assert.equal(firstQueued.brief, undefined);
+
+  const partnerQueue = await request("/api/ateneum/plan-requests", { cookie: hennaCookie });
+  assert.ok(!(await partnerQueue.json() as any).requests.some((item: any) => item.id === firstQueued.id));
+  const blockedShare = await request(`/api/ateneum/plans/${original.id}/share`, {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { expectedVersion: 1 },
+  });
+  assert.equal(blockedShare.status, 409);
+  const blockedRevision = await request(`/api/ateneum/plans/${original.id}/draft`, {
+    method: "PATCH",
+    cookie: juusoCookie,
+    body: { expectedVersion: 1, summary: "Ei saa ohittaa jonossa olevaa parannusta." },
+  });
+  assert.equal(blockedRevision.status, 409);
+
+  const firstClaimResponse = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST",
+    cookie: botCookie,
+    body: { claimKey: "00000000-0000-4000-8000-000000000011" },
+  });
+  assert.equal(firstClaimResponse.status, 200);
+  const firstClaim = (await firstClaimResponse.json() as any).request;
+  assert.equal(firstClaim.id, firstQueued.id);
+  assert.equal(firstClaim.source.type, "plan");
+  assert.equal(firstClaim.plan.id, original.id);
+  assert.equal(firstClaim.plan.version, 1);
+  assert.deepEqual(firstClaim.plan.content, originalContent);
+  assert.equal(firstClaim.brief.goal, maxInstruction);
+
+  const firstCompletionBody = {
+    expectedAttempt: firstClaim.attemptCount,
+    title: original.title,
+    planType: "trip",
+    startDate: null,
+    endDate: null,
+    summary: "Budjetilla ja matka-ajoilla tarkennettu yksityinen luonnos.",
+    content: { sections: [{
+      id: "overview", title: "Yleiskatsaus", type: "overview",
+      summary: "Toinen versio.", facts: [{ label: "Budjetti", value: "250 €" }], items: [], checklist: [],
+    }] },
+  };
+  const firstCompletionResponse = await request(`/api/ateneum/plan-requests/${firstQueued.id}/complete`, {
+    method: "POST", cookie: botCookie, body: firstCompletionBody,
+  });
+  assert.equal(firstCompletionResponse.status, 200);
+  const firstCompletion = await firstCompletionResponse.json() as any;
+  assert.equal(firstCompletion.plan.id, original.id);
+  assert.equal(firstCompletion.plan.version, 2);
+  const repeatedCompletion = await request(`/api/ateneum/plan-requests/${firstQueued.id}/complete`, {
+    method: "POST", cookie: botCookie, body: firstCompletionBody,
+  });
+  assert.equal(repeatedCompletion.status, 200);
+  assert.equal((await repeatedCompletion.json() as any).plan.version, 2);
+  assert.equal(
+    rawDb.prepare("SELECT COUNT(*) FROM ateneum_plan_revisions WHERE plan_id = ?").pluck().get(original.id),
+    2,
+  );
+  assert.equal(
+    rawDb.prepare("SELECT status FROM ateneum_plan_revisions WHERE plan_id = ? AND version = 1").pluck().get(original.id),
+    "superseded",
+  );
+
+  const shareV2 = await request(`/api/ateneum/plans/${original.id}/share`, {
+    method: "POST", cookie: juusoCookie, body: { expectedVersion: 2 },
+  });
+  assert.equal(shareV2.status, 200);
+  const acceptV2 = await request(`/api/ateneum/plans/${original.id}/accept`, {
+    method: "POST", cookie: hennaCookie, body: { expectedVersion: 2 },
+  });
+  assert.equal(acceptV2.status, 200);
+  assert.equal((await acceptV2.json() as any).plan.status, "accepted");
+
+  const secondQueuedResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      planId: original.id,
+      baseVersion: 2,
+      planType: "trip",
+      brief: { goal: "Lisää sateen varasuunnitelma." },
+    },
+  });
+  assert.equal(secondQueuedResponse.status, 202);
+  const secondQueued = (await secondQueuedResponse.json() as any).request;
+  const secondClaimResponse = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST",
+    cookie: botCookie,
+    body: { claimKey: "00000000-0000-4000-8000-000000000012" },
+  });
+  const secondClaim = (await secondClaimResponse.json() as any).request;
+  assert.equal(secondClaim.id, secondQueued.id);
+  assert.equal(secondClaim.plan.status, "accepted");
+  const secondCompletion = await request(`/api/ateneum/plan-requests/${secondQueued.id}/complete`, {
+    method: "POST",
+    cookie: botCookie,
+    body: {
+      expectedAttempt: secondClaim.attemptCount,
+      title: original.title,
+      planType: "trip",
+      startDate: null,
+      endDate: null,
+      summary: "Kolmas yksityinen versio sisältää sateen varasuunnitelman.",
+      content: { sections: [{
+        id: "overview", title: "Yleiskatsaus", type: "overview",
+        summary: "Kolmas versio.", facts: [], items: [], checklist: ["Tarkista sääennuste"],
+      }] },
+    },
+  });
+  assert.equal(secondCompletion.status, 200);
+  assert.equal((await secondCompletion.json() as any).plan.version, 3);
+
+  const ownerView = await request(`/api/ateneum/plans/${original.id}`, { cookie: juusoCookie });
+  const ownerPlan = (await ownerView.json() as any).plan;
+  assert.equal(ownerPlan.version, 3);
+  assert.equal(ownerPlan.status, "draft");
+  assert.equal(ownerPlan.acceptedVersion, 2);
+  const partnerView = await request(`/api/ateneum/plans/${original.id}`, { cookie: hennaCookie });
+  const partnerPlan = (await partnerView.json() as any).plan;
+  assert.equal(partnerPlan.version, 2);
+  assert.equal(partnerPlan.status, "accepted");
+  assert.equal(partnerPlan.summary, firstCompletionBody.summary);
+
+  rawDb.prepare("DELETE FROM ateneum_plans WHERE id = ?").run(original.id);
 });
 
 test("an open activity can queue a private rich plan without changing its shared state", async () => {
