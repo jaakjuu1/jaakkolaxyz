@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { sqliteTable, text, integer, real, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer, real, uniqueIndex, check } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -223,9 +223,12 @@ export const ateneumPlanRequests = sqliteTable(
     requesterUserId: text("requester_user_id")
       .notNull()
       .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    sourceType: text("source_type", { enum: ["idea", "activity"] }).notNull().default("idea"),
     ideaId: text("idea_id")
-      .notNull()
       .references(() => ateneumIdeas.id, { onDelete: "cascade" }),
+    activityId: text("activity_id").references(() => ateneumActivities.id, {
+      onDelete: "cascade",
+    }),
     planType: text("plan_type", { enum: ["trip", "event", "project", "other"] }).notNull(),
     brief: text("brief").notNull().default("{}"),
     status: text("status", {
@@ -250,10 +253,20 @@ export const ateneumPlanRequests = sqliteTable(
       .default(sql`(unixepoch())`),
   },
   (table) => ({
-    requesterIdeaUnique: uniqueIndex("idx_ateneum_plan_requests_requester_idea").on(
+    sourceCheck: check(
+      "chk_ateneum_plan_requests_source",
+      sql`(${table.sourceType} = 'idea' AND ${table.ideaId} IS NOT NULL AND ${table.activityId} IS NULL)
+        OR (${table.sourceType} = 'activity' AND ${table.activityId} IS NOT NULL AND ${table.ideaId} IS NULL)`,
+    ),
+    requesterIdeaUnique: uniqueIndex("idx_ateneum_plan_requests_requester_idea")
+      .on(
       table.requesterUserId,
       table.ideaId,
-    ),
+      )
+      .where(sql`${table.sourceType} = 'idea'`),
+    requesterActivityUnique: uniqueIndex("idx_ateneum_plan_requests_requester_activity")
+      .on(table.requesterUserId, table.activityId)
+      .where(sql`${table.sourceType} = 'activity'`),
   }),
 );
 
