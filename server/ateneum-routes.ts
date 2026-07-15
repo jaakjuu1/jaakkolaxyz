@@ -95,6 +95,17 @@ function requireHumanSession(
   return next();
 }
 
+function requirePlanQueueWorker(
+  req: AteneumAuthedRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  if (req.ateneumUser?.role !== "bot" || req.ateneumAuth?.kind !== "session") {
+    return res.status(403).json({ message: "Ateneum queue worker session is required" });
+  }
+  return next();
+}
+
 function requireNotificationPermission(
   req: AteneumAuthedRequest,
   res: Response,
@@ -248,6 +259,39 @@ const planDraftPatchSchema = planDraftFieldsObject
   });
 const planVersionActionSchema = z
   .object({ expectedVersion: z.number().int().min(1) })
+  .strict();
+const planRequestBriefSchema = z
+  .object({
+    goal: z.string().trim().min(1).max(3_000),
+    timing: z.string().trim().max(1_000).default(""),
+    budget: z.string().trim().max(1_000).default(""),
+    mustHaves: z.string().trim().max(3_000).default(""),
+    avoid: z.string().trim().max(2_000).default(""),
+    notes: z.string().trim().max(5_000).default(""),
+  })
+  .strict();
+const planRequestCreateSchema = z
+  .object({
+    ideaId: z.string().trim().min(1).max(200),
+    planType: z.enum(["trip", "event", "project", "other"]),
+    brief: planRequestBriefSchema,
+  })
+  .strict();
+const planRequestClaimSchema = z
+  .object({ claimKey: z.string().uuid() })
+  .strict();
+const planRequestCompleteSchema = planDraftFieldsObject
+  .extend({ expectedAttempt: z.number().int().min(1).max(3) })
+  .strict()
+  .refine(
+    (value) => !value.startDate || !value.endDate || value.startDate <= value.endDate,
+    { message: "End date must not precede start date", path: ["endDate"] },
+  );
+const planRequestFailSchema = z
+  .object({
+    expectedAttempt: z.number().int().min(1).max(3),
+    error: z.string().trim().min(1).max(500),
+  })
   .strict();
 
 const connectionCheckInBodySchema = z
@@ -1270,6 +1314,80 @@ type RawPlanRevision = {
   updatedAt: number;
 };
 
+type RawPlanRequest = {
+  id: string;
+  requesterUserId: string;
+  ideaId: string;
+  planType: "trip" | "event" | "project" | "other";
+  brief: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  attemptCount: number;
+  claimKey: string | null;
+  availableAt: number;
+  claimedAt: number | null;
+  completedAt: number | null;
+  resultPlanId: string | null;
+  lastError: string | null;
+  createdAt: number;
+  updatedAt: number;
+};
+
+function readRawPlanRequest(id: string): RawPlanRequest {
+  const request = ateneumRawDb
+    .prepare(
+      `SELECT id, requester_user_id AS requesterUserId, idea_id AS ideaId,
+              plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+              available_at AS availableAt, claimed_at AS claimedAt,
+              completed_at AS completedAt, result_plan_id AS resultPlanId,
+              last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+       FROM ateneum_plan_requests WHERE id = ?`,
+    )
+    .get(id) as RawPlanRequest | undefined;
+  if (!request) throw new PlanTransitionError(404, "Suunnitelmapyyntöä ei löytynyt");
+  return request;
+}
+
+function serializePlanRequest(request: RawPlanRequest, includeInput = false) {
+  let brief: unknown = undefined;
+  if (includeInput) {
+    try {
+      brief = JSON.parse(request.brief);
+    } catch {
+      throw new PlanTransitionError(500, "Suunnitelmapyynnön sisältö on vioittunut");
+    }
+  }
+  return {
+    id: request.id,
+    ideaId: request.ideaId,
+    planType: request.planType,
+    status: request.status,
+    attemptCount: Number(request.attemptCount),
+    resultPlanId: request.resultPlanId,
+    lastError: request.status === "failed" ? "Suunnitelman käsittely epäonnistui." : null,
+    createdAt: new Date(Number(request.createdAt) * 1000).toISOString(),
+    updatedAt: new Date(Number(request.updatedAt) * 1000).toISOString(),
+    ...(includeInput ? { requesterUserId: request.requesterUserId, brief } : {}),
+  };
+}
+
+function serializeClaimedPlanRequest(request: RawPlanRequest) {
+  const idea = ateneumRawDb
+    .prepare(
+      `SELECT id, title, description, category, tags, energy_cost AS energyCost,
+              budget_cost AS budgetCost, social_mode AS socialMode, duration_min AS durationMin
+       FROM ateneum_ideas WHERE id = ?`,
+    )
+    .get(request.ideaId) as Record<string, unknown> | undefined;
+  const requester = ateneumRawDb
+    .prepare("SELECT display_name AS displayName FROM ateneum_users WHERE id = ?")
+    .get(request.requesterUserId) as { displayName: string } | undefined;
+  return {
+    ...serializePlanRequest(request, true),
+    requesterDisplayName: requester?.displayName ?? "Käyttäjä",
+    idea: idea ? { ...idea, tags: parseTags(String(idea.tags ?? "[]")) } : null,
+  };
+}
+
 class PlanTransitionError extends Error {
   constructor(public readonly statusCode: number, message: string) {
     super(message);
@@ -2151,6 +2269,255 @@ export function registerAteneumRoutes(app: Express): void {
         return res.status(404).json({ message: "Idea not found" });
       }
       return res.json({ ok: true });
+    },
+  );
+
+  // Human-authored queue: an idea becomes an agent-built private plan later.
+  app.get(
+    "/api/ateneum/plan-requests",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      try {
+        const rows = ateneumRawDb
+          .prepare(
+            `SELECT id, requester_user_id AS requesterUserId, idea_id AS ideaId,
+                    plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+                    available_at AS availableAt, claimed_at AS claimedAt,
+                    completed_at AS completedAt, result_plan_id AS resultPlanId,
+                    last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+             FROM ateneum_plan_requests
+             WHERE requester_user_id = ? ORDER BY created_at DESC`,
+          )
+          .all(req.ateneumUser!.id) as RawPlanRequest[];
+        return res.json({ requests: rows.map((row) => serializePlanRequest(row)) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plan-requests",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planRequestCreateSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      const user = req.ateneumUser!;
+      try {
+        const result = ateneumRawDb.transaction(() => {
+          const idea = ateneumRawDb
+            .prepare("SELECT id FROM ateneum_ideas WHERE id = ? AND is_active = 1")
+            .get(parsed.data.ideaId) as { id: string } | undefined;
+          if (!idea) throw new PlanTransitionError(404, "Ideaa ei löytynyt");
+          const existing = ateneumRawDb
+            .prepare(
+              `SELECT id, requester_user_id AS requesterUserId, idea_id AS ideaId,
+                      plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+                      available_at AS availableAt, claimed_at AS claimedAt,
+                      completed_at AS completedAt, result_plan_id AS resultPlanId,
+                      last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+               FROM ateneum_plan_requests WHERE requester_user_id = ? AND idea_id = ?`,
+            )
+            .get(user.id, parsed.data.ideaId) as RawPlanRequest | undefined;
+          if (existing && existing.status !== "failed" && (existing.status !== "completed" || existing.resultPlanId)) {
+            return { request: existing, existing: true };
+          }
+          if (existing) {
+            ateneumRawDb
+              .prepare(
+                `UPDATE ateneum_plan_requests
+                 SET plan_type = ?, brief = ?, status = 'pending', attempt_count = 0,
+                     claim_key = NULL, available_at = unixepoch(), claimed_at = NULL, completed_at = NULL,
+                     result_plan_id = NULL, last_error = NULL, updated_at = unixepoch()
+                 WHERE id = ?`,
+              )
+              .run(parsed.data.planType, JSON.stringify(parsed.data.brief), existing.id);
+            return { request: readRawPlanRequest(existing.id), existing: false };
+          }
+          const id = newId("plq");
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_requests
+                (id, requester_user_id, idea_id, plan_type, brief, status, attempt_count,
+                 available_at, created_at, updated_at)
+               VALUES (?, ?, ?, ?, ?, 'pending', 0, unixepoch(), unixepoch(), unixepoch())`,
+            )
+            .run(id, user.id, parsed.data.ideaId, parsed.data.planType, JSON.stringify(parsed.data.brief));
+          return { request: readRawPlanRequest(id), existing: false };
+        }).immediate();
+        return res.status(result.existing ? 200 : 202).json({
+          request: serializePlanRequest(result.request),
+          existing: result.existing,
+        });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plan-requests/claim",
+    requireAteneumAuth,
+    requirePlanQueueWorker,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planRequestClaimSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        const request = ateneumRawDb.transaction(() => {
+          ateneumRawDb.exec(`
+            UPDATE ateneum_plan_requests
+            SET status = CASE WHEN attempt_count >= 3 THEN 'failed' ELSE 'pending' END,
+                claim_key = NULL, available_at = unixepoch(), claimed_at = NULL,
+                last_error = CASE WHEN attempt_count >= 3 THEN 'Käsittely keskeytyi kolme kertaa.' ELSE last_error END,
+                updated_at = unixepoch()
+            WHERE status = 'processing' AND claimed_at < unixepoch() - 7200;
+          `);
+          const existing = ateneumRawDb
+            .prepare(
+              `SELECT id, requester_user_id AS requesterUserId, idea_id AS ideaId,
+                      plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+                      available_at AS availableAt, claimed_at AS claimedAt,
+                      completed_at AS completedAt, result_plan_id AS resultPlanId,
+                      last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+               FROM ateneum_plan_requests
+               WHERE status = 'processing' AND claim_key = ?`,
+            )
+            .get(parsed.data.claimKey) as RawPlanRequest | undefined;
+          if (existing) return serializeClaimedPlanRequest(existing);
+          const candidate = ateneumRawDb
+            .prepare(
+              `SELECT id, requester_user_id AS requesterUserId, idea_id AS ideaId,
+                      plan_type AS planType, brief, status, attempt_count AS attemptCount, claim_key AS claimKey,
+                      available_at AS availableAt, claimed_at AS claimedAt,
+                      completed_at AS completedAt, result_plan_id AS resultPlanId,
+                      last_error AS lastError, created_at AS createdAt, updated_at AS updatedAt
+               FROM ateneum_plan_requests
+               WHERE status = 'pending' AND attempt_count < 3 AND available_at <= unixepoch()
+               ORDER BY created_at ASC LIMIT 1`,
+            )
+            .get() as RawPlanRequest | undefined;
+          if (!candidate) return null;
+          const changed = ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plan_requests
+               SET status = 'processing', attempt_count = attempt_count + 1,
+                   claim_key = ?, claimed_at = unixepoch(), last_error = NULL, updated_at = unixepoch()
+               WHERE id = ? AND status = 'pending' AND attempt_count = ?`,
+            )
+            .run(parsed.data.claimKey, candidate.id, candidate.attemptCount);
+          if (changed.changes !== 1) return null;
+          return serializeClaimedPlanRequest(readRawPlanRequest(candidate.id));
+        }).immediate();
+        return res.json({ request });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plan-requests/:id/complete",
+    requireAteneumAuth,
+    requirePlanQueueWorker,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planRequestCompleteSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        const result = ateneumRawDb.transaction(() => {
+          const request = readRawPlanRequest(req.params.id);
+          if (request.status === "completed" && request.resultPlanId && request.attemptCount === parsed.data.expectedAttempt) {
+            return { request, planId: request.resultPlanId, existing: true };
+          }
+          if (request.status !== "processing" || request.attemptCount !== parsed.data.expectedAttempt) {
+            throw new PlanTransitionError(409, "Suunnitelmapyyntö ei ole enää tämän työntekijän käsittelyssä");
+          }
+          if (parsed.data.planType !== request.planType) {
+            throw new PlanTransitionError(400, "Suunnitelman tyyppi ei vastaa jonopyyntöä");
+          }
+          const planId = newId("pln");
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plans
+                (id, owner_user_id, plan_type, latest_version, accepted_version, created_at, updated_at)
+               VALUES (?, ?, ?, 1, NULL, unixepoch(), unixepoch())`,
+            )
+            .run(planId, request.requesterUserId, parsed.data.planType);
+          ateneumRawDb
+            .prepare(
+              `INSERT INTO ateneum_plan_revisions
+                (id, plan_id, version, title, start_date, end_date, summary, content,
+                 status, drafted_by, created_by, created_at, updated_at)
+               VALUES (?, ?, 1, ?, ?, ?, ?, ?, 'draft', 'into', ?, unixepoch(), unixepoch())`,
+            )
+            .run(
+              newId("prv"),
+              planId,
+              parsed.data.title,
+              parsed.data.startDate ?? null,
+              parsed.data.endDate ?? null,
+              parsed.data.summary,
+              JSON.stringify(parsed.data.content),
+              req.ateneumUser!.id,
+            );
+          ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plan_requests
+               SET status = 'completed', result_plan_id = ?, completed_at = unixepoch(),
+                   claimed_at = NULL, last_error = NULL, updated_at = unixepoch()
+               WHERE id = ? AND status = 'processing' AND attempt_count = ?`,
+            )
+            .run(planId, request.id, parsed.data.expectedAttempt);
+          return { request: readRawPlanRequest(request.id), planId, existing: false };
+        }).immediate();
+        return res.json({
+          request: serializePlanRequest(result.request),
+          plan: { id: result.planId, version: 1, status: "draft", visibility: "private" },
+          existing: result.existing,
+        });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
+    },
+  );
+
+  app.post(
+    "/api/ateneum/plan-requests/:id/fail",
+    requireAteneumAuth,
+    requirePlanQueueWorker,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const parsed = planRequestFailSchema.safeParse(req.body ?? {});
+      if (!parsed.success) {
+        return res.status(400).json({ message: fromZodError(parsed.error).message });
+      }
+      try {
+        const request = ateneumRawDb.transaction(() => {
+          const current = readRawPlanRequest(req.params.id);
+          if (current.status !== "processing" || current.attemptCount !== parsed.data.expectedAttempt) {
+            throw new PlanTransitionError(409, "Suunnitelmapyyntö ei ole enää tämän työntekijän käsittelyssä");
+          }
+          const terminal = current.attemptCount >= 3;
+          ateneumRawDb
+            .prepare(
+              `UPDATE ateneum_plan_requests
+               SET status = ?, available_at = unixepoch() + 21600, claimed_at = NULL,
+                   claim_key = NULL, last_error = ?, updated_at = unixepoch()
+               WHERE id = ? AND status = 'processing' AND attempt_count = ?`,
+            )
+            .run(terminal ? "failed" : "pending", parsed.data.error, current.id, parsed.data.expectedAttempt);
+          return readRawPlanRequest(current.id);
+        }).immediate();
+        return res.json({ request: serializePlanRequest(request) });
+      } catch (error) {
+        return respondPlanTransitionError(res, error);
+      }
     },
   );
 

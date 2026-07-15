@@ -216,6 +216,47 @@ export const ateneumPlanAcceptances = sqliteTable(
   }),
 );
 
+export const ateneumPlanRequests = sqliteTable(
+  "ateneum_plan_requests",
+  {
+    id: text("id").primaryKey(),
+    requesterUserId: text("requester_user_id")
+      .notNull()
+      .references(() => ateneumUsers.id, { onDelete: "cascade" }),
+    ideaId: text("idea_id")
+      .notNull()
+      .references(() => ateneumIdeas.id, { onDelete: "cascade" }),
+    planType: text("plan_type", { enum: ["trip", "event", "project", "other"] }).notNull(),
+    brief: text("brief").notNull().default("{}"),
+    status: text("status", {
+      enum: ["pending", "processing", "completed", "failed"],
+    }).notNull().default("pending"),
+    attemptCount: integer("attempt_count").notNull().default(0),
+    claimKey: text("claim_key").unique(),
+    availableAt: integer("available_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    claimedAt: integer("claimed_at", { mode: "timestamp" }),
+    completedAt: integer("completed_at", { mode: "timestamp" }),
+    resultPlanId: text("result_plan_id").references(() => ateneumPlans.id, {
+      onDelete: "set null",
+    }),
+    lastError: text("last_error"),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    requesterIdeaUnique: uniqueIndex("idx_ateneum_plan_requests_requester_idea").on(
+      table.requesterUserId,
+      table.ideaId,
+    ),
+  }),
+);
+
 export const ateneumWishes = sqliteTable("ateneum_wishes", {
   id: text("id").primaryKey(),
   userId: text("user_id")

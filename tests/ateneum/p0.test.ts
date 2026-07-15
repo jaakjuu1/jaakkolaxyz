@@ -584,7 +584,7 @@ test("frontend API contracts and activity detail DOM stay aligned", () => {
   assert.equal((detail.match(/id=["']content["']/g) ?? []).length, 1);
 });
 
-test("plan wholes are conversation-authored and only reviewed in Ateneum", () => {
+test("plan wholes can be queued from ideas and are reviewed in Ateneum", () => {
   const index = readFileSync(path.resolve("public-static/ateneum/index.html"), "utf8");
   const detail = readFileSync(path.resolve("public-static/ateneum/plan.html"), "utf8");
 
@@ -596,6 +596,10 @@ test("plan wholes are conversation-authored and only reviewed in Ateneum", () =>
     "function sharePlan(",
     "function acceptPlan(",
     "function returnPlanToDraft(",
+    "function openPlanRequest(",
+    "function submitPlanRequest(",
+    "Laajenna suunnitelmaksi",
+    "/plan-requests",
     "/ateneum/plan.html?id=",
     "Innon luonnostelema",
     "Suunnitelmat",
@@ -1054,6 +1058,102 @@ test("agent-assisted plan drafts stay private until a human shares and both acce
   });
   assert.equal(partnerAfterReturn.status, 200);
   assert.equal(((await partnerAfterReturn.json()) as any).plan.version, 1);
+});
+
+test("human plan requests are private, atomically claimed by the bot, and completed once", async () => {
+  const ideaResponse = await request("/api/ateneum/ideas", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { title: `Jonotettava idea ${Date.now()}`, description: "Laajenna tämä rauhalliseksi kokonaisuudeksi." },
+  });
+  assert.equal(ideaResponse.status, 200);
+  const idea = (await ideaResponse.json() as any).idea;
+  const brief = {
+    goal: "Tee valmis viikonloppukokonaisuus kahdelle.",
+    timing: "Elokuun toinen viikonloppu",
+    budget: "Enintään 800 euroa",
+    mustHaves: "Rauhallinen tahti ja yksi hyvä illallinen",
+    avoid: "Ei täyteen ahdettua ohjelmaa",
+    notes: "Luonnos ensin vain Juusolle",
+  };
+  const queuedResponse = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: { ideaId: idea.id, planType: "trip", brief },
+  });
+  assert.equal(queuedResponse.status, 202);
+  const queued = (await queuedResponse.json() as any).request;
+  assert.equal(queued.status, "pending");
+
+  const hennaRequests = await request("/api/ateneum/plan-requests", { cookie: hennaCookie });
+  assert.equal(hennaRequests.status, 200);
+  assert.ok(!(await hennaRequests.json() as any).requests.some((item: any) => item.id === queued.id));
+  const humanClaim = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST", cookie: juusoCookie, body: {},
+  });
+  assert.equal(humanClaim.status, 403);
+
+  const claimKey = "00000000-0000-4000-8000-000000000001";
+  const claimResponse = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST", cookie: botCookie, body: { claimKey },
+  });
+  assert.equal(claimResponse.status, 200);
+  const claimed = (await claimResponse.json() as any).request;
+  assert.equal(claimed.id, queued.id);
+  assert.equal(claimed.status, "processing");
+  assert.equal(claimed.attemptCount, 1);
+  assert.deepEqual(claimed.brief, brief);
+  assert.equal(claimed.idea.id, idea.id);
+  assert.equal(claimed.requesterDisplayName, "Juuso");
+
+  const repeatedClaim = await request("/api/ateneum/plan-requests/claim", {
+    method: "POST", cookie: botCookie, body: { claimKey },
+  });
+  assert.equal(repeatedClaim.status, 200);
+  const repeatedClaimed = (await repeatedClaim.json() as any).request;
+  assert.equal(repeatedClaimed.id, claimed.id);
+  assert.equal(repeatedClaimed.attemptCount, 1);
+
+  const completion = {
+    expectedAttempt: claimed.attemptCount,
+    title: idea.title,
+    planType: "trip",
+    startDate: "2026-08-08",
+    endDate: "2026-08-10",
+    summary: "Rauhallinen viikonloppu kahdelle.",
+    content: { sections: [{
+      id: "overview", title: "Yleiskatsaus", type: "overview",
+      summary: "Luonnos työjonosta.", facts: [], items: [], checklist: [],
+    }] },
+  };
+  const wrongType = await request(`/api/ateneum/plan-requests/${queued.id}/complete`, {
+    method: "POST", cookie: botCookie, body: { ...completion, planType: "event" },
+  });
+  assert.equal(wrongType.status, 400);
+  const completedResponse = await request(`/api/ateneum/plan-requests/${queued.id}/complete`, {
+    method: "POST", cookie: botCookie, body: completion,
+  });
+  assert.equal(completedResponse.status, 200);
+  const completed = await completedResponse.json() as any;
+  assert.equal(completed.request.status, "completed");
+  assert.equal(completed.plan.status, "draft");
+
+  const repeatedComplete = await request(`/api/ateneum/plan-requests/${queued.id}/complete`, {
+    method: "POST", cookie: botCookie, body: completion,
+  });
+  assert.equal(repeatedComplete.status, 200);
+  assert.equal((await repeatedComplete.json() as any).plan.id, completed.plan.id);
+
+  const juusoPlans = await request("/api/ateneum/plans", { cookie: juusoCookie });
+  assert.ok((await juusoPlans.json() as any).plans.some((plan: any) => plan.id === completed.plan.id && plan.visibility === "private"));
+  const hennaPlans = await request("/api/ateneum/plans", { cookie: hennaCookie });
+  assert.ok(!(await hennaPlans.json() as any).plans.some((plan: any) => plan.id === completed.plan.id));
+
+  const duplicate = await request("/api/ateneum/plan-requests", {
+    method: "POST", cookie: juusoCookie, body: { ideaId: idea.id, planType: "trip", brief },
+  });
+  assert.equal(duplicate.status, 200);
+  assert.equal((await duplicate.json() as any).request.resultPlanId, completed.plan.id);
 });
 
 test("legacy activity status and rating keep the shared PATCH contract", async () => {
