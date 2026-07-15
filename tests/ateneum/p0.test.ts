@@ -605,6 +605,9 @@ test("plan wholes are conversation-authored and only reviewed in Ateneum", () =>
   }
   for (const marker of [
     "function renderSection(",
+    "function renderPlanTabs(",
+    "function activateTab(",
+    "data-tab=",
     "function renderActions(",
     "function runAction(",
     "return-to-draft",

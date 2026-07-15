@@ -410,6 +410,20 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             assert plan_tap_heights and min(plan_tap_heights) >= 44, f"plan tap target below 44px: {plan_tap_heights}"
             assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile plan list overflows"
 
+            # The plan detail uses the same compact, switching tab interaction as rich activity details.
+            a.navigate(f"/ateneum/plan.html?id={plan_id}")
+            a.wait("document.querySelectorAll('.tab-btn').length === 2")
+            assert a.eval("document.querySelector('.tab-btn[data-tab=overview]').classList.contains('active')")
+            assert a.eval("document.querySelector('.tab-content[data-tab=itinerary]').offsetParent === null")
+            a.eval("document.querySelector('.tab-btn[data-tab=itinerary]').click()")
+            a.wait("document.querySelector('.tab-content[data-tab=itinerary]').classList.contains('active')")
+            assert "Saapuminen ja rauhallinen ilta" in a.eval("document.querySelector('.tab-content[data-tab=itinerary]').textContent")
+            detail_tap_heights = a.eval("[...document.querySelectorAll('.tab-btn')].map(node => node.getBoundingClientRect().height)")
+            assert detail_tap_heights and min(detail_tap_heights) >= 44, f"plan detail tab below 44px: {detail_tap_heights}"
+            assert a.eval("document.documentElement.scrollWidth <= window.innerWidth + 1"), "mobile plan detail overflows"
+            a.navigate("/ateneum/?view=plans")
+            a.wait(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}].draft')")
+
             b.eval("showView('plans')")
             b.wait("document.getElementById('plans-count').textContent === '(0)'")
             assert not b.eval(f"document.querySelector('.plan-card[data-plan-id={json.dumps(plan_id)}]')")
