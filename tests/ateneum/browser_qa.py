@@ -412,7 +412,7 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
 
             # The plan detail uses the same compact, switching tab interaction as rich activity details.
             a.navigate(f"/ateneum/plan.html?id={plan_id}")
-            a.wait("document.querySelectorAll('.tab-btn').length === 2")
+            a.wait("document.querySelectorAll('.tab-btn').length === 8")
             assert a.eval("document.querySelector('.tab-btn[data-tab=overview]').classList.contains('active')")
             assert a.eval("document.querySelector('.tab-content[data-tab=itinerary]').offsetParent === null")
             a.eval("document.querySelector('.tab-btn[data-tab=itinerary]').click()")
