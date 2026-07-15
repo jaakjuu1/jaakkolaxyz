@@ -619,6 +619,8 @@ test("plan wholes can be queued from ideas and activities and are reviewed in At
     "function renderEnhancement(",
     "function submitEnhancement(",
     'id="enhance-instruction"',
+    'maxlength="3000"',
+    'id="enhance-error"',
     "Paranna Innon avulla",
     "sourceType === 'plan'",
     "baseVersion: plan.version",
@@ -1179,6 +1181,10 @@ test("plan-request migration preserves the current production idea and activity 
       ON ateneum_plan_requests(requester_user_id, idea_id) WHERE source_type = 'idea';
     CREATE UNIQUE INDEX idx_ateneum_plan_requests_requester_activity
       ON ateneum_plan_requests(requester_user_id, activity_id) WHERE source_type = 'activity';
+    CREATE INDEX idx_ateneum_plan_requests_status_created
+      ON ateneum_plan_requests(status, available_at, created_at);
+    CREATE UNIQUE INDEX idx_ateneum_plan_requests_claim_key
+      ON ateneum_plan_requests(claim_key) WHERE claim_key IS NOT NULL;
   `);
   rawDb.prepare(
     `INSERT INTO ateneum_plan_requests
@@ -1218,6 +1224,26 @@ test("plan-request migration preserves the current production idea and activity 
       status: "pending", attempt_count: 0, claim_key: null, brief: '{"goal":"idea"}',
     },
   ]);
+  const migratedActivity = rawDb.prepare(
+    `SELECT available_at AS availableAt, claimed_at AS claimedAt,
+            completed_at AS completedAt, result_plan_id AS resultPlanId, last_error AS lastError
+     FROM ateneum_plan_requests WHERE id = 'plq_current_activity'`,
+  ).get() as any;
+  assert.ok(migratedActivity.availableAt > 0);
+  assert.ok(migratedActivity.claimedAt > 0);
+  assert.equal(migratedActivity.completedAt, null);
+  assert.equal(migratedActivity.resultPlanId, null);
+  assert.equal(migratedActivity.lastError, null);
+  const indexes = new Set(
+    (rawDb.prepare("PRAGMA index_list(ateneum_plan_requests)").all() as any[]).map((index) => index.name),
+  );
+  for (const name of [
+    "idx_ateneum_plan_requests_status_created",
+    "idx_ateneum_plan_requests_claim_key",
+    "idx_ateneum_plan_requests_requester_idea",
+    "idx_ateneum_plan_requests_requester_activity",
+    "idx_ateneum_plan_requests_requester_plan_version",
+  ]) assert.ok(indexes.has(name), `missing migrated queue index: ${name}`);
   assert.equal(rawDb.pragma("quick_check", { simple: true }), "ok");
   assert.deepEqual(rawDb.pragma("foreign_key_check"), []);
   rawDb.prepare("DELETE FROM ateneum_plan_requests WHERE id IN ('plq_current_idea','plq_current_activity')").run();
@@ -1354,6 +1380,18 @@ test("a plan owner can iteratively enhance a plan while accepted versions stay p
   });
   assert.equal(ambiguous.status, 400);
 
+  const tooLongInstruction = await request("/api/ateneum/plan-requests", {
+    method: "POST",
+    cookie: juusoCookie,
+    body: {
+      planId: original.id,
+      baseVersion: original.version,
+      planType: original.planType,
+      brief: { goal: "x".repeat(3_001) },
+    },
+  });
+  assert.equal(tooLongInstruction.status, 400);
+  const maxInstruction = "x".repeat(3_000);
   const firstQueuedResponse = await request("/api/ateneum/plan-requests", {
     method: "POST",
     cookie: juusoCookie,
@@ -1361,7 +1399,7 @@ test("a plan owner can iteratively enhance a plan while accepted versions stay p
       planId: original.id,
       baseVersion: original.version,
       planType: original.planType,
-      brief: { goal: "Lisää tarkka budjetti ja matka-ajat." },
+      brief: { goal: maxInstruction },
     },
   });
   assert.equal(firstQueuedResponse.status, 202);
@@ -1398,7 +1436,7 @@ test("a plan owner can iteratively enhance a plan while accepted versions stay p
   assert.equal(firstClaim.plan.id, original.id);
   assert.equal(firstClaim.plan.version, 1);
   assert.deepEqual(firstClaim.plan.content, originalContent);
-  assert.equal(firstClaim.brief.goal, "Lisää tarkka budjetti ja matka-ajat.");
+  assert.equal(firstClaim.brief.goal, maxInstruction);
 
   const firstCompletionBody = {
     expectedAttempt: firstClaim.attemptCount,

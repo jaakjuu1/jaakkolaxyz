@@ -209,7 +209,8 @@ function renderEnhancement(item) {
     ? '<div class="enhance-state failed" aria-live="polite">Uutta versiota ei voitu tehdä. Suunnitelmasi ei muuttunut. Voit lähettää ohjeen uudelleen.</div>'
     : '';
   return `<section class="enhance-panel"><h2>Paranna Innon avulla</h2><p>Kerro omin sanoin, mitä haluat muuttaa tai lisätä. Into tekee uuden yksityisen version — mitään ei jaeta automaattisesti.</p>${failed}
-    <form id="enhance-plan-form"><label for="enhance-instruction">Mitä haluat muuttaa tai lisätä?</label><textarea id="enhance-instruction" required minlength="3" maxlength="5000" placeholder="Esim. lisää ajoajat, tarkat lippuhinnat, kaksi ravintolavaihtoehtoa ja varasuunnitelma sateelle."></textarea>
+    <form id="enhance-plan-form"><label for="enhance-instruction">Mitä haluat muuttaa tai lisätä?</label><textarea id="enhance-instruction" required minlength="3" maxlength="3000" placeholder="Esim. lisää ajoajat, tarkat lippuhinnat, kaksi ravintolavaihtoehtoa ja varasuunnitelma sateelle."></textarea>
+    <div id="enhance-error" class="enhance-state failed" aria-live="polite" hidden></div>
     <div class="actions"><button class="btn btn-primary" id="enhance-plan" type="submit">Lähetä Innolle</button></div></form>
     <p class="privacy-note">Vain sinä ja Into näette tämän ohjeen. Kumppani näkee vasta version, jonka jaat.</p></section>`;
 }
@@ -286,8 +287,17 @@ async function submitEnhancement(event) {
   event.preventDefault();
   const input = document.getElementById('enhance-instruction');
   const button = document.getElementById('enhance-plan');
+  const errorOutput = document.getElementById('enhance-error');
   const instruction = input.value.trim();
-  if (instruction.length < 3) { input.focus(); return; }
+  errorOutput.hidden = true;
+  if (instruction.length < 3 || instruction.length > 3000) {
+    errorOutput.textContent = instruction.length > 3000
+      ? 'Ohje saa olla enintään 3 000 merkkiä.'
+      : 'Kirjoita vähintään kolme merkkiä.';
+    errorOutput.hidden = false;
+    input.focus();
+    return;
+  }
   button.disabled = true;
   button.textContent = 'Lähetetään…';
   try {
@@ -308,10 +318,10 @@ async function submitEnhancement(event) {
     renderPlan();
     scheduleEnhancementPoll();
   } catch (error) {
-    toast('Virhe: ' + error.message);
+    errorOutput.textContent = 'Pyyntöä ei voitu lähettää: ' + error.message;
+    errorOutput.hidden = false;
     button.disabled = false;
     button.textContent = 'Lähetä Innolle';
-    await loadPlan();
   }
 }
 function scheduleEnhancementPoll() {

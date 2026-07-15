@@ -501,6 +501,10 @@ def run_browser_qa(base_url: str, chrome_port: int) -> dict[str, Any]:
             revised_path.write_text(json.dumps(revised_content, ensure_ascii=False), encoding="utf-8")
             a.navigate(f"/ateneum/plan.html?id={plan_id}")
             a.wait("document.querySelector('.status-pill.accepted') && document.getElementById('enhance-instruction')")
+            a.eval("document.getElementById('enhance-instruction').value = 'x'.repeat(3001); document.getElementById('enhance-plan-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))")
+            a.wait("!document.getElementById('enhance-error').hidden")
+            assert "enintään 3 000" in a.eval("document.getElementById('enhance-error').textContent")
+            assert a.eval("document.getElementById('enhance-instruction').value.length") == 3001
             a.set_value("#enhance-instruction", "Lisää päiväretki ja pidä hyväksytty versio kumppanin näkyvissä.")
             a.click("#enhance-plan")
             a.wait("document.querySelector('.enhance-panel[data-enhancement-status=pending]')")
