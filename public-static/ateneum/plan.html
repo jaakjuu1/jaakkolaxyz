@@ -2,7 +2,7 @@
 <html lang="fi">
 <head>
 <meta charset="utf-8">
-<title>Kokonaisuus — Ateneum</title>
+<title>Suunnitelma — Ateneum</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0a6e3a">
 <style>
@@ -79,13 +79,13 @@
 </style>
 </head>
 <body>
-<div id="app"><div class="loading">Ladataan kokonaisuutta…</div></div>
+<div id="app"><div class="loading">Ladataan suunnitelmaa…</div></div>
 <div id="toast" class="toast"></div>
 <script>
 const API = '/api/ateneum';
 const app = document.getElementById('app');
 const toastEl = document.getElementById('toast');
-const TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Kokonaisuus' };
+const TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Muu' };
 const STATUS_LABELS = { draft: 'Yksityinen luonnos', proposed: 'Jaettu ehdotus', accepted: 'Yhteinen suunnitelma' };
 const SECTION_ICONS = { overview: '📋', itinerary: '📅', bookings: '🧾', places: '📍', checklist: '✓', budget: '€', notes: '📝', other: '•' };
 const PRIORITY_LABELS = { must: 'Pakollinen', high: 'Tärkeä', medium: 'Hyvä olla', low: 'Valinnainen' };
@@ -128,7 +128,7 @@ function stateCopy(item) {
   if (item.status === 'draft') {
     return item.acceptedVersion
       ? `Tämä uusi versio näkyy vain sinulle. Yhteinen versio ${item.acceptedVersion} pysyy kumppanin näkyvissä, kunnes jaatte ja hyväksytte uuden.`
-      : 'Tämä luonnos näkyy vain sinulle. Tarkista kokonaisuus rauhassa ennen kuin jaat sen kumppanille.';
+      : 'Tämä luonnos näkyy vain sinulle. Tarkista suunnitelma rauhassa ennen kuin jaat sen kumppanille.';
   }
   if (item.status === 'accepted') return 'Molemmat hyväksyivät tämän version. Tämä on nyt teidän yhteinen suunnitelmanne.';
   if (!canWrite()) return 'Odottaa toisen kumppanin vastausta.';
@@ -136,10 +136,10 @@ function stateCopy(item) {
   return `${item.ownerDisplayName} jakoi tämän version. Se odottaa sinun hyväksyntääsi tai palautusta muokattavaksi.`;
 }
 function renderHeader() {
-  return `<header><a class="back" href="/ateneum/?view=plans">← Kokonaisuudet</a><div class="who">Hei, <strong>${escapeHtml(me.displayName)}</strong></div></header>`;
+  return `<header><a class="back" href="/ateneum/?view=plans">← Suunnitelmat</a><div class="who">Hei, <strong>${escapeHtml(me.displayName)}</strong></div></header>`;
 }
 function renderLogin(message = '') {
-  app.innerHTML = `<div class="login"><h1>Ateneum</h1><p>Kirjaudu sisään nähdäksesi kokonaisuuden.</p>
+  app.innerHTML = `<div class="login"><h1>Ateneum</h1><p>Kirjaudu sisään nähdäksesi suunnitelman.</p>
     <form id="login-form"><label for="email">Sähköposti</label><input id="email" type="email" required autocomplete="email"><button class="btn btn-primary" type="submit">Lähetä kirjautumislinkki</button></form>
     <p id="login-message">${escapeHtml(message)}</p></div>`;
   document.getElementById('login-form').onsubmit = async event => {
@@ -192,11 +192,11 @@ function renderPlan() {
       <div class="meta"><span>${escapeHtml(TYPE_LABELS[item.planType] || item.planType)}</span><span>${escapeHtml(dateRange(item))}</span><span>Versio ${item.version}</span><span>${sections.length} osiota</span></div>
       <div class="origin">${escapeHtml(origin)}</div>${item.summary ? `<p class="summary">${escapeHtml(item.summary)}</p>` : ''}<div class="plan-state">${escapeHtml(stateCopy(item))}</div>
       ${renderActions(item) ? `<div class="actions">${renderActions(item)}</div>` : ''}</section>
-    ${toc}${sections.length ? sections.map(renderSection).join('') : '<div class="empty">Kokonaisuudessa ei ole vielä osioita.</div>'}
-    <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin kokonaisuuksiin</a></div>
+    ${toc}${sections.length ? sections.map(renderSection).join('') : '<div class="empty">Suunnitelmassa ei ole vielä osioita.</div>'}
+    <div class="actions"><a class="btn" href="/ateneum/?view=plans">← Takaisin suunnitelmiin</a></div>
   </main></div>`;
   const share = document.getElementById('share-plan');
-  if (share) share.onclick = () => runAction(share, 'share', 'Jaetaan…', 'Kokonaisuus jaettu kumppanille', 'Jaetaanko tämä versio kumppanille? Jakaminen toimii omana hyväksyntänäsi.');
+  if (share) share.onclick = () => runAction(share, 'share', 'Jaetaan…', 'Suunnitelma jaettu kumppanille', 'Jaetaanko tämä versio kumppanille? Jakaminen toimii omana hyväksyntänäsi.');
   const accept = document.getElementById('accept-plan');
   if (accept) accept.onclick = () => runAction(accept, 'accept', 'Hyväksytään…', 'Versio hyväksytty');
   const returnButton = document.getElementById('return-plan');
@@ -231,7 +231,7 @@ async function loadPlan() {
     renderPlan();
   } catch (error) {
     if (generation !== loadGeneration) return;
-    app.innerHTML = `<div class="wrap">${me ? renderHeader() : ''}<div class="error">Kokonaisuutta ei voitu ladata: ${escapeHtml(error.message)}</div><a class="btn" href="/ateneum/?view=plans">← Kokonaisuudet</a></div>`;
+    app.innerHTML = `<div class="wrap">${me ? renderHeader() : ''}<div class="error">Suunnitelmaa ei voitu ladata: ${escapeHtml(error.message)}</div><a class="btn" href="/ateneum/?view=plans">← Suunnitelmat</a></div>`;
   }
 }
 function queueRefresh() {
@@ -243,7 +243,7 @@ window.addEventListener('focus', queueRefresh);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') queueRefresh(); });
 async function init() {
   planId = new URLSearchParams(location.search).get('id');
-  if (!planId) { app.innerHTML = '<div class="wrap"><div class="error">Kokonaisuuden ID puuttuu.</div></div>'; return; }
+  if (!planId) { app.innerHTML = '<div class="wrap"><div class="error">Suunnitelman ID puuttuu.</div></div>'; return; }
   const fragment = new URLSearchParams(location.hash.slice(1));
   const token = fragment.get('magic');
   if (token) {

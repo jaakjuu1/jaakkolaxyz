@@ -463,10 +463,10 @@
     <div id="wishes-list"></div>
   </section>
 
-  <!-- Kokonaisuudet -->
+  <!-- Suunnitelmat -->
   <section id="view-plans" class="hidden">
-    <h2>Kokonaisuudet <small id="plans-count"></small></h2>
-    <p class="section-lead">Kokonaisuus syntyy keskustelussa Innon kanssa. Luonnos näkyy ensin vain pyytäjälle ja tulee yhteiseksi vasta, kun molemmat hyväksyvät saman version.</p>
+    <h2>Suunnitelmat <small id="plans-count"></small></h2>
+    <p class="section-lead">Suunnitelma syntyy keskustelussa Innon kanssa. Luonnos näkyy ensin vain pyytäjälle ja tulee yhteiseksi vasta, kun molemmat hyväksyvät saman version.</p>
     <div id="plans-list"><div class="loading">Ladataan…</div></div>
   </section>
 
@@ -507,7 +507,7 @@
     <span class="ico">⭐</span><span>Toiveet</span>
   </button>
   <button data-view="plans" onclick="showView('plans')">
-    <span class="ico">🗺️</span><span>Kokon.</span>
+    <span class="ico">🗺️</span><span>Suunn.</span>
   </button>
   <button data-view="settings" onclick="showView('settings')">
     <span class="ico">⚙️</span><span>Aset.</span>
@@ -1049,8 +1049,8 @@ async function rotateWeeklySuggestion() {
   }
 }
 
-// === Kokonaisuudet ===
-const PLAN_TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Kokonaisuus' };
+// === Suunnitelmat ===
+const PLAN_TYPE_LABELS = { trip: 'Matka', event: 'Tapahtuma', project: 'Projekti', other: 'Muu' };
 const PLAN_STATUS_LABELS = { draft: 'yksityinen luonnos', proposed: 'jaettu ehdotus', accepted: 'yhteinen suunnitelma' };
 
 function formatPlanDate(date) {
@@ -1068,7 +1068,7 @@ function planStateCopy(plan) {
     const oldVersion = plan.acceptedVersion
       ? ` Viimeksi hyväksytty versio ${plan.acceptedVersion} pysyy kumppanin näkyvissä.`
       : '';
-    return `Luonnos näkyy vain sinulle. Tarkista kokonaisuus rauhassa ennen jakamista.${oldVersion}`;
+    return `Luonnos näkyy vain sinulle. Tarkista suunnitelma rauhassa ennen jakamista.${oldVersion}`;
   }
   if (plan.status === 'accepted') return 'Molemmat hyväksyivät tämän version. Tämä on nyt teidän yhteinen suunnitelmanne.';
   if (!canWrite()) return 'Odottaa toisen kumppanin vastausta.';
@@ -1081,7 +1081,7 @@ function renderPlanCard(plan) {
   const origin = plan.draftedBy === 'into'
     ? `Innon luonnostelema ${escapeHtml(plan.ownerDisplayName)}n pyynnöstä`
     : `${escapeHtml(plan.ownerDisplayName)}n luonnos`;
-  let actions = `<a class="btn" href="/ateneum/plan.html?id=${encodeURIComponent(plan.id)}">Avaa kokonaisuus</a>`;
+  let actions = `<a class="btn" href="/ateneum/plan.html?id=${encodeURIComponent(plan.id)}">Avaa suunnitelma</a>`;
   if (canWrite() && plan.status === 'draft' && plan.isOwner) {
     actions += `<button class="btn btn-primary human-write" onclick="sharePlan('${escapeHtml(plan.id)}', ${plan.version}, this)">Jaa kumppanille</button>`;
   } else if (canWrite() && plan.status === 'proposed') {
@@ -1107,17 +1107,17 @@ function renderPlanCard(plan) {
 async function loadPlans() {
   const generation = beginLoad('plans');
   const list = document.getElementById('plans-list');
-  list.innerHTML = '<div class="loading">Ladataan kokonaisuuksia…</div>';
+  list.innerHTML = '<div class="loading">Ladataan suunnitelmia…</div>';
   try {
     const { plans = [] } = await api('/plans');
     if (!isLatestLoad('plans', generation)) return;
     document.getElementById('plans-count').textContent = `(${plans.length})`;
     list.innerHTML = plans.length
       ? plans.map(renderPlanCard).join('')
-      : '<div class="empty">Ei vielä kokonaisuuksia. Pyydä Innolta keskustelussa esimerkiksi matkan, juhlan tai muun yhteisen kokonaisuuden luonnos.</div>';
+      : '<div class="empty">Ei vielä suunnitelmia. Pyydä Innolta keskustelussa esimerkiksi matkan, juhlan tai muun yhteisen suunnitelman luonnos.</div>';
   } catch (e) {
     if (isLatestLoad('plans', generation)) {
-      list.innerHTML = `<div class="empty">Kokonaisuuksien lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
+      list.innerHTML = `<div class="empty">Suunnitelmien lataus epäonnistui: ${escapeHtml(e.message)}</div>`;
     }
   }
 }
@@ -1140,7 +1140,7 @@ async function runPlanAction(button, path, pending, success) {
 async function sharePlan(id, version, button) {
   if (!confirm('Jaetaanko tämä versio kumppanille? Jakaminen toimii omana hyväksyntänäsi.')) return;
   button.dataset.version = version;
-  await runPlanAction(button, `/plans/${encodeURIComponent(id)}/share`, 'Jaetaan…', 'Kokonaisuus jaettu kumppanille');
+  await runPlanAction(button, `/plans/${encodeURIComponent(id)}/share`, 'Jaetaan…', 'Suunnitelma jaettu kumppanille');
 }
 
 async function acceptPlan(id, version, button) {

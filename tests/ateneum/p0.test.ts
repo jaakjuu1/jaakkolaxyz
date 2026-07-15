@@ -598,6 +598,8 @@ test("plan wholes are conversation-authored and only reviewed in Ateneum", () =>
     "function returnPlanToDraft(",
     "/ateneum/plan.html?id=",
     "Innon luonnostelema",
+    "Suunnitelmat",
+    "Suunn.",
   ]) {
     assert.ok(index.includes(marker), `plan list missing: ${marker}`);
   }
