@@ -34,6 +34,7 @@ server/ateneum-seed.ts
 shared/ateneum-schema.ts
 public-static/ateneum/index.html
 public-static/ateneum/activity.html
+public-static/ateneum/plan.html
 tests/ateneum/p0.test.ts
 tests/ateneum/seed.test.ts
 tests/ateneum/browser_qa.py
@@ -44,6 +45,7 @@ dist/server-metafile.json
 dist/runtime-externals.json
 dist/public/ateneum/index.html
 dist/public/ateneum/activity.html
+dist/public/ateneum/plan.html
 ```
 
 Muita tuotantotiedostoja, dashboardia tai salaista `.env`-tiedostoa ei korvata.
@@ -83,23 +85,26 @@ test -s dist/server-metafile.json
 test -s dist/runtime-externals.json
 test -s dist/public/ateneum/index.html
 test -s dist/public/ateneum/activity.html
+test -s dist/public/ateneum/plan.html
 grep -q 'ateneum_weekly_suggestions' dist/index.cjs
 grep -q 'learn workspace static mounted from data/learn' dist/index.cjs
 node --check dist/index.cjs
 cmp public-static/ateneum/index.html dist/public/ateneum/index.html
 cmp public-static/ateneum/activity.html dist/public/ateneum/activity.html
+cmp public-static/ateneum/plan.html dist/public/ateneum/plan.html
 
 tar -czf "$ARTIFACT" \
   .env.example package.json package-lock.json script/build.ts server/index.ts \
   server/ateneum-auth.ts server/ateneum-db.ts server/ateneum-email.ts \
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts \
   shared/ateneum-schema.ts public-static/ateneum/index.html \
-  public-static/ateneum/activity.html tests/ateneum/p0.test.ts \
+  public-static/ateneum/activity.html public-static/ateneum/plan.html \
+  tests/ateneum/p0.test.ts \
   tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py \
   tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md \
   dist/index.cjs dist/server-metafile.json \
   dist/runtime-externals.json dist/public/ateneum/index.html \
-  dist/public/ateneum/activity.html
+  dist/public/ateneum/activity.html dist/public/ateneum/plan.html
 sha256sum "$ARTIFACT"
 ```
 
@@ -199,12 +204,12 @@ ssh teppo-server '
     server/ateneum-auth.ts server/ateneum-db.ts server/ateneum-email.ts
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
-    public-static/ateneum/activity.html tests/ateneum/p0.test.ts
+    public-static/ateneum/activity.html public-static/ateneum/plan.html tests/ateneum/p0.test.ts
     tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
     tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
     dist/index.cjs dist/server-metafile.json
     dist/runtime-externals.json dist/public/ateneum/index.html
-    dist/public/ateneum/activity.html
+    dist/public/ateneum/activity.html dist/public/ateneum/plan.html
   )
 
   cd "$APP"
@@ -279,10 +284,12 @@ ssh teppo-server '
   test -s "$RELEASE/dist/index.cjs"
   test -s "$RELEASE/dist/public/ateneum/index.html"
   test -s "$RELEASE/dist/public/ateneum/activity.html"
+  test -s "$RELEASE/dist/public/ateneum/plan.html"
   grep -q ateneum_weekly_suggestions "$RELEASE/dist/index.cjs"
   node --check "$RELEASE/dist/index.cjs"
   cmp "$RELEASE/public-static/ateneum/index.html" "$RELEASE/dist/public/ateneum/index.html"
   cmp "$RELEASE/public-static/ateneum/activity.html" "$RELEASE/dist/public/ateneum/activity.html"
+  cmp "$RELEASE/public-static/ateneum/plan.html" "$RELEASE/dist/public/ateneum/plan.html"
 
   printf "BACKUP=%s\nRELEASE=%s\n" "$BACKUP" "$RELEASE"
 '
@@ -304,12 +311,12 @@ ssh teppo-server '
     server/ateneum-auth.ts server/ateneum-db.ts server/ateneum-email.ts
     server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
     shared/ateneum-schema.ts public-static/ateneum/index.html
-    public-static/ateneum/activity.html tests/ateneum/p0.test.ts
+    public-static/ateneum/activity.html public-static/ateneum/plan.html tests/ateneum/p0.test.ts
     tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
     tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
     dist/index.cjs dist/server-metafile.json
     dist/runtime-externals.json dist/public/ateneum/index.html
-    dist/public/ateneum/activity.html
+    dist/public/ateneum/activity.html dist/public/ateneum/plan.html
   )
   cd "$RELEASE"
   rsync -rlti --dry-run --relative --omit-dir-times \
@@ -406,12 +413,12 @@ FILES=(
   server/ateneum-auth.ts server/ateneum-db.ts server/ateneum-email.ts
   server/ateneum-routes.ts server/ateneum-seed-data.ts server/ateneum-seed.ts
   shared/ateneum-schema.ts public-static/ateneum/index.html
-  public-static/ateneum/activity.html tests/ateneum/p0.test.ts
+  public-static/ateneum/activity.html public-static/ateneum/plan.html tests/ateneum/p0.test.ts
   tests/ateneum/seed.test.ts tests/ateneum/browser_qa.py
     tests/ateneum/migration_qa.py docs/ateneum-p0-deploy.md
     dist/index.cjs dist/server-metafile.json
   dist/runtime-externals.json dist/public/ateneum/index.html
-  dist/public/ateneum/activity.html
+  dist/public/ateneum/activity.html dist/public/ateneum/plan.html
 )
 cd "$RELEASE"
 rsync -rlti --relative --omit-dir-times \
@@ -421,6 +428,7 @@ node --check dist/index.cjs
 grep -q ateneum_weekly_suggestions dist/index.cjs
 cmp public-static/ateneum/index.html dist/public/ateneum/index.html
 cmp public-static/ateneum/activity.html dist/public/ateneum/activity.html
+cmp public-static/ateneum/plan.html dist/public/ateneum/plan.html
 REMOTE
 then
   restore_files

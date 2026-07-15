@@ -79,86 +79,148 @@ def start_and_stop(bundle: Path, database: Path, label: str, log_dir: Path) -> N
                 process.wait(timeout=3)
 
 
-def inspect_before(database: Path) -> dict[str, int | str]:
+def table_exists(db: sqlite3.Connection, name: str) -> bool:
+    return bool(
+        db.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (name,)
+        ).fetchone()
+    )
+
+
+def inspect_before(database: Path) -> dict[str, Any]:
     with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as db:
         quick = db.execute("PRAGMA quick_check").fetchone()[0]
         foreign_keys = len(db.execute("PRAGMA foreign_key_check").fetchall())
-        activities = int(db.execute("SELECT count(*) FROM ateneum_activities").fetchone()[0])
-        users = int(db.execute("SELECT count(*) FROM ateneum_users").fetchone()[0])
-    if quick != "ok" or foreign_keys:
-        raise AssertionError(f"source DB is unhealthy: quick={quick}, foreignKeys={foreign_keys}")
-    return {
-        "quick": str(quick),
-        "foreignKeys": foreign_keys,
-        "activities": activities,
-        "users": users,
-    }
-
-
-def inspect_after(database: Path, expected_activities: int, expected_users: int) -> dict[str, Any]:
-    with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as db:
-        quick = db.execute("PRAGMA quick_check").fetchone()[0]
-        foreign_keys = len(db.execute("PRAGMA foreign_key_check").fetchall())
-        columns = {
+        activity_columns = {
             str(row[1]) for row in db.execute("PRAGMA table_info(ateneum_activities)").fetchall()
         }
-        required_columns = {
-            "planning_mode",
-            "version",
-            "proposed_by",
-            "updated_by",
-            "updated_at",
-        }
-        missing = sorted(required_columns - columns)
-        acceptance_table = int(
-            db.execute(
-                "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='ateneum_activity_acceptances'"
-            ).fetchone()[0]
+        has_planning = "planning_mode" in activity_columns
+        has_acceptances = table_exists(db, "ateneum_activity_acceptances")
+        has_requests = table_exists(db, "ateneum_plan_requests")
+        request_columns = (
+            {
+                str(row[1])
+                for row in db.execute("PRAGMA table_info(ateneum_plan_requests)").fetchall()
+            }
+            if has_requests else set()
         )
-        activities = int(db.execute("SELECT count(*) FROM ateneum_activities").fetchone()[0])
-        users = int(db.execute("SELECT count(*) FROM ateneum_users").fetchone()[0])
-        non_legacy = int(
-            db.execute(
+        if has_requests and "source_type" in request_columns:
+            source_counts = {
+                str(source): int(count)
+                for source, count in db.execute(
+                    "SELECT source_type, count(*) FROM ateneum_plan_requests GROUP BY source_type"
+                ).fetchall()
+            }
+        elif has_requests:
+            source_counts = {"idea": int(db.execute(
+                "SELECT count(*) FROM ateneum_plan_requests"
+            ).fetchone()[0])}
+        else:
+            source_counts = {}
+        state = {
+            "quick": str(quick),
+            "foreignKeys": foreign_keys,
+            "activities": int(db.execute("SELECT count(*) FROM ateneum_activities").fetchone()[0]),
+            "users": int(db.execute("SELECT count(*) FROM ateneum_users").fetchone()[0]),
+            "hadPlanningColumns": has_planning,
+            "nonLegacyActivities": int(db.execute(
                 "SELECT count(*) FROM ateneum_activities WHERE planning_mode <> 'legacy' OR version < 1"
-            ).fetchone()[0]
-        )
-        acceptances = int(
-            db.execute("SELECT count(*) FROM ateneum_activity_acceptances").fetchone()[0]
-        )
+            ).fetchone()[0]) if has_planning else 0,
+            "acceptanceRows": int(db.execute(
+                "SELECT count(*) FROM ateneum_activity_acceptances"
+            ).fetchone()[0]) if has_acceptances else 0,
+            "planRequestRows": int(db.execute(
+                "SELECT count(*) FROM ateneum_plan_requests"
+            ).fetchone()[0]) if has_requests else 0,
+            "planRequestSourceCounts": source_counts,
+        }
+    if quick != "ok" or foreign_keys:
+        raise AssertionError(f"source DB is unhealthy: quick={quick}, foreignKeys={foreign_keys}")
+    return state
+
+
+def inspect_after(database: Path, expected: dict[str, Any]) -> dict[str, Any]:
+    with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as db:
+        quick = db.execute("PRAGMA quick_check").fetchone()[0]
+        foreign_keys = len(db.execute("PRAGMA foreign_key_check").fetchall())
+        activity_columns = {
+            str(row[1]) for row in db.execute("PRAGMA table_info(ateneum_activities)").fetchall()
+        }
+        required_activity_columns = {
+            "planning_mode", "version", "proposed_by", "updated_by", "updated_at",
+        }
+        missing_activity = sorted(required_activity_columns - activity_columns)
+        request_columns = {
+            str(row[1]) for row in db.execute("PRAGMA table_info(ateneum_plan_requests)").fetchall()
+        }
+        required_request_columns = {"source_type", "idea_id", "activity_id", "plan_id", "base_version"}
+        missing_request = sorted(required_request_columns - request_columns)
+        request_sql_row = db.execute(
+            "SELECT sql FROM sqlite_master WHERE type='table' AND name='ateneum_plan_requests'"
+        ).fetchone()
+        request_sql = str(request_sql_row[0]) if request_sql_row else ""
+        indexes = {
+            str(row[1]) for row in db.execute("PRAGMA index_list(ateneum_plan_requests)").fetchall()
+        }
+        required_indexes = {
+            "idx_ateneum_plan_requests_status_created",
+            "idx_ateneum_plan_requests_claim_key",
+            "idx_ateneum_plan_requests_requester_idea",
+            "idx_ateneum_plan_requests_requester_activity",
+            "idx_ateneum_plan_requests_requester_plan_version",
+        }
+        source_counts = {
+            str(source): int(count)
+            for source, count in db.execute(
+                "SELECT source_type, count(*) FROM ateneum_plan_requests GROUP BY source_type"
+            ).fetchall()
+        }
+        actual = {
+            "activities": int(db.execute("SELECT count(*) FROM ateneum_activities").fetchone()[0]),
+            "users": int(db.execute("SELECT count(*) FROM ateneum_users").fetchone()[0]),
+            "nonLegacyActivities": int(db.execute(
+                "SELECT count(*) FROM ateneum_activities WHERE planning_mode <> 'legacy' OR version < 1"
+            ).fetchone()[0]),
+            "acceptanceRows": int(db.execute(
+                "SELECT count(*) FROM ateneum_activity_acceptances"
+            ).fetchone()[0]),
+            "planRequestRows": int(db.execute(
+                "SELECT count(*) FROM ateneum_plan_requests"
+            ).fetchone()[0]),
+            "planRequestSourceCounts": source_counts,
+        }
+    expected_non_legacy = expected["nonLegacyActivities"] if expected["hadPlanningColumns"] else 0
     failures = {
         "quick": quick != "ok",
         "foreignKeys": foreign_keys != 0,
-        "missingColumns": bool(missing),
-        "acceptanceTable": acceptance_table != 1,
-        "activityCount": activities != expected_activities,
-        "userCount": users != expected_users,
-        "legacyBackfill": non_legacy != 0,
-        "unexpectedAcceptances": acceptances != 0,
+        "missingActivityColumns": bool(missing_activity),
+        "missingRequestColumns": bool(missing_request),
+        "missingRequestIndexes": not required_indexes.issubset(indexes),
+        "planSourceConstraint": "'plan'" not in request_sql,
+        "activityCount": actual["activities"] != expected["activities"],
+        "userCount": actual["users"] != expected["users"],
+        "nonLegacyPreservation": actual["nonLegacyActivities"] != expected_non_legacy,
+        "acceptancePreservation": actual["acceptanceRows"] != expected["acceptanceRows"],
+        "requestCount": actual["planRequestRows"] != expected["planRequestRows"],
+        "requestSourceCounts": actual["planRequestSourceCounts"] != expected["planRequestSourceCounts"],
     }
     if any(failures.values()):
-        raise AssertionError(
-            json.dumps(
-                {
-                    "failures": failures,
-                    "missingColumns": missing,
-                    "quick": quick,
-                    "foreignKeys": foreign_keys,
-                    "activities": activities,
-                    "users": users,
-                    "nonLegacy": non_legacy,
-                    "acceptances": acceptances,
-                },
-                sort_keys=True,
-            )
-        )
+        raise AssertionError(json.dumps({
+            "failures": failures,
+            "missingActivityColumns": missing_activity,
+            "missingRequestColumns": missing_request,
+            "missingRequestIndexes": sorted(required_indexes - indexes),
+            "quick": quick,
+            "foreignKeys": foreign_keys,
+            "actual": actual,
+        }, sort_keys=True))
     return {
         "quick": quick,
         "foreignKeys": foreign_keys,
-        "activities": activities,
-        "users": users,
-        "legacyActivities": activities,
-        "acceptanceRows": acceptances,
-        "requiredColumns": sorted(required_columns),
+        **actual,
+        "requiredActivityColumns": sorted(required_activity_columns),
+        "requiredRequestColumns": sorted(required_request_columns),
+        "requiredRequestIndexes": sorted(required_indexes),
     }
 
 
@@ -183,22 +245,14 @@ def main() -> None:
         database = temp_path / "ateneum.db"
         shutil.copy2(args.database_copy, database)
         start_and_stop(args.release_bundle.resolve(), database, "release", temp_path)
-        migrated = inspect_after(
-            database,
-            expected_activities=int(before["activities"]),
-            expected_users=int(before["users"]),
-        )
+        migrated = inspect_after(database, before)
         rollback_dist = temp_path / "rollback-dist"
         rollback_dist.mkdir()
         rollback_bundle = rollback_dist / "index.cjs"
         shutil.copy2(args.rollback_bundle, rollback_bundle)
         shutil.copytree(ROOT / "dist" / "public", rollback_dist / "public")
         start_and_stop(rollback_bundle, database, "rollback", temp_path)
-        after_rollback = inspect_after(
-            database,
-            expected_activities=int(before["activities"]),
-            expected_users=int(before["users"]),
-        )
+        after_rollback = inspect_after(database, before)
 
     print("ATENEUM_MIGRATION_QA=PASS")
     print(
