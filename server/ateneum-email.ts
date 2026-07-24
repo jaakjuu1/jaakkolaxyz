@@ -191,6 +191,7 @@ export async function shouldNotify(
     | "wish_added"
     | "wish_fulfilled"
     | "activity_planned"
+    | "plan_shared"
     | "inactivity_reminder"
     | "custom_message",
 ): Promise<boolean> {
@@ -216,6 +217,9 @@ export async function shouldNotify(
     case "wish_fulfilled":
       return prefs.wishFulfilled;
     case "activity_planned":
+      return prefs.activityPlanned;
+    // Rich plan proposals use the same partner-attention preference as time proposals.
+    case "plan_shared":
       return prefs.activityPlanned;
     case "inactivity_reminder":
       return prefs.inactivityReminder;
@@ -504,6 +508,63 @@ export async function sendActivityPlanned(opts: {
     html: layout({ title: "Uusi aikaehdotus", body, unsubscribeUrl: unsub }),
     kind: "activity_planned",
     meta: { activityId: opts.activity.id, fromUserId: opts.fromUser.id },
+  });
+}
+
+export async function sendPlanShared(opts: {
+  toUser: AteneumUser;
+  fromUser: AteneumUser;
+  plan: {
+    id: string;
+    title: string;
+    summary?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    version?: number | null;
+  };
+}): Promise<{ sent: boolean; skipped?: boolean; error?: string }> {
+  if (!(await shouldNotify(opts.toUser.id, "plan_shared"))) {
+    return { sent: false, skipped: true };
+  }
+  const dateBits = [opts.plan.startDate, opts.plan.endDate].filter(Boolean);
+  const dateLine =
+    dateBits.length === 2
+      ? `${dateBits[0]} – ${dateBits[1]}`
+      : dateBits[0] ?? null;
+  const summary = (opts.plan.summary ?? "").trim();
+  const summaryBlock = summary
+    ? `<div style="font-size: 14px; color: #555; margin-top: 8px;">${escapeHtml(
+        summary.length > 280 ? `${summary.slice(0, 277)}…` : summary,
+      )}</div>`
+    : "";
+  const dateBlock = dateLine
+    ? `<div style="font-size: 14px; color: #555; margin-top: 4px;">${escapeHtml(dateLine)}</div>`
+    : "";
+  const body = `
+    <p>Hei ${escapeHtml(opts.toUser.displayName)},</p>
+    <p><strong>${escapeHtml(opts.fromUser.displayName)}</strong> jakoi sinulle suunnitelmaehdotuksen:</p>
+    <div style="background: #e9f4ec; border-radius: 6px; padding: 16px; margin: 16px 0;">
+      <div style="font-size: 16px; font-weight: 600;">${escapeHtml(opts.plan.title)}</div>
+      ${dateBlock}
+      ${summaryBlock}
+    </div>
+    <p>Suunnitelmasta tulee yhteinen vasta, kun hyväksyt saman version Ateneumissa.</p>
+    ${button(
+      `${PUBLIC_URL}/ateneum/plan.html?id=${encodeURIComponent(opts.plan.id)}`,
+      "Avaa suunnitelma",
+    )}
+  `;
+  const unsub = await buildUnsubscribeUrl(opts.toUser);
+  return sendEmail({
+    to: opts.toUser.email,
+    subject: `Suunnitelmaehdotus: ${opts.plan.title}`,
+    html: layout({ title: "Uusi suunnitelmaehdotus", body, unsubscribeUrl: unsub }),
+    kind: "plan_shared",
+    meta: {
+      planId: opts.plan.id,
+      fromUserId: opts.fromUser.id,
+      version: opts.plan.version ?? null,
+    },
   });
 }
 

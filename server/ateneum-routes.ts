@@ -43,6 +43,7 @@ import {
   sendWeeklySuggestion,
   sendWishAdded,
   sendActivityPlanned,
+  sendPlanShared,
   sendInactivityReminder,
   sendCustomMessage,
   getNotificationPrefs,
@@ -3028,7 +3029,35 @@ export function registerAteneumRoutes(app: Express): void {
             .run(plan.id);
         });
         share();
-        return res.json({ plan: serializePlanForViewer(readRawPlan(req.params.id), user) });
+        const sharedPlan = serializePlanForViewer(readRawPlan(req.params.id), user);
+
+        // Email: notify the other human that a rich plan was proposed, not agreed.
+        try {
+          const others = await ateneumDb.select().from(ateneumUsers);
+          const other = selectHumanPartner(others, user);
+          if (other && sharedPlan) {
+            sendPlanShared({
+              toUser: other,
+              fromUser: user,
+              plan: {
+                id: String(sharedPlan.id),
+                title: String(sharedPlan.title ?? "Suunnitelma"),
+                summary:
+                  typeof sharedPlan.summary === "string" ? sharedPlan.summary : null,
+                startDate:
+                  typeof sharedPlan.startDate === "string" ? sharedPlan.startDate : null,
+                endDate:
+                  typeof sharedPlan.endDate === "string" ? sharedPlan.endDate : null,
+                version:
+                  typeof sharedPlan.version === "number" ? sharedPlan.version : null,
+              },
+            }).catch((e) => console.error("[ateneum] plan share email failed:", e));
+          }
+        } catch (e) {
+          console.error("[ateneum] plan share email setup failed:", e);
+        }
+
+        return res.json({ plan: sharedPlan });
       } catch (error) {
         return respondPlanTransitionError(res, error);
       }
