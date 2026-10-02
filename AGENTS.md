@@ -15,6 +15,13 @@ sync a learn section, read [docs/learn-sections.md](docs/learn-sections.md)
 first. It covers the folder layout, page rules, how to deploy and how to verify
 against production.
 
+## Deploying
+
+Production is updated by copying built files over SSH; there is no CI/CD. Read
+[docs/deploy.md](docs/deploy.md) before any production change: it says which
+kind of change needs a build and a restart, how to back up, verify and roll
+back. The Ateneum release in detail: [docs/ateneum-p0-deploy.md](docs/ateneum-p0-deploy.md).
+
 ## Rules
 
 - Do not commit secrets, `.env*`, SQLite databases or backups; `.gitignore`

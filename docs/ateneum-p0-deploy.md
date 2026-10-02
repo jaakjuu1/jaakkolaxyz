@@ -15,7 +15,7 @@ Tämä runbook on **suunnitelma, ei deploy-lupa**. Tuotantotiedostojen kirjoitta
 | SQLite | `/home/clawdbot/jaakkolaxyz/data/ateneum.db` (oletus) |
 | Julkinen osoite | `https://jaakkola.xyz/ateneum/` |
 
-Tuotannon git-työpuu on likainen ja sisältää muuta live-driftiä. **Älä käytä `git pull`, `git reset`, `git clean` tai koko repon rsynciä.** Alla käytetään vain eksplisiittistä tiedostolistaa.
+Tuotannon git-työpuu oli 2026-07-13 likainen ja sisälsi muuta live-driftiä; se on sittemmin täsmäytetty `main`iin (ks. [deploy.md](deploy.md), "Keeping production's git checkout aligned"). **Älä käytä `git pull`, `git reset --hard`, `git clean` tai koko repon rsynciä.** Alla käytetään vain eksplisiittistä tiedostolistaa.
 
 ## Hyväksytty tiedostoscope
 
