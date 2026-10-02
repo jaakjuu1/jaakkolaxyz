@@ -11,6 +11,7 @@
     "check": "tsc",
     "test:ateneum": "tsx --test tests/ateneum/*.test.ts",
     "test:dashboard": "tsx --test tests/dashboard/*.test.ts",
+    "test:contact": "tsx --test tests/contact/*.test.ts",
     "test:ateneum:browser": "python3 tests/ateneum/browser_qa.py",
     "db:push": "drizzle-kit push"
   },
@@ -79,6 +80,7 @@
     "react-hook-form": "^7.66.0",
     "react-resizable-panels": "^2.1.9",
     "recharts": "^2.15.4",
+    "resend": "^6.32.0",
     "sonner": "^2.0.7",
     "ssh2": "^1.17.0",
     "tailwind-merge": "^3.3.1",

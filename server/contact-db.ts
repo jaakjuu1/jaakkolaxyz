@@ -1,0 +1,46 @@
+import Database from "better-sqlite3";
+import fs from "fs";
+import path from "path";
+import type { ContactInput } from "./contact";
+
+export interface ContactStore {
+  /** Persists one submission and returns its row id. Throws on failure. */
+  save(input: ContactInput): number;
+  close(): void;
+}
+
+/**
+ * Durable copy of every contact-form submission (SQLite, same data/ directory
+ * as the Ateneum and dashboard databases). Opened lazily on first use so that
+ * importing this module never creates files.
+ */
+export function openContactStore(
+  dbPath: string = process.env.CONTACT_DB_PATH || path.resolve(process.cwd(), "data", "contact.db"),
+): ContactStore {
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  const db = new Database(dbPath);
+  db.pragma("journal_mode = WAL");
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS contact_submissions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      company TEXT NOT NULL DEFAULT '',
+      message TEXT NOT NULL,
+      budget TEXT,
+      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )
+  `);
+  const insert = db.prepare(
+    "INSERT INTO contact_submissions (name, email, company, message, budget) VALUES (?, ?, ?, ?, ?)",
+  );
+  return {
+    save(input) {
+      const result = insert.run(input.name, input.email, input.company, input.message, input.budget ?? null);
+      return Number(result.lastInsertRowid);
+    },
+    close() {
+      db.close();
+    },
+  };
+}

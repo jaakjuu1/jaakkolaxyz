@@ -4,7 +4,7 @@ Personal site and apps of Juuso Jaakkola: React + Vite client (`client/`),
 Express server (`server/`), shared types (`shared/`), blog posts as Markdown in
 `content/blog/{en,fi}/`, the private Ateneum app (`server/ateneum-*.ts`,
 `public-static/ateneum/`), the ops dashboard at `/dashboard/` (`server/dashboard-*.ts`),
-and the static learning tracks at `/learn/`.
+the public contact form (`server/contact.ts`), and the static learning tracks at `/learn/`.
 
 Production runs on `teppo-server` (SSH alias) from `/home/clawdbot/jaakkolaxyz`
 as the `jaakkolaxyz` systemd service (`node dist/index.cjs`).

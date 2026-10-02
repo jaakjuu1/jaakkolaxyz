@@ -26,6 +26,7 @@ const allowlist = [
   "passport",
   "passport-local",
   "pg",
+  "resend",
   "@aws-sdk/client-ses",
   "@aws-sdk/client-sesv2",
   "stripe",
