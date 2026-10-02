@@ -73,7 +73,7 @@ export function Navbar({ lang, setLang }: NavbarProps) {
           )}
         </Button>
         
-        <a href="#lead-capture">
+        <a href="/#lead-capture">
           <Button variant="default" size="sm" className="hidden sm:inline-flex rounded-full px-6 font-medium">
             {lang === 'fi' ? 'Ota yhteyttä' : 'Contact'}
           </Button>

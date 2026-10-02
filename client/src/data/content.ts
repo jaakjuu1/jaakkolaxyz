@@ -208,6 +208,13 @@ export const content = {
         budget: "Budjettiluokka",
         submit: "Lähetä",
         success: "Kiitos viestistäsi! Olen pian yhteydessä.",
+        placeholders: {
+          name: "Matti Meikäläinen",
+          email: "matti@yritys.fi",
+          company: "Yritys Oy",
+          budget: "Valitse budjetti",
+          message: "Kerro lyhyesti mitä tarvitset...",
+        },
       },
       quiz: {
         title: "Project Fit -kartoitus",
@@ -249,8 +256,12 @@ export const content = {
       },
     },
     footer: {
-      copyright: "© 2024 JJ. All rights reserved.",
-      links: ["LinkedIn", "Twitter", "GitHub"],
+      copyright: "© 2026 Juuso Jaakkola",
+      links: [
+        { label: "LinkedIn", url: "https://www.linkedin.com/in/juusojaakkola/" },
+        { label: "X", url: "https://x.com/juusojaa" },
+        { label: "GitHub", url: "https://github.com/jaakjuu1" },
+      ],
     },
   },
   en: {
@@ -373,6 +384,13 @@ export const content = {
         budget: "Budget Range",
         submit: "Send",
         success: "Thanks for your message! I'll be in touch soon.",
+        placeholders: {
+          name: "John Doe",
+          email: "john@company.com",
+          company: "Acme Inc",
+          budget: "Select range",
+          message: "Tell me briefly what you need...",
+        },
       },
       quiz: {
         title: "Project Fit Quiz",
@@ -414,8 +432,12 @@ export const content = {
       },
     },
     footer: {
-      copyright: "© 2024 JJ. All rights reserved.",
-      links: ["LinkedIn", "Twitter", "GitHub"],
+      copyright: "© 2026 Juuso Jaakkola",
+      links: [
+        { label: "LinkedIn", url: "https://www.linkedin.com/in/juusojaakkola/" },
+        { label: "X", url: "https://x.com/juusojaa" },
+        { label: "GitHub", url: "https://github.com/jaakjuu1" },
+      ],
     },
   },
 };
