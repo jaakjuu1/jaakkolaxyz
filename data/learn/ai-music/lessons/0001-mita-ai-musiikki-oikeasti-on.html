@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppitunti 0001 — Mitä AI-musiikki oikeasti on</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --accent:#0a6e3a; --rule:#e5e5e5; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         color: var(--ink); max-width: 720px; margin: 2rem auto; padding: 0 1.2rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; margin-top: 2.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .key { background: #f6f6f4; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .compare > div { border: 1px solid var(--rule); padding: 0.8rem; border-radius: 4px; }
+  .compare h4 { margin: 0 0 0.5rem 0; font-size: 0.95rem; color: var(--accent); }
+  code { background: #f6f6f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #f6f6f4; padding: 0.8rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.3rem 0; }
+  .mission-link { color: var(--accent); text-decoration: none; border-bottom: 1px dotted; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+           color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Mitä AI-musiikki oikeasti on</h1>
+<p class="meta">Oppitunti 0001 · AI-musiikin tuotanto · ~8 min lukuaikaa</p>
+
+<div class="key">
+  <strong>Ydinajatus tähän oppituntiin:</strong> AI-musiikki ei ole "tietokone säveltää". Se on <em>tilastollinen malli siitä, miten ääni yleensä seuraa toista ääntä</em>. Kaikki muu — promptit, tyylisanat, kontrollisäätimet — ovat tapoja ohjata tätä tilastollista prosessia.
+</div>
+
+<h2>1. Kolme arkitehtuuria, kolme mental mallia</h2>
+
+<p>Nykyään tuotannossa on kolme selkeästi erilaista lähestymistapaa. Niiden ymmärtäminen erottaa sinut ihmisistä, jotka vain kirjoittavat "make a cool song" ja toivovat parasta.</p>
+
+<div class="compare">
+  <div>
+    <h4>Transformer + tokenit</h4>
+    <p>Käyttävät: <strong>Suno, Udio, HeartMuLa</strong></p>
+    <p>Ääni pilkotaan pieniksi "sanoiksi" (tokeneiksi) — sama idea kuin GPT tekee tekstille. Malli oppii todennäköisyydet sille, mikä tokeni seuraa mitäkin. Sama arkkitehtuuri kuin kielimalleissa, mutta sanaston muodostavat äänifragmentit eivät kirjaimet.</p>
+  </div>
+  <div>
+    <h4>Diffuusio spektrogrammissa</h4>
+    <p>Käyttävät: <strong>Stable Audio, Riffusion, monet uudet</strong></p>
+    <p>Spektrogrammi on kuva äänestä (aika × taajuus, väri = voimakkuus). Malli oppii luomaan tämän kuvan lisäämällä ja poistamalla kohinaa — sama idea kuin Stable Diffusion kuvilla. Lopuksi kuva muunnetaan takaisin ääneksi.</p>
+  </div>
+  <div>
+    <h4>Autoregressiivinen EnCodec (Meta)</h4>
+    <p>Käyttävät: <strong>MusicGen, AudioGen</strong></p>
+    <p>EnCodec on neuroverkko, joka pakkaa äänen diskreeteiksi koodeiksi (kuten MP3, vain neuroverkon oppima). Näitä koodeja syötetään kielimallille, joka arvaa seuraavan. Nopea, pieni, kontrolloitava.</p>
+  </div>
+</div>
+
+<h3>Miksi tämä jako on tärkeä?</h3>
+<ul>
+  <li><strong>Transformer-mallit</strong> (Suno) tuottavat vakuuttavimman laulun ja rakenteen — koska ne "tietävät" biisien kaaret kielimalleina</li>
+  <li><strong>Diffuusiomallit</strong> (Stable Audio) ovat joustavampia tyylikokeiluihin ja äänimaisemaan — koska ne operoivat spektrogrammin tasolla</li>
+  <li><strong>MusicGen-tyyli</strong> on nopea ja kevyt — täydellinen iteraatioon ja paikalliseen käyttöön, mutta laulu on rajallinen</li>
+</ul>
+
+<h2>2. Spektrogrammi — yhteinen kieli</h2>
+
+<p>Kaikki kolme arkkitehtuuria operoivat jollain tasolla <strong>spektrogrammin</strong> päällä, vaikka eivät suoraan. Siksi spektrogrammin ymmärtäminen on yksi hyödyllisimmistä taidoista.</p>
+
+<pre>
+Taajuus (kHz)
+  20 ┤            ▓▓▒▒░░           (laulu: keskiäänet)
+  10 ┤      ▓▓▓▓▓▓▓▓▓▓▓▓▓          (rummut: leveä kaista)
+   5 ┤  ▒▒▒░░░░░░░░░░░░░░░         (kitara: keskitaajuudet)
+   1 ┤▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓         (basso: matalat)
+     └──────────────────────── aika
+       0s   5s   10s  15s  20s
+</pre>
+
+<p><strong>Mitä tämä kertoo?</strong> Pystyakseli = taajuus (Hz, ihmiskorva kuulee ~20 Hz – 20 kHz). Vaaka-akseli = aika. Väri = voimakkuus kullakin hetkellä. Tummempi = kovempi.</p>
+
+<p>Laulu näkyy kapeana vyöhykkeenä keskitaajuuksilla (200 Hz – 4 kHz). Rummut ovat leveitä pystyviivoja — transientteja. Basso on matalalla, kitarat keskellä. Kun opit "lukemaan" spektrogrammia, ymmärrät miksi tietty prompti tuottaa "ohuen" tai "täyteläisen" soundin.</p>
+
+<h2>3. Mitä tämä tarkoittaa sinulle</h2>
+
+<p>Jos valitsisit vain yhden asian muistettavaksi tästä oppitunnista, muistaisit tämän:</p>
+
+<div class="key">
+  <strong>AI-musiikin laatu ei ole pelkkä mallin laatu — se on ohjauksen laatu.</strong> Sama MusicGen tuottaa taidetta tai kuraa riippuen siitä, miten tarkasti kuvaat haluamasi äänimaailman sanoin. Sama Suno tuottaa hitin tai roskaa riippuen siitä, miten jäsennät rakenteen.
+</div>
+
+<p>Tämä on hyvä uutinen: taito on opeteltavissa, ei syntyjään. Ja se on tämän kurssin koko pointti.</p>
+
+<h2>4. Mitä seuraavaksi?</h2>
+
+<p>Seuraavassa oppitunnissa (<strong>0002</strong>) katsotaan konkreettisesti, miltä spektrogrammi näyttää oikeasta äänestä — otamme Suno-kappaleen ja piirrämme sen spektrogrammin, jotta opit tunnistamaan peruselementit silmällä.</p>
+
+<p>Sitä ennen sinulla on <strong>yksi tehtävä</strong>:</p>
+
+<ol>
+  <li>Avaa <a href="https://suno.com">suno.com</a> (ilmaisella tilillä) ja luo yksi kappale millä tahansa suomenkielisellä kuvauksella</li>
+  <li>Kuuntele se loppuun</li>
+  <li>Kirjoita vastauksesi alla oleviin kenttiin ja paina <strong>Kopioi vastaukset</strong> — liitä ne sitten tähän keskusteluun.</li>
+</ol>
+
+<form id="quiz" style="margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-radius: 4px; background: #fcfcfb;" onsubmit="return false;">
+  <div style="margin-bottom: 1rem;">
+    <label for="q1" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">1. Missä kohtaa kappaletta kuulet selkeimmän laulumelodian?</label>
+    <textarea id="q1" rows="2" style="width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px;" placeholder="Esim. 0:45 kohdalla, kun kertosäe alkaa…"></textarea>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label for="q2" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">2. Mikä elementti yllätti sinut eniten — miksi?</label>
+    <textarea id="q2" rows="2" style="width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px;" placeholder="Esim. rumpujen yllättävä tauko, koska…"></textarea>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label for="q3" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">3. Jos saisit vaihtaa yhden asian, mikä se olisi?</label>
+    <textarea id="q3" rows="2" style="width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px;" placeholder="Esim. haluaisin kitaran tilalle syntetisaattorin…"></textarea>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <label for="q4" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">4. Minkä promptin annoit Sunolle? (valinnainen)</label>
+    <input type="text" id="q4" style="width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px;" placeholder="Esim. suomalainen suomipop, akustinen, iloinen tunnelma">
+  </div>
+
+  <div style="display:flex; gap: 0.5rem; align-items:center;">
+    <button type="button" onclick="copyAnswers()" style="background: var(--accent); color: white; border: 0; padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit; font-weight: 600;">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()" style="background: transparent; color: var(--muted); border: 1px solid var(--rule); padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit;">Tyhjennä</button>
+    <span id="status" style="color: var(--accent); font-size: 0.9rem;"></span>
+  </div>
+</form>
+
+<script>
+function copyAnswers() {
+  const a = [1,2,3].map(i => `Q${i}: ` + (document.getElementById('q'+i).value.trim() || '(tyhjä)')).join('\n');
+  const prompt = document.getElementById('q4').value.trim();
+  const full = a + (prompt ? `\nPrompt: ${prompt}` : '');
+  navigator.clipboard.writeText(full).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — liitä tähän keskusteluun';
+    setTimeout(() => s.textContent = '', 4000);
+  });
+}
+function clearAnswers() {
+  [1,2,3,4].forEach(i => document.getElementById('q'+i).value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+
+<hr>
+
+<h2>Lähteet</h2>
+<ul>
+  <li><a href="https://ai.meta.com/resources/models-and-libraries/audiocraft/">Meta AudioCraft</a> — EnCodec + autoregressiivinen LM</li>
+  <li><a href="https://medium.com/@Micheal-Lanham/building-a-music-generation-model-from-scratch-explained-simply-128a1cb5fe02">Building a Music Generation Model from Scratch</a> — kahden polun vertailu</li>
+  <li><a href="https://hermes-agent.nousresearch.com/docs/user-guide/skills/bundled/mlops/mlops-models-audiocraft">Hermes AudioCraft -dokumentaatio</a></li>
+</ul>
+
+<footer>
+  <p><strong>Muistutus:</strong> tämä on interaktiivinen oppimateriaali. Kysy minulta mitä tahansa epäselvää — olen opettajasi.</p>
+  <p>← Takaisin oppimateriaalien etusivulle.</p>
+</footer>
+
+</body>
+</html>

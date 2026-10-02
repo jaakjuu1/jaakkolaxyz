@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005 — Metta: rakastava ystävällisyys</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Metta: rakastava ystävällisyys</h1>
+  <p class="meta">Oppitunti 0005 · ~9 min · harjoitus</p>
+
+  <p>Kaikki tähänastiset harjoitukset ovat olleet "läsnäolon" harjoittamista — tietoista olemista siinä, mikä on. Tämä oppitunti on erilainen. Metta on tietoista <em>ystävällisyyden suuntaamista</em>: sydämen lihasten treenaamista siinä missä <a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitysharjoitus</a> on tahdonlihasten treenaamista.</p>
+
+  <p>Sharon Salzberg, joka on tehnyt tästä elämäntyönsä, kirjoittaa: <em>"Rakkaus ei ole lahja, joka sattuu olemaan joissain ihmisissä. Se on taito, jota voi opetella."</em> Tämä on tämän oppitunnin ydin.</p>
+
+  <h2>Mikä metta oikeastaan on?</h2>
+
+  <p>Pali-kielen sana <em>metta</em> (sanskritiksi <em>maitri</em>) on perinteisesti käännetty "rakastava ystävällisyys", "hyväntahtoisuus" tai "ystävällinen rakkaus". Se ei ole romanttinen rakkaus, ei ole kiintymys eikä ole myöskään "olemalla kiltti" passiivisessa mielessä. Se on <em>aktiivinen hyväntahtoisuus</em> — tahto toisen (ja itsen) hyväksi.</p>
+
+  <p>Metta on yksi neljästä Brahmavihāroista, "jumalallisesta asuinpaikasta" — neljä tunnetta, jotka ovat buddhalaisen psykologian mukaan ihmisen luontaisia "asumiskelpoisia" mielentiloja:</p>
+
+  <ul>
+    <li><strong>Metta</strong> — rakastava ystävällisyys</li>
+    <li><strong>Karuṇā</strong> — myötätunto (lohdutus kärsimyksessä)</li>
+    <li><strong>Muditā</strong> — ilo toisen onnesta</li>
+    <li><strong>Upekkhā</strong> — tasaveroinen tasapaino, "vapaa myötätunto"</li>
+  </ul>
+
+  <p>Metta on niistä ensimmäinen ja usein portti muihin.</p>
+
+  <blockquote>
+    Et voi antaa toiselle sitä, mitä et ole ensin valmis antamaan itsellesi.
+  </blockquote>
+
+  <h2>Kriittinen ero: metta EI ole positiivista ajattelua</h2>
+
+  <p>Tämä on tärkein yksittäinen ero, ja se on syytä tehdä selväksi heti, koska metta usein ymmärretään väärin.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Positiivinen ajattelu</h3>
+      <p>"Kaikki on hyvin."</p>
+      <p>"Ajattele positiivisesti!"</p>
+      <p>"Kiellä negatiiviset tunteet."</p>
+      <p>"Pakota optimismia."</p>
+    </div>
+    <div class="col right">
+      <h3>Metta</h3>
+      <p>"Tämä hetki on näin, ja silti toivon itselleni hyvää."</p>
+      <p>"Huomaan kärsimyksen, ja silti lähetän ystävällisyyttä."</p>
+      <p>"Tunne on olemassa — annan sen olla, ja lähetän silti toivon."</p>
+    </div>
+  </div>
+
+  <p>Tara Brachin sanoin: metta ei ole "ajatus vaan suuntaus" — tapa kohdata kokemusta, ei pakotettua mielialaa. Kun tunnet olevasi vihainen itsellesi, metta ei sano "älä tunne vihaa". Se sanoo "tämä hetki on vaikea, suon itselleni silti turvaa".</p>
+
+  <p>Sharon Salzberg varoittaa suoraan: metta-harjoitukset, joissa ihmisiä pakotetaan "tuntemaan rakkautta", ovat epäonnistumisen resepti. Harjoitus ei ole <em>tunteen tuottaminen</em>, se on <em>ystävällisyyden suuntaaminen</em> juuri silloin, kun tunteet ovat hankalia.</p>
+
+  <h2>Miksi metta on tutkimuksen valossa erityisen kiinnostava?</h2>
+
+  <p>Tässä polussa olemme toistuvasti viitanneet Goleman ja Davidsoniin. Metta on yksi niistä harjoituksista, joista he sanovat <em>Altered Traits</em> -kirjassaan, että vaikutusnäyttö on yllättävän hyvä — suurelta osin siksi, että se kohdistuu "tunnejärjestelmään", joka on monella ihmisellä alikehittynyt.</p>
+
+  <p>Tutkimustuloksia:</p>
+
+  <ul>
+    <li><strong>Itsemyötätunto nousee nopeasti.</strong> Neffin ja Germerin mukaan jo lyhyt 8-ryhmäinen MSC-ohjelma (Mindful Self-Compassion) nostaa itsemyötätuntoa tilastollisesti merkitsevästi.</li>
+    <li><strong>Masennusoireet vähenevät.</strong> Dette et al. (2021) meta-analyysi: metta-meditaatio on tehokkaampi masennusoireissa kuin vertailuharjoitukset, vaikutuskoko kohtalainen.</li>
+    <li><strong>Krooninen itsensä arvostelu vähenee.</strong> Tutkitusti yksi tehokkaimmista interventioista ihmisille, joilla on voimakas sisäinen kriitikko.</li>
+    <li><strong>Positiiviset tunteet lisääntyvät.</strong> Lyhyelläkin harjoittelulla (2 viikkoa) iloa ja tyytyväisyyttä mittaavat kyselyt osoittavat nousua (Hutcherson et al., 2008).</li>
+    <li><strong>Aivotasolla</strong> — empatiaverkot aktivoituvat, uhkavasteen verkostot hiljenevät. Weng et al. (2013): lyhyt metta-harjoittelu muuttaa aivojen vasemmanpuoleisen amygdalan reaktiota uhkakuviin.</li>
+</ul>
+
+  <p>Robert Wright kokoaa tämän evoluutiopsykologiseen viitekehykseen: ihmisen "ryhmäkoheesiokoneisto" on luontainen, mutta se on rakennettu ryhmän sisäistä luottamusta varten — ei kaikkia kohtaan. Metta laajentaa tätä järjestelmää keinotekoisesti, ja sen hyödyt ovat siksi nopeasti näkyvissä.</p>
+
+  <h2>Käytännön harjoitus: perinteinen metta-säe</h2>
+
+  <p>Tässä on klassinen versio, joka juontaa Theragāthaan ja Pa Auk -perinteeseen. Se on suunniteltu tehtäväksi noin 15–20 minuutissa, mutta voit lyhentää.</p>
+
+  <ol>
+    <li><strong>Asento.</strong> Istu mukavasti, selkä suorana. Kädet reisille tai sydämen päälle. Sulje silmät tai pidä ne pehmeästi puoliavoimina.</li>
+    <li><strong>Ankkuri.</strong> Kolme syvää hengitystä. Anna kehon painua alustaa vasten. Huomaa sydämenalue (käsien välissä tai rintakehän keskellä) — tämä on metta-harjoituksen <a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">ankkuri</a>, ei hengitys.</li>
+    <li><strong>Itse.</strong> Aloita itsestä. Tämä on ensimmäinen ja tärkein vaihe — moni ohittaa sen, mutta ilman sitä harjoitus ei toimi. Toista hiljaa tai mielessäsi: <em>"Oloni olkoon turvallinen. Oloni olkoon terve. Oloni olkoon rauhallinen. Oloni olkoon helppo."</em></li>
+    <li><strong>Toinen ihminen.</strong> Valitse henkilö, josta pidät — ystävä, lapsi, eläin. Kuvittele hänet mielessäsi mahdollisimman konkreettisesti. Toista samat säkeet hänelle.</li>
+    <li><strong>Neutraali.</strong> Valitse henkilö, jota et tunne kovin hyvin — naapuri, työkaveri, bussimatkustaja. Toista säkeet.</li>
+    <li><strong>Vaikea.</strong> Tämä on haastava vaihe, ja se tehdään vasta, kun edelliset ovat sujuneet. Valitse henkilö, johon sinulla on ristiriitaisia tunteita — ei välttämättä "vihollinen", mutta vaikea ihminen. Voit aloittaa "neutraalilla vaikealla", kuten etäisellä ex-työkaverilla.</li>
+    <li><strong>Kaikki.</strong> Lopuksi laajenna kaikkiin olentoihin: "Kaikkien olkoot turvassa. Kaikkien olkoot terve. Kaikkien olkoon rauhallinen."</li>
+  </ol>
+
+  <h3>Jos tämä tuntuu teennäiseltä</h3>
+
+  <p>Tämä on yleisin este, ja se on rehellisesti tunnustettava. Sharon Salzberg'n neuvo on käyttökelpoinen:</p>
+
+  <blockquote>
+    Metta ei ole lauseiden toistamista. Se on suunnan valitsemista. Jos lauseet tuntuvat tyhjiltä, etsi yksinkertaisempi muoto — esimerkiksi mielikuva itsestäsi turvallisessa paikassa, tai pelkkä hiljainen toivomus "turvaa, terveyttä, rauhaa" kolme kertaa.
+  </blockquote>
+
+  <p>Toinen vaihtoehto: metta-mantra. Klassinen lause on "minä olen turvassa, rakastettu, levossa" — tai sen buddhalainen vastine "budho" (hereillä oleva). Tämä yhdistää <a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">toistuvan lauseen</a> metta-harjoitukseen, mikä monille helpottaa pääsyä tunteeseen.</p>
+
+  <h2>Itsemyötätunto: metta erityisesti itseä kohtaan</h2>
+
+  <p>Tämä on ehkä tämän oppitunnin tärkein kohta Suomessa ja Suomen kaltaisessa kulttuurissa, jossa itsekriittisyys on yleistä ja "nöyryysvaatimus" sisäänrakennettu.</p>
+
+  <p>Kristin Neff, Austinin yliopiston psykologi, erottaa kolme itsemyötätunnon osatekijää:</p>
+
+  <ul>
+    <li><strong>Self-kindness</strong> — ystävällisyys itseä kohtaan (vs. itsekritiikki)</li>
+    <li><strong>Common humanity</strong> — kärsimyksen näkeminen yhteisenä ihmiskokemuksena (vs. eristäytyminen)</li>
+    <li><strong>Mindfulness</strong> — tietoinen läsnäolo kärsimyksessä (vs. ylikierros tai välttely)</li>
+</ul>
+
+  <p>Metta-harjotus, etenkin itselle suunnattuna, aktivoi näitä kaikkia. Tutkimusten mukaan ihmisillä, joilla on korkea itsemyötätunto, on <em>enemmän</em> motivaatiota korjata virheitään — ei vähemmän. Ironista kyllä, itsekriittisyys lamauttaa toimintaa, kun taas ystävällisyys itseä kohtaan vapauttaa sen.</p>
+
+  <p>Harri Vasikkuri (alias "Heart of Finland") kirjoittaa blogissaan: <em>"Itseään kohtaan ystävällinen ihminen ei ole 'löysä' — hän on rehellinen, koska hänellä on voimia katsoa todellisuutta ilman itsensä rankaisemista."</em></p>
+
+  <h2>Miksi "rakkaus itseä kohtaan" on vaikeaa?</h2>
+
+  <p>Tämä on yleisin kysymys, ja se on rehellisesti vastattava. Kolme yleistä estettä:</p>
+
+  <ul>
+    <li><strong>Syyllisyys.</strong> "En ansaitse rakkautta, koska olen tehnyt virheitä." — Totuus: ansaitsemisen logiikka ei toimi rakkaudessa. Et ansaitse lapsen rakkautta, etkä vanhempiesi. Se vain annetaan, ja sinä voit antaa sen itsellesi.</li>
+    <li><strong>Epäaitous.</strong> "Tämä tuntuu teennäiseltä, joten se ei voi olla aitoa." — Metta ei ole pakotettu tunne, se on suunta. Suunnan valitseminen on aitoa, vaikkei tunne olisi voimakas aluksi.</li>
+    <li><strong>Epäluulo.</strong> "Jos olen ystävällinen itselleni, minusta tulee laiska." — Tutkimus sanoo päinvastaista. Itseään arvosteleva ihminen lykkää toimintaa, koska epäonnistumisen pelko on lamauttava. Itseään arvostava ihminen toimii, koska virheet eivät kaada koko minuutta.</li>
+</ul>
+
+  <blockquote>
+    Armollisuus ei ole heikkoutta. Se on taitoa, joka vaatii vuosia.
+  </blockquote>
+
+  <h2>Metta arjessa: käytännön sovellukset</h2>
+
+  <p>Harjoitus ei rajoitu istumiseen. Kolme tapaa tuoda metta arkeen:</p>
+
+  <ol>
+    <li><strong>Aamumetta.</strong> 2 minuuttia ennen päivän alkua — itselle, sitten yhdelle ihmiselle, sitten kaikille. Voi tehdä vaikka vain käytävällä ennen töihin lähtöä.</li>
+    <li><strong>Vaikean hetken metta.</strong> Kun joku käyttäytyy töykeästi, yritä 30 sekuntia hiljaista mettaa <em>heidän</em> suuntaansa — "olkoon turvassa, olkoon terve". Huomaat, että se muuttaa <em>oman</em> reaktiosi, ei heitä.</li>
+    <li><strong>Epäonnistumisen metta.</strong> Kun olet tehnyt virheen — työssä, ihmissuhteessa — lausu itsellesi metta ennen kuin alat analysoida virhettä. "Oloni olkoon turvallinen epäonnistumisen hetkellä." Analyysi tulee sitten paremmin, kun et ole lamautumassa.</li>
+</ol>
+
+  <h2>Rajat ja varoitukset</h2>
+
+  <p>Metta ei sovi kaikkiin tilanteisiin, ja sen rajat on syytä tuntea:</p>
+
+  <ul>
+    <li><strong>Aktiivinen kriisi tai tuore trauma.</strong> Metta itseä kohtaan saattaa aluksi olla mahdotonta — tämä on merkki siitä, että keho ei ole vielä turvassa. Anna tilan olla, palaa kun on turvallisempaa.</li>
+    <li><strong>Vakava masennus ja anhedonia.</strong> Jos tunteita ei juuri tunne, "rakkauden lähettäminen" voi tuntua absurdilta. Aloita pienemmistä: toivomus "jonkinlaista helpotusta". Tämä riittää.</li>
+    <li><strong>Väärin kohdistettuna</strong> — metta ei ole "pysy väkivaltaisessa suhteessa, koska on tärkeää rakastaa". Rehellinen metta sisältää itsensuojelun, johon voi kuulua "et halua tätä ihmistä elämääsi enempää". Sharon Salzberg on korostanut tätä.</li>
+  </ul>
+
+  <h2>Viikon harjoitusohjelma</h2>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Viikko 1</h3>
+      <p>5 minuuttia päivässä, vain itselle. Käytä yksinkertaista säettä. Toista kolme kertaa. Kirjaa ylös miltä tuntuu — epämukavuus, helppous, tyhjyys, kaikki kelpaavat.</p>
+    </div>
+    <div class="col right">
+      <h3>Viikko 2</h3>
+      <p>10 minuuttia päivässä. Lisää ystävä, sitten neutraali ihminen. Pidä kirjaa tilanteista, joissa havaitset itsemyötätunnon puutteen arjessa — ei korjaamista varten, vain näkyväksi tekemistä varten.</p>
+    </div>
+  </div>
+
+  <p>Sharon Salzberg'n lempilause opettajaltaan: <em>"Harjoittele säännöllisesti. Kun se alkaa tuntua hyvältä, olet todennäköisesti tekemässä sitä väärin."</em> Hän tarkoittaa, että metta muuttuu todella kasvattavaksi vasta kun se ulottuu vaikeisiin ihmisiin ja vaikeisiin hetkiin itsenä.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Metta — rakastava ystävällisyys, tunteiden suunnattu harjoittaminen</a></li>
+    <li><a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">Samatha — tyynnyttäminen, jonka metta täydentää sydämen avaamisella</a></li>
+    <li><a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">Vipassana — kirkas näkeminen, joka tasapainottaa mettaa</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, joka mahdollistaa aidon metta-suuntauksen</a></li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra — toistuva lause, joka voi toimia metta-säkeenä</a></li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Witness — sisäinen tarkkailija, joka mahdollistaa mettan tuomitsematta</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditation — yleiskäsite, johon metta on yksi sydämen muoto</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Sharon Salzberg — <em>Lovingkindness</em> (1995), <em>Real Happiness</em> (2010); Tara Brach — <em>Radical Acceptance</em> (2003); Kristin Neff — <em>Self-Compassion</em> (2011); Christopher Germer — <em>The Mindful Path to Self-Compassion</em> (2009); Hutcherson et al. — <em>Psychological Science</em> (2008); Weng et al. — <em>Psychological Science</em> (2013); Dette et al. — meta-analyysi metta-meditaatiosta (2021).
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Metta-harjoituksia löytyy "Inner Journeys" -osiosta — tilasiirtymiä hyväksyvämpään mieleen.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Inner Journeys" — tilasta toiseen -harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#journeys" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23journeys" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0004-kavelymeditaatio.html">← Edellinen: Kävelymeditaatio</a>
+    <a class="next" href="0006-zazen.html">Seuraava: Zazen — pelkkä istuminen →</a>
+  </div>
+</main>
+</body>
+</html>

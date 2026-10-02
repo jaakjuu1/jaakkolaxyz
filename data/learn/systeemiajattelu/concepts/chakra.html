@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: chakra</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>chakra</h1>
+  <p class="meta">Käsite · systeemiajattelu · itäinen perinne · Ayyadurai-Tier 2</p>
+
+  <p class="lede">Chakra tarkoittaa energiakeskusta — pyörivää voiman solmua, jossa <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">pranan</a> ja tietoisuuden virrat kohtaavat. Se on siddhan ja ayurvedan ydinoppi: ihmisen keho ei ole pelkkä fyysinen rakenne, vaan monikerroksinen systeemi, jossa energia järjestyy seitsemäksi pääkeskukseksi.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Chakra</strong> on sanskritin sana, joka tarkoittaa "pyörää" tai "levyä". Siddhan ja ayurvedan perinteessä chakrat ovat kehon sisäisiä energiakeskuksia, joissa <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> virtaa ja tiivistyy. Jokainen chakra on systeemi — siinä on panos (sisään virtaava prana), prosessi (energian muuntuminen), olotila ja vuorovaikutus ympäristön kanssa.</p>
+
+  <p>Vaikka chakrat kuvataan usein henkisinä tai "epäfyysisinä", Ayyadurai tulkitsee ne systeemiteorian kautta: ne ovat säätelysilmukoita, joissa informaatio ja energia kulkevat kehon eri kerrosten välillä. Chakra ei siis ole "mystinen" vaan <em>toiminnallinen solmu</em> — tapa, jolla keho ylläpitää tasapainoa.</p>
+
+  <p>Seitsemän päächakraa, juuresta kruunuun, ovat:</p>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/muladhara.html" class="wikilink" data-concept="muladhara">muladhara</a> — juurichakra, selviytyminen, maadoittuminen.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/svadhisthana.html" class="wikilink" data-concept="svadhisthana">svadhisthana</a> — sakraalichakra, luovuus, tunne.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/manipura.html" class="wikilink" data-concept="manipura">manipura</a> — solar plexus, tahto, identiteetti.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/anahata.html" class="wikilink" data-concept="anahata">anahata</a> — sydänchakra, yhteys, myötätunto.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/vishuddha.html" class="wikilink" data-concept="vishuddha">vishuddha</a> — kurkkuchakra, ilmaisu, totuus.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/ajna.html" class="wikilink" data-concept="ajna">ajna</a> — otsachakra, intuitio, näkeminen.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/sahasrara.html" class="wikilink" data-concept="sahasrara">sahasrara</a> — kruunuchakra, tietoisuus, ykseys.</li>
+  </ul>
+
+  <h2>Alkuperä</h2>
+  <p>Chakra-käsite esiintyy varhaisimmissa intialaisissa teksteissä, erityisesti <em>Atharva Vedassa</em> ja myöhemmissä tantrisissa lähteissä kuten <em>Sat-Cakra-Nirupana</em> (1577) ja <em>Padaka-Pancaka</em>. Siddhan perinteessä chakrat eivät ole myöhempi lisäys, vaan kuuluvat alkuperäiseen kehon anatomiaan.</p>
+
+  <p>Länsimaiselle yleisölle chakrat tulivat 1900-luvun alussa teosofian ja C.W. Leadbeaterin teosten kautta. 1960-luvulta lähtien ne levisivät osaksi New Age -liikettä ja joogakulttuuria.</p>
+
+  <p>Ayyadurai nostaa chakrat takaisin systeemiajattelun kehykseen. Hänelle chakrat eivät ole "värillisiä kiekkoja kuvastoissa", vaan kehon <a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">palautesilmukoita</a> ja energian säätelijöitä — samalla logiikalla kuin <a href="/learn/systeemiajattelu/concepts/control-system.html" class="wikilink" data-concept="control-system">säätösysteemit</a> tai <a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostaattiset</a> mekanismit.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> — elämänenergia, joka virtaa chakrojen kautta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/vayu.html" class="wikilink" data-concept="vayu">vayu</a> — viisi elämänenergian tyyppiä, jotka aktivoivat chakroja.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/kosha.html" class="wikilink" data-concept="kosha">kosha</a> — ihmisen monikerroksinen olemus, jonka kanssa chakrat toimivat yhdessä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/architecture-of-existence.html" class="wikilink" data-concept="architecture-of-existence">architecture-of-existence</a> — Ayyadurai'n ylärakenne, jossa chakrat ovat yksi kerros.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddha</a> — intialainen perinne, josta chakra-oppi on peräisin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/ayurveda.html" class="wikilink" data-concept="ayurveda">ayurveda</a> — terveysjärjestelmä, joka käyttää chakroja diagnostisesti.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — chakrat toimivat säätösilmukoina.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — chakrat ylläpitävät kehon sisäistä tasapainoa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/muladhara.html" class="wikilink" data-concept="muladhara">muladhara</a> ... <a href="/learn/systeemiajattelu/concepts/sahasrara.html" class="wikilink" data-concept="sahasrara">sahasrara</a> — seitsemän päächakraa.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Chakra-käsite tulee vastaan <em>Itä ja systeemit</em> -moduulissa, erityisesti oppitunneissa joissa käsitellään <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> ihmisanatomiaa ja <a href="/learn/systeemiajattelu/concepts/architecture-of-existence.html" class="wikilink" data-concept="architecture-of-existence">olemassaolon arkkitehtuuria</a>. Lisäksi se mainitaan <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">pranaa</a> ja <a href="/learn/systeemiajattelu/concepts/vayu.html" class="wikilink" data-concept="vayu">vayuta</a> käsittelevissä oppitunneissa.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Ayyadurai, V.A. — <em>Systems Health</em> (2014)</li>
+    <li>Ayyadurai, V.A. — <em>The Intelligence of the Universe</em> (2016)</li>
+    <li>Ayyadurai, V.A. — <em>Architecture of Existence</em> (2018)</li>
+    <li><em>Sat-Cakra-Nirupana</em> (1577), Arthur Avalon (toim.)</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="chakra.html" class="wikilink" data-concept="chakra">chakra</a> — tämä käsite</li>
+    <li><a href="prana.html" class="wikilink" data-concept="prana">prana</a></li>
+    <li><a href="vayu.html" class="wikilink" data-concept="vayu">vayu</a></li>
+    <li><a href="kosha.html" class="wikilink" data-concept="kosha">kosha</a></li>
+    <li><a href="muladhara.html" class="wikilink" data-concept="muladhara">muladhara</a></li>
+    <li><a href="svadhisthana.html" class="wikilink" data-concept="svadhisthana">svadhisthana</a></li>
+    <li><a href="manipura.html" class="wikilink" data-concept="manipura">manipura</a></li>
+    <li><a href="anahata.html" class="wikilink" data-concept="anahata">anahata</a></li>
+    <li><a href="vishuddha.html" class="wikilink" data-concept="vishuddha">vishuddha</a></li>
+    <li><a href="ajna.html" class="wikilink" data-concept="ajna">ajna</a></li>
+    <li><a href="sahasrara.html" class="wikilink" data-concept="sahasrara">sahasrara</a></li>
+    <li><a href="architecture-of-existence.html" class="wikilink" data-concept="architecture-of-existence">architecture-of-existence</a></li>
+    <li><a href="intelligence-of-the-universe.html" class="wikilink" data-concept="intelligence-of-the-universe">intelligence-of-the-universe</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Chakra on yksi Ayyadurai-Tier 2 -käsitteistä, jotka yhdistävät itäisen perinteen ja länsimaisen systeemiajattelun.
+  </p>
+</main>
+</body>
+</html>

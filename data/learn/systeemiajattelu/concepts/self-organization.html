@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: self-organization</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>self-organization</h1>
+  <p class="meta">Käsite · systeemiajattelu · kompleksisuus · itseorganisaatio</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Itseorganisaatio</strong> (engl. <em>self-organization</em>) on prosessi, jossa järjestäytynyt rakenne tai käyttäytymismalli syntyy systeemin komponenttien paikallisten vuorovaikutusten tuloksena ilman keskitettyä ohjausta, ulkoista käskyä tai ennalta määrättyä suunnitelmaa. Makroskooppinen järjestys ei ole kenenkään suunnittelema — se <em>emergoituu</em> mikroskooppisista säännöistä.</p>
+  <p>Itseorganisaation tunnuspiirteet ovat:</p>
+  <ul>
+    <li>Komponentit toimivat vain paikallisen informaation varassa; kenelläkään ei ole kokonaiskuvaa.</li>
+    <li>Vuorovaikutus on jatkuvaa ja dynaamista, ja siihen liittyy <a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">palautesilmukoita</a>.</li>
+    <li>Järjestys ylläpitää itseään energia- ja materiavuoista, jotka pitävät systeemiä kaukana termodynaamisesta tasapainosta.</li>
+    <li>Lopputulos on tyypillisesti <a href="/learn/systeemiajattelu/concepts/robustness.html" class="wikilink" data-concept="robustness">robusti</a> ja mukautuva: yksittäisen solmun vaurio ei romahduta rakennetta.</li>
+  </ul>
+  <p>Itseorganisaatiota esiintyy fysikaalisissa, kemiallisissa, biologisissa ja sosiaalisissa systeemeissä: Bénardin konvektiokennot, lumihiutaleet, muurahaisten ravinnonhankintapolut, aivojen neuroniverkot, ekosysteemit, kieli ja markkinatalous.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Termi vakiintui 1900-luvun puolivälissä, kun fyysikko <strong>Ilya Prigogine</strong> tutki dissipatiivisia rakenteita — järjestelmiä, jotka ylläpitävät itseään energiavuoista kaukana termodynaamisesta tasapainosta. Hän sai Nobelin kemianpalkinnon vuonna 1977 työstään, joka osoitti, että järjestys voi syntyä kaaoksesta ilman ulkoista ohjausta.</p>
+  <p>Biologiassa <strong>Stuart Kauffman</strong> osoitti 1990-luvulla, miten autorekatalyyttiset kemialliset verkot voivat spontaanisti tuottaa monimutkaisuutta. Saksalainen fyysikko <strong>Hermann Haken</strong> kehitti samanaikaisesti synergetiikan, joka formalisoi itseorganisaation matemaattisesti <a href="/learn/systeemiajattelu/concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">järjestysparametrin</a> avulla.</p>
+  <p>Sosiaalitieteissä itseorganisaatio yhdistetään usein <strong>Friedrich Hayekin</strong> hajautetun tiedon teoriaan, <strong>Elinor Ostromin</strong> yhteisvarallisuuden tutkimukseen ja <a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksisten adaptiivisten systeemien</a> tutkimukseen, jota ovat vieneet eteenpäin <strong>John Holland</strong>, <strong>W. Brian Arthur</strong> ja <strong>Santa Fe -instituutti</strong> (perustettu 1984).</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Itseorganisaatio on systeemiajattelun ydinkäsitteitä ja kytkeytyy erityisesti seuraaviin:</p>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergenssi</a> — itseorganisaatio on yksi keskeinen mekanismi, jonka kautta <a href="/learn/systeemiajattelu/concepts/emergent-properties.html" class="wikilink" data-concept="emergent-properties">emergenttejä ominaisuuksia</a> syntyy.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksinen adaptiivinen systeemi</a> — CAS-systeemit ovat tyypillisesti itseorganisoituvia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attraktori</a> — itseorganisoituva systeemi hakeutuu attraktoreihin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">faasisiirtymä</a> — kriittiset faasisiirtymät ovat usein itseorganisaation ilmenemismuoto.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">palautesilmukka</a> — positiivinen ja negatiivinen palaute ohjaavat järjestäytymistä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">epälineaarisuus</a> — epälineaariset vuorovaikutukset ovat edellytys itseorganisaatiolle.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">järjestysparametri</a> — Hakenin käsite kuvaa syntyvää makroskooppista järjestystä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-parameter.html" class="wikilink" data-concept="control-parameter">säätöparametri</a> — ohjaa systeemiä kohti kriittistä pistettä.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Itseorganisaatio on keskeinen käsite [[../lessons/kompleksisuus-ja-kaaos|Kompleksisuus ja kaaos]] -oppijaksossa, jossa käsitellään dissipatiivisia rakenteita, CAS-teoriaa ja emergenssiä. Sitä sivutaan myös [[../lessons/systeemiajattelun-perusteet|Systeemiajattelun perusteissa]] osana dynaamisten systeemien teoriaa ja [[../lessons/palaute-ja-silmukat|Palaute ja silmukat]] -jaksossa palautemekanismien yhteydessä.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Prigogine, I. & Stengers, I. (1984). <em>Order Out of Chaos: Man's New Dialogue with Nature</em>. Bantam Books.</li>
+    <li>Kauffman, S. (1993). <em>The Origins of Order: Self-Organization and Selection in Evolution</em>. Oxford University Press.</li>
+    <li>Haken, H. (1977). <em>Synergetics: An Introduction</em>. Springer.</li>
+    <li>Camazine, S., Deneubourg, J.-L., Franks, N. R., Sneyd, J., Theraulaz, G. & Bonabeau, E. (2001). <em>Self-Organization in Biological Systems</em>. Princeton University Press.</li>
+    <li>Holland, J. H. (1995). <em>Hidden Order: How Adaptation Builds Complexity</em>. Addison-Wesley.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">order-parameter</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-parameter.html" class="wikilink" data-concept="control-parameter">control-parameter</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/network.html" class="wikilink" data-concept="network">network</a></li>
+  </ul>
+</main>
+</body>
+</html>

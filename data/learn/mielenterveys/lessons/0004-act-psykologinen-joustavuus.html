@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — ACT: paha olo ei estä toimintaa</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --green: #3b6b3b;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  .hex {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1.3rem;
+    margin: 1.4rem 0;
+    background: var(--bg);
+  }
+  .hex h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--accent);
+    font-size: 1rem;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+  }
+  .hex ol {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    counter-reset: hex;
+  }
+  .hex ol li {
+    counter-increment: hex;
+    padding: .55rem 0;
+    border-top: 1px dashed var(--rule);
+    display: flex;
+    gap: .6rem;
+    align-items: baseline;
+  }
+  .hex ol li::before {
+    content: counter(hex);
+    font-weight: 700;
+    color: var(--green);
+    flex: 0 0 1.4rem;
+  }
+  .hex ol li .body { flex: 1; min-width: 0; }
+  .hex ol li strong { display: inline; }
+  .hex ol li .muted {
+    display: block;
+    color: var(--muted);
+    font-size: .92rem;
+    margin-top: .15rem;
+  }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+  }
+  .col h3 { margin-top: 0; }
+  .col.bad { background: #fbf0ec; border-left: 3px solid var(--accent); }
+  .col.good { background: #f0f5ee; border-left: 3px solid var(--green); }
+  @media (prefers-color-scheme: dark) {
+    .col.bad { background: #2a201d; }
+    .col.good { background: #1d2520; }
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .warn {
+    background: #fff5e6;
+    border-left: 3px solid #b07000;
+    padding: .9rem 1.1rem;
+    margin: 1.6rem 0;
+    border-radius: 0 4px 4px 0;
+    font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .warn { background: #2a2418; border-left-color: #d49a3a; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>ACT: paha olo ei estä toimintaa</h1>
+  <p class="meta">Oppitunti 0004 · ~7 min · työkalu ja ajattelutapa</p>
+
+  <p>0002-oppitunti opetti laskemaan kehon alas. 0003-oppitunti opetti tutkimaan pään kiertämää ajatusta. Tämä oppitunti on paletin <em>kolmas työkalu</em> — se hetki, kun mikään ei ole hävinnyt kehosta tai päästä, mutta silti pitäisi toimia.</p>
+
+  <p>ACT (Acceptance and Commitment Therapy, hyväksymis- ja omistautumisterapia) on terapia, jonka ydinajatus voidaan tiivistää yhteen lauseeseen:</p>
+
+  <blockquote>
+    Sinun ei tarvitse ensin voittaa ajatuksiasi ja tunteitasi, jotta voit tehdä oikean teon.
+  </blockquote>
+
+  <p>Tämä ei ole "positiivinen ajattelu". Tämä on tarkempi, rehellisempi tapa suhtautua siihen, että elämä sisältää vaikeita tunteita — ja että arvojesi mukainen toiminta on mahdollista <em>samanaikaisesti</em> niiden kanssa.</p>
+
+  <h2>Kuusi ACT:n ydinprosessia</h2>
+
+  <p>APA kuvaa ACT:n kuusi ydinprosessia, jotka yhdessä muodostavat <strong>psykologisen joustavuuden</strong> — kyvyn olla läsnä, avautua vaikeillekin kokemuksille ja silti toimia arvojen mukaan.</p>
+
+  <div class="hex">
+    <h3>ACT:n kuusi ydintä</h3>
+    <ol>
+      <li><span class="body"><strong>Hyväksyminen</strong><span class="muted">— anna tunteen olla, älä taistele sitä vastaan.</span></span></li>
+      <li><span class="body"><strong>Ajatuksista irrottautuminen</strong><span class="muted">— ajatukset ovat tapahtumia mielessä, eivät käskyjä tai totuuksia.</span></span></li>
+      <li><span class="body"><strong>Nykyhetki</strong><span class="muted">— huomaa missä olet, älä jää menneeseen tai tulevaan.</span></span></li>
+      <li><span class="body"><strong>Minä havainnoijana</strong><span class="muted">— sinä <em>olet</em> ajatuksesi, et <em>ole</em> ajatuksesi.</span></span></li>
+      <li><span class="body"><strong>Arvot</strong><span class="muted">— mikä on sinulle tärkeää suunnassa, ei tavoitteena.</span></span></li>
+      <li><span class="body"><strong>Sitoutunut toiminta</strong><span class="muted">— tee tekoja arvojen suuntaan, myös epämukavuuden kanssa.</span></span></li>
+    </ol>
+  </div>
+
+  <p>Nämä kuusi eivät ole "vaiheet" — ne ovat kykyjä joita voi harjoittaa yhtä aikaa.</p>
+
+  <h2>Kaksi konkreettista taitoa</h2>
+
+  <p>Kuudesta ytimestä kaksi on erityisen hyödyllistä arkisesti: <strong>arvot</strong> ja <strong>sitoutunut toiminta</strong>. Näitä voi käyttää milloin tahansa, missä tahansa.</p>
+
+  <h3>1. Arvot ovat suunta, eivät tavoite</h3>
+
+  <p>Suurin osa ihmisistä yrittää tuntea olonsa paremmaksi <em>jotta</em> voisi toimia. ACT kääntää tämän: sinä toimit arvojesi suuntaan <em>huolimatta</em> siitä miltä sinusta tuntuu. Tämä ei ole välinpitämättömyyttä — se on tarkempaa elämistä.</p>
+
+  <div class="twocol">
+    <div class="col bad">
+      <h3>Tavoitteena</h3>
+      <p>"Kunhan pääsen eroon ahdistuksesta, voin hakea uutta työtä."</p>
+      <p>Tässä elämä odottaa, että tunne ratkeaa.</p>
+    </div>
+    <div class="col good">
+      <h3>Suuntana</h3>
+      <p>"Haluan arvoni mukaisesti työskennellä merkityksellisessä työssä. Ahdistus saa olla mukana, mutta lähetän hakemuksen silti."</p>
+      <p>Tässä tunne saa seurata, toiminta ei jää odottamaan.</p>
+    </div>
+  </div>
+
+  <p>Arvot eivät ole koskaan "valmiita" — ne ovat kompassi, ei määränpää. Sama arvo voi ohjata montaa eri tekoa eri päivinä.</p>
+
+  <h3>2. Sitoutunut teko tässä hetkessä</h3>
+
+  <p>Sitoutunut toiminta ei ole sankarillista. Se on pieni ja konkreettinen: yksi puhelu, yksi viesti, yksi askel. Toistuva. Silloinkin kun mieli sanoo "en jaksa", keho sanoo "ei kiinnosta", ajatus sanoo "tämä on turhaa".</p>
+
+  <p>Tärkeä ero DBT:n STOP:iin: STOP on <em>impulssin katkaisu</em> kun keho on viritetty. ACT:n sitoutunut toiminta on <em>pyrkimys eteenpäin</em> kun keho on rauhallinen mutta mieli haluaisisi perääntyä. Molempia tarvitaan.</p>
+
+  <h2>Miten ACT liittyy tähän asti opittuun</h2>
+
+  <ul>
+    <li><strong>0001 (Hyväksyminen)</strong> — opetti eron hyväksymisen ja luovuttamisen välillä. ACT:n "hyväksyminen" on sama asia.</li>
+    <li><strong>0002 (DBT STOP &amp; TIPP)</strong> — kehollinen säätely. ACT ei korvaa tätä, se toimii tämän <em>jälkeen</em>.</li>
+    <li><strong>0003 (CBT-ajatuskupla)</strong> — ajatusten uudelleenarviointi. ACT ei kiellä tätä, se laajentaa sitä: arvot voivat ohjata toimintaa myös silloin kun ajatus ei muutu.</li>
+  </ul>
+
+  <p>Yhdessä nämä neljä muodostavat paletin: keho alas → pää kuntoon → arvo esiin → pieni teko.</p>
+
+  <blockquote>
+    <strong>Tiivistetysti:</strong> "Minua ahdistaa" ei tarkoita "en voi tehdä mitään". Se tarkoittaa: "ahdistus on mukana, ja voin silti ottaa seuraavan askeleen."
+  </blockquote>
+
+  <hr>
+
+  <h2>Tee nyt: arvo ja yksi teko</h2>
+
+  <p>Tämä harjoitus on tehokkain kun teet sen oikeasti — eli vastaat kysymyksiin ja lähetät itsellesi tai minulle vastauksen, mutta <em>toteutat</em> myös lopuksi luvatun pienen teon.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi arvo joka ohjaa elämääsi — ei tavoite, vaan <em>suunta</em>? (Esim. <em>rehellisyys, läheisyys, oppiminen, terveys, luovuus, vapaus, vastuullisuus</em>.)</label>
+      <textarea id="q1" rows="2" placeholder="Esimerkki: Läheisyys — haluan olla läsnä ihmisille joista välitän."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Miltä sinusta <em>tällä hetkellä</em> tuntuu? Nimeä yksi tunne ja yksi kehon paikka.</label>
+      <textarea id="q2" rows="2" placeholder="Esimerkki: Väsynyt, hartiat kireät. Tai: innostunut mutta levoton."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Yksi <em>pieni</em> teko tämän arvon suuntaan jonka voisit tehdä seuraavan 24 tunnin aikana — vaikka se tuntuisi epämukavalta.</label>
+      <textarea id="q3" rows="3" placeholder="Esimerkki: Soitan äidille viiden minuutin ajan. Lähetän yhden sähköpostin jonka olen lykännyt. Kävelen 20 minuuttia ilman puhelinta."></textarea>
+    </div>
+    <div>
+      <label for="q4">4. Mikä tässä hetkessä, tunteen tai ajatuksen puolesta, voisi <em>estää</em> sinua tekemästä kyseistä tekoa?</label>
+      <textarea id="q4" rows="2" placeholder="Esimerkki: 'Tämä on turhaa, hänelle ei kuitenkaan merkitystä.' Tai: 'Olen liian väsynyt.'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <div class="warn">
+    <strong>Huomio rajauksesta:</strong> ACT on tutkitusti tehokas työkalu, mutta sen vaikutuksen koko ja näytön laatu vaihtelevat tutkimusjoukon mukaan (mm. tuore PMC-katsaus 2024). Se ei ole ihmelääke, eikä korvaa ammattiapua silloin kun oireet ovat vaikeita. Käytä sitä parhaana työkaluna <em>lisäksi</em>, ei <em>sijasta</em>.
+  </div>
+
+  <p class="footer-note">
+    Lähteet: APA — <a href="https://www.apa.org/education/ce/acceptance-commitment.pdf">ACT acceptance and commitment therapy</a>; PMC 2024 — <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11653371/">ACT effectiveness review</a>; NICE-yhteys: ACT:ää käytetään osana depression ja ahdistuksen hoitosuosituksia.
+  </p>
+
+  <div class="pager">
+    <a href="0003-cbt-ajatuskupla.html">← Edellinen: CBT:n ajatuskupla</a>
+    <a class="next" href="../reference/glossary.html">Termit: Glossary →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const ids = ['q1','q2','q3','q4'];
+  const labels = ['1. Arvoni', '2. Tunne ja keho nyt', '3. Pieni teko seuraavan 24h aikana', '4. Mikä voisi estää'];
+  const fields = ids.map(id => document.getElementById(id));
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3','q4'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

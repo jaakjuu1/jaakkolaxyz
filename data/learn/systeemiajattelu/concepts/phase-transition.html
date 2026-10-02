@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: phase-transition</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>phase-transition</h1>
+  <p class="meta">Käsite · systeemiajattelu · faasisiirtymä · oppimispolun perusta</p>
+
+  <p class="lede">Faasisiirtymä on järjestelmän äkillinen, epäjatkuva tilanmuutos, jossa pieni muutos ohjausparametrista tuottaa laadullisen muutoksen koko järjestelmän käyttäytymisessä. Käsite on peräisin fysiikasta mutta on keskeinen systeemiajattelussa, koska se selittää äkillisiä ilmiöitä yhteiskunnissa, biologiassa ja mielessä.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Faasisiirtymä</strong> (engl. <em>phase transition</em>) on tilanmuutos, jossa järjestelmän makroskooppinen tila vaihtuu äkisti, kun kontrolliparametri (esimerkiksi lämpötila, paine tai tiheys) ylittää kriittisen kynnyksen. Siirtymä on epäjatkuva: järjestelmä hyppää uuteen tilaan ilman välivaiheita.</p>
+
+  <p>Fysiikassa tunnetuimmat esimerkit ovat:</p>
+  <ul>
+    <li><strong>Veden jäätyminen</strong> — 0 °C lämpötilassa vesi siirtyy nestemäisestä kiinteään olomuotoon.</li>
+    <li><strong>Veden kiehuminen</strong> — 100 °C lämpötilassa siirtymä nesteestä kaasuksi.</li>
+    <li><strong>Magnetismi</strong> — Curie-lämpötilassa aine menettää tai saa magneettiset ominaisuutensa.</li>
+    <li><strong>Suprajohtavuus</strong> — kriittisessä lämpötilassa sähkövastus putoaa nollaan.</li>
+  </ul>
+
+  <p>Systeemiajattelussa faasisiirtymä käsitteellistetään laajemmin: mikä tahansa järjestelmä, joka kokee äkillisen laadullisen muutoksen, käy läpi faasisiirtymän. Tällöin puhutaan usein "laadullisesta tilasiirtymästä" tai <em>tipping point</em> -ilmiöstä. Tyypillisiä systeemitieteellisiä esimerkkejä:</p>
+  <ul>
+    <li><strong>Ekologia</strong>: järven äkillinen rehevöityminen, kun ravinteiden kuormitus ylittää kynnyksen.</li>
+    <li><strong>Yhteiskunta</strong>: vallankumous, markkinaherätyminen tai polarisoituminen.</li>
+    <li><strong>Biologia</strong>: solupäätökset (erilaistuminen, apoptoosi) ovat faasisiirtymiä, joissa kynnyssignalointi laukaisee epäjatkuvan vasteen.</li>
+    <li><strong>Ihminen</strong>: yhtäkkinen oivallus, kriittinen oppimiskokemus, sairauden puhkeaminen.</li>
+    <li><strong>Ayurveda</strong>: <a href="vata.html">vata</a>-, <a href="pitta.html">pitta</a>- ja <a href="kapha.html">kapha</a>-tasapainon äkillinen siirtymä pois terveelliseltä alueelta — V.A. Shiva Ayyadurai vertaa tätä faasisiirtymään.</li>
+  </ul>
+
+  <p>Käsite liittyy läheisesti <a href="critical-mass.html">kriittiseen massaan</a>, <a href="bifurcation.html">bifurkaatioon</a> ja <a href="phase-space.html">faasiavaruuteen</a>. Faasisiirtymän yhteydessä järjestelmän tila ei palaudu — siirtymä on (lähes) peruuttamaton ilman aktiivista vastatoimenpidettä.</p>
+
+  <blockquote>
+    <p>"Systems often don't respond gradually to pressure. They flip — suddenly, dramatically, and seemingly out of nowhere. This is the nature of phase transitions." — Donella Meadows, <em>Thinking in Systems</em></p>
+  </blockquote>
+
+  <h2>Alkuperä</h2>
+  <p>Faasisiirtymän käsite vakiintui fysiikassa 1800-luvulla (van der Waals 1873 — kaasujen ja nesteiden välisen siirtymän teoria). 1900-luvun puolivälissä <strong>Landsbergin</strong> ja <strong>Landau</strong>-teoria sekä <strong>Kenneth Wilsonin</strong> renormalisointiryhmä (1971) kehittivät faasisiirtymien yleisen matemaattisen kehyksen. Wilson sai työstä Nobelin palkinnon 1982.</p>
+
+  <p>Systeemiajattelussa faasisiirtymä laajeni yleiskäsitteeksi 1970- ja 1980-luvuilla, erityisesti kun <a href="complexity.html">kompleksisuuden</a> tutkimus toi esiin ilmiön yleisyyden luonnon-, yhteiskunta- ja ihmisjärjestelmissä. C.S. Holling tunnisti ekologiset <em>tipping points</em> 1970-luvulla. Nykyisin Malcolm Gladwell popularisoi termin <em>The Tipping Point</em> -kirjallaan (2000).</p>
+
+  <p>Ayyadurai tarkastelee faasisiirtymää inhimillisen terveyden näkökulmasta: sairastuminen ei ole asteittainen prosessi vaan <em>kriittisen kynnyksen ylittäminen</em>, jonka jälkeen järjestelmä on uudessa, alemmassa tilassa (esim. <a href="systems-health.html">epäterveellinen systeemitila</a>).</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="emergence.html">emergence</a> — faasisiirtymä tuottaa äkillistä emergenssiä.</li>
+    <li><a href="emergent-properties.html">emergent-properties</a> — siirtymän jälkeen ilmaantuvat uudet ominaisuudet.</li>
+    <li><a href="critical-mass.html">critical-mass</a> — kriittinen massa on usein laukaiseva tekijä.</li>
+    <li><a href="bifurcation.html">bifurcation</a> — matemaattisesti läheinen ilmiö dynamiikassa.</li>
+    <li><a href="phase-space.html">phase-space</a> — faasisiirtymä on muutos faasiavaruudessa.</li>
+    <li><a href="attractor.html">attractor</a> — siirtymä vie uuteen vetovoima-altaaseen.</li>
+    <li><a href="leverage-point.html">leverage-point</a> — kriittiset kynnykset ovat usein vaikutuskohtia.</li>
+    <li><a href="threshold.html">threshold</a> — raja-arvo, jonka ylittyessä muutos tapahtuu.</li>
+    <li><a href="non-linearity.html">non-linearity</a> — epälineaarisuus mahdollistaa epäjatkuvat vasteet.</li>
+    <li><a href="feedback-loop.html">feedback-loop</a> — positiivinen takaisinkytkentä vahvistaa siirtymää.</li>
+    <li><a href="resilience.html">resilience</a> — joustavuus määrittää, kuinka helposti siirtymä tapahtuu.</li>
+    <li><a href="systems-health.html">systems-health</a> — terveyden ja sairauden välinen siirtymä.</li>
+    <li><a href="natural-systems-state.html">natural-systems-state</a> — lähtötila ennen siirtymää.</li>
+    <li><a href="integrated-systems-state.html">integrated-systems-state</a> — korkeamman integraation tila.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Faasisiirtymä on <strong>Tier 1</strong> -käsite ja yksi oppimispolun neljästä peruspilarista. Se esitellään <em>Systeemiajattelun perusteet</em> -johdantokurssilla ja syvenee moduuleissa, jotka käsittelevät kriittisiä ilmiöitä, ekosysteemejä, taloustieteitä ja ihmisen terveyttä. Ayyadurai-viitekehyksessä se on keskeinen <em>systems-health</em>-polussa.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — emergenssi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergent-properties.html" class="wikilink" data-concept="emergent-properties">emergent-properties</a> — ilmenevät ominaisuudet</li>
+    <li><a href="/learn/systeemiajattelu/concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — kriittinen massa</li>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — bifurkaatio</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — faasiavaruus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — vetovoima</li>
+    <li><a href="/learn/systeemiajattelu/concepts/leverage-point.html" class="wikilink" data-concept="leverage-point">leverage-point</a> — vaikutuspiste</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — epälineaarisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentäsilmukka</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — joustavuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/systems-health.html" class="wikilink" data-concept="systems-health">systems-health</a> — systeemiterveys</li>
+    <li><a href="/learn/systeemiajattelu/concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a> — luonnollinen systeemitila</li>
+    <li><a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vata</a> — ayurvedinen dosha, joka liittyy liikkeeseen ja muutokseen</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: van der Waals 1873; Landau & Lifshitz — <em>Statistical Physics</em>; Wilson 1971; Holling 1973; Gladwell 2000 — <em>The Tipping Point</em>; Ayyadurai 2013; Meadows 2008. Wikipedia-artikkelit: <em>Phase transition</em>; <em>Tipping point</em>; <em>Renormalization group</em>.
+  </p>
+</main>
+</body>
+</html>

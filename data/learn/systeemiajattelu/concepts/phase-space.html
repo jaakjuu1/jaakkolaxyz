@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: phase-space</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>phase-space</h1>
+  <p class="meta">Käsite · systeemiajattelu · dynamiikka · matemaattinen perusta</p>
+
+  <p class="lede">Faasiavaruus on abstrakti matemaattinen tila, jossa kukin piste edustaa systeemin <em>yhtä mahdollista kokonaistilaa</em> — kaikkine muuttujineen kerralla. Sen avulla dynaaminen systeemi voidaan kuvata geometrisesti yhtenä liikkuvana pisteenä, jonka rata paljastaa systeemin koko tulevaisuuden ja menneisyyden.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Faasiavaruus</strong> (engl. <em>phase space</em>, myös <em>state space</em>) on joukko, jonka jokainen piste kuvaa systeemin yhtä täydellistä tilaa. Käytännössä faasiavaruuden ulottuvuudet vastaavat systeemin riippumattomia <a href="state.html">tilamuuttujia</a>: yksiulotteisessa heilurissa faasiavaruus on 2D (asento ja nopeus), säämalleissa ulottuvuuksia voi olla miljoonia.</p>
+
+  <p>Faasiavaruudessa systeemin kehitys piirtyy <em>ratana</em> (trajectory). Nopeusvektori jokaisessa pisteessä määräytyy systeemin dynamiikasta — yhtälöistä, jotka kertovat kuinka tila muuttuu ajassa. Kun kaikki mahdolliset radat on yhdistetty, syntyy <em>virtaviivojen kenttä</em> (flow field), joka kuvaa systeemin koko dynamiikan.</p>
+
+  <p>Faasiavaruudessa voidaan tunnistaa useita rakenteita:</p>
+  <ul>
+    <li><strong>Attraktorit</strong> — alueet, joihin viereiset radat päätyvät (kts. <a href="attractor.html">attractor</a>).</li>
+    <li><strong>Repellerit</strong> — alueet, joista radat pakenevat.</li>
+    <li><strong>Satulat</strong> — epästabiilit pisteet, jotka erottavat attraktoreiden vetovoima-alueet (<em>basin of attraction</em>).</li>
+    <li><strong>Erilliset polut</strong> — systeemin kaksi mahdollista tilaa eivät voi sekoittua.</li>
+  </ul>
+
+  <blockquote>
+    <p>"The phase space is the system's map of itself — every possible future already exists as a point waiting to be visited." — Ilya Prigogine</p>
+  </blockquote>
+
+  <p>Faasiavaruus ei ole <em>fysikaalinen</em> tila, vaan matemaattinen konstruktio. Vaikka ulottuvuuksia olisi tuhansia, voimme visualisoida sen projisoimalla 2D-tasolle tai tarkastelemalla invariantteja leikkauksia (<em>Poincaré section</em>). Tämä tekee faasiavaruudesta tehokkaan työkalun myös silloin, kun suora kuvittelu ei onnistu.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Faasiavaruuden käsite syntyi 1800-luvun lopun fysiikassa. Henri Poincaré kehitti sen <em>faasiavaruusanalyysin</em> muotona tutkiessaan kolmen kappaleen ongelmaa (1890) — hän osoitti, että planeettojen ratojen vakaus voidaan kuvata vaiheavaruudessa, vaikkei yleistä suljettua ratkaisua löytyisikään.</p>
+
+  <p>Termi <em>phase space</em> vakiintui fysiikassa 1900-luvun alkupuolella, erityisesti tilastollisen mekaniikan ja kvanttimekaniikan myötä. Ludwig Boltzmann ja Josiah Willard Gibbs käyttivät faasiavaruutta kuvaamaan kaasumolekyylien jakaumia, ja Werner Heisenberg sekä Paul Dirac liittivät sen kvanttimekaniikan matemaattiseen muotoiluun.</p>
+
+  <p>1970-luvulta lähtien faasiavaruus on ollut keskeinen työkalu <a href="chaos-theory.html">kaaosteoriassa</a>, <a href="complexity.html">kompleksisuustutkimuksessa</a> ja dynaamisissa systeemeissä. Edward Lorenz, Benoit Mandelbrot ja David Ruelle laajensivat käsitettä fraktaaleihin ja outoihin attraktoreihin. Nykyisin faasiavaruus on vakiintunut kieli kaikkialla, missä mallinnetaan aikaa ja muutosta — ekologiasta neurotieteeseen ja taloustieteeseen.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="state.html">state</a> — systeemin tila on yksittäinen piste faasiavaruudessa.</li>
+    <li><a href="attractor.html">attractor</a> — faasiavaruuden vetovoima-alue, johon radat ajautuvat.</li>
+    <li><a href="bifurcation.html">bifurcation</a> — faasiavaruuden rakenteen äkillinen muutos kontrolliparametrin ylittäessä kriittisen arvon.</li>
+    <li><a href="equilibrium.html">equilibrium</a> — vakaa kiintopiste faasiavaruudessa.</li>
+    <li><a href="dynamical-equilibrium.html">dynamical-equilibrium</a> — suljettu rata faasiavaruudessa.</li>
+    <li><a href="trajectory.html">trajectory</a> — systeemin kehitys piirtyy ratana faasiavaruudessa.</li>
+    <li><a href="phase-transition.html">phase-transition</a> — faasisiirtymä näkyy faasiavaruuden topologian muutoksena.</li>
+    <li><a href="control-parameter.html">control-parameter</a> — kontrolliparametri muuttaa faasiavaruuden rakennetta.</li>
+    <li><a href="order-parameter.html">order-parameter</a> — järjestysparametri tiivistää faasiavaruuden tilan.</li>
+    <li><a href="complexity.html">complexity</a> — kompleksiset systeemit vaativat korkeaulotteisen faasiavaruuden.</li>
+    <li><a href="complex-adaptive-system.html">complex-adaptive-system</a> — sopeutuvien systeemien käyttäytymistä kuvataan faasiavaruudessa.</li>
+    <li><a href="modeling.html">modeling</a> — mallintaminen on usein faasiavaruuden rakentamista.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Faasiavaruus esitellään <a href="../lessons/dynaamiset-systeemit.html">Dynaamiset systeemit</a> -moduulissa yhdessä <a href="attractor.html">attraktorin</a> ja <a href="bifurcation.html">bifurkaation</a> kanssa. Sitä syvennetään moduuleissa, joissa käsitellään kaaosta, ilmastoa, hermoverkkoja ja ekologisia systeemejä — kaikkialla, missä aikaulottuvuus tekee tilasta dynaamisen.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/state.html" class="wikilink" data-concept="state">state</a> — tila</li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — attraktori</li>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — bifurkaatio</li>
+    <li><a href="/learn/systeemiajattelu/concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — tasapaino</li>
+    <li><a href="/learn/systeemiajattelu/concepts/dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — dynaaminen tasapaino</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — faasisiirtymä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-parameter.html" class="wikilink" data-concept="control-parameter">control-parameter</a> — kontrolliparametri</li>
+    <li><a href="/learn/systeemiajattelu/concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">order-parameter</a> — järjestysparametri</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — kompleksisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — sopeutuva järjestelmä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a> — mallintaminen</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Poincaré 1890; Gibbs 1902 — <em>Elementary Principles in Statistical Mechanics</em>; Strogatz 1994 — <em>Nonlinear Dynamics and Chaos</em>; Prigogine 1997 — <em>The End of Certainty</em>; Wikipedia-artikkelit: <em>Phase space</em>; <em>State space</em>; <em>Dynamical system</em>.
+  </p>
+</main>
+</body>
+</html>

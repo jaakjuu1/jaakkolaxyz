@@ -1,0 +1,154 @@
+<!doctype html><html lang="fi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Tulostettava pikaviite ja päiväkirjapohja: maagisen harjoituspäiväkirjan rakenne, havainto–tulkinta–tarkistus ja STOP-protokolla."><title>Harjoituspäiväkirja ja STOP · Rituaalit</title><style>
+:root {
+  --bg:#fbfaf6; --ink:#1a1a1a; --muted:#666; --rule:#d8d4c7;
+  --accent:#4a3a8a; --accent-soft:#ece8f5; --code:#f4f1e8;
+  --warn:#8a4c2e; --warn-soft:#f6e9df; --ok:#32634b; --ok-soft:#e6f0ea;
+  --max:42rem;
+}
+@media (prefers-color-scheme:dark) {
+  :root { --bg:#181715; --ink:#ece8de; --muted:#aaa399; --rule:#3a3530;
+    --accent:#b6a9e5; --accent-soft:#2a2535; --code:#221f1a;
+    --warn:#e1a27e; --warn-soft:#3a2821; --ok:#9ac9ad; --ok-soft:#203128; }
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:1.05rem/1.72 Georgia,'Times New Roman',serif}
+main{width:100%;max-width:var(--max);margin:3rem auto;padding:0 1.35rem 4rem;min-width:0}
+h1,h2,h3{line-height:1.22;letter-spacing:-.01em} h1{font-size:2.15rem;margin:.25rem 0 .45rem}
+h2{font-size:1.38rem;margin:2.45rem 0 .8rem;padding-bottom:.3rem;border-bottom:1px solid var(--rule)}
+h3{font-size:1.12rem;margin:1.6rem 0 .45rem;color:var(--accent)} p{margin:.85rem 0}
+a{color:var(--accent);text-decoration:none;border-bottom:1px solid var(--accent-soft)} a:hover{border-bottom-color:var(--accent)}
+nav.path,.meta,.eyebrow{color:var(--muted);font-size:.89rem} nav.path a{color:var(--muted);border:0}
+.lead{font-size:1.18rem;line-height:1.6;margin:1.35rem 0 2rem}.card,.exercise,.sourcebox,.warning,.claim{
+  padding:1rem 1.15rem;margin:1.35rem 0;border-radius:4px;border-left:3px solid var(--accent);background:var(--code)}
+.warning{border-left-color:var(--warn);background:var(--warn-soft)}.claim{border-left-color:var(--ok);background:var(--ok-soft)}
+.card h3,.exercise h3,.sourcebox h3,.warning h3,.claim h3{margin-top:0} blockquote{margin:1.4rem 0;padding:.7rem 1.15rem;border-left:3px solid var(--accent);background:var(--accent-soft);font-style:italic}
+table{width:100%;table-layout:fixed;border-collapse:collapse;margin:1rem 0;font-size:.96rem} th,td{text-align:left;vertical-align:top;padding:.55rem;border-bottom:1px solid var(--rule);overflow-wrap:anywhere} th{color:var(--accent)}
+ul,ol{padding-left:1.35rem}li{margin:.38rem 0}.tag{display:inline-block;padding:.1rem .45rem;margin:.1rem;border:1px solid var(--rule);border-radius:99px;font-size:.8rem;color:var(--muted)}
+label{display:block;font-weight:700;margin:.8rem 0 .25rem}textarea{width:100%;min-height:80px;padding:.65rem;border:1px solid var(--rule);border-radius:4px;background:var(--bg);color:var(--ink);font:inherit;resize:vertical}
+button{margin:.8rem .5rem 0 0;padding:.55rem .85rem;border:0;border-radius:4px;background:var(--accent);color:var(--bg);font:inherit;cursor:pointer}.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.status{color:var(--ok);font-size:.9rem}.status.error{color:var(--warn)}.pager{display:flex;justify-content:space-between;gap:1rem;margin-top:2.6rem;padding-top:1rem;border-top:1px solid var(--rule)}
+.small{font-size:.9rem;color:var(--muted)} code{background:var(--code);padding:.1rem .28rem;border-radius:3px}
+.rule-line{border:0;border-top:1px dashed var(--rule);margin:1.1rem 0}
+@media(max-width:600px){main{margin:1.5rem auto}h1{font-size:1.8rem}.pager{flex-direction:column}table{font-size:.88rem}}
+@media print{body{font-size:10pt}main{max-width:none;margin:0}.exercise button,.pager,.noprint{display:none}a{color:inherit;border:0}.warning,.claim,.card,.exercise{break-inside:avoid}textarea{min-height:2.6em;break-inside:avoid}}
+</style></head><body><main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Rituaalit</a> › Pikaviite</nav>
+<h1>Harjoituspäiväkirja ja STOP</h1>
+<p class="lead">Tulostettava pikaviite ja päiväkirjapohja maagiseen harjoitukseen: mitä päiväkirjaan kirjataan, miten havainto erotetaan tulkinnasta ja milloin harjoitus keskeytetään.</p>
+<p class="small noprint">Tulosta selaimen tulostustoiminnolla. Painikkeet ja navigointi jäävät pois tulosteesta; taulukot, STOP-lohko ja päiväkirjapohjan kentät tulostuvat. Sivumäärä riippuu selaimesta ja marginaaleista.</p>
+
+<h2>Miksi päiväkirja</h2>
+<p>Maagisen harjoituksen perinteinen päiväkirja ei ole hartauskirja vaan <strong>kirjanpito</strong>. Sen tehtävä on tehdä oma muisti tarkistettavaksi: mitä tein, milloin, kuinka kauan, mitä havaitsin — ja mitä arvelin havainnon tarkoittavan. Ilman kirjausta jälkikäteinen tulkinta muokkaa muiston itsensä kaltaiseksi.</p>
+<p>Yksi merkintä per harjoituskerta. Kirjaa harjoituksen <em>jälkeen</em>, ei sen aikana. Pidä merkintä lyhyenä; viisi riviä joka kerta on arvokkaampi kuin kaksi sivua kerran kuussa.</p>
+
+<h2>Merkinnän runko</h2>
+<table>
+<tr><th>Kenttä</th><th>Mitä siihen tulee</th></tr>
+<tr><td><strong>Päivä ja kello</strong></td><td>Päivämäärä, alkamis- ja päättymisaika.</td></tr>
+<tr><td><strong>Harjoitus</strong></td><td>Mikä harjoitus, mikä versio, mikä lähde. Esim. ”Qabalistinen risti, ilman tikaria, Regardien ohje”.</td></tr>
+<tr><td><strong>Olosuhteet</strong></td><td>Uni edellisenä yönä, ruoka, kofeiini, alkoholi, lääkitys, kuormitus, sairastelu.</td></tr>
+<tr><td><strong>1. Havainto</strong></td><td>Mitä tapahtui ilman selitystä. Keho, hengitys, mieliala, ajatuksen kulku, häiriöt.</td></tr>
+<tr><td><strong>2. Tulkinta</strong></td><td>Mitä arvelen sen tarkoittavan — ja minkä lajin väite se on.</td></tr>
+<tr><td><strong>3. Tarkistus</strong></td><td>Mikä havainto muuttaisi käsitystäni? Onko yksinkertaisempaa selitystä?</td></tr>
+<tr><td><strong>Arki</strong></td><td>Uni, työ, ihmissuhteet, toimintakyky: ennallaan / parempi / huonompi.</td></tr>
+<tr><td><strong>Lähdetarkistus</strong></td><td>Poikkesinko ohjeesta? Missä kohtaa ja miksi?</td></tr>
+</table>
+
+<h2>Neljä väitelajia yhdessä taulukossa</h2>
+<table>
+<tr><th>Laji</th><th>Tunnistus</th><th>Tarkistuskysymys</th></tr>
+<tr><td>Historiallinen lähdeohje</td><td>”Lähde sanoo, että…”</td><td>Löytyykö tämä painetusta tekstistä sellaisenaan?</td></tr>
+<tr><td>Perinteen tulkinta</td><td>”Tämä tarkoittaa perinteessä…”</td><td>Kuka tulkitsee, milloin, ja onko tulkinta ohjeen sisällä vai ulkona?</td></tr>
+<tr><td>Kokemuksellinen havainto</td><td>”Minä havaitsin…”</td><td>Onko kuvaus neutraali? Sisältääkö se jo selityksen?</td></tr>
+<tr><td>Metafyysinen väite</td><td>”Todellisuudessa tapahtuu…”</td><td>Mikä voisi osoittaa väitteen vääräksi?</td></tr>
+</table>
+<p class="small">Laajempi viiden lajin versio: <a href="../../occult-development/reference/kasitteisto-ja-vaitelajit.html">Käsitteistö ja väitelajit</a>.</p>
+
+<h2>Neutraali havainto vai valmis tulkinta?</h2>
+<table>
+<tr><th>Tulkinta naamioituna havainnoksi</th><th>Neutraali havainto</th></tr>
+<tr><td>”Tila puhdistui.”</td><td>”Huoneessa oli hiljaisempi olo; en enää ajatellut päivän riitaa noin 10 minuuttiin.”</td></tr>
+<tr><td>”Energia nousi selkärankaa pitkin.”</td><td>”Selässä lämmin, kihelmöivä tunne noin minuutin ajan.”</td></tr>
+<tr><td>”Enkeli oli läsnä idässä.”</td><td>”Mielikuva hahmosta idässä oli poikkeuksellisen selkeä ja pysyi noin 30 sekuntia.”</td></tr>
+<tr><td>”Suoja piti koko päivän.”</td><td>”Päivä sujui tavallista rauhallisemmin. En tiedä, liittyikö se harjoitukseen.”</td></tr>
+</table>
+
+<h2>STOP-protokolla</h2>
+<div class="claim">
+<h3>S — Seis</h3><p>Keskeytä harjoitus, jos kokemus alkaa hallita unta, työtä, ihmissuhteita tai turvallisuutta. Keskeytys on osa harjoitusta, ei epäonnistuminen.</p>
+<h3>T — Tarkenna</h3><p>Kirjaa havainto ilman metafyysistä selitystä: mitä, milloin, kuinka kauan, minkä jälkeen?</p>
+<h3>O — Ota toinen näkökulma</h3><p>Puhu ihmiselle, joka ei hyödy siitä että uskot tiettyyn selitykseen. Tarvittaessa terveydenhuollon ammattilaiselle.</p>
+<h3>P — Palaa perustaan</h3><p>Uni, ruoka, liike, arkirutiinit, sosiaalinen yhteys. Älä lisää harjoituksen intensiteettiä korjataksesi harjoituksen aiheuttamaa epätasapainoa.</p>
+</div>
+
+<div class="warning"><h3>Keskeytä ja hae apua</h3>
+<p>Hakeudu avun piiriin, jos koet voimakasta tai pitkittyvää unettomuutta, maniaa, itsetuhoisuutta, vainoharhaisuutta, hallusinaatioita, dissosiaatiota tai vaikeutta huolehtia arjesta. Hengellinen selitys ei sulje pois lääketieteellistä arviota. Kiireellisissä tilanteissa ota yhteys päivystykseen tai hätänumeroon.</p>
+<p><strong>Historiallista esoteerista tekstiä ei käytetä lääketieteellisenä tai psykologisena hoito-ohjeena.</strong> Tämä sivu ei ole hoitosuositus.</p></div>
+
+<h2>Annostelusäännöt</h2>
+<ul>
+<li>Enintään <strong>yksi</strong> täysi rituaaliharjoitus päivässä.</li>
+<li>Ei pidennystä eikä uusia elementtejä, jos edellinen viikko tuntui kuormittavalta.</li>
+<li>Ei harjoitusta päihtyneenä, univelassa tai akuutissa kriisissä.</li>
+<li>Vähintään yksi harjoitukseton päivä viikossa.</li>
+<li>Jos jäät väliin, jatka seuraavasta päivästä. Menetettyjä kertoja ei oteta kiinni.</li>
+</ul>
+<p class="small"><span class="tag">toimituksellinen turvakehys</span> Nämä ovat <strong>tämän oppimispolun toimituksellisia turvarajoja</strong>, eivät lähdeohjeita. Kerran päivässä ja viikoittainen lepopäivä <strong>poikkeavat Regardien ohjeesta</strong>: <em>The Golden Dawn</em> esittää pentagrammirituaalille päivittäisen kaksoisrytmin (kutsuva aamulla, karkottava illalla) eikä tunne harjoituksetonta päivää. Tiukempi raja on valittu varovaisuudesta — se pitää harjoituksen kevyempänä, jättää tilaa havainnon kirjaamiselle ja tekee tauon pitämisestä helppoa. Se ei ole väite siitä, kumpi rytmi tuottaa parempia tuloksia.</p>
+
+<h2>Mitä ei luvata</h2>
+<p>Nämä harjoitukset eivät lupaa muutosta ulkoisessa todellisuudessa: eivät terveydessä, taloudessa, toisten ihmisten käytöksessä eivätkä tulevissa tapahtumissa. Ainoa asia, jota voit rehellisesti seurata, on oma olotilasi, tarkkaavaisuutesi ja toimintakykysi — ja niitäkin vain kirjatun havainnon kautta.</p>
+
+<div class="exercise"><h3>Päiväkirjamerkintä</h3>
+<p>Täytä yhden harjoituskerran merkintä tähän. Kopioi teksti omaan päiväkirjaasi — sivu ei tallenna mitään.</p>
+<form id="journal-entry" onsubmit="return false;">
+<label for="journal-when">Päivä, kello ja kesto</label>
+<textarea id="journal-when" placeholder="Esim. ”30.7. klo 7.10–7.22, 12 min”"></textarea>
+<label for="journal-what">Harjoitus, versio ja lähde</label>
+<textarea id="journal-what" placeholder="Esim. ”Qabalistinen risti, ilman tikaria, Regardien ohje. Ei pentagrammeja.”"></textarea>
+<label for="journal-conditions">Olosuhteet: uni, ruoka, kofeiini, kuormitus</label>
+<textarea id="journal-conditions" placeholder="Esim. ”Nukuin 6 h, kaksi kahvia, kiireinen työpäivä edellä.”"></textarea>
+<label for="journal-observation">1. Havainto — ilman selitystä</label>
+<textarea id="journal-observation" placeholder="Esim. ”Hengitys hidastui kolmannen sanan kohdalla. Vasen olkapää jännitti. Kaksi kertaa unohdin sanajärjestyksen.”"></textarea>
+<label for="journal-interpretation">2. Tulkinta — ja sen väitelaji</label>
+<textarea id="journal-interpretation" placeholder="Esim. ”Arvelen rauhoittumisen johtuvan rytmistä ja keskittymisestä (empiirinen). Perinteen selitys valosta on metafyysinen.”"></textarea>
+<label for="journal-check">3. Tarkistus — mikä muuttaisi käsitystäni?</label>
+<textarea id="journal-check" placeholder="Esim. ”Kokeilen viikon ajan pelkkää hiljaa istumista samaan aikaan ja vertaan.”"></textarea>
+<label for="journal-life">Arki: uni, työ, ihmissuhteet, toimintakyky</label>
+<textarea id="journal-life" placeholder="Esim. ”Ennallaan. Ei univaikeuksia.”"></textarea>
+<label for="journal-stop">STOP-tarkistus: onko syytä keskeyttää tai keventää?</label>
+<textarea id="journal-stop" placeholder="Esim. ”Ei. Jos univaikeudet jatkuvat kaksi yötä, pidän tauon.”"></textarea>
+<button type="button" onclick="copyAnswers('journal-entry')">Kopioi merkintä</button>
+<button type="button" class="secondary" onclick="clearAnswers('journal-entry')">Tyhjennä</button>
+<span class="status" aria-live="polite"></span>
+</form>
+</div>
+
+<div class="sourcebox"><h3>Liittyvät sivut</h3>
+<ul>
+<li><a href="../lessons/0002-qabalistinen-risti.html">Qabalistinen risti</a> — lyhyt itsenäinen harjoitus, aloituspiste</li>
+<li><a href="../lessons/0005-lbrp.html">LBRP — pentagrammin pienempi rituaali</a> — 14 päivän ohjelma</li>
+<li><a href="../../occult-development/lessons/0006-kriittinen-turvaprotokolla.html">Kriittinen turvaprotokolla</a> — laajempi turvallisuusoppitunti</li>
+<li><a href="../../occult-development/reference/kasitteisto-ja-vaitelajit.html">Käsitteistö ja väitelajit</a> — viisi väitelajia</li>
+<li><strong>Israel Regardie: <em>The Golden Dawn</em></strong> — rituaaliohjeiden painettu lähde</li>
+</ul></div>
+
+<nav class="pager"><a href="../index.html">← Rituaalit</a><a href="../lessons/0002-qabalistinen-risti.html">Qabalistinen risti →</a></nav>
+</main><script>
+function copyAnswers(formId){
+  const form=document.getElementById(formId);
+  const status=form.querySelector('.status');
+  const values=[...form.querySelectorAll('textarea')].map(el=>{
+    const label=form.querySelector(`label[for="${el.id}"]`);
+    return `${label?label.textContent.trim():el.id}: ${el.value.trim()||'(tyhjä)'}`;
+  }).join('\n');
+  const ok=()=>{status.classList.remove('error'); status.textContent='✓ Kopioitu leikepöydälle'; setTimeout(()=>status.textContent='',3500);};
+  const fail=()=>{status.classList.add('error'); status.textContent='Kopiointi ei onnistunut — valitse teksti ja kopioi käsin.';};
+  if(!navigator.clipboard||typeof navigator.clipboard.writeText!=='function'){ fail(); return; }
+  try{ navigator.clipboard.writeText(values).then(ok).catch(fail); }catch(e){ fail(); }
+}
+function clearAnswers(formId){
+  const form=document.getElementById(formId); form.querySelectorAll('textarea').forEach(el=>el.value='');
+  const status=form.querySelector('.status'); status.classList.remove('error');
+  status.textContent='Tyhjennetty'; setTimeout(()=>status.textContent='',2500);
+}
+</script></body></html>

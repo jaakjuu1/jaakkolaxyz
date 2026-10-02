@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — Bija-mantrat — tavut joilla ei ole käännöstä</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Bija-mantrat — tavut joilla ei ole käännöstä</h1>
+  <p class="meta">Oppitunti 0004 · ~8 min · Om, Aim, Hreem, Kleem ja muut siemenet</p>
+
+  <p>Tämä oppitunti käsittelee <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">bija-mantria</a></strong> — sanskritin kielen "siemeniä", joita perinne pitää sanoja vanhempina äänteinä. Käymme läpi neljä keskeistä <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">bijaa</a></strong> ja niiden käytön, sekä sen mitä niiden symboliikasta kannattaa ottaa vakavasti.</p>
+
+  <h2>Mikä on bija-mantra?</h2>
+
+  <p><em>Bija</em> tarkoittaa sanskritiksi "siementä". <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantrat</a></strong> ovat yleensä yksittäisiä tai kahden-kolmen foneetin tavu, joilla ei ole kielellistä merkitystä — niitä ei voi kääntää, koska ne eivät viittaa mihinkään kielelliseen objektiin. Ne ovat <em>ääniä ennen sanoja</em>.</p>
+
+  <p>Tämä tekee niistä kiehtovia: ne ovat äänteitä, jotka toimivat joko tyhjinä symboleina tai jonkin kokoavana äänenä. Perinteessä ajatellaan, että bija-mantrat edustavat jotain perustavaa — värähtelyn perusyksikköä, äänen "alkuääntä", merkitystä ennen merkitystä.</p>
+
+  <p>Tämä kaikulma on tietysti runollinen, ja se on pidettävä mielessä. Tieteellisesti bija-mantrat ovat äänteitä, joilla on erityinen taipumus resonoida eri tavoin ihmiskehossa ja -mielessä. Emme tiedä varmuudella, miksi näin tapahtuu, mutta äänteen fysikaaliset ominaisuudet (kesto, muoto, taajuusjakauma) ovat olemassa ja ne voidaan mitata.</p>
+
+  <h2>Neljä keskeisintä bijaa</h2>
+
+  <p>Perinteessä bija-kokoelma on laaja — joissakin teksteissä satoja. Käytännössä neljä ovat ylivoimaisesti yleisimpiä ja ne riittävät alkuun.</p>
+
+  <h3>Om (ॐ) — kaikkeuden perusta</h3>
+  <p>Om on bija-mantra <em>ennen kaikkia muita</em>. Se on jo käsitelty oppitunnissa 0002, mutta tässä kontekstissa se on samalla esimerkki bijasta: tavu, joka ei tarkoita mitään kielellisesti, mutta joka toimii voimakkaana symbolina ja akustisena ankkurina.</p>
+
+  <p>Om on tärkeä tunnistaa <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">bija</a></strong>-kokoelman kautta, koska se selittää, miksi Om on niin tärkeä: se ei ole <em>yksi</em> mantra muiden joukossa, vaan <em>ensisijainen</em> bija, josta muut lähtevät.</p>
+
+  <h3>Aim (ऐं) — luova intentions</h3>
+  <p>Aim (lausutaan suunnilleen "ai-m" nenä-äänteellä, kuten ranskassa "aim") liitetään perinteessä:</p>
+
+  <ul>
+    <li>Saraswati-jumalattareen — tieto, luovuus, puhe, oppiminen</li>
+    <li>Toisena ja kolmantena <em>chakrana</em>, erityisesti <em>svadhisthana</em>- ja <em>manipura</em>-alueilla</li>
+    <li>Intentiontiin, keskittymiseen, uuden tiedon omaksumiseen</li>
+  </ul>
+
+  <p>Käytännön harjoittelussa Aim on mantra "minä opin" tai "minä keskityn" -tyyppisiin intentioihin. Se sopii kokeiluun, kun haluaa kirkastaa mieltä ilman uskonnollista kehystä.</p>
+
+  <p>Aim-tavussa on huomattava, että sen lopussa oleva <em>m</em>-äänne ei ole suomalaisittain tavallinen konsonantti — se sulkeutuu huulten kautta, niin että ääni päättyy kevyeen sulkeutumaan. Tämä antaa tavu suljetun, keskittyneen tunnelman.</p>
+
+  <h3>Hreem (ह्रीं) — dynamiikka ja voima</h3>
+  <p>Hreem on <em>R-äänteellä</em> varustettu tavu, joka on akustisesti voimakkaampi kuin kaksi edellistä. Perinteessä se liitetään:</p>
+
+  <ul>
+    <li>Bhairava- ja Kali-muotoihin — voima, transformaatio, rohkeus</li>
+    <li>Kolmanteen <em>chakraan</em> (manipura), joka yhdistyy tahdon voimaan ja energiakehon keskukseen</li>
+    <li>Vaikeiden tunteiden ja esteiden läpäisyyn — "palamiseen läpi"</li>
+  </ul>
+
+  <p>Hreem on mantra "minä päästän irti", "minä toimin", "minä nousen" -tyyppisiin intentioihin. Se on äänne, joka resonoi erityisen voimakkaasti keuhkoissa ja rintakehässä.</p>
+
+  <p>Tämä ei kuitenkaan tarkoita, että Hreem olisi aggressiivinen. Päinvastoin — sen teho on siinä, että se antaa dynaamisen mutta keskittyneen kanavan tunteille, joita on vaikea käsitellä hiljaisuudessa.</p>
+
+  <h3>Kleem (क्लीं) — vetovoima ja yhteys</h3>
+  <p>Kleem (lausutaan suunnilleen "klee-m") on bija, joka liitetään:</p>
+
+  <ul>
+    <li>Vetovoimaan, houkuttelevuuteen, magnetismiin</li>
+    <li>Sakraali- ja sydänchakra-alueisiin (ensimmäinen ja neljäs)</li>
+    <li>Suhteisiin, kumppanuuteen, avoimuuteen</li>
+  </ul>
+
+  <p>Kleem on äänne, joka "vetää puoleensa". Sen K-alku ja -M-loppu muodostavat suljetun, imevän tunnelman. Perinteen mukaan Kleem on erityisen tehokas silloin, kun haluaa harjoittaa <strong><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">lähimmäisenrakkautta</a></strong> tai avoimuutta.</p>
+
+  <p>Tässä on tärkeä psykologinen ero: Kleem ei ole magiaa, joka saa toiset ihmiset ihastumaan sinuun. Se on tekniikka, joka avaa omaa sydänaluettasi ja luo tilan, jossa yhteys syntyy luonnollisesti.</p>
+
+  <h2>Muita maininnan arvoisia bijoja</h2>
+
+  <p>Tässä lyhyt lista, koska ne tulevat vastaan jooga- ja meditaatiokirjallisuudessa. Kaikkia ei tarvitse opetella, mutta tunnistaminen auttaa.</p>
+
+  <ul>
+    <li><strong>Shreem</strong> (श्रीं) — Lakshmi, vauraus, anteliaisuus, myötätunto</li>
+    <li><strong>Dum</strong> (डुं) — Durga, suoja, maadoittuminen, selkeys</li>
+    <li><strong>Thaam</strong> (ठां) — hiljaisuus, <strong><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">tyyni</a> tila</strong></li>
+    <li><strong>Stram</strong> (स्त्रां) — parantava äänne, kehon palautuminen</li>
+    <li><strong>Kaam</strong> (कां) — rakkaus, tahto, halu</li>
+  </ul>
+
+  <p>Tämä ei ole tyhjentävä lista. Perinteessä bijoja on kymmeniä ellei satoja. Tärkeintä on ymmärtää <em>rakenne</em> — yksi tavu, joka symboloi jotain, ja jota toistetaan meditaation tai rituaalin aikana.</p>
+
+  <h2>Bija-mantra ja chakrat</h2>
+
+  <p>Yksi yleisimmistä bija-mantra-järjestelmistä on chakrayhteys. Klassisessa perinteessä jokaiselle seitsemälle päächakralle on oma bija:</p>
+
+  <ol>
+    <li><strong>Muladhara</strong> (juurichakra) — Lam</li>
+    <li><strong>Svadhisthana</strong> (sakraalichakra) — Vam</li>
+    <li><strong>Manipura</strong> (solar plexus) — Ram</li>
+    <li><strong>Anahata</strong> (sydänchakra) — Yam</li>
+    <li><strong>Vishuddha</strong> (kurkuchakra) — Ham</li>
+    <li><strong>Ajna</strong> (kolmas silmä) — Om (tai Ksham)</li>
+    <li><strong>Sahasrara</strong> (kruunuchakra) — (hiljaisuus / kaikkien bijojen summa)</li>
+  </ol>
+
+  <p>Tämä chakrayhteys on yleinen joogaharjoittelussa, mutta sen todistusarvo on kyseenalainen — chakrajärjestelmä on perinne, ei neurotieteellinen totuus. Harjoittelijalle chakrayhteys tarjoaa kuitenkin <em>konkreettisen rungon</em>: tiedät, mihin bijaa kohdistat, mihin hengität, mitä aluetta kehosta tunnustelet.</p>
+
+  <p>Jos chakra-ajattelu ei resonoi, voit käyttää bijoja myös ilman sitä: valitse vain se bija, jonka symbolinen merkitys tuntuu sopivalta hetkeen.</p>
+
+  <h2>Bija-mantra ja <strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">japa</a></strong></h2>
+
+  <p><strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a></strong> on mantran toistamista, ja bija-mantrat sopivat tähän erinomaisesti, koska ne ovat lyhyitä. Käytännön tasolla bija-japa etenee näin:</p>
+
+  <ol>
+    <li>Valitse yksi bija, joka vastaa senhetkistä intentiotasi.</li>
+    <li>Asetu istumaan, hengitä muutama kerta rauhallisesti.</li>
+    <li>Aloita tavun toisto, joko ääneen, kuiskaten tai mielessä.</li>
+    <li>Toisto voi olla vapaata tai laskettua — tähän palataan oppitunnissa 0005, jossa käsittelemme malaa ja laskemista.</li>
+  </ol>
+
+  <p>Bija-mantra sopii erityisen hyvin tilanteisiin, joissa pidempi mantra tuntuisi raskaalta tai epäluontevalta. Yksi tavu on helppo omaksua — se ei vaadi muistamista eikä käännöksen ymmärtämistä.</p>
+
+  <h2>Mitä bija-mantra EI ole</h2>
+
+  <p>Tässä muutama yleinen virhe, jotka on helppo välttää, kunhan tietää niistä.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Bija-mantrat ovat taikuutta</h3>
+      <p>"Lausu Aim 108 kertaa ja saat työpaikan." Tämä on uskonvarainen väite, johon ei liity todistusvoimaa.</p>
+    </div>
+    <div class="col right">
+      <h3>Bija-mantrat ovat symboleja</h3>
+      <p>Aim, Hreem ja Kleem ovat symboleja intentionoista. Ne toimivat siksi, että toistaminen kirkastaa tarkoitusta — eivät siksi, että ne "houkuttelisivat" ulkoisia voimia.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Bija vaatii initiaation</h3>
+    <p>Perinne tietyissä suuntauksissa edellyttää opettajan valtuutusta. Käytännössä suurinta osaa bijoista voi harjoittaa vapaasti. Se ei sido sinua mihinkään kouluun.</p>
+    </div>
+    <div class="col right">
+      <h3>Bija on äänne</h3>
+      <p>Se on työkalu, jonka voit ottaa käyttöön itse. Opettaja voi nopeuttaa oppimista, mutta ei ole portinvartijaa.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Kokeile itse: yhden bijan valinta</h2>
+
+  <p>Tässä harjoituksessa valitset yhden bijan ja kuulostelet, miten se istuu sinuun.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on tämänhetkinen intentionsi? Mitä haluat kirkastaa tai vahvistaa?</label>
+      <textarea id="q1" rows="2" placeholder="Esim. keskittymiskykyä, rohkeutta, avoimuutta, lepoa."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Valitse sen perusteella yksi bija (Om, Aim, Hreem tai Kleem) ja toista sitä 5 minuuttia. Mitä huomasit?</label>
+      <textarea id="q2" rows="2" placeholder="Esim. tuntuu kömpelöltä, tuntuu luontevalta, tuntuu tehoavan, vai ulkoisesti mitäänsanomaton."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos kokeilit useampaa, vertailu: mikä tuntui sopivimmalta?</label>
+      <textarea id="q3" rows="2" placeholder="Esim. Aim tuntui kirkkaalta, Kleem raskaalta, Om tutulta."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantra</a> — itse oppitunnin aihe, "siemen"-mantrat ilman kielellistä käännöstä.</li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — yläkäsite, johon bijat kuuluvat yhtenä tyyppinä (oppitunti 0001).</li>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — tärkein bija, joka toimii kaikkien muiden bijojen perustana (oppitunti 0002).</li>
+    <li><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a> — bijoja toistetaan tyypillisesti japan muodossa, erityisesti malan kanssa (oppitunti 0005).</li>
+    <li><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a> — rukousnauha, jota käytetään usein bija-toistojen laskemiseen (oppitunti 0005).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — bija-mantrat toimivat meditaation ankkureina, erityisesti chakrayhteydessä.</li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness</a> — bija-mantra yhdistettynä avoimeen tarkkaavuuteen on voimakas meditaatioyhdistelmä.</li>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Lähimmäisenrakkaus</a> — Kleem-bija liittyy myötätuntoon ja rakkauden intentioon, vaikkei suoraan ole metta-mantra.</li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Tyyni tila</a> — bija-mantra valmistaa mieltä hiljaisuutta varten, mutta ei korvaa sitä.</li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Läsnäolo</a> — bija-toiston tehtävä on palauttaa mieli tähän hetkeen.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Bija-mantrat ovat nyt työkaluja, mutta ne tarvitsevat vielä yhden palan: <em>tavan toistaa niitä</em>. Seuraavaksi käsittelemme <strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">japaa</a></strong> ja <strong><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">mala-rukousnauhaa</a></strong>, joka on perinteinen tapa laskea toistoja — käytäntö, joka muuttaa yksittäisen kokeilun säännölliseksi harjoitukseksi.</p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Kokeile bija-mantroja osana Sanctumin hengitysrituaaleja — eri äänimaisemat tukevat eri bijoja.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a class="prev" href="0003-so-ham.html">← Edellinen: So Ham — hengityksen luonnollinen mantra</a>
+    <a class="next" href="0005-japa-mala.html">Seuraava oppitunti: Japa ja mala — 108 helmen rukousnauha →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Tämänhetkinen intentio', '2. Bija-valinta ja kokemus', '3. Vertailu'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

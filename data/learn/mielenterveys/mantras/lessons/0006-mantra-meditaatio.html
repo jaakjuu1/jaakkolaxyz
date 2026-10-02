@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — Mantra meditaation muotona</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Mantra meditaation muotona</h1>
+  <p class="meta">Oppitunti 0006 · ~8 min · mindfulness vertailu ja oman mantran valinta</p>
+
+  <p>Tämä oppitunti kokoaa yhteen koko <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a></strong>-polun ja antaa sinulle kehyksen oman käytäntösi rakentamiseen. Vertaamme mantra-meditaatiota <strong><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulness-meditaatioon</a></strong>, käymme läpi mantran valinnan perusteet ja sovellamme aiemmissa oppitunneissa opittua yhteen.</p>
+
+  <h2>Kaksi ovea, yksi huone</h2>
+
+  <p>Mantra-meditaatio ja mindfulness-meditaatio näyttävät ulkoisesti erilaisilta, mutta niillä on sama päämäärä — ja ne toimivat eri ihmisille eri tavoin. Tässä nopea, rehellinen vertailu.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Mantra-meditaatio</h3>
+      <p><strong>Tekniikka:</strong> toistuva äänne, joko ääneen tai mielessä.</p>
+      <p><strong>Ankkuri:</strong> äänne / tavu / sana.</p>
+      <p><strong>Mielelle:</strong> antaa selkeän, kapean tarkkaavuuskohteen. Hyödyllinen, jos mieli on ahdistunut tai äänekäs.</p>
+      <p><strong>Riskit:</strong> voi jäädä pelkäksi mekaaniseksi toistoksi. Voi vahvistaa uskoa sanan "taikuuteen".</p>
+    </div>
+    <div class="col">
+      <h3>Mindfulness-meditaatio</h3>
+      <p><strong>Tekniikka:</strong> avoin tarkkaavuus siihen, mitä nousee.</p>
+      <p><strong>Ankkuri:</strong> usein hengitys, kehotietoisuus tai äänten havainnointi.</p>
+      <p><strong>Mielelle:</strong> ei kohdetta vaan avoin tila. Hyödyllinen, jos haluaa oppia hyväksymään ajatuksia.</p>
+      <p><strong>Riskit:</strong> voi olla vaikea aloittelijalle, joka ei saa keskittymistä kiinni. Voi lisätä ahdistusta, jos tulee "paljaaksi" liian nopeasti.</p>
+    </div>
+  </div>
+
+  <p>Useimmat ihmiset hyötyvät <em>molemmista</em>, ja ne voi yhdistää: japan aikana voit tehdä myös mindfulness-havaintoa kehosta ja tunteista, ja mindfulness-istunnon aikana voit hiljaisuuden hetkellä palata mieleen <strong><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a></strong> -tyyliseen hengitysmantraan.</p>
+
+  <h2>Historiallinen konteksti</h2>
+
+  <p>Mantra-meditaatio tulee eteläaasialaisesta perinteestä, mindfulness-meditaatio buddhalaisesta. Molemmat ovat peräisin noin 2 500 vuoden takaa, ja ne ovat kehittyneet vuosisatojen aikana eri suuntiin. Länsimaissa molemmat ovat saaneet tieteellistä tarkastelua 1970-luvulta lähtien, erityisesti Bensonin (mantra/relaxation response), Kabat-Zinnin (MBSR-mindfulness) ja Davidsonin (neuroscience of meditation) tutkimusten kautta.</p>
+
+  <p>Huomionarvoista on, että tieteellinen tutkimus <em>ei</em> ole osoittanut mantra-meditaatiota paremmaksi kuin mindfulnessia eikä toisin päin. Tutkimukset osoittavat, että ne toimivat eri mekanismein ja sopivat eri ihmisille. Valinta ei ole "oikea vai väärä", vaan "mikä sopii tähän ihmiseen ja tähän hetkeen".</p>
+
+  <h2>Kumpi sinulle?</h2>
+
+  <p>Tässä lyhyt itsearvio, joka ei ole diagnoosi vaan virike. Vastaa spontaanisti.</p>
+
+  <ul>
+    <li>Jos mielesi täyttyy helposti huolista, suunnitelmista ja sisäisestä puheesta → mantra todennäköisesti auttaa.</li>
+    <li>Jos haluat oppia olemaan ajatusten kanssa ilman, että tartut niihin → mindfulness todennäköisesti auttaa.</li>
+    <li>Jos haluat rauhoittaa kehoa nopeasti → mantra yhdistettynä hengitykseen.</li>
+    <li>Jos haluat ymmärtää mieltäsi syvemmin → mindfulness.</li>
+    <li>Jos haluat tehdä jotain, joka on selvästi <em>harjoitus</em> → molemmat käyvät.</li>
+  </ul>
+
+  <p>Ja hyvin usein ihmiset huomaavat tarvitsevansa molempia — mantraa kiireiseen hetkeen, mindfulnessia pidempään istuntoon. Tämä on yleensä toimivin yhdistelmä.</p>
+
+  <h2>Miten valita oma mantrasi</h2>
+
+  <p>Tässä viisi käytännön kriteeriä, jotka ohjaavat valintaa ilman mystiikkaa.</p>
+
+  <h3>1. Äänteen tulee sopia kielellesi ja kurkulle</h3>
+  <p>Jokaisen mantran tulisi olla äänne, jonka voit tuottaa vaivattomasti. Jos jokin tavu tökii tai tuntuu väkinäiseltä, se ei ole <em>sinulle</em> — kokeile toista. Esimerkiksi Om sopii monille, mutta joillekin Hreem tai Kleem istuu paremmin, koska niissä on erilainen vokaali- ja konsonanttipainotus.</p>
+
+  <h3>2. Sanoman tulee resonoida (tai olla olematon, kuten bijalla)</h3>
+  <p>Jos valitsemallasi mantralla on kielellinen merkitys (esim. "Ram", "Shanti"), varmista, että merkitys ei ole sinulle vastenmielinen. Jos taas valitset bija-mantran (Om, Aim, Hreem, Kleem), merkitystä ei ole, joten kysymys ei koske sinua.</p>
+
+  <h3>3. Sopivuus intentioon</h3>
+  <p>Perinteen mukaan eri mantrat sopivat eri intentioihin. Tässä joitakin yleisiä pareja:</p>
+
+  <ul>
+    <li><strong>Rauha, yleinen rentoutuminen:</strong> Om, So Ham, Shanti</li>
+    <li><strong>Keskittyminen, oppiminen:</strong> Aim</li>
+    <li><strong>Rohkeus, muutos:</strong> Hreem</li>
+    <li><strong>Yhteys, rakkaus, metta:</strong> Kleem, tai buddhalainen <strong><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">metta-meditaatio</a></strong> omilla fraaseillaan</li>
+    <li><strong>Maadoittuminen, suoja:</strong> Lam</li>
+  </ul>
+
+  <h3>4. Soveltuvuus tilanteeseen</h3>
+  <p>Jotkut mantrat ovat luonteeltaan äänekkäitä (esim. Hreem, jossa R-äänne resonoi). Toiset ovat hiljaisia (So Ham, Om sisäänhengityksessä). Joskus haluat vain äänettömän mielen toiston, ja So Ham tai Om ovat siihen parhaat.</p>
+
+  <h3>5. Neutraali perinne vai perinteinen sitoutuminen</h3>
+  <p>Jos haluat pitää käytäntösi ei-uskonnollisena, valitse mantrat joilla ei ole selvää kulttuuri- tai uskontositoutumista: Om, So Ham, tai bija-mantrat. Jos taas haluat liittyä johonkin tiettyyn perinteeseen, voit valita sen mukaan — mutta tämä ei ole tarpeen mantran tehokkuuden kannalta.</p>
+
+  <h2>Mantra, joka ei toimi</h2>
+
+  <p>Joskus valittu mantra ei tunnu toimivan. Tässä yleisimmät syyt.</p>
+
+  <ul>
+    <li><strong>Äänne ei istu suuhun.</strong> Vaihda toiseen.</li>
+    <li><strong>Merkitys häiritsee.</strong> Jos mantra herättää assosiaatioita, joita et halua, vaihda.</li>
+    <li><strong>Toisto on liian nopeaa.</strong> Hidasta.</li>
+    <li><strong>Toisto on liian mekaanista.</strong> Lisää hengitys ja tarkoitus mukaan.</li>
+    <li><strong>Yrität "saada" jotain.</strong> Mantra ei ole työkalu tavoitteen saavuttamiseen, vaan tapa olla läsnä. Jos odotat näkyvää tulosta, tulet pettymään. Käytä sitä, vaikkei sinulle tapahdu "mitään".</li>
+  </ul>
+
+  <h2>Mantra ja hengitys yhdistettynä: yksi kokonainen istunto</h2>
+
+  <p>Tässä on esimerkkiharjoitus, joka yhdistää kaiken, mitä tällä polulla on opittu. Varaa 15–20 minuuttia.</p>
+
+  <ol>
+    <li>Asetu istumaan mukavasti. Sulje silmät.</li>
+    <li>Hengitä viisi kertaa hitaasti sisään ja ulos. Anna kehon rauhoittua — tämä on <strong><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitystietoisuuden</a></strong> perusta.</li>
+    <li>Aloita hiljainen So Ham -mantra: "so" sisäänhengityksellä, "ham" uloshengityksellä. Jatka 3 minuuttia.</li>
+    <li>Siirry Om-mantraan. Toista uloshengityksellä, mielellinen tai hiljaisesti äänetty. Jatka 5 minuuttia.</li>
+    <li>Lisää <strong><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditatiivinen läsnäolo</a></strong>: anna mantran jatkua taustalla ja avaa tarkkaavuus koko kehoon. Tämä on mindfulness-elementti.</li>
+    <li>Jos huomaat ajatusten vieneen huomion, palaa So Ham — se on aina <em>takaisin kotiin</em> -mantra.</li>
+    <li>Päätä hiljaisuuteen: hiljennä mantra, istu 2 minuuttia hiljaa. Tämä on <strong><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">tyyni hetki</a></strong>, jossa kaikki opittu yhdistyy.</li>
+  </ol>
+
+  <p>Tämä istunto on yhdistelmä: se alkaa hengityksellä, jatkuu kahdella eri mantralla, laajenee mindfulness-tietoisuuteen ja päättyy hiljaisuuteen. Se on yksi tapa yhdistää koko tämän polun työkalut.</p>
+
+  <h2>Mantra ja <strong><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">todistaja</a></strong>-asento</h2>
+
+  <p>Harjoittelun syventyessä useimmat huomaavat, että mantra muuttuu vähitellen näkymättömäksi. Kun näin tapahtuu, syntyy tila, jossa <em>joku kuulee</em> mantran, mutta <em>kuka</em>? Tämä on klassinen <strong><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">todistaja</a></strong>-asento, jossa tietoisuus erottautuu sen kohteesta.</p>
+
+  <p>Tämä ei ole pakollinen vaihe eikä sitä tarvitse tavoitella. Se syntyy, kun harjoitus jatkuu riittävän kauan. Kun se syntyy, siitä ei tarvitse tehdä numeroa — pelkkä tietoisuus sen olemassaolosta riittää.</p>
+
+  <h2>Yleiset sudenkuopat — rehellinen lista</h2>
+
+  <ul>
+    <li><strong>"Oikea" mantra.</strong> Ei ole olemassa oikeaa eikä väärää mantaa, vain sinulle sopiva ja sopimaton.</li>
+    <li><strong>Initiaation tarve.</strong> Suurinta osaa mantroista voi käyttää ilman opettajaa tai valtuutusta.</li>
+    <li><strong>Uskonnollinen hyppy.</strong> Mantra ei edellytä uskoa mihinkään, ja se toimii yhtä lailla ei-uskonnollisessa viitekehyksessä.</li>
+    <li><strong>Vertaaminen muihin.</strong> "Toinen meditoi 40 minuuttia, minä vain 10" — vertailu on ansoista. Tee oma harjoituksesi.</li>
+    <li><strong>Tuloksen odottaminen.</strong> Kuten liikunnassa, tulokset näkyvät viikkojen ja kuukausien kuluessa, eivät yhden istunnon jälkeen.</li>
+    <li><strong>Liiallinen itsekriittisyys.</strong> "Palaatko sinä vielä mantran?" — kyllä, koko ajan. Tämä on harjoitus, ei saavutus.</li>
+  </ul>
+
+  <h2>Milloin EI mantra-meditoida</h2>
+
+  <p>Tämä on tärkeä lista, koska mantra ei sovi kaikkiin hetkiin.</p>
+
+  <ul>
+    <li>Jos tunnet olevasi vakavasti ahdistunut tai masentunut, hakeudu ensin ammattilaisen puheille. Mantra voi olla hyvä lisä, mutta se ei korvaa terapiaa.</li>
+    <li>Jos sinulla on dissosiatiivisia kokemuksia, mantra voi voimistaa niitä — keskustele terapeutin kanssa ensin.</li>
+    <li>Jos jokin mantra herättää ahdistavia ajatuksia tai muistoja, vaihda toiseen tai pidä tauko.</li>
+    <li>Jos olet sairas ja kuumeessa, lepo on tärkeämpää kuin mantra.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Kokeile itse: oman mantran valinta</h2>
+
+  <p>Tämä on koko polun päättävä harjoitus. Vastaa kolmeen kysymykseen rehellisesti.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä mantra tuntuu sinulle luontevimmalta näiden kokeilujen jälkeen?</label>
+      <textarea id="q1" rows="2" placeholder="Esim. Om oli selkein, So Ham helpoin, Kleem veti puoleensa, jokin muu."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä on sen intentio — mihin elämänalueeseen haluat sitä käyttää?</label>
+      <textarea id="q2" rows="2" placeholder="Esim. aamun keskittymiseen, illan rauhoittumiseen, työstressin hetkeen."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Miten aiot sisällyttää sen päivärutiiniin? (Esim. aamulla 5 min, illalla 15 min malan kanssa.)</label>
+      <textarea id="q3" rows="2" placeholder="Esim. joka aamu ennen työtä, 10 minuuttia. Tai vasta illalla."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Vastauksia ei tarvitse lähettää minulle — tämä on sinun henkilökohtainen suunnitelmasi. Voit kuitenkin halutessasi lähettää ne, niin keskustellaan mantrastasi ja siitä, miten se istuu elämääsi.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — yläkäsite, jonka eri muotoja tämä polku on käsitellyt (oppitunti 0001).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — mantra-meditaatio on yksi meditaation muoto, vertailukohdaksi mindfulness-meditaatiolle.</li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness</a> — avoimeen tarkkaavuuteen perustuva lähestymistapa, jota on verrattu mantra-meditaatioon tässä oppitunnissa.</li>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — yleisin mantra-meditaation mantra (oppitunti 0002).</li>
+    <li><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a> — hengityksen luonnollinen mantra, hyvä vaihtoehto aloittelijalle (oppitunti 0003).</li>
+    <li><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantra</a> — siemenmantrat kuten Aim, Hreem ja Kleem sopivat intentionoihin (oppitunti 0004).</li>
+    <li><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a> — käytäntö, joka muuttaa yksittäisen mantran säännölliseksi harjoitukseksi (oppitunti 0005).</li>
+    <li><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a> — 108 helmen rukousnauha, joka antaa japan rakenteen (oppitunti 0005).</li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Pranayama</a> — hengitysharjoitusten järjestelmä, joka limittyy mantra-meditaation kanssa.</li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengitystietoisuus</a> — yhdistyy luontevasti mantra-meditaatioon, erityisesti So Hamin kanssa.</li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Läsnäolo</a> — sekä mantra- että mindfulness-meditaation yhteinen päämäärä.</li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Todistaja</a> — syventyneen meditaation asento, jossa tietoisuus tarkkailee itseään.</li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Tyyni tila</a> — sekä mantran hiljainen osa että mindfulnessin päämäärä lähestyvät tätä tilaa.</li>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Lähimmäisenrakkaus</a> — myötätuntomeditaatio, joka voidaan yhdistää mantraan tai pitää erillään.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mantra-polun päätös</h2>
+
+  <p>Olet nyt käynyt läpi koko polun:</p>
+
+  <ol>
+    <li><strong>Mikä on mantra</strong> — mielen työkalu, ääni, tarkoitus, toisto.</li>
+    <li><strong>Om-tavu</strong> — jooga-kirjallisuuden perusta.</li>
+    <li><strong>So Ham</strong> — hengityksen luonnollinen mantra.</li>
+    <li><strong>Bija-mantrat</strong> — tavut joilla ei ole käännöstä.</li>
+    <li><strong>Japa ja mala</strong> — toisto, laskenta, säännöllinen harjoitus.</li>
+    <li><strong>Mantra meditaation muotona</strong> — vertailu mindfulnessiin ja oman mantran valinta.</li>
+  </ol>
+
+  <p>Nämä eivät ole koko totuus mantroista. Ne ovat perusta, jolle voit halutessasi rakentaa lisää — laajempia mantroja, tantra-perinteen tekniikoita, joogafilosofian syventävää opiskelua. Mutta tällä perustalla pärjää pitkälle.</p>
+
+  <p>Tärkein asia, jonka toivotan mukaan: <em>älä odota täydellisyyttä.</em> Hyvä harjoitus on sellainen, jonka teet säännöllisesti, ei sellainen jonka teet täydellisesti.</p>
+
+  <p class="footer-note">
+    Lähteet: Benson, H. (1975). <em>The Relaxation Response</em>. Harvard Medical School. Kabat-Zinn, J. (1990). <em>Full Catastrophe Living</em> (MBSR-perusta). Davidson, R. & Goleman, D. (1978, myöhemmin 2017). Tutkimukset mindfulness-meditaation neurotieteellisistä vaikutuksista. Transkriptiot: <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2267640/">Benson rentoutusvaste</a>; <a href="https://www.health.harvard.edu/mind-and-mood/mindfulness-meditation">Harvard mindfulness</a>.
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Yhdistä mantra "Guided Meditations" -osion istumaharjoitukseen.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Guided Meditations" — ääniohjattuja harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#meditations" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23meditations" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a class="prev" href="0005-japa-mala.html">← Edellinen: Japa ja mala</a>
+    <a class="next" href="0001-mika-on-mantra.html">Takaisin polun alkuun ↑</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Suosikkimantra', '2. Intentio', '3. Päiväriutin'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

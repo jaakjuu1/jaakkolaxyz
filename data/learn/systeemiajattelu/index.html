@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Systeemiajattelu — oppimispolku</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+    --path-bg: #f4f1e8; --path-border: #d8d4c7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; --path-bg: #221f1a; --path-border: #3a3530; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  ul, ol { padding-left: 1.5rem; }
+  li { margin: 0.35rem 0; }
+
+  /* Polku-laatikot */
+  .path {
+    background: var(--path-bg);
+    border: 1px solid var(--path-border);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.5rem 0;
+  }
+  .path h3 { margin-top: 0; }
+  .path-meta { color: var(--muted); font-size: 0.9rem; margin: 0.3rem 0 0.8rem; }
+  .path-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-top: 0.5rem;
+  }
+  .path-cta:hover { opacity: 0.85; border-bottom: none; }
+  .path-steps { margin: 0.8rem 0; padding-left: 1.2rem; }
+  .path-steps li { margin: 0.3rem 0; }
+
+  /* Alipolku-hakemisto */
+  .subindex {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .subindex-card {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem;
+  }
+  .subindex-card h3 { margin: 0 0 0.3rem; font-size: 1rem; }
+  .subindex-card p { font-size: 0.9rem; color: var(--muted); margin: 0.3rem 0 0.6rem; }
+  .subindex-card a { font-size: 0.9rem; }
+
+  /* Missä olet nyt -laatikko */
+  .where-am-i {
+    background: var(--accent-soft);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+  }
+  .where-am-i button {
+    background: var(--accent);
+    color: var(--bg);
+    border: 0;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+  .where-am-i button:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Systeemiajattelu</h1>
+<p class="meta" style="color: var(--muted); font-size: 0.9rem;">Oppimispolku · 30 oppituntia · 119 käsitettä · ~502 500 merkkiä</p>
+
+<h2>Miksi opiskella systeemiajattelua?</h2>
+<p>Systeemiajattelu on kyky nähdä <strong>kokonaisuuksia, kytköksiä ja dynamiikkaa</strong> — ei vain yksittäisiä asioita. Se auttaa ymmärtämään miksi asiat tapahtuvat, miksi muutokset epäonnistuvat, ja missä kannattaa painaa, jos haluaa oikeasti vaikuttaa.</p>
+
+<p>Nykymaailman suurimmat haasteet — ilmastonmuutos, organisaatioiden jähmettyminen, ihmissuhteiden dynamiikka, oman kehon terveys — ovat kaikki systeemisiä ongelmia. Niitä ei ratkaista yksinkertaisilla syy-seuraus-analyyseillä, vaan <em>verkostojen ymmärtämisellä</em>.</p>
+
+<blockquote>"Et voi ymmärtää elävää järjestelmää osiinsa pilkkomalla — elämä syntyy osien <em>välisissä suhteissa</em>." — W. Ross Ashby</blockquote>
+
+<hr>
+
+<div class="where-am-i" id="where-am-i">
+  <strong>Missä olet nyt?</strong>
+  <p id="where-am-i-text">Aloittamassa polkua.Valitse alta jompikumpi polku.</p>
+  <button onclick="localStorage.removeItem('sys-last-visited'); location.reload();">Aloita alusta</button>
+</div>
+
+<h2>Valitse polku</h2>
+
+<div class="path">
+  <h3>Systeemiajattelu 101</h3>
+  <p class="path-meta">Aloittelijalle · 5 oppituntia · noin 2,5 tuntia</p>
+  <p>Yksi oppitunti per alipolku — saat yleiskuvan kaikista viidestä näkökulmasta. Sopii, jos haluat kokeilla systeemiajattelua ilman suurta sitoutumista.</p>
+  <ol class="path-steps">
+    <li><a href="foundations/lessons/0001-mika-on-jarjestelma.html">Foundations 1 — Mikä on järjestelmä?</a></li>
+    <li><a href="methods/lessons/0001-systeemidynamiikan-perusteet.html">Methods 1 — Systeemidynamiikan perusteet</a></li>
+    <li><a href="complexity/lessons/0002-cas.html">Complexity 2 — Kompleksiset sopeutuvat järjestelmät</a></li>
+    <li><a href="cybernetics/lessons/0002-takaisinkytkenta.html">Cybernetics 2 — Takaisinkytkentä</a></li>
+    <li><a href="applications/lessons/0001-keho-systeemina.html">Applications 1 — Keho systeeminä</a></li>
+  </ol>
+  <a href="foundations/lessons/0001-mika-on-jarjestelma.html" class="path-cta">Aloita 101-polku →</a>
+</div>
+
+<div class="path">
+  <h3>Täysi polku</h3>
+  <p class="path-meta">Syventäjälle · 30 oppituntia · noin 12–15 tuntia</p>
+  <p>Kaikki viisi alipolkua järjestyksessä. Suositusjärjestys: foundations → methods → complexity → cybernetics → applications. Jokainen alipolku rakentaa edellisen varaan.</p>
+  <a href="foundations/index.html" class="path-cta">Aloita täysi polku →</a>
+</div>
+
+<hr>
+
+<h2>Alipolut</h2>
+<p>Jokainen alipolku on 6 oppituntia. Ne rakentuvat toistensa varaan — voit edetä vasemmalta oikealle tai hypätä suoraan sinua kiinnostavaan.</p>
+
+<div class="subindex">
+  <div class="subindex-card">
+    <h3><a href="foundations/index.html">Foundations</a></h3>
+    <p>Perusteet: järjestelmä, osat, rajat, takaisinkytkentä, emergenssi, tasapaino.</p>
+    <a href="foundations/index.html">Avaa →</a>
+  </div>
+  <div class="subindex-card">
+    <h3><a href="methods/index.html">Methods</a></h3>
+    <p>Työkalut: systeemidynamiikka, stocks-and-flows, kausaalidiagrammit, Systems Health.</p>
+    <a href="methods/index.html">Avaa →</a>
+  </div>
+  <div class="subindex-card">
+    <h3><a href="complexity/index.html">Complexity</a></h3>
+    <p>Kompleksisuus, CAS, itseorganisoituminen, attraktorit, verkostot, epälineaarisuus.</p>
+    <a href="complexity/index.html">Avaa →</a>
+  </div>
+  <div class="subindex-card">
+    <h3><a href="cybernetics/index.html">Cybernetics</a></h3>
+    <p>Ohjaaminen: takaisinkytkentä, sisäinen malli, Ashbyn laki, Viable System Model.</p>
+    <a href="cybernetics/index.html">Avaa →</a>
+  </div>
+  <div class="subindex-card">
+    <h3><a href="applications/index.html">Applications</a></h3>
+    <p>Käytäntö: keho, ihmissuhteet, organisaatiot, yhteiskunta, planeetta, systeeminen silmä.</p>
+    <a href="applications/index.html">Avaa →</a>
+  </div>
+  <div class="subindex-card">
+    <h3><a href="concepts/index.html">Concepts</a></h3>
+    <p>119 käsitettä aakkosjärjestyksessä — wiki-tyylinen hakemisto.</p>
+    <a href="concepts/index.html">Avaa →</a>
+  </div>
+</div>
+
+<hr>
+
+<h2>Suositusjärjestys</h2>
+<p>Tämä polku on rakennettu niin, että jokainen oppitunti rakentaa edellisen varaan. Suositusjärjestys:</p>
+
+<ol>
+  <li><strong>Foundations</strong> — ymmärrä peruskäsitteet (järjestelmä, osat, rajat, takaisinkytkentä, emergenssi).</li>
+  <li><strong>Methods</strong> — opi työkalut (stocks-and-flows, kausaalidiagrammit).</li>
+  <li><strong>Complexity</strong> — laajenna kompleksisiin ilmiöihin (CAS, itseorganisoituminen, verkostot).</li>
+  <li><strong>Cybernetics</strong> — opi säätelyn logiikka (takaisinkytkentä, VSM, monimuotoisuus).</li>
+  <li><strong>Applications</strong> — sovella kaikkea opittua (keho, organisaatiot, planeetta).</li>
+</ol>
+
+<p>Tämä järjestys ei ole pakollinen — voit hypätä suoraan sinua kiinnostavaan alipolkuun. Mutta täysi polku tuottaa syvimmän ymmärryksen, koska työkalut karttuvat kerroksittain.</p>
+
+<hr>
+
+<p style="color: var(--muted); font-size: 0.85rem; margin-top: 3rem;">Polku on suunniteltu itseopiskeluun. Jokaisen oppitunnin lopussa on reflektiokysymyksiä ja mahdollisuus kopioida vastaukset leikepöydälle.</p>
+
+<script>
+// Missä olet nyt -seuranta
+(function() {
+  var key = 'sys-last-visited';
+  var text = document.getElementById('where-am-i-text');
+  var last = localStorage.getItem(key);
+  if (last) {
+    text.innerHTML = 'Viimeksi vierailit: <a href="' + last + '">' + last.replace(/^.*\//, '') + '</a>. Jatka siitä, tai aloita alusta alta.';
+  }
+  // Tallenna klikatut linkit
+  document.querySelectorAll('a[href$=".html"]').forEach(function(a) {
+    a.addEventListener('click', function() {
+      try { localStorage.setItem(key, a.getAttribute('href')); } catch(e) {}
+    });
+  });
+})();
+</script>
+
+</main>
+</body>
+</html>

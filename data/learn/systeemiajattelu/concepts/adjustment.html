@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: adjustment</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>adjustment</h1>
+  <p class="meta">Käsite · systeemiajattelu · kontroliteoria · tasapainon palauttaminen</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Adjustment</strong> (säätö, korjausliike) on systeemin vaste <a href="disturbance.html">disturbanceen</a>: korjaava liike, jolla systeemi palauttaa tasapainonsa, sopeutuu uuteen tilaan tai muuttaa rakennettaan. Käsite on klassisen <a href="control-theory.html">kontroliteorian</a> peruskäsite ja <a href="general-systems-theory.html">yleisen systeemiteorian</a> keskeinen dynaaminen elementti.</p>
+
+  <p>Adjustment on disturbance-käsitteen pari. Niitä ei voi ymmärtää erillään: jokainen disturbance synnyttää adjustmentin, ja jokainen adjustment muuttaa systeemin herkkyyttä tuleville disturbanceille. Tämä kahden käsitteen muodostama pari on <a href="systems-thinking.html">systeemiajattelun</a> dialektinen ydin.</p>
+
+  <p>Adjustment voidaan luokitella kolmeen tyyppiin:</p>
+  <ul>
+    <li><strong>Palauttava säätö</strong> (restorative) — systeemin paluu entiseen tasapainoon.</li>
+    <li><strong>Sopeuttava säätö</strong> (adaptive) — systeemin hienosäätö uuteen tasapainoon.</li>
+    <li><strong>Rakenteellinen säätö</strong> (structural) — systeemin rakenteen muutos, jotta uusi tasapaino löytyy.</li>
+  </ul>
+
+  <h2>Alkuperä</h2>
+  <p>Adjustment-käsite vakiintui 1940-luvun kybernetiikassa. <a href="control-theory.html">Norbert Wiener</a> kuvasi säätöpiirin periaatteen, jossa <a href="receptor.html">reseptori</a> mittaa, <a href="comparator.html">komparaattori</a> vertaa asetusarvoon ja <a href="effector.html">efektori</a> tuottaa adjustment-liikkeen. <a href="control-systems-engineering.html">W. R. Ashby</a> laajensi käsitteen <em>requisite variety</em> -periaatteella: systeemin säätökapasiteetin tulee vastata ympäristön häiriöiden moninaisuutta.</p>
+
+  <p>Ayyadurain viitekehyksessä adjustment saa syvän merkityksen. Hänen mukaansa ayurvedan hoito, joogaharjoitus ja meditaatio ovat kaikki adjustment-liikkeitä — ne ovat tapoja, joilla ihminen (tai yhteisö) säätää itseään kohti <a href="natural-systems-state.html">luonnollista systeemitilaa</a>. Dosha-epätasapainon korjaaminen ruokavaliolla, yrteillä, <a href="pranayama.html">pranayamalla</a> ja <a href="asana.html">asanalla</a> on klassinen adjustment. Samoin mielen koulutus, sosiaalinen konfliktien ratkaisu ja ekologinen ennalistaminen.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="adjustment.html">adjustment</a> itse — tämän sivun käsite.</li>
+    <li><a href="disturbance.html">disturbance</a> — adjustmentin sysäys, sen synnyttäjä.</li>
+    <li><a href="equilibrium.html">equilibrium</a> — tila, jota adjustment tavoittelee.</li>
+    <li><a href="homeostasis.html">homeostasis</a> — biologinen adjustment-mekanismi.</li>
+    <li><a href="negative-feedback.html">negative-feedback</a> — adjustmentin yleisin säätösilmukka.</li>
+    <li><a href="positive-feedback.html">positive-feedback</a> — adjustment, joka vahvistaa poikkeamaa (erikoistapaus).</li>
+    <li><a href="control-loop.html">control-loop</a> — adjustmentin toteuttava silmukka.</li>
+    <li><a href="cybernetic-loop.html">cybernetic-loop</a> — klassinen kyberneettinen säätöpiiri.</li>
+    <li><a href="requisite-variety.html">requisite-variety</a> — adjustment-kapasiteetin riittävyyden laki.</li>
+    <li><a href="resilience.html">resilience</a> — adjustment-kapasiteetin mittari.</li>
+    <li><a href="self-organization.html">self-organization</a> — adjustment ilman ulkoista ohjausta.</li>
+    <li><a href="natural-systems-state.html">natural-systems-state</a> — tila, johon adjustment tähtää.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Adjustment esitellään <a href="../lessons/control-systems.html">control systems</a> -oppitunnilla klassisen säätöteorian yhteydessä ja <a href="../lessons/homeostasis.html">homeostaasi</a>-oppitunnilla biologisena vasteena. Ayyadurain viitekehyksessä käsite on keskeinen <a href="../lessons/ayurveda-and-systems-thinking.html">ayurveda ja systeemiajattelu</a> -oppitunnilla sekä <a href="../lessons/integrated-systems-state.html">ISS-tilan</a> dynamiikassa.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Wiener, N. (1948) — <em>Cybernetics</em>.</li>
+    <li>Ashby, W. R. (1956) — <em>An Introduction to Cybernetics</em>.</li>
+    <li>Buckley, W. (1968) — <em>Modern Systems Research for the Behavioral Scientist</em>.</li>
+    <li>Ayyadurai, V. C. — <em>The Intelligent System of the Universe</em>, <em>Vellamami</em>, <em>Decoding Reality</em>.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/adjustment.html" class="wikilink" data-concept="adjustment">adjustment</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a></li>
+  </ul>
+</main>
+</body>
+</html>

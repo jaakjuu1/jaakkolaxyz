@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005-emergenssi — Emergenssi</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Perusteet</a> · Oppitunti 0005/6</p>
+  <h1>Emergenssi</h1>
+  <p class="lede">Kokonaisuus on enemmän kuin osiensa summa. Se 'enemmän' on emergenssi — uusi laatu, joka syntyy vain vuorovaikutuksessa.</p>
+
+  <p>Järjestelmän osat ovat olemassa, mutta jokin <em>muu</em> syntyy niiden yhteisvaikutuksesta. Tuo "jokin muu" on <strong>emergenssi</strong> (emergence) — ehkä mystisin ja silti konkreetein systeemiajattelun käsite.</p>
+
+  <p>Emergenssi selittää, miksi maailmassa on jatkuvasti uutta, jota ei voi ennustaa pelkistä osista. Se selittää tietoisuuden, markkinat, säät, elämän itse.</p>
+
+  <h2>Määritelmä</h2>
+
+  <p><strong>Emergenssi</strong> tarkoittaa: järjestelmän tasolla syntyy ominaisuuksia, joita <em>yksikään sen osa ei yksinään omaa</em>. Nämä ominaisuudet eivät ole löydettävissä osia tutkimalla — ne syntyvät <em>vain kokonaisuuden vuorovaikutuksessa</em>.</p>
+
+  <p><strong>Esimerkki — vesi:</strong></p>
+
+  <ul>
+    <li>Vety: kevyt, räjähtävä kaasu.</li>
+    <li>Happi: tarvitaan palamaan, tukee palamista.</li>
+    <li>Vesi (H₂O): kumpaakaan ominaisuutta ei ole. Vesi ei ole räjähtävä eikä se tue palamista — se <em>sammuttaa</em> tulen.</li>
+  </ul>
+
+  <p>Veden "märkyys" — kyky kostuttaa, liuottaa, juoda — on emergentti ominaisuus. Se ei ole vedyssä eikä hapessa. Se syntyy <em>nimenomaan</em> niiden yhdistyessä.</p>
+
+  <p><strong>Toinen esimerkki — liikenne:</strong></p>
+
+  <ul>
+    <li>Yksittäinen auto: metallilaatikko, joka kuljettaa 1–5 ihmistä.</li>
+    <li>Tuhansien autojen järjestelmä: <em>ruuhka</em>. Ruuhka ei ole yhdenkään auton ominaisuus — se syntyy vain yhteisvaikutuksesta.</li>
+  </ul>
+
+  <p>Ruuhka on emergentti ilmiö. Et voi nähdä sitä autossa, mutta et voi myöskään nähdä sitä ilman autoja.</p>
+
+  <h2>Miksi emergenssi on tärkeä</h2>
+
+  <p>Emergenssi on käsite, joka erottaa systeemiajattelun pelkästä reductionismista.</p>
+
+  <p><strong>Reductionismi</strong> — vallitseva tieteellinen menetelmä — uskoo, että kokonaisuus selitetään täysin osiensa kautta. Kaikki biologian ilmiöt selitetään kemialla, kaikki kemia fysiikalla, kaikki fysiikka hiukkasfysiikalla.</p>
+
+  <p><strong>Systeemiajattelu</strong> — ja erityisesti emergenssi-käsite — sanoo: <em>reductionismi on oikeassa siinä, että osat ovat olemassa, mutta väärässä siinä, että ne selittävät kaiken</em>. On olemassa kokonaisuuden tason ilmiöitä, joita ei voi palauttaa osiin.</p>
+
+  <blockquote>
+    <p>"The whole is more than the sum of its parts." — Aristoteles, <em>Metafysiikka</em></p>
+  </blockquote>
+
+  <p>Aristoteles tarkoitti: kokonaisuus on <em>enemmän kuin</em> osiensa summa. Tuo "enemmän" on emergenssi. Se on se, mitä pelkkä summaus ei tavoita.</p>
+
+  <h2>Emergenssi vs. pelkkä monimutkaisuus</h2>
+
+  <p>Termiä käytetään joskus huolimattomasti. Emergenssi ei ole mikä tahansa "monimutkainen" ilmiö. Emergenssi on <em>tunnistamaton</em> osista — se on <em>uutta laatua</em>, ei vain suurta määrää.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Ei-emergentti monimutkaisuus</h3>
+      <p>Suuri palapeli: tuhat palaa, jotka yhdistettynä muodostavat kuvan. Kuva ei ole emergentti — se on <em>suunniteltu</em> kokonaisuus, ja jokainen pala on pala suunnitelmasta.</p>
+    </div>
+    <div class="col">
+      <h3>Aito emergenssi</h3>
+      <p>Muurahaisyhdyskunta: miljoona yksinkertaista muurahaista, joista yhdyskunta syntyy ilman keskussuunnittelua. Yhdyskunnan käyttäytyminen ei ole kenenkään yksittäisen muurahaisen ominaisuus.</p>
+    </div>
+  </div>
+
+  <p>Jako ei ole aina selkeä, ja se on kiistanalaista. Mutta ero on olemassa: <em>suunniteltu kokonaisuus</em> on selitettävissä osista, <em>itseorganisoitunut kokonaisuus</em> ei.</p>
+
+  <h2>Heikko ja vahva emergenssi</h2>
+
+  <p>Filosofiassa erotetaan kaksi astetta:</p>
+
+  <ul>
+    <li><strong>Heikko emergenssi</strong> — kokonaisuuden ominaisuus on periaatteessa selitettävissä osista, mutta vain valtavalla laskennalla. Esimerkki: sään ennustaminen perustuen ilmakehän perusyhtälöihin. Periaatteessa selitettävissä, käytännössä mahdotonta.</li>
+    <li><strong>Vahva emergenssi</strong> — kokonaisuuden ominaisuus ei ole <em>periaatteessakaan</em> selitettävissä osista. Esimerkki: tietoisuus. Tietoinen kokemus ei palaudu neuroneihin — on kiistanalaista, voiko se koskaan palautua.</li>
+  </ul>
+
+  <p>Arkikäytännössä: heikko emergenssi on yleisin. Esimerkiksi liikenteen ruuhka, markkinahinnat, ekosysteemin tasapaino. Nämä ovat <em>teoriassa</em> selitettävissä osista, mutta <em>käytännössä</em> ennustaminen on mahdotonta ilman kokonaisuuden tason mallia.</p>
+
+  <h2>Emergenssi luonnossa</h2>
+
+  <p>Emergenssi on kaikkialla luonnossa:</p>
+
+  <ul>
+    <li><strong>Elämä:</strong> molekyylit eivät ole eläviä, mutta solu on. Elämä syntyy emergenttina ilmiönä molekyylien monimutkaisesta vuorovaikutuksesta.</li>
+    <li><strong>Tietoisuus:</strong> yksittäinen neuroni ei ole tietoinen, mutta aivot ovat. Tietoisuus on emergentti ilmiö.</li>
+    <li><strong>Vesi:</strong> "märkyys" on emergentti ominaisuus H-O-H -sidoksessa.</li>
+    <li><strong>Myrsky:</strong> yksittäinen ilmamolekyyli ei ole myrsky, mutta riittävän tiheässä vuorovaikutuksessa syntyy pyörteitä.</li>
+  </ul>
+
+  <p>Nämä eivät ole "jumalallista" mystiikkaa — ne ovat <em>mekanismeja</em>, joissa paikallisten vuorovaikutusten kautta syntyy globaaleja rakenteita.</p>
+
+  <h2>Emergenssi yhteiskunnassa</h2>
+
+  <p>Sama periaate pätee ihmisten järjestelmiin:</p>
+
+  <ul>
+    <li><strong>Kieli:</strong> yksikään aivosolusi ei puhu suomea, mutta sinä puhut. Kieli on emergentti kyky.</li>
+    <li><strong>Markkinat:</strong> yksikään ostaja tai myyjä ei määrää hintaa, mutta hinta syntyy. Hinta on emergentti ilmiö.</li>
+    <li><strong>Kulttuuri:</strong> yksikään ihminen ei määrää tapoja, mutta tavat syntyvät ja muuttuvat. Kulttuuri on emergentti.</li>
+    <li><strong>Lait:</strong> yksikään kansalainen ei ole "lait", mutta lait ohjaavat käyttäytymistä. Ne ovat emergenttejä.</li>
+  </ul>
+
+  <p>Tämä on tärkeä: <strong>emergenttejä ilmiöitä ei voi suoraan ohjata, mutta niitä voi ohjata epäsuorasti</strong>. Et voi määrätä kielioppia — kieli kehittyy itse. Mutta voit vaikuttaa kielenkäyttäjiin (koulutus, media, esimerkki).</p>
+
+  <h2>Mikä ei ole emergenssiä</h2>
+
+  <p>On tärkeää nähdä, mikä <em>ei</em> ole emergenssiä, jotta käsite säilyy terävänä:</p>
+
+  <ul>
+    <li><strong>Suunniteltu lopputulos</strong> — kokoonpantu laite, rakennus, organisaatiokaavio. Nämä ovat emergenttejä <em>suhteessa</em> osiin, mutta suunniteltuja.</li>
+    <li><em>Puhdas summaus</em> — väestön keski-ikä, bruttokansantuote. Nämä ovat aggregaatteja, eivät emergenttejä ilmiöitä.</li>
+    <li><strong>Deterministinen kausaalisuus</strong> — jos jokainen syy-seuraus-suhde tunnetaan, mitään "uutta" ei synny.</li>
+  </ul>
+
+  <p>Emergenssi syntyy <em>vuorovaikutuksessa</em>, ei pelkässä rinnakkainolossa.</p>
+
+  <h2>Miksi tämä on vaikeaa</h2>
+
+  <p>Emergenssi on vaikea käsite, koska se rikkoo meidän intuitiomme. Me haluamme selityksiä, jotka palautuvat yksinkertaisempaan. Emergenssi sanoo: joskus selitys on <em>kokonaisuudessa</em>, ei osissa.</p>
+
+  <p>Tämä ei ole mysticismiä eikä epätieteellisyyttä. Se on havainto siitä, miten maailma on rakentunut. Emergenssi on mekanismi, ei mysteeri — mutta se on mekanismi, jota emme voi aina ennustaa osista.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Etsi kolme emergenttiä ilmiötä jokapäiväisestä elämästäsi.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi ilmiö, jota et voi selittää yhdellä tekijällä, vaan joka syntyy monen yhteisvaikutuksesta?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. työpaikan ilmapiiri, jonkin tietyn musiikkikappaleen tunnelma, kaupunginosan maine..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat tämän ilmiön osat? Mitkä ovat niiden väliset vuorovaikutukset, jotka tuottavat kokonaisuuden?</label>
+      <textarea id="q2" rows="3" placeholder="Yritä luetella vähintään neljä osaa ja kaksi vuorovaikutusta..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos haluaisit vaikuttaa tähän emergenttiin ilmiöön, et voi muuttaa sitä suoraan. Miten voisit muuttaa osia tai vuorovaikutuksia?</label>
+      <textarea id="q3" rows="3" placeholder="Tämä on emergentin ohjaamisen taito — vaikuttamalla osiin, ei kokonaisuuteen..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Emergenttien ilmiöiden tunnistaminen on se taito, joka erottaa systeemisen ajattelun mekaanisesta.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — tämän oppitunnin ydinkäsite</li>
+    <li><a href="../../concepts/emergent-properties.html" class="wikilink" data-concept="emergent-properties">emergent-properties</a> — kokonaisuuden tason ominaisuudet</li>
+    <li><a href="../../concepts/holism.html" class="wikilink" data-concept="holism">holism</a> — kokonaisuus edellä -näkemys</li>
+    <li><a href="../../concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a> — palauttaminen osiin</li>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — ilman keskussuunnittelua syntyvä järjestys</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — sopeutuva järjestelmä</li>
+    <li><a href="../../concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — monimutkaisuuden tutkimus</li>
+    <li><a href="../../concepts/behavior.html" class="wikilink" data-concept="behavior">behavior</a> — järjestelmän havaittu käyttäytyminen</li>
+    <li><a href="../../concepts/system.html" class="wikilink" data-concept="system">system</a> — kokonaisuus, josta emergenssi syntyy</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0004-takaisinkytkenta.html">← Takaisinkytkentä</a>
+    <a class="next" href="0006-tasapaino-ja-muutos.html">Seuraava oppitunti: Tasapaino ja muutos →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Aristoteles — <em>Metafysiikka</em> (~350 eaa.); Philip Clayton — <em>Mind and Emergence</em> (Oxford, 2004); Stuart Kauffman — <em>At Home in the Universe</em> (Oxford, 1995); John Holland — <em>Emergence</em> (Perseus, 1998).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

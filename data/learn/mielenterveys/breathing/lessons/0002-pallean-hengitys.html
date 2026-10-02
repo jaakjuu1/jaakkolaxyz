@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — Palleahengitys</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Palleahengitys</h1>
+  <p class="meta">Oppitunti 0002 · ~8 min · harjoittelu</p>
+
+  <p>Tämä on tämän polun ensimmäinen oikea harjoitus. Ei teorioita — vain yksi lihas, kolme asentoa, ja tapa havaita toimiiko se. Käytä tähän oppituntiin <em>vähintään 10 minuuttia</em>.</p>
+
+  <h2>Missä pallea oikeasti on?</h2>
+
+  <p>[[Diaphragm|Pallea]] (latinaksi <em>diaphragma</em>) on kuvun muotoinen lihas, joka erottaa rintakehän vatsaontelosta. Se kiinnittyy:</p>
+
+  <ul>
+    <li><strong>Etupuolelta</strong> — rintalastan alaosaan (processus xiphoideus).</li>
+    <li><strong>Sivuilta</strong> — kuuden alimman kylkiluun sisäpintaan.</li>
+    <li><strong>Takaa</strong> — selkärankaan lannerangan yläosaan (L1–L3) jännekautta (crus dextrum ja sinistrum).</li>
+  </ul>
+
+  <p>Pallean yläpinta on rintakehän puolella, alapinta vatsaontelon puolella. Lepotilassa se on <em>kuvun muotoinen, ylöspäin kaartuva</em>. Kun se supistuu, kupu laskee alaspäin ja litistyy — samalla rintakehän tilavuus kasvaa ja ilma virtaa sisään.</p>
+
+  <p>Hermotus tulee <strong>phrenicus-hermosta</strong> (C3–C5), joka lähtee kaulan yläosasta. Tämä on anatomisesti merkittävää: <em>C3, C4, C5 pitävät pallean elossa — samat segmentit, jotka hermottavat olkapäätä ja kättä</em>. Siksi hartiajännitys ja pallean toiminta kytkeytyvät toisiinsa.</p>
+
+  <blockquote>
+    Pallea ei ole pelkkä hengityslihas. Se on keskeinen osa ydintä (core), vaikuttaa selän stabiliteettiin, vatsaontelon paineeseen ja jopa laskimoveren paluuseen sydämeen.
+  </blockquote>
+
+  <h2>Miksi et ehkä tunne sitä</h2>
+
+  <p>Jos olet hengittänyt rintakehällä vuosia, pallea on voinut "jäätyä" yläasentoonsa. Se on ylijännittynyt ja alikehittynyt samaan aikaan — paradoksaalinen tila, jossa lihas on jatkuvasti virittynyt mutta ei toimi kunnolla. Yleisiä syitä:</p>
+
+  <ul>
+    <li>Stressi ja ahdistus (krooninen sympaattinen tonus nostaa palleaa).</li>
+    <li>Istumatyö (lonkat ja lantio kiristyvät, pallea joutuu kompensoimaan).</li>
+    <li>Ahtaat vaatteet (kiristävät vyötäröltä).</li>
+    <li>Huono ryhti (yläselän kyfoosi estää kylkiluiden avautumisen).</li>
+  </ul>
+
+  <p>Totuus on, että <strong>palleahengitystä ei tarvitse opetella — se on jo sinussa</strong>. Sinun tarvitsee vain lakata häiritsemästä sitä.</p>
+
+  <hr>
+
+  <h2>Harjoitus 1 — Selinmakuu</h2>
+
+  <p>Tämä on helpoin ja usein tehokkain asento. Pallea toimii vapaasti, selkäranka on tuettu, ja voit keskittyä pelkästään hengitykseen.</p>
+
+  <ol>
+    <li><strong>Asento:</strong> selinmakuulle, polvet koukussa, jalkapohjat lattiassa. Pää tukee lattiaa, ei tyynyä (tai ohut tyyny). Kädet vartalon vierellä, kämmenet ylöspäin.</li>
+    <li><strong>Ennen hengitystä:</strong> kallista lantiota niin, että alaselkä painuu kevyesti kohti lattiaa (lannerangan lordoosi oikenee). Tämä vapauttaa pallean alaselkäkiinnityksen.</li>
+    <li><strong>Sisäänhengitys:</strong> nenän kautta, 4 sekuntia. Kuvittele, että ilma menee vatsaan, ei rintaan. Anna vatsan pullistua eteenpäin, sivuille ja taakse. Rintakehä liikkuu vain hieman.</li>
+    <li><strong>Uloshengitys:</strong> suun kautta kevyesti huuliraolla ("fuuh"), 6 sekuntia. Anna vatsan palata alas. Tunne, miten pallea nousee takaisin ylös — voit auttaa kevyesti vetämällä vatsaa sisään alaviistoon.</li>
+    <li><strong>Toisto:</strong> 6–8 kierrosta. Pidä tauko, jos tuntuu epämukavalta.</li>
+  </ol>
+
+  <p>Tarkistus: <em>jos rintakehäsi liikkuu enemmän kuin vatsasi, palaa kohtaan 1.</em></p>
+
+  <h2>Harjoitus 2 — Istuen</h2>
+
+  <p>Kun selinmakuu sujuu, siirry istumaan. Tämä on vaikeampaa, koska painovoima vetää vatsaonteloa alaspäin ja pallean on työskenneltävä enemmän.</p>
+
+  <ol>
+    <li><strong>Asento:</strong> tuolilla, jalat lattiassa, lantio keskellä. Selkä irti selkänojasta (tai vain kevyesti kiinni). Pää suoraan, leukakulma vaakatasossa.</li>
+    <li><strong>Ennen hengitystä:</strong> ojenna selkä niin, että kruunu nousee kohti kattoa. Tunne kylkiluiden avautuvan sivuille — tämä vapauttaa pallean yläkiinnityksen.</li>
+    <li><strong>Sisäänhengitys:</strong> nenän kautta, 4 sekuntia. Vatsa pullistuu, kylkiluut avautuvat sivuille. Voit kokeilla laittaa kädet kylkiin — tunne, miten ne erkanevat.</li>
+    <li><strong>Uloshengitys:</strong> suun kautta, 6 sekuntia. Vatsa palautuu, kylkiluut sulkeutuvat.</li>
+    <li><strong>Toisto:</strong> 6–8 kierrosta.</li>
+  </ol>
+
+  <p>Jos hartiat nousevat, ne ovat apulihaksia — rentouta ne tietoisesti. Voit tehdä olkapäille yhden pyöräytyksen ennen harjoitusta.</p>
+
+  <h2>Harjoitus 3 — Seisten</h2>
+
+  <p>Tämä on toiminnallisin asento. Jos osaat hengittää oikein seisten, osaat tehdä sen missä vain — työpaikalla, kaupassa, jonossa.</p>
+
+  <ol>
+    <li><strong>Asento:</strong> seisten, jalat noin lantion leveydellä. Polvet pehmeästi koukussa (ei lukossa). Lantio keskitasossa — ei eteen, ei taakse.</li>
+    <li><strong>Ennen hengitystä:</strong> tunne jalkapohjien kontakti lattiaan. Paino tasaisesti koko jalalla. Anna lantion "roikkua" lonkista — kuvittele, että häntäluu on painava.</li>
+    <li><strong>Sisäänhengitys:</strong> nenän kautta, 4 sekuntia. Vatsa liikkuu, kylkiluut avautuvat.</li>
+    <li><strong>Uloshengitys:</strong> suun kautta, 6 sekuntia. Voit kuvitella, että ilma virtaa ulos lantionpohjan kautta — tämä aktivoi syvän poikittaisen vatsalihaksen (transversus abdominis) ja tukee palleaa.</li>
+    <li><strong>Toisto:</strong> 6 kierrosta.</li>
+  </ol>
+
+  <p>Seisten tehtävänä etuna on, että huomaat helposti <em>mihin jännität</em> — leukaa, hartioita, pakaroita. Näitä ei tarvitse korjata väkisin, vain huomata.</p>
+
+  <hr>
+
+  <h2>Yleisiä ongelmia ja ratkaisuja</h2>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>"Vatsa ei liiku ollenkaan"</h3>
+      <p>Pallea on jäykistynyt tai pidättelet tahdosta. Kokeile: päästä ilmaa ulos ensin, anna vatsan tyhjentyä kokonaan — sitten sisäänhengitys tulee helpommin.</p>
+    </div>
+    <div class="col right">
+      <h3>"Tunnen vain rintakehän liikkuvan"</h3>
+      <p>Kokeile "hengittää lantionpohjaan" — kuvittele ilma menevän paljon alemmas. Tai laita kirja vatsan päälle: kirjan pitäisi nousta.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>"Paniikki lisääntyy"</h3>
+      <p>Liian syvä hengitys voi laukaista hyperventilaation, etenkin ahdistuneena. Palaa pintaan: lyhyemmät hengitykset, vähemmän toistoja, vähemmän voimaa. 4–6 on vain suositus.</p>
+    </div>
+    <div class="col right">
+      <h3>"Tuntuu tyhmältä"</h3>
+      <p>Tämä on yleistä etenkin miehillä. Muista: et tee mitään eksoottista — käytät lihasta, joka sinulla on jo. Se ei ole mystiikkaa.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Miten usein ja kuinka kauan?</h2>
+
+  <p>Harvard Health suosittelee hengitysharjoituksia <strong>5–10 minuuttia päivittäin</strong>. Tutkimusnäyttö tukee tätä: jo kahden viikon säännöllinen harjoittelu laskee leposykettä ja parantaa HRV:tä.</p>
+
+  <p>Käytännön ohje:</p>
+
+  <ol>
+    <li><strong>Viikot 1–2:</strong> selinmakuu, 5 minuuttia, kerran päivässä.</li>
+    <li><strong>Viikot 3–4:</strong> istuen, 5–7 minuuttia, kerran päivässä.</li>
+    <li><strong>Viikot 5+:</strong> seisten tai liikkeessä, 7–10 minuuttia, kerran päivässä. Lisää tähän tekniikoita (<a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">sama vritti</a>, <a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">visama vritti</a>).</li>
+  </ol>
+
+  <p>Paras aika: <em>aamu ennen puhelinta, tai ilta ennen nukkumaanmenoa</em>. Molemmat ovat hetkiä, jolloin keho on siirtymässä tilasta toiseen — hengitys toimii siltana.</p>
+
+  <hr>
+
+  <h2>Koe itse: kolmen asennon testi</h2>
+
+  <p>Tee kaikki kolme asentoa. Kirjaa havaintosi — tämä kertoo sinulle, missä asennossa olet jo hyvä ja missä tarvitset harjoitusta.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Selinmakuu: pystyitkö hengittämään niin, että vatsa liikkui selvästi? (0=ei, 10=täydellisesti)</label>
+      <textarea id="q1" rows="2" placeholder="Esim. '7 — vatsa liikkui mutta rinta nousi myös paljon'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Istuen: mikä muuttui vaikeammaksi? Mitä huomasit?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'hartiat nousivat sisäänhengityksellä' / 'tuntui helpolta' / 'alaselkä jännittyi'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Seisten: mikä oli yllättävintä?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. 'tunsin kuinka paljon jännitän leukaa' / 'tuntui luonnollisemmalta kuin istuen'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Mihin tämä johtaa?</h2>
+
+  <p>Palleahengitys on <em>kaikkien muiden tekniikoiden pohja</em>. Seuraavat oppitunnit rakentavat tämän päälle:</p>
+
+  <ul>
+    <li><strong>Oppitunti 0003</strong> — <a href="../../concepts/ujjayi.html" class="wikilink" data-concept="ujjayi">nenä-, suu- ja kurkunpään säätö box breathingia varten</a>.</li>
+    <li><strong>Oppitunti 0004</strong> — <a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">sierainten vuorottelu</a>, jossa palleahengitys on automaattinen pohja.</li>
+    <li><strong>Oppitunti 0006</strong> — kaikki yhdistettynä 10 minuutin aamurutiiniksi.</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Harvard Health — <a href="https://www.health.harvard.edu/mind-and-mood/relaxation-techniques-breath-control-helps-quell-errant-stress-response">"Breath control"</a>; NIH — Lehrer et al., <em>"Heart rate variability biofeedback"</em> (2017); Bordoni & Zanier, <em>"Anatomic connections of the diaphragm"</em> (2013); IAYT — <a href="https://www.iayt.org/">Yoga Therapy in Practice</a> -julkaisut.
+  </p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Prāna + āyāma — elämänenergian tietoinen laajentaminen hengityksen kautta</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengityksen liikkeen tietoinen seuraaminen</a></li>
+    <li><a href="../../concepts/diaphragm.html" class="wikilink" data-concept="diaphragm">Kupu-lihas rintakehän ja vatsaontelon välillä — hengityksen päämoottori</a></li>
+    <li><a href="../../concepts/ujjayi.html" class="wikilink" data-concept="ujjayi">Meren kohinaa muistuttava hengitys, jossa kurkunpää on kevyesti suljettu</a></li>
+    <li><a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">Tasainen hengitys, jossa sisään- ja uloshengitys sekä pidot ovat yhtä pitkiä</a></li>
+    <li><a href="../../concepts/bandha.html" class="wikilink" data-concept="bandha">Energialukot — mula, uddiyana ja jalandhara bandha, jotka ohjaavat prānan liikettä</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Tietoinen läsnäolo nykyhetkessä</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Kaikki tekniikat, joissa tietoinen huomio pidetään yhdessä kohteessa</a></li>
+  </ul>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Avaa "Open Focus View" ja hengitä pallealla seuraten animoitua ympyrää.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Open Focus View" — minimalistinen hengitysnäyttö.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#focus" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23focus" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0001-miksi-hengitat.html">← Miksi hengität</a>
+    <a class="next" href="0003-nelion-hengitys.html">Seuraava: Nelión hengitys (box breathing) →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Selinmakuu', '2. Istuen', '3. Seisten'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — Keho alas ennen ajatuksia (DBT STOP &amp; TIPP)</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --green: #3b6b3b;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding-left: 0;
+    margin: 1.2rem 0 1.6rem;
+  }
+  .steps li {
+    counter-increment: step;
+    border-left: 3px solid var(--green);
+    padding: .6rem .9rem .6rem 1.2rem;
+    margin-bottom: .8rem;
+    background: var(--accent-soft);
+    border-radius: 0 4px 4px 0;
+  }
+  .steps li::before {
+    content: counter(step) ". ";
+    font-weight: 700;
+    color: var(--green);
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .warn {
+    background: #fff5e6;
+    border-left: 3px solid #b07000;
+    padding: .9rem 1.1rem;
+    margin: 1.6rem 0;
+    border-radius: 0 4px 4px 0;
+    font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .warn { background: #2a2418; border-left-color: #d49a3a; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Keho alas ennen ajatuksia</h1>
+  <p class="meta">Oppitunti 0002 · ~7 min · työkalu</p>
+
+  <p>Jos keho on tunnekuohun vallassa, järkipuhe ei useinkaan mene perille. Silloin ensimmäinen tehtävä ei ole <em>ajatella selkeästi</em> vaan <em>laskea hermoston kierroksia</em>.</p>
+
+  <p>Tämä on DBT:n (dialektisen käyttäytymisterapian) ydinviesti: kun vireystila on liian korkea, keho ohittaa rationaalisen mielen. Tähän on kaksi yksinkertaista työkalua: <strong>STOP</strong> impulssin katkaisuun ja <strong>TIPP</strong> vireystilan nopeaan laskuun.</p>
+
+  <h2>STOP — katkaise impulssi</h2>
+
+  <p>STOP on tarkoitettu hetkeen, jossa tunne uhkaa viedä sinut impulsiiviseen toimintaan — sanomaan jotain mitä kadut, lähettämään viestin, sulkemaan läppärin, lopettamaan puhelun. Neljä kirjainta, neljä vaihetta:</p>
+
+  <ol class="steps">
+    <li><strong>S</strong>top — pysähdy. Älä toimi vielä. Voit sanoa itsellesi "palaan tähän hetken kuluttua".</li>
+    <li><strong>T</strong>ake a step back — ota askel taakse. Fyysinen: nouset tuolista, menet toiseen huoneeseen. Henkinen: kuvittelet itsesi katsojana tähän hetkeen.</li>
+    <li><strong>O</strong>bserve — huomaa mitä tapahtuu. Mitä ajattelet? Mitä tunnet kehossa? Mitä ympärilläsi tapahtuu?</li>
+    <li><strong>P</strong>roceed mindfully — jatka tietoisesti. Mitä arvojesi mukainen seuraava teko on nyt?</li>
+  </ol>
+
+  <p>Tämä voi kestää 30 sekuntia. Se on tarkoitus. Hitaus on suoja.</p>
+
+  <h2>TIPP — laske vireystila alas</h2>
+
+  <p>Joskus pelkkä pysähtyminen ei riitä. Keho on niin viritetty, että se on ajanut ajatuksen ohi. Silloin TIPP — neljä fysiologista temppua, jotka pakottavat hermoston rauhoittumaan:</p>
+
+  <ul>
+    <li><strong>T — Temperature</strong> (kylmä). Kylmä vesi kasvoille, kädet kylmään veteen, kylmä suihku niskaan. Kylmä ärsyke aktivoi <em>sukellusvastesimen</em> (mammalian dive reflex) ja hidastaa sykettä minuuteissa.</li>
+    <li><strong>I — Intense exercise</strong> (rasitus). Lyhyt ja voimakas — juokse portaita ylös, tee punnerruksia kunnes happi loppuu, kyykkyhyppyjä 30 sekuntia. Tarkoitus on hapenotto, ei kuntoilu.</li>
+    <li><strong>P — Paced breathing</strong> (hengitys). Hengitä sisään 4 sekuntia, ulos 6–8 sekuntia. Pidempää uloshengitystä. Toista kunnes keho rauhoittuu.</li>
+    <li><strong>P — Progressive muscle relaxation</strong> (lihasrentoutus). Jännitä yksi lihasryhmä 5–10 sekuntia (esim. jalat, sitten kädet, sitten hartiat), vapauta. Huomaat eron rentouden ja jännityksen välillä.</li>
+  </ul>
+
+  <blockquote>
+    Tämä on tärkeää, koska monille ihmisille "hyväksy tilanne" on liian korkea vaatimus, jos keho on paniikissa. Ensin säädetään keho, sitten vasta tutkitaan ajatuksia.
+  </blockquote>
+
+  <h2>Milloin käyttää kumpaakin?</h2>
+
+  <p>Helppo erottelu:</p>
+  <ul>
+    <li><strong>STOP</strong> kun tunnet <em>tekemisen pakkoa</em> — haluat sanoa, kirjoittaa, sulkea, lähteä, avata.</li>
+    <li><strong>TIPP</strong> kun keho on <em>fysiologisesti viritetty</em> — sydän hakkaa, kädet tärisevät, hengitys tiheää, hartiat lukossa.</li>
+  </ul>
+
+  <p>STOP ja TIPP eivät sulje toisiaan pois. Usein STOP ensin, sitten TIPP jos keho ei rauhoitu.</p>
+
+  <hr>
+
+  <h2>Tee nyt: kokeile STOP-harjoitusta</h2>
+
+  <p>Tämä harjoitus on tehokkain silloin kun on oikeasti jokin pieni kiire tai ärsytys päällä — kokous, viesti, työtehtävä. Jos sellaista ei ole nyt, voit kokeilla <em>muistista</em> viimeaikaisesta tilanteesta.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Kuvaile tilanne (1–3 lausetta) missä sinun oli vaikea olla toimimatta impulsiivisesti — viime viikolta.</label>
+      <textarea id="q1" rows="3" placeholder="Esimerkki: Slack-viesti pomolta joka ärsytti, halusin vastata heti."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitä teit? Oliko vaihtoehto STOP?</label>
+      <textarea id="q2" rows="3" placeholder="Esimerkki: Vastasin heti. Pidin päivän tauon ennen vastaamista."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos STOP olisi ollut käytettävissä, mikä olisi ollut paras hetki pysähtyä?</label>
+      <textarea id="q3" rows="3" placeholder="Esimerkki: Heti viestin luettuani. 30 sekuntia ennen vastausta."></textarea>
+    </div>
+    <div>
+      <label for="q4">4. Valitse yksi TIPP-menetelmä jota kokeilet seuraavan kerran kun keho on viritetty.</label>
+      <textarea id="q4" rows="2" placeholder="Esimerkki: Kylmä vesi kasvoille. Punnerrukset 30 s. Rauhallinen uloshengitys."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <div class="warn">
+    <strong>Tärkeä rajoitus:</strong> Nämä ovat itsehallintatyökaluja, eivätkä korvaa ammattiapua. Jos sinulla on itsetuhoisia ajatuksia tai toimintakyky on romahtanut pitkäksi aikaa, ota yhteys lääkäriin tai kriisiapuun (esim. <a href="https://mieli.fi">MIELI ry</a> 09 2525 0111).
+  </div>
+
+  <p class="footer-note">
+    Lähteet: dbt.tools — <a href="https://dbt.tools/emotional_regulation/stop.php">STOP-skill</a>; dialecticalbehaviortherapy.com — <a href="https://dialecticalbehaviortherapy.com/distress-tolerance/tipp/">TIPP-menetelmä</a>; Kaiser Permanente — <a href="https://mydoctor.kaiserpermanente.org/ncal/Images/Distress%20Tolerance%20DBT%20Skills_ADA_04232020_tcm75-1598996.pdf">DBT distress tolerance</a>.
+  </p>
+
+  <div class="pager">
+    <a href="0001-hyvaksyminen-ei-ole-luovuttamista.html">← Edellinen: Hyväksyminen ei ole luovuttamista</a>
+    <a class="next" href="../reference/glossary.html">Termit: Glossary →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3'), document.getElementById('q4')];
+  const labels = ['1. Tilanne', '2. Mitä tein', '3. Paras pysähtymisen hetki', '4. Valittu TIPP-menetelmä'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3','q4'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

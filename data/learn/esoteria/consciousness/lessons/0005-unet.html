@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005-unet — Unet ja matkat</title>
+<style>
+:root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+@media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+p { margin: 0.9rem 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+a:hover { border-bottom-color: var(--accent); }
+code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+nav.path a { color: var(--muted); border-bottom: none; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+.reflect h3 { margin-top: 0; }
+.svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+.svg-container svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Tietoisuus</a> › Oppitunti 5</nav>
+
+<h1>Unet ja matkat</h1>
+<p class="meta">Oppitunti 5 / 6 · ~30 min</p>
+
+<h2>Uni temppelinä</h2>
+
+<p><strong>Uni</strong> on yksi tietoisuuden suurimmista mysteereistä — ja samalla jokapäiväisin kokemuksemme. Vietämme kolmanneksen elämästämme unessa, mutta ymmärrämme sitä huonosti.</p>
+
+<p>Hermetrisessä ja shamanistisessa perinteessä uni on <strong>temppeli</strong> — portti toisiin maailmoihin, henkiseen opastukseen, itsensä syvimpien kerrosten kohtaamiseen.</p>
+
+<blockquote>"Uni on pieni kuolema — ja pieni kuolema on suuri uni. Molemmat ovat portteja." — perinteinen sanonta</blockquote>
+
+<h2>Unen vaiheet</h2>
+
+<p>Uni ei ole yhtenäistä — se koostuu <strong>eri vaiheista</strong>:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 300" width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Aaltoileva viiva kuvaamaan unisykliä -->
+  <path d="M 30 150 Q 80 80, 130 150 T 230 150 T 330 150 T 370 150" stroke="#5a8aaa" stroke-width="2" fill="none"/>
+  <!-- Vaiheet -->
+  <!-- Valveilla -->
+  <text x="60" y="200" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia">Valve</text>
+  <text x="60" y="220" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia" font-style="italic">beta</text>
+  <!-- Nukahtaminen -->
+  <text x="140" y="200" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia">Nukahtaminen</text>
+  <text x="140" y="220" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia" font-style="italic">alpha</text>
+  <!-- Kevyt uni -->
+  <text x="220" y="200" text-anchor="middle" fill="#a8b88a" font-size="11" font-family="Georgia">Kevyt uni</text>
+  <text x="220" y="220" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia" font-style="italic">theta</text>
+  <!-- Syvä uni -->
+  <text x="300" y="200" text-anchor="middle" fill="#4a3a8a" font-size="11" font-family="Georgia">Syvä uni</text>
+  <text x="300" y="220" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia" font-style="italic">delta</text>
+  <!-- REM -->
+  <circle cx="370" cy="150" r="12" fill="#d28a72"/>
+  <text x="370" y="155" text-anchor="middle" fill="white" font-size="10" font-family="Georgia" font-weight="bold">R</text>
+  <text x="370" y="200" text-anchor="middle" fill="#d28a72" font-size="11" font-family="Georgia">REM</text>
+  <text x="370" y="220" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia" font-style="italic">näky, uni</text>
+</svg>
+</div>
+
+<h3>REM-uni</h3>
+
+<p><strong>REM</strong> (Rapid Eye Movement) on univaihe, jossa:</p>
+<ul>
+<li>Silmät liikkuvat nopeasti</li>
+<li>Aivot ovat <strong>aktiiviset</strong> — kuin valveilla</li>
+<li>Näemme <strong>unia</strong></li>
+<li>Keho on <strong>halvaantunut</strong> — ettet toimi unia</li>
+</ul>
+
+<p>REM on <strong>portti</strong> tietoisiin uniin ja tietoisuuden laajentamiseen.</p>
+
+<h2>Miksi näemme unia?</h2>
+
+<p>Unien tarkoitusta ei täysin ymmärretä, mutta teorioita on useita:</p>
+
+<h3>1. Muistin järjestely</h3>
+<p>Uni <strong>käsittelee</strong> päivän kokemuksia — siirtää tärkeät pitkäaikaismuistiin, hylkää turhat.</p>
+
+<h3>2. Emotionaalinen käsittely</h3>
+<p>Uni <strong>purkaa</strong> päivän tunnejännitteitä — tämä on tärkeä psyykkinen toiminto.</p>
+
+<h3>3. Symbolinen viestintä</h3>
+<p>Uni <strong>puhuu</strong> symbolien kautta — viestejä alitajunnasta.</p>
+
+<h3>4. Harjoittelu</h3>
+<p>Uni <strong>harjoittelee</strong> taitoja — urheilijat, muusikot, kirurgit hyötyvät unesta.</p>
+
+<h3>5. Tietoisuuden tutkiminen</h3>
+<p>Uni <strong>testaa</strong> tietoisuuden rajoja — mitä on mahdollista kokea.</p>
+
+<h2>Unien symbolit</h2>
+
+<p>Unet <strong>puhuvat symbolien kieltä</strong> — sama unien symboli voi merkitä eri asioita eri ihmisille.</p>
+
+<h3>Yleisiä symboleja</h3>
+
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+<tr style="border-bottom: 1px solid var(--rule);">
+<th>Symboli</th><th>Mahdollisia merkityksiä</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Vesi</strong></td><td>Tunteet, alitajunta, puhdistus</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Tuli</strong></td><td>Muutos, intohimo, transformaatio</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Lentäminen</strong></td><td>Vapaus, korkeampi tietoisuus, irrottautuminen</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Putoaminen</strong></td><td>Kontrollin menetys, epävarmuus</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Talo</strong></td><td>Itse, persoona, elämän rakenne</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Eläin</strong></td><td>Vaistot, voima, arkkityyppi</td>
+</tr>
+<tr>
+<td><strong>Pimeys</strong></td><td>Tuntematon, pelko, syvä tietoisuus</td>
+</tr>
+</table>
+
+<p>Mutta muista: <strong>sinä olet unesi paras tulkitsija</strong>. Symbolit puhuvat sinulle omalla kielelläsi.</p>
+
+<h2>Unipäiväkirja</h2>
+
+<p>Unipäiväkirja on <strong>tehokkain työkalu</strong> unien ymmärtämiseen.</p>
+
+<h3>Näin pidät unipäiväkirjaa</h3>
+
+<ol>
+<li>Pidä <strong>kynä ja paperi</strong> yöpöydällä</li>
+<li>Herätessäsi <strong>heti</strong> — ennen kuin nouset — kirjoita mitä muistat</li>
+<li>Kirjaa <strong>tunnelma</strong> ja värit</li>
+<li>Kirjaa <strong>mitä herätessäsi tunsit</strong></li>
+<li>Kirjoita <strong>assosiaatioita</strong> — mitä uni toi mieleesi?</li>
+</ol>
+
+<p>Tämä tapa kannattaa ottaa <strong>joka aamu</strong> — viikon kuluessa huomaat, että alat muistaa unia paremmin.</p>
+
+<h2>Tietoinen uni (lucid dreaming)</h2>
+
+<p><strong>Tietoinen uni</strong> on uni, jossa tiedät <em>nukkuvasi</em>. Tämä on portti tietoisuuden laajentamiseen.</p>
+
+<h3>Miten oppia tietoinen uni?</h3>
+
+<ol>
+<li><strong>Unipäiväkirja</strong> — lisää tietoisuutta unista</li>
+<li><strong>Realiteettitarkistukset</strong> — kysy päivän aikana "nukunko?" ja katso ympärillesi</li>
+<li><strong>MILT-tekniikka</strong> (Mnemonic Induction of Lucid Dreams) — toista ennen unta "tunnen, kun nukun"</li>
+<li><strong>WBTB-tekniikka</strong> (Wake Back To Bed) — herää 5 tunnin jälkeen, valvo 30 min, nuku takaisin</li>
+</ol>
+
+<h3>Mitä tehdä tietoisessa unessa?</h3>
+
+<p>Kun olet tietoinen unessa, voit:</p>
+<ul>
+<li><strong>Tutkia</strong> — katso ympärillesi tarkasti</li>
+<li><strong>Liikkua</strong> — lennä, ui, kulje</li>
+<li><strong>Tavata</strong> — sisäisiä opettajia, arkkityyppejä</li>
+<li><strong>Harjoitella</strong> — vaikeita tilanteita turvallisesti</li>
+<li><strong>Kysyä</strong> — "mitä minun tulee tietää?"</li>
+</ul>
+
+<h2>Shamaaninen matka</h2>
+
+<p><strong>Shamaaninen matka</strong> on tietoisen unen kaltainen tila — tarkoituksellinen matka "toiseen maailmaan".</p>
+
+<h3>Kolme maailmaa</h3>
+
+<p>Shamaaninen perinne jakaa todellisuuden <strong>kolmeen maailmaan</strong>:</p>
+
+<ul>
+<li><strong>Ylämaailma</strong> — henkioppaat, jumaluudet, korkeampi tietoisuus</li>
+<li><strong>Keskimaailma</strong> — arkinen todellisuus, mutta henkisesti</li>
+<li><strong>Alamaailma</strong> — voimaeläimet, esi-isät, syvät voimat</li>
+</ul>
+
+<h3>Matkaan lähtö</h3>
+
+<ol>
+<li>Asetu hiljaisuuteen</li>
+<li>Käytä <strong>rummunlyöntiä</strong> tai muuta tasaista rytmiä (n. 3-4 lyöntiä/sekunti)</li>
+<li>Visualisoi <strong>portti</strong> — puu, luola, vesi</li>
+<li>Astu portin läpi</li>
+<li>Seuraa, minne matka vie</li>
+<li>Tapaa, keitä kohtaat</li>
+<li>Palaa kun olet valmis</li>
+<li>Kirjoita kokemus ylös</li>
+</ol>
+
+<h2>Tietoisen unen ja matkan erot</h2>
+
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+<tr style="border-bottom: 1px solid var(--rule);">
+<th></th><th>Tietoinen uni</th><th>Shamaaninen matka</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Tila</strong></td><td>Oikea uni</td><td>Valveilla</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Kesto</strong></td><td>Minuutteja-tunteja</td><td>15-60 min</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Hallinta</strong></td><td>Osittainen</td><td>Täysi</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Tarkoitus</strong></td><td>Tutkiminen</td><td>Parantaminen, opastus</td>
+</tr>
+<tr>
+<td><strong>Riskit</strong></td><td>Väsymys</td><td>Sekoittuminen todellisuuteen</td>
+</tr>
+</table>
+
+<h2>Unien ja matkojen tulkinta</h2>
+
+<p>Kokemuksen <strong>tulkinta</strong> on yhtä tärkeää kuin kokemus itse.</p>
+
+<h3>Kysymyksiä tulkintaan</h3>
+
+<ul>
+<li><strong>Mikä oli tärkein symboli?</strong></li>
+<li><strong>Mitä tunsin?</strong> — tunne on avain tulkintaan</li>
+<li><strong>Mikä toistui?</strong> — toistuvat teemat ovat merkityksellisiä</li>
+<li><strong>Keitä tapasin?</strong> — hahmot voivat edustaa sinun osiasi</li>
+<li><strong>Missä olin?</strong> — paikka voi heijastaa mielentilaa</li>
+</ul>
+
+<h2>Yleisiä unien teemoja</h2>
+
+<h3>Ahdistavat unet</h3>
+<p>Usein <strong>käsittelevät</strong> ratkaisemattomia asioita. Ne eivät ole "pahoja" — ne ovat <em>prosessointia</em>.</p>
+
+<h3>Toistuvat unet</h3>
+<p>Osoittavat <strong>toistuvia teemoja</strong> elämässäsi — sama oppitunti, jota et ole vielä oppinut.</p>
+
+<h3>Selvät unet</h3>
+<p>Osoittavat <strong>voimakasta tietoisuutta</strong> — hyvä merkki valveillakin.</p>
+
+<h3>Lentämisunet</h3>
+<p>Liittyvät <strong>vapauden tunteeseen</strong> tai sen kaipuuseen.</p>
+
+<h3>Vesiunet</h3>
+<p>Liittyvät <strong>tunteisiin</strong> — myrskyiset vedet = myrskyiset tunteet.</p>
+
+<h2>Varoitukset</h2>
+
+<p>Unet ja matkat ovat <strong>voimakkaita</strong> työkaluja, ja niihin liittyy riskejä:</p>
+
+<ul>
+<li><strong>Älä paastoa liikaa</strong> — nälkä heikentää harkintaa</li>
+<li><strong>Pidä maadoitus</strong> — syö, juo, liiku, ole toisten kanssa</li>
+<li><strong>Älä usko kaikkea</strong> — unet ovat symboleja, eivät kirjaimellisia totuuksia</li>
+<li><strong>Jos olet epävarma</strong>, keskustele kokeneemman harjoittajan kanssa</li>
+</ul>
+
+<h2>Yömeditaatio</h2>
+
+<p>Voit tehdä meditaation <strong>juuri ennen unta</strong>:</p>
+
+<ol>
+<li>Aseta intentio: "muistan uneni"</li>
+<li>Toivota selvä uni</li>
+<li>Visualisoi ovi, joka avautuu</li>
+<li>Anna itsesi <em>liukua</em> uneen tietoisena</li>
+<li>Herätessäsi, muistuta itseäsi päiväkirjasta</li>
+</ol>
+
+<h2>Unien voima</h2>
+
+<p>Unet ovat <strong>voimakkaita</strong>, koska ne puhuvat suoraan <em>alitajunnalle</em>. Ne voivat:</p>
+
+<ul>
+<li><strong>Opastaa</strong> päätöksissä</li>
+<li><strong>Parantaa</strong> emotionaalisia haavoja</li>
+<li><strong>Ratkaisa</strong> ongelmia tietoisesti ajattelematta</li>
+<li><strong>Yhdistää</strong> syvempiin tietoisuuden tasoihin</li>
+</ul>
+
+<h2>Yhteenveto</h2>
+
+<p>Uni on temppeli — portti toisiin maailmoihin ja itsemme syvimpiin kerroksiin. REM-uni on portti tietoisiin uniin. Unet puhuvat symbolien kieltä — ja sinä olet paras tulkitsijasi. Unipäiväkirja on tehokkain työkalu unien ymmärtämiseen. Tietoinen uni on uni, jossa tiedät nukkuvasi — sitä voi oppia harjoittelulla. Shamaaninen matka on tarkoituksellinen matka "toiseen maailmaan" valveilla. Tulkinnassa tunne on avain — mikä toistuu, keitä tapaat, missä olet. Unet voivat opastaa, parantaa ja yhdistää. Tärkeintä on <strong>kuunnella</strong>.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Harjoitus: Unipäiväkirja (21 päivää)</h3>
+<ol>
+<li>Pidä <strong>kynä ja paperi</strong> yöpöydällä</li>
+<li>Herätessäsi <strong>heti</strong>, kirjoita mitä muistat</li>
+<li>Kirjaa:
+<ul>
+<li>Päivämäärä ja aika</li>
+<li>Unen sisältö (niin tarkasti kuin muistat)</li>
+<li>Tunteet unessa ja herätessä</li>
+<li>Värit, hahmot, paikat</li>
+<li>Assosiaatiot — mitä uni toi mieleesi?</li>
+</ul>
+</li>
+<li>Toista 21 päivän ajan</li>
+<li>Viikon välein lue vanhat unet — huomaat toistuvia teemoja</li>
+</ol>
+<p>21 päivän jälkeen unien muisti paranee huomattavasti, ja alat nähdä <strong>kuvioita</strong>.</p>
+</div>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Muistatko uniasi? Onko sinulla toistuvia unia? Onko yöuni rauhallista vai levotonta? Mitä unet sinulle viestivät — jos mitään? Oletko koskaan kokenut tietoista unta? Mitä haluaisit uniltasi?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..." style="width:100%; min-height:100px; margin-top:0.8rem; padding:0.5rem; font-family:inherit; font-size:0.95rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:4px;"></textarea>
+</div>
+
+</main>
+</body>
+</html>

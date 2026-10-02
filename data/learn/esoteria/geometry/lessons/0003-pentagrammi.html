@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003-pentagrammi — Pentagrammi</title>
+<style>
+  :root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+  .svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+  .svg-container svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Geometria</a> › Oppitunti 3</nav>
+
+<h1>Pentagrammi</h1>
+<p class="meta">Oppitunti 3 / 6 · ~22 min</p>
+
+<h2>Viiden sakaran tähti</h2>
+<p><strong>Pentagrammi</strong> — viisikulmainen tähti — on yksi vanhimmista ja voimakkaimmista symboleista. Se on ollut pyhä Mesopotamiassa, Egyptissä, Kreikassa, keskiajan kristinuskossa, hermetismissä ja länsimaisten esoteeristen perinteiden keskiössä.</p>
+
+<p>Pentagrammi on <strong>viisi viivaa, jotka muodostavat viisi kulmaa ja sulkeutuvat ympyrään</strong>. Se on sekä <em>tähti</em> että <em>piirros</em> — yhtenäinen viiva, joka kulkee viisi kertaa ympäri.</p>
+
+<blockquote>"Pentagrammi on ihmisen symboli — pää, kädet, jalat, jotka säteilevät viiteen suuntaan." — Pythagoras</blockquote>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="200" cy="200" r="180" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.3"/>
+  <polygon points="200.00,30.00 361.68,147.47 299.92,337.53 100.08,337.53 38.32,147.47" stroke="#888" stroke-width="0.8" fill="none" opacity="0.4"/>
+  <polygon points="200.00,30.00 299.92,337.53 38.32,147.47 361.68,147.47 100.08,337.53 200.00,30.00" stroke="#4a3a8a" stroke-width="3" fill="rgba(74,58,138,0.08)" stroke-linejoin="miter"/>
+  <circle cx="200.00" cy="30.00" r="5" fill="#4a3a8a"/>
+  <circle cx="361.68" cy="147.47" r="5" fill="#4a3a8a"/>
+  <circle cx="299.92" cy="337.53" r="5" fill="#4a3a8a"/>
+  <circle cx="100.08" cy="337.53" r="5" fill="#4a3a8a"/>
+  <circle cx="38.32" cy="147.47" r="5" fill="#4a3a8a"/>
+  <text x="200" y="20" text-anchor="middle" fill="#666" font-size="13" font-family="Georgia">Henki</text>
+  <text x="375" y="150" text-anchor="middle" fill="#666" font-size="13" font-family="Georgia">Tuli</text>
+  <text x="320" y="360" text-anchor="middle" fill="#666" font-size="13" font-family="Georgia">Ilma</text>
+  <text x="80" y="360" text-anchor="middle" fill="#666" font-size="13" font-family="Georgia">Vesi</text>
+  <text x="25" y="150" text-anchor="middle" fill="#666" font-size="13" font-family="Georgia">Maa</text>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">Pentagrammi — viiden sakaran tähti</text>
+</svg>
+</div>
+
+<h2>Miksi viisi?</h2>
+
+<p>Viisi on <strong>ensimmäinen luku, joka yhdistää itsensä itseensä</strong>. Tämä kuulostaa abstraktilta, mutta se on konkreettista:</p>
+
+<ul>
+<li><strong>1+1=2</strong> — kaksi on yksinkertainen summa</li>
+<li><strong>2+1=3</strong> — kolme on kolmen summa</li>
+<li><strong>3+1=4</strong> — neljä on neljä</li>
+<li><strong>4+1=5</strong> — viisi on <strong>viiden</strong> summa</li>
+</ul>
+
+<p>Viisi on siis <strong>ensimmäinen luku, joka "tietää" olevansa viisi</strong>. Tämä tekee siitä <em>tietoisuuden symbolin</em> — tietoisuus, joka tuntee itsensä.</p>
+
+<h3>Viisi elementtiä</h3>
+<p>Antiikin kreikkalaiset yhdistivät viisi elementtiin:</p>
+<ul>
+<li>Eetteri (Henki)</li>
+<li>Tuli</li>
+<li>Ilma</li>
+<li>Vesi</li>
+<li>Maa</li>
+</ul>
+
+<p>Pentagrammi sisältää <em>kaikki viisi</em> — se on kokonaisuuden symboli.</p>
+
+<h3>Viisi aistia</h3>
+<p>Ihmisellä on viisi aistia — näkö, kuulo, haju, maku, kosketus. Pentagrammi edustaa <em>täydellistä ihmistä</em>, joka on tietoinen kaikkien aistiensa kautta.</p>
+
+<h3>Kultainen leikkaus</h3>
+<p>Pentagrammin sisällä piilee <strong>kultainen leikkaus</strong> (φ ≈ 1.618). Pentagrammin lävistäjien suhde on täsmälleen φ. Tämä ei ole sattuma — se on yksi niistä "sattumista", jotka osoittavat geometrian <em>universaalisuuden</em>.</p>
+
+<h2>Ihmisen symboli</h2>
+
+<p>Pythagoraan mukaan pentagrammi on <strong>ihmisen symboli</strong> — pää ylhäällä, kädet ja jalat viistosti, viisi sakaraa säteilemässä viiteen suuntaan.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Taustaympyrä -->
+  <circle cx="200" cy="200" r="180" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.3"/>
+  <!-- Pentagrammi -->
+  <polygon points="200.00,30.00 299.92,337.53 38.32,147.47 361.68,147.47 100.08,337.53 200.00,30.00" stroke="#4a3a8a" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Pythagoraan ihminen: pää ylimmän sakaran kohdalla, raajat viistosti -->
+  <!-- Pää (top sakara) -->
+  <circle cx="200" cy="65" r="22" stroke="#4a3a8a" stroke-width="2.5" fill="rgba(74,58,138,0.1)"/>
+  <!-- Vartalo: top-sakarasta alas vasempaan alakulmaan -->
+  <line x1="200" y1="87" x2="100.08" y2="337.53" stroke="#4a3a8a" stroke-width="2.5"/>
+  <!-- Kädet: ylävartalosta oikeaan ja vasempaan yläsakaraan -->
+  <line x1="170" y1="130" x2="361.68" y2="147.47" stroke="#4a3a8a" stroke-width="2.5"/>
+  <line x1="170" y1="130" x2="38.32" y2="147.47" stroke="#4a3a8a" stroke-width="2.5"/>
+  <!-- Toinen jalka: top-sakarasta oikeaan alakulmaan -->
+  <line x1="200" y1="87" x2="299.92" y2="337.53" stroke="#4a3a8a" stroke-width="2.5"/>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">Pythagoraan ihminen pentagrammin sakarat = raajat</text>
+</svg>
+</div>
+
+<p>Tämä yhteys tekee pentagrammin <em>erityisen voimakkaan</em>:</p>
+
+<ul>
+<li>Pää = henkinen tietoisuus</li>
+<li>Kädet = toiminta maailmassa</li>
+<li>Jalat = maadoitus, keho</li>
+<li>Viisi sakaraa = viisi ulottuvuutta</li>
+</ul>
+
+<p>Kun ihminen <em>toteuttaa</em> pentagrammia — elää sen mukaan — hänestä tulee <em>kanoninen ihminen</em>, joka on tasapainossa hengen ja materian välillä.</p>
+
+<h2>Pentagrammin kaksi suuntaa</h2>
+
+<p>Pentagrammin voi piirtää <strong>kahteen suuntaan</strong> — ja suunnilla on väliä.</p>
+
+<h3>Oikea suunta — valoisa pentagrammi</h3>
+<p>Piirretty alhaalta vasemmalta ylös ja alas: yksi sakara osoittaa <em>ylöspäin</em>. Tämä on <strong>valon, hengen, valkean magian</strong> suunta.</p>
+
+<h3>Väärä suunta — pimeä pentagrammi</h3>
+<p>Piirretty alhaalta oikealta ylös ja alas: kaksi sakaraa osoittaa ylöspäin. Tämä on perinteisesti <strong>pimeän, materian, noituuden</strong> symboli.</p>
+
+<p>Hermetismissä perinteessä käytetään yksinomaan <strong>oikeaa</strong> pentagrammia — se edustaa "taivaan valtaa" maan päällä. Käänteinen pentagrammi symboloi hengen <em>kukistumista</em> materian alle.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 900 400" width="900" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Vasen: oikea pentagrammi -->
+  <text x="200" y="25" text-anchor="middle" fill="#666" font-size="14" font-family="Georgia">Oikea (valoisa)</text>
+  <circle cx="200" cy="200" r="150" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.3"/>
+  <polygon points="200.00,75 278.21,310.83 76.92,184.07 323.08,184.07 121.79,310.83 200.00,75" stroke="#4a3a8a" stroke-width="2.5" fill="none"/>
+  <!-- Oikea: käänteinen pentagrammi (piirretty toisin päin) -->
+  <text x="700" y="25" text-anchor="middle" fill="#666" font-size="14" font-family="Georgia">Väärä (käänteinen)</text>
+  <circle cx="700" cy="200" r="150" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.3"/>
+  <polygon points="700.00,75 778.21,310.83 576.92,184.07 823.08,184.07 621.79,310.83 700.00,75" stroke="#4a3a8a" stroke-width="2.5" fill="none" transform="rotate(180 700 200)"/>
+</svg>
+</div>
+
+<h2>Pentagrammi rituaaleissa — LBRP</h2>
+
+<p>Pentagrammi on <strong>keskeinen rituaalinen symboli</strong> hermeettisessä perinteessä. <strong>Lesser Banishing Ritual of the Pentagram</strong> (LBRP) on Golden Dawn -aineiston tunnetuin perusrituaali: siinä piirretään <strong>neljä pentagrammia, yksi kuhunkin ilmansuuntaan</strong>.</p>
+
+<p>Rituaalin runko painetun lähteen mukaan:</p>
+
+<ol>
+<li>Qabalistinen risti: kuusi asentoa ja kuusi sanaa</li>
+<li>Pentagrammi ja jumalnimi <strong>itään</strong> — YOD HE VAU HE</li>
+<li>Pentagrammi ja jumalnimi <strong>etelään</strong> — ADONAI</li>
+<li>Pentagrammi ja jumalnimi <strong>länteen</strong> — EHEIEH</li>
+<li>Pentagrammi ja jumalnimi <strong>pohjoiseen</strong> — AGLA</li>
+<li>Paluu itään, ympyrän sulkeminen ja neljä arkkienkeliä</li>
+<li>Qabalistinen risti uudelleen</li>
+</ol>
+
+<p>Viidettä pentagrammia — ylös, alas tai keskelle — tässä rituaalissa ei ole; se kuuluu muihin, myöhempiin rituaaleihin. Karkotusversio on sama rituaali, jossa pentagrammin viivojen suunta käännetään.</p>
+
+<p><em>Tilan puhdistuminen</em> ja <em>suojan kutsuminen</em> ovat <strong>perinteen tulkintoja</strong> siitä, mitä rituaali tekee — eivät havaintoja eivätkä lähteen lupauksia. Rituaaliohje kertoo, mitä tehdään ja sanotaan; merkitys on tulkintakerros sen päällä.</p>
+
+<p><em>(Lähdetarkistettu läpikäynti, sanat, jumalnimet ja 14 päivän harjoitusohjelma: <a href="../../rituals/lessons/0005-lbrp.html">LBRP — pentagrammin pienempi rituaali</a> Rituaalit-alipolussa.)</em></p>
+
+<h2>Elementit pentagrammin sakarilla</h2>
+
+<p>Jokainen pentagrammin sakara liittyy <strong>yhteen alkuaineeseen</strong>:</p>
+
+<ul>
+<li><strong>Ylä sakara (ylös)</strong> — Henki (eetteri)</li>
+<li><strong>Oikea ylä sakara</strong> — Tuli</li>
+<li><strong>Oikea ala sakara</strong> — Ilma</li>
+<li><strong>Vasen ala sakara</strong> — Vesi</li>
+<li><strong>Vasen ylä sakara</strong> — Maa</li>
+</ul>
+
+<p>Tämä järjestys ei ole sattumanvarainen — se noudattaa <strong>alkemista logiikkaa</strong>. Tuli on lähimpänä Henkeä (ylös), Maa on vastapäätä (vasemmalla), ja niin edelleen.</p>
+
+<h2>Pentagrammi ja elämän puu</h2>
+
+<p>Pentagrammi esiintyy myös <strong>elämän puussa</strong>:</p>
+
+<ul>
+<li>Keter, Tiphareth, Netzach, Hod, Yesod — nämä <strong>viisi sefiraa</strong> muodostavat pentagrammin kuvion</li>
+<li>Tämä on "voiman pentagrammi" — viisi sefiraa, jotka säteilevät Keteristä alas</li>
+<li>Toinen pentagrammi: Chesed, Gevurah, Tiphareth, Netzach, Hod — toinen tapa lukea puuta</li>
+</ul>
+
+<p>Tämä on miksi pentagrammi on niin voimakas symboli — se <em>tiivistää</em> koko elämän puun rakenteen.</p>
+
+<h2>Pentagrammi arjessa</h2>
+
+<p>Pentagrammi ei ole vain rituaalien symboli. Se esiintyy <strong>kaikkialla</strong>:</p>
+
+<ul>
+<li><strong>Luonto:</strong> omenan siemenkodat (viisi tähteä poikkileikkauksessa), meritähti, monet kukat</li>
+<li><strong>Kehot:</strong> ihmisen käden sormet (viisi), jalan varpaat (viisi)</li>
+<li><strong>Taide:</strong> Dürerin <em>Melencolia I</em>, monet goottilaiset kaiverrokset</li>
+<li><strong>Arkkitehtuuri:</strong> viisisakaraiset goottilaiset ruusut, islamilaiset mosaiikit</li>
+</ul>
+
+<p>Pentagrammi on <strong>universaali</strong> — se ei ole yhden kulttuurin keksintö.</p>
+
+<h2>Harjoitus: pentagrammin piirtäminen</h2>
+
+<div class="reflect">
+<h3>Harjoitus: Aktiivinen pentagrammi (20 min)</h3>
+<ol>
+<li>Ota iso paperi (A3) ja musta kynä.</li>
+<li>Asetu seisomaan paperin ääreen. Hengitä kolme kertaa syvään.</li>
+<li>Piirrä <strong>iso ympyrä</strong> paperille.</li>
+<li>Aloita alhaalta, vasemmalta. Piirrä <strong>jatkuva viiva</strong> joka kulkee:
+<ul>
+<li>Ylös oikeaan yläkulmaan</li>
+<li>Alas vasempaan alakulmaan</li>
+<li>Ylös oikeaan alakulmaan</li>
+<li>Alas vasempaan yläkulmaan</li>
+<li>Takaisin alkuun</li>
+</ul>
+</li>
+<li>Piirrä hitaasti, tietoisesti. Tunne jokainen liike.</li>
+<li>Kun olet valmis, katso piirrostasi. Mitä tunnet?</li>
+<li>Toista kolme kertaa. Kolmas kerta on yleensä <em>vahvin</em>.</li>
+</ol>
+<p>Tämä ei ole pelkkä piirustusharjoitus — se on <em>pentagrammin elävöittämistä</em>. Kun piirrät sen tietoisesti, tulet osaksi sen symbolia.</p>
+</div>
+
+<h2>Pentagrammin suojaava voima</h2>
+
+<p>Monet perinteet uskovat, että pentagrammi <strong>suojaa</strong> pahoilta voimilta. Tämä ei ole taikauskoa — se on <em>geometriaa</em>:</p>
+
+<ul>
+<li>Pentagrammi <em>järjestää tilan</em></li>
+<li>Se <em>aktivoi suojaviivan</em> piirtäjän ympärille</li>
+<li>Se <em>muistuttaa</em> piirtäjää neljästä alkuaineesta ja hengestä</li>
+<li>Se <em>kutsuu</em> suojaavia voimia</li>
+</ul>
+
+<p>Suoja ei tule muotoa <em>itseään</em> — se tulee <em>tietoisuudesta</em>, jonka muoto aktivoi. Pentagrammi on portti, joka avaa suojan.</p>
+
+<h2>Käänteinen pentagrammi — varoitus</h2>
+
+<p>Jos oikea pentagrammi edustaa <em>hengen voittoa</em> materiasta, käänteinen edustaa <em>hengen alistumista</em>. Tämä ei ole "hyvä vs. paha" -kysymys — se on <em>tasapainon</em> kysymys.</p>
+
+<p>Elämä vaatii <em>molempia</em>: taivasta ja maata, henkeä ja kehoa. Käänteinen pentagrammi yksinään on varoitusmerkki — se sanoo: <em>jotain on epätasapainossa</em>.</p>
+
+<h2>Yhteenveto</h2>
+<p>Pentagrammi on viiden sakaran tähti, joka edustaa ihmistä, viittä alkuainetta ja tietoisuutta. Se on hermeettisen perinteen käytetyimpiä geometrisia symboleja, ja se on keskeinen rituaaleissa — erityisesti <a href="../../rituals/lessons/0005-lbrp.html">LBRP:ssä</a>, jossa pentagrammi piirretään neljään ilmansuuntaan. Pentagrammi tiivistää elämän puun rakenteen, ja se on yhtä universaali kuin kultainen leikkaus. Sen voima ei ole muodossa itsessään — se on tietoisuudessa, jonka muoto aktivoi.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Piirrä tai visualisoi pentagrammi nyt. Tunne sen sakaraat — pää, kädet, jalat. Missä sinun elämässäsi on tasapainoa? Missä on epätasapainoa? Mitä pentagrammi sinulle sanoo?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

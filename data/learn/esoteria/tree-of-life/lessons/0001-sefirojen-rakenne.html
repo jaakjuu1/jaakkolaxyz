@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-sefirojen-rakenne — Sefirojen rakenne</title>
+<style>
+  :root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+  .tree-diagram { background: var(--code-bg); padding: 1.5rem; border-radius: 4px; font-family: "SF Mono", Menlo, monospace; text-align: center; margin: 1.5rem 0; line-height: 1.4; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Elämän puu</a> › Oppitunti 1</nav>
+
+<h1>Sefirojen rakenne</h1>
+<p class="meta">Oppitunti 1 / 6 · ~22 min</p>
+
+<h2>Mikä on elämän puu?</h2>
+<p><strong>Elämän puu</strong> (hepreaksi <em>Etz Chaim</em>) on qabbalan keskeisin symboli — kaavio, joka kuvaa <strong>kymmenen sefiraa</strong> ja niiden välisiä <strong>22 polkua</strong>. Se on samalla kosmologinen kartta, psykologian kartta ja meditaation kartta.</p>
+
+<p>Elämän puu ei ole yksinomaan juutalainen. Vastaavia rakenteita löytyy muistakin perinteistä:</p>
+<ul>
+<li>Hindulaisuuden <strong>chakrat</strong> — samankaltainen pystyakselinen järjestelmä</li>
+<li>Pythagoraan <strong>monadit</strong> — numerojen ja kosmoksen yhteys</li>
+<li>Hermetismin <strong>kymmenen taivaallista tasoa</strong></li>
+<li>Kristinuskon <strong>enkelikuorat</strong> — yhdeksän enkelikuntaa</li>
+</ul>
+
+<p>Kaavio on siis universaali — ei yhden kulttuurin keksintö.</p>
+
+<blockquote>"Elämän puu on universaali kaavio, joka kuvaa sitä, miten ääretön virtaa rajalliseen — ja miten rajallinen voi palata äärettömään." — klassinen qabalistinen määritelmä</blockquote>
+
+<h2>Sefira — sana</h2>
+<p>Sana <strong>sefirah</strong> (monikko <em>sephiroth</em>) tarkoittaa kirjaimellisesti "lukua" tai "laskemista". Sefira on <strong>emanaation piste</strong> — paikka, jossa ääretön tiivistyy mitattavaksi. Jokainen sefira on sekä:</p>
+
+<ul>
+<li><strong>Numero</strong> — yksi kymmenestä peruspisteestä</li>
+<li><strong>Laatua</strong> — ominaisuus, voima, tietoisuuden tila</li>
+<li><strong>Nimi</strong> — jumalallinen nimi, enkeli, arkkityyppi</li>
+<li><strong>Kokemus</strong> — syvempi tietoisuuden taso</li>
+</ul>
+
+<p>Tämä monitasoisuus tekee sefiroista niin rikkaita. Ne eivät ole abstrakteja symboleja — ne ovat <strong>kokemuksellisia portteja</strong>.</p>
+
+<h2>Elämän puun kaavio</h2>
+
+<div class="tree-diagram">
+<pre>
+              Keter (1)
+                 |
+            Chokmah — Binah
+                 |
+           Chesed — Gevurah
+                 |
+              Tiphareth
+                 |
+           Netzach — Hod
+                 |
+              Yesod
+                 |
+              Malkuth (10)
+</pre>
+</div>
+
+<p>Tämä on klassinen esitys. Huomaa kolme pylvästä:</p>
+
+<ul>
+<li><strong>Vasen pylväs</strong> (Binah, Gevurah, Hod): supistuminen, muoto, ankaruus —<em> voiman puoli</em></li>
+<li><strong>Oikea pylväs</strong> (Chokmah, Chesed, Netzach): laajeneminen, virtaus, rakkaus —<em> armon puoli</em></li>
+<li><strong>Keskuspylväs</strong> (Keter, Tiphareth, Yesod, Malkuth): tasapaino, yhdistäminen —<em> tietoisuuden puoli</em></li>
+</ul>
+
+<h2>Kymmenen sefiraa lyhyesti</h2>
+
+<p>Tässä nopea yleiskatsaus. Käymme jokaisen läpi tarkemmin myöhemmissä oppitunneissa.</p>
+
+<h3>1. Keter — Kruunu</h3>
+<p>Ensimmäinen sefira, puhtaan olemassaolon kruunu. Ennen erottelua, ennen muotoa. Tässä pisteessä kaikki on vielä <em>mahdollisuutta</em>, ei <em>toteutumaa</em>.</p>
+
+<h3>2. Chokmah — Viisaus</h3>
+<p>Dynaaminen, virtaava, maskuliininen. Chokmah on <em>impulssi</em> — ensimmäinen liikahdus, jonka Keter synnyttää.</p>
+
+<h3>3. Binah — Ymmärrys</h3>
+<p>Staattinen, muotoileva, feminiininen. Binah <em>muotoilee</em> Chokmah'n impulssin — antara sille rakenteen.</p>
+
+<h3>4. Chesed — Armo</h3>
+<p>Laajeneminen, anteliaisuus, rakkaus. Tämä on voima, joka <em>antaa</em> ja <em>kutsuu</em>.</p>
+
+<h3>5. Gevurah — Voima</h3>
+<p>Supistuminen, rajoittaminen, oikeudenmukaisuus. Tämä on voima, joka <em>rajoittaa</em> ja <em>suojaa</em>.</p>
+
+<h3>6. Tiphareth — Kauneus</h3>
+<p>Koko puun keskus. Tässä harmonisoituvat kaikki vastakohdat. Tiphareth on <em>sydän</em>.</p>
+
+<h3>7. Netzach — Voittaminen</h3>
+<p>Tunne, vaisto, intohimo. Tämä on voima, joka <em>taistelee</em> ja <em>säilyttää</em>.</p>
+
+<h3>8. Hod — Loisto</h3>
+<p>Äly, kieli, analyysi. Tämä on voima, joka <em>erottelee</em> ja <em>nimeää</em>.</p>
+
+<h3>9. Yesod — Perusta</h3>
+<p>Yhteen kokoava voima, alitajunta, unimaisema. Tämä on <em>silta</em> hengen ja aineen välillä.</p>
+
+<h3>10. Malkuth — Valtakunta</h3>
+<p>Fyysinen maailma, jossa elämme. Tämä on <em>toteutuma</em>, jossa kaikki yllä oleva <em>ilmentyy</em>.</p>
+
+<h2>22 polkua</h2>
+<p>Sefirojen välillä on <strong>22 polkua</strong>, jotka vastaavat:</p>
+
+<ul>
+<li>22 <strong>heprealaisen aakkoston kirjainta</strong></li>
+<li>22 <strong>suurta arkana tarot-korttia</strong></li>
+<li>22 <strong>väriä, ääntä, eläintä, kasvia</strong></li>
+</ul>
+
+<p>Polut ovat siirtymiä sefirasta toiseen. Jokainen polku on oma laatunsa, oma äänensä, oma kokemuksensa.</p>
+
+<h2>Neljä maailmaa</h2>
+<p>Qabala jakaa todellisuuden <strong>neljään maailmaan</strong> (Olamot):</p>
+
+<h3>Atziluth — Emanaatio</h3>
+<p>Puhtaan hengen maailma. Lähinnä Ain Sofia. Tässä maailmassa sefirot ovat <em>puhtaita ominaisuuksia</em> ilman muotoa.</p>
+
+<h3>Briah — Luominen</h3>
+<p>Enkelien ja arkkityyppien maailma. Sefirot ilmenevät <em>elävinä voimina</em> — enkeleinä, nimisinä.</p>
+
+<h3>Yetzirah — Muodostuminen</h3>
+<p>Astralitaso, unimaailma. Sefirot ilmenevät <em>kuvina ja symboleina</em> — väreinä, ääninä, muotoina.</p>
+
+<h3>Assiah — Toiminta</h3>
+<p>Fyysinen maailma. Sefirot ilmenevät <em>aineena ja energiana</em>.</p>
+
+<p>Nämä neljä maailmaa eivät ole erillisiä paikkoja — ne ovat <strong>samojen voimien eri ilmenemismuotoja</strong>. Sama sefirah voi ilmetä kaikissa neljässä.</p>
+
+<h2>Miten elämän puuta luetaan</h2>
+<p>Elämän puuta voi lukea kolmella tavalla:</p>
+
+<h3>1. Ylhäältä alas (emanaatio)</h3>
+<p>Keterista Malkuthiin — ääretön virtaa aineelliseksi.</p>
+
+<h3>2. Alhaalta ylös (nousu)</h3>
+<p>Malkuthista Keteriin — ihminen nousee takaisin kohti lähdettä.</p>
+
+<h3>3. Sisäkkäin (syventäminen)</h3>
+<p>Jokainen sefira sisältää koko puun — mikrokosmos heijastaa makrokosmosta.</p>
+
+<p>Kaikki kolme lukutapaa ovat yhtä aitoja.</p>
+
+<h2>Harjoitus: puun kohtaaminen</h2>
+
+<div class="reflect">
+<h3>Harjoitus: Elämän puun visualisaatio (10 min)</h3>
+<ol>
+<li>Sulje silmät. Hengitä kolme kertaa syvään.</li>
+<li>Kuvittele eteesi <strong>suuri, kirkas puu</strong>. Sen runko on keskuspylväs, sen oksat ja juuret ovat muut sefirot.</li>
+<li>Juurilla, maan alla, on <strong>Malkuth</strong> — tumma, tiheä, konkreettinen.</li>
+<li>Juuri yläpuolella, hieman korkeammalla, <strong>Yesod</strong> — hopeinen, unelmainen.</li>
+<li>Edelleen ylöspäin, korkealla keskellä, <strong>Tiphareth</strong> — kultainen, kirkas, kuin aurinko.</li>
+<li>Ylimpänä, kruununa, <strong>Keter</strong> — valkoinen, ääretön.</li>
+<li>Anna koko puun <em>olla läsnä</em>. Se on sinun sisälläsi.</li>
+<li>Avaa silmät hitaasti.</li>
+</ol>
+<p>Tämä visualisaatio on yksi qabbalistisen meditaation perusmuodoista. Se ei ole "mielikuvitus" — se on <em>tietoisuuden syventäminen</em>.</p>
+</div>
+
+<h2>Yhteenveto</h2>
+<p>Elämän puu on universaali kaavio, joka kuvaa kymmenen sefiraa ja niiden väliset 22 polkua. Sefirat ovat sekä numeroita, laatuja, nimiä että kokemuksia. Kolme pylvästä — voima, armo ja tasapaino — yhdistyvät keskuspylväässä. Neljä maailmaa — Atziluth, Briah, Yetzirah, Assiah — ovat ilmenemisen tasoja. Tämä kaavio on sekä kartta että harjoitus.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Kun katsot elämän puun kaaviota, mikä sefira vetää sinua puoleensa eniten? Miksi? Mitä tämä veto kertoo sinusta?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

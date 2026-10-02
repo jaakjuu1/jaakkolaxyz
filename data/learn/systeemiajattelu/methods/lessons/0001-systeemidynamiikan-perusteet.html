@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-systeemidynamiikan-perusteet — Systeemidynamiikan perusteet</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Menetelmät</a> · Oppitunti 0001/6</p>
+  <h1>Systeemidynamiikan perusteet</h1>
+  <p class="lede">Jay Forresterin menetelmä: kuvaile järjestelmä rakenteena (varastot, virrat, viiveet, takaisinkytkennät) ja simuloi sen käyttäytymistä. Intuitio ei riitä.</p>
+
+  <p>Perusteet-polun oppitunneissa opimme <em>mitä</em> järjestelmät ovat. Menetelmät-polussa opimme <strong>miten niitä tutkitaan</strong>. Tämä ensimmäinen oppitunti esittelee voimakkaimman työkalun: <strong>systeemidynamiikan</strong>.</p>
+
+  <p>Systeemidynamiikka on tapa mallintaa järjestelmä niin, että sen käyttäytymistä voi simuloida. Sen loi <strong>Jay Forrester</strong> MIT:ssä 1950-luvulla, ja se on edelleen yksi käytetyimmistä systeemiajattelun menetelmistä.</p>
+
+  <h2>Forresterin oivallus</h2>
+
+  <p><strong>Jay Forrester</strong> (1918–2016) oli sähköinsinööri joka siirtyi liikkeenjohtoon. Hän huomasi jotain häiritsevää: samat johtamisratkaisut joka tuottivat <em>lyhyellä aikavälillä</em> hyviä tuloksia, aiheuttivat <em>pitkällä aikavälillä</em> romahduksia.</p>
+
+  <p>Esimerkki: kasvava yritys palkkaa lisää myyjiä. Lyhyellä aikavälillä myynti kasvaa. Mutta tuotanto ei pysy perässä → toimitusviiveet kasvavat → asiakastyytyväisyys laskee → myynti romahtaa vuoden päästä. Forrester ymmärsi: <em>intuitio ei riitä monimutkaisissa järjestelmissä</em>.</p>
+
+  <p>Hän kehitti menetelmän, jossa järjestelmä kuvataan matemaattisesti — varastot, virrat, viiveet, takaisinkytkennät — ja sitten <strong>simuloidaan</strong>. Tämä on <em>systeemidynamiikka</em>.</p>
+
+  <blockquote>
+    <p>"All of the systems we've been talking about so far are actually inside of social systems. They are in families, in corporations, in cities. They're all driven by the same structure: stocks, flows, and feedback." — Jay Forrester</p>
+  </blockquote>
+
+  <h2>Mallintamisen perusidea</h2>
+
+  <p><strong>Mallintaminen</strong> (modeling) on todellisuuden yksinkertaistamista niin, että se on ymmärrettävissä ja ennustettavissa. Huono malli on liian yksinkertainen (jättää olennaisen pois). Huono malli on myös liian monimutkainen (ei opeta mitään).</p>
+
+  <p>Hyvä malli sieppaa <strong>olennaisen rakenteen</strong>: varastot, virrat, takaisinkytkennät, viiveet. Se ei yritä kuvata kaikkea — se kuvaa sen, mikä aiheuttaa käyttäytymisen.</p>
+
+  <p>Forresterin keskeinen oivallus oli kolmijako:</p>
+
+  <ol>
+    <li><strong>Rakenne</strong> (structure) — miten järjestelmän osat kytkeytyvät toisiinsa.</li>
+    <li><strong>Käyttäytyminen</strong> (behavior) — miten järjestelmä käyttäytymistyyppisesti.</li>
+    <li><strong>Tapahtumat</strong> (events) — yksittäiset havainnot ("myynti putosi 20 %").</li>
+  </ol>
+
+  <p>Useimmat ihmiset tarkastelevat <em>tapahtumia</em>. Lehdet uutisoivat tapahtumia. Mutta tapahtumat ovat seurausta käyttäytymisestä, ja käyttäytyminen on seurausta rakenteesta. Jos haluat ymmärtää järjestelmää, katso rakennetta.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Reaktiivinen näkemys</h3>
+      <p>"Myynti putosi siksi, että kilpailija lanseerasi uuden tuotteen." Tämä on tapahtumataso — reagoi yksittäiseen ilmiöön.</p>
+    </div>
+    <div class="col right">
+      <h3>Systeeminen näkemys</h3>
+      <p>"Myynti putosi, koska järjestelmän rakenteessa on viive palautekierrossa, mikä hidastaa reagointia markkinamuutoksiin." Tämä on rakennetaso — näkee järjestelmän dynaamisen syyn.</p>
+    </div>
+  </div>
+
+  <h2>Kolme mallintamisen tasoa</h2>
+
+  <p>Systeemidynamiikassa mallintaminen etenee kolmessa vaiheessa:</p>
+
+  <ol>
+    <li><strong>Kausaalisilmukka-diagrammi (CLD)</strong> — piirretään järjestelmän tärkeimmät takaisinkytkennät. Tämä on laadullinen kuvaus.</li>
+    <li><strong>Varasto-virta -malli</strong> — määritellään konkreettisesti mitkä asiat ovat varastoja (stocks), mitkä virtoja (flows), ja miten ne riippuvat toisistaan.</li>
+    <li><strong>Simulaatio</strong> — annetaan mallin ajaa ajan yli ja nähdään minkälaisen käyttäytymisen rakenne tuottaa.</li>
+  </ol>
+
+  <p>Usein pelkkä vaihe 1 — CLD:n piirtäminen — riittää tuomaan oivalluksen. Mutta joskus on mentävä vaiheeseen 3, jotta ymmärrää mitä <em>tarkalleen</em> tapahtuu. Seuraavissa oppitunneissa käymme läpi jokaisen vaiheen.</p>
+
+  <h2>Miksi mallintaminen on vaikeaa</h2>
+
+  <p>Mallintaminen on vaikeaa kolmesta syystä:</p>
+
+  <ul>
+    <li><strong>Tieto on hajanaista</strong> — tarvitset eri ihmisten näkemyksiä, ja heidän välillään on ristiriitoja.</li>
+    <li><strong>Intuitio johtaa harhaan</strong> — meidän aivomme eivät ole sopeutuneet ajattelemaan monimutkaisia takaisinkytkentöjä. Forresterin havainto: tavoitteellinen päättäjä tekee usein <em>vahingossa</em> juuri sen, mikä pahentaa tilannetta.</li>
+    <li><strong>Mallin raja on epäselvä</strong> — mitä otetaan mukaan, mitä jätetään pois? Tämä on oppitunnin 0003 (rajojen) teema uudelleen.</li>
+  </ul>
+
+  <p>Forresterin oppi: <strong>mallintaminen ei ole matikkaharjoitus, se on ajattelutavan kurssia</strong>. Tavoite ei ole "oikea vastaus" vaan ymmärrys siitä, miten järjestelmä <em>toimii</em>.</p>
+
+  <h2>Meadows ja "Leverage Points"</h2>
+
+  <p><strong>Donella Meadows</strong>, Forresterin oppilas, kirjoitti 1999 esseet "Places to Intervene in a System" — tunnettu myös nimellä <em>Leverage Points</em>. Se listaa 12 paikkaa järjestelmässä, joissa intervention vaikutus on suurin.</p>
+
+  <p>Esseessä Meadows teki kaksi havaintoa, jotka muuttivat alaa:</p>
+
+  <ul>
+    <li><strong>Ihmiset menevät väärin paikkoihin.</strong> He muuttavat parametreja (nopeusrajoituksia, veroja, bonuksia), vaikka nämä ovat heikoimpia vipupisteitä.</li>
+    <li><strong>Todelliset vipupisteet ovat syvemmällä</strong> — tarkoituksessa, säännöissä, informaation virroissa, ja lopulta paradigmoissa.</li>
+  </ul>
+
+  <p>Tämä on tärkeää: mallintaminen ei ole vain "mitä järjestelmä tekee" vaan "missä sitä kannattaa muuttaa". Seuraavassa oppitunnissa näemme miten varastot ja virrat paljastavat vipupisteet.</p>
+
+  <h2>Systeemidynamiikan rajat</h2>
+
+  <p>Systeemidynamiikka on voimakas — mutta ei kaikkivoipa. Sen rajoitukset:</p>
+
+  <ul>
+    <li><strong>Kvantitatiivinen luonne</strong> — kaikki pitää olla mitattava. Tämä sopii fysiikalle ja taloudelle, mutta on kömpelöä ihmisten tunteille ja merkityksille.</li>
+    <li><strong>Oletus selkeydestä</strong> — mallintaja olettaa, että järjestelmän rakenne on tunnistettavissa. Monet todelliset järjestelmät ovat sotkuisempia.</li>
+    <li><strong>Pehmeät ongelmat</strong> — kun kysymys ei ole "miten järjestelmä toimii" vaan "mitä järjestelmä edes on", systeemidynamiikka ei auta. Näihin tarvitaan pehmeitä menetelmiä (oppitunti 0003).</li>
+  </ul>
+
+  <p>Systeemidynamiikka on työkalu — ei maailmankatsomus. Se sopii tiettyihin kysymyksiin, ja on väärä muihin.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Valitse tilanne, jossa olet toistanut saman ratkaisun ilman pysyvää tulosta. Usein tämä on merkki siitä, että olet tapahtumatasolla etkä näe rakennetta.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on tilanne, johon reagoit aina samalla tavalla — mutta joka ei ratkea pysyvästi?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. aina kun stressaan, aloitan urheilla. Sitten stressi kasvaa, urheilu unohtuu, ja olen takaisin alussa..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä on "tapahtuma" jonka näet? Ja mikä voisi olla rakennetason syy?</label>
+      <textarea id="q2" rows="3" placeholder="Tapahtuma: 'en ehdi urheilla'. Rakennetaso: 'aikatauluni on ylikuormitettu'..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos mallintaisit tämän tilanteen varastoiksi ja virroiksi, mitkä olisivat tärkeimmät?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. varasto: 'väsymys', 'vapaa-aika'. Virta: 'kuormituksen lisääntyminen', 'palautumisaika'..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa opetamme piirtämään varasto-virta -malleja. Tämä avaa oven vipupisteiden tunnistamiseen.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a> — tämän oppitunnin ydinmenetelmä</li>
+    <li><a href="../../concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a> — mallintaminen yleisesti</li>
+    <li><a href="../../concepts/stocks.html" class="wikilink" data-concept="stocks">stocks</a> — varastot — järjestelmän akkumuloinnit</li>
+    <li><a href="../../concepts/flows.html" class="wikilink" data-concept="flows">flows</a> — virrat — varastoja muuttavat prosessit</li>
+    <li><a href="../../concepts/stocks-and-flows.html" class="wikilink" data-concept="stocks-and-flows">stocks-and-flows</a> — varasto-virta -mallinnus</li>
+    <li><a href="../../concepts/causal-loop-diagram.html" class="wikilink" data-concept="causal-loop-diagram">causal-loop-diagram</a> — kausaalisilmukka-diagrammi</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentä — rakenteen ydin</li>
+    <li><a href="../../concepts/delay.html" class="wikilink" data-concept="delay">delay</a> — viiveet — monimutkaistavat dynamiikkaa</li>
+    <li><a href="../../concepts/leverage-point.html" class="wikilink" data-concept="leverage-point">leverage-point</a> — vipupiste — missä muutos merkitsee</li>
+    <li><a href="../../concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a> — mallintamisen perusvalinta</li>
+  </ul>
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-varastot-ja-virrat.html">Seuraava oppitunti: Varastot ja virrat →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Jay W. Forrester — <em>Industrial Dynamics</em> (MIT Press, 1961), <em>Urban Dynamics</em> (1969), <em>World Dynamics</em> (1971); Donella H. Meadows — <em>Thinking in Systems</em> (Chelsea Green, 2008); Donella H. Meadows — <em>Places to Intervene in a System</em> (Sustainability Institute, 1999).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

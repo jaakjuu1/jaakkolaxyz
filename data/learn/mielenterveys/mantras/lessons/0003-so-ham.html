@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — So Ham — hengityksen luonnollinen mantra</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>So Ham — hengityksen luonnollinen mantra</h1>
+  <p class="meta">Oppitunti 0003 · ~7 min · "minä olen" hengityksen rytmissä</p>
+
+  <p>Tämä oppitunti käsittelee <strong><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a></strong> -mantraa, joka poikkeaa lähes kaikista muista mantroista yhdellä ratkaisevalla tavalla: sitä ei tarvitse opetella, koska se syntyy itsestään joka hengenvetosi yhteydessä. Tämä tekee siitä monien mielestä koko joogaharjoittelun helpoimman ja silti syvimmän mantran.</p>
+
+  <h2>Sana, joka tarkoittaa "minä olen"</h2>
+
+  <p><em>So Ham</em> (lausutaan suunnilleen "so ham" tai "so'ham") on sanskritia ja koostuu kahdesta osasta:</p>
+
+  <ul>
+    <li><strong>So</strong> (सो) = "hän" / "tuo" maskuliinimuoto, voidaan kääntää "minä"</li>
+    <li><strong>Ham</strong> (हम्) = "minä" / "tämä", voidaan kääntää "olen"</li>
+  </ul>
+
+  <p>Yhdessä <em>So Ham</em> tarkoittaa kirjaimellisesti <em>"minä olen Hän"</em> tai <em>"minä olen tuo"</em> — viitaten siihen, että yksilö on pohjimmiltaan sama kuin koko todellisuus, Brahman. Tämä on yksi Upanishad-kirjallisuuden keskeisiä lauseita.</p>
+
+  <blockquote>
+    "So Ham — minä olen Hän. Tämä kaiku on jokaisen uloshengityksen ääni."
+  </blockquote>
+
+  <p>Huomaa, että lauseen subjekti ja predikaatti ovat eri järjestyksessä kuin suomessa. "So Ham" on rakenteeltaan <em>"minä-olen"</em> eli "I am", ei "Ham So" eli "olen minä". Sanskritissa substantiivi tulee ensin.</p>
+
+  <h2>Miksi So Ham on hengitysmantra</h2>
+
+  <p>Perinteessä sanotaan, että <em>So Ham</em> syntyy itsestään jokaisen hengenvetosi äänenä. Tämä ei ole pelkkää mystiikkaa, vaan äänneopillinen havainto:</p>
+
+  <ul>
+    <li><strong>Sisäänhengitys</strong> synnyttää kevyen ilmavirran nieluun. Jos kuuntelet tarkkaan, tässä virtauksessa on kuultavissa soinnillinen pohja. Joillain se kuulostaa "so"-maiselta.</li>
+    <li><strong>Uloshengitys</strong> synnyttää rentoutuneen, hieman sulkeutuvan äänteen kurkussa ja nenässä. Tämä kuulostaa "ham"-maiselta.</li>
+  </ul>
+
+  <p>Tämä on tietysti yksinkertaistus, ja kaikki eivät kuule äänteitä samalla tavalla. Mutta perinteen ydin on selvä: mantra <em>syntyy hengityksestä</em>, ei sitä tarvitse erikseen keksiä.</p>
+
+  <h3>Nykyinen neurotieteellinen tuki</h3>
+  <p><strong>Breath-awareness</strong>-tyyppisiä menetelmiä on tutkittu laajasti esimerkiksi <em>Journal of Applied Psychophysiology</em> -lehdessä ja Harvardin Benson-tutkimuksissa (ks. oppitunti 0001). Hengitykseen synkronoitu mantra tuottaa keskushermoston rauhoittumista ja vähentää <em>sympaattisen hermoston</em> aktiivisuutta. So Ham on tästä erityisen hyvä esimerkki, koska mantra ja hengitys eivät kilpaile keskenään — ne ovat sama liike.</p>
+
+  <h2>Miten So Hamia harjoitetaan</h2>
+
+  <p>So Ham on monella tapaa helpompi kuin Om, koska äänteet eivät vaadi äänenkäytön hallintaa — ne vain syntyvät. Harjoitus etenee kolmessa vaiheessa.</p>
+
+  <h3>Vaihe 1 — Kuuntele hengitystä</h3>
+  <ol>
+    <li>Istu mukavasti, sulje silmät.</li>
+    <li>Hengitä vapaasti, noin 5 minuuttia. <strong>Älä yritä hallita mitään.</strong></li>
+    <li>Kiinnitä huomio hengitysäänen — mihin tahansa ääneen, jonka kuulet tai tunnet: nenän sihinä, kurkun kohina, rintakehän liike.</li>
+    <li>Tämä vaihe yksinään on jo hyödyllinen, ja se on <strong><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitystietoisuusharjoitus</a></strong>.</li>
+  </ol>
+
+  <h3>Vaihe 2 — Lisää So Ham hiljaa</h3>
+  <ol>
+    <li>Jatka hengittämistä vapaasti.</li>
+    <li>Sisäänhengityksen alussa, hiljaa mielessä, ajattele "so".</li>
+    <li>Uloshengityksen alussa, samalla tavalla hiljaa mielessä, ajattele "ham".</li>
+    <li>Anna tavujen syntyä itsestään, älä pakota.</li>
+    <li>Jatka 10–15 minuuttia.</li>
+  </ol>
+
+  <p>Tämä on So Ham -harjoituksen perusmuoto. Kun se on tuttu, voit siirtyä seuraavaan vaiheeseen.</p>
+
+  <h3>Vaihe 3 — So Ham äänenä, sitten vain mielessä</h3>
+  <ol>
+    <li>Aloita ääneen lausutulla So Hamilla: "sooo... haaam". Anna äänen venyä koko hengityksen ajan.</li>
+    <li>Muutaman minuutin jälkeen hiljennä ääni kuiskaukseen, sitten pelkäksi mielen liikkeeksi.</li>
+    <li>Pidä sisäinen hengitysmalli: so-sisäänhengitys, ham-uloshengitys.</li>
+  </ol>
+
+  <p>Tämä kolmivaiheinen siirtymä (ääni → kuiskaus → ajatus) on klassinen siirtymä kaikissa mantrahengitysharjoituksissa, ja So Ham soveltuu siihen erityisen hyvin.</p>
+
+  <h2>So Ham ja jooga-filosofia</h2>
+
+  <p>So Ham on monella tapaa Advaita Vedantan — ei-kaksijakoisen koulukunnan — kulmakivi. Tässä sen filosofinen konteksti.</p>
+
+  <h3>Atman = Brahman</h3>
+  <p>Advaita-vedanta opettaa, että yksilöllinen sielu (<em>atman</em>) on pohjimmiltaan sama kuin koko todellisuuden perusta (<em>Brahman</em>). So Ham lauseena tiivistää tämän: "minä olen Hän" eli "minä olen se kaikkeus, josta kaikki tulee".</p>
+
+  <p>Tätä ei tarvitse uskoa eikä se ole vaatimus harjoittelulle. Se on filosofinen viitekehys, jonka sisällä So Ham on syntynyt. Kuka tahansa voi harjoittaa So Hamia ilman, että uskoo hetkeäkään atmanin ja Brahmanin yhteyttä.</p>
+
+  <h3>Mantra meditaation ankkurina</h3>
+  <p>Advaita-vedannassa on myös käytännön taso: So Ham ei ole <em>vain</em> lause, se on menetelmä. Sen avulla mieli palaa luonnollisesti <em>läsnäoloon</em>. Hengitysrytmi ankkuroi kehon, ja äänne ankkuroi mielen. Kun molemmat ovat paikallaan, <strong><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">läsnäolo</a></strong> paljastuu itsestään — ilman että tarvitsee tehdä mitään.</p>
+
+  <h3>Suhde Patanjalin jooga-sutreihin</h3>
+  <p>Patanjalin <em>Yoga Sutrat</em> (n. 400 eaa.) eivät nimeä So Hamia suoraan, mutta niissä kuvataan <em>pranava</em>-harjoitusta, joka tarkoittaa "jumalallisen alkukirjaimen", Om-tavun, toistamista. Useimmat tutkijat tulkitsevat, että So Ham on yksi pranaman muoto — ehkä se varhaisin, koska se ei vaadi opettelua.</p>
+
+  <h2>So Ham verrattuna Omiin</h2>
+
+  <p>Molempia kannattaa vertailla, koska ne ovat hyvin eri luonteeltaan ja sopivat eri ihmisille.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Om</h3>
+      <p>Opeteltava, äännekäs, hengitystä pidempi. Vahva kulttuurinen lataus. Antaa selkeän fyysisen tunteen, mutta vaatii totuttelua.</p>
+    </div>
+    <div class="col">
+      <h3>So Ham</h3>
+      <p>Syntyy itsestään hengityksen mukana, aluksi hiljainen. Ei erityistä opettelua. Kulttuurinen viite kevyempi, tausta jooga-filosofinen.</p>
+    </div>
+  </div>
+
+  <p>Jos sinulla on vaikeuksia saada Om-tavua luontevasti ulos, kokeile So Hamia muutaman viikon ajan. Se on yleensä helpompi, koska ääni syntyy hengityksen sivutuotteena eikä sen päälle.</p>
+
+  <h2>So Ham ja <strong><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">todistaja</a></strong>-asento</h2>
+
+  <p>Yksi So Ham -harjoituksen hienoimmista integraatioista on sen yhdistäminen <strong><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">todistaja</a></strong>-asentoon: kun mieli harjaantuu hiljaiseksi So Ham -toiston myötä, voit siirtyä tarkkailemaan itse toistoa — kuka katsoo? Kuka kuulee "so:n" ja "ham:n"?</p>
+
+  <p>Tämä on tärkeä käännekohta monille meditoijille, koska ilman tällaista siirtymää mantra-meditaatio voi jäädä pelkäksi tekniikaksi. Todistaja-asennossa mantra muuttuu portaaksi hiljaisuuteen, ei päämääräksi.</p>
+
+  <h2>Yleisiä virheitä So Ham -harjoittelussa</h2>
+
+  <ul>
+    <li><strong>Pakottaminen</strong> — yrittää saada tavut kuulostamaan "oikeilta". So Ham toimii parhaiten, kun se syntyy kevyesti ja luonnollisesti.</li>
+    <li><strong>Hengityksen manipulointi</strong> — yrittää säädellä hengitystä sopivaksi mantran tahtiin. Tämä on jo pranayamaa, ja se on eri harjoitus. So Ham on ensin luonteva hengitys, sitten vasta äänne.</li>
+    <li><strong>Liian kovaääninen toisto</strong> — So Ham toimii parhaiten hiljaisena tai jopa äänettömänä, kun perusta on tuttu.</li>
+    <li><strong>Liiallinen uskonnollinen lataus</strong> — So Ham on filosofisesti Advaita Vedantan symboli, mutta tekniikkana se ei vaadi uskonnollista sitoutumista.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Kokeile itse: So Ham viisi kertaa</h2>
+
+  <p>Suoritetaan nyt yksi so-ham-harjoitus, kirjaa havainnot.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Ennen harjoitusta: kirjoita, mitä mielessäsi on juuri nyt ja mihin aiot kiinnittää huomiota.</label>
+      <textarea id="q1" rows="2" placeholder="Esim. työstressi, kiinnitän hengitykseen."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Harjoituksen aikana: milloin So Ham tuntui luontevalta, milloin se katosi tai tökki?</label>
+      <textarea id="q2" rows="2" placeholder="Esim. aluksi outoa, sitten tasoittui, keskittyminen herpaantui kerran."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Harjoituksen jälkeen: oliko eroa alkuun nähden? Jäikö jokin tunnetila?</label>
+      <textarea id="q3" rows="2" placeholder="Esim. keho rennompi, mutta mieli yhtä kireä kuin alussa."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a> — itse oppitunnin aihe, hengityksen luonnollinen mantra.</li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — So Ham on yksi monista mantroista, joilla on omat erityispiirteensä (oppitunti 0001).</li>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — toinen keskeinen mantra, jota voi käyttää So Hamin rinnalla tai sijaan (oppitunti 0002).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — So Hamia harjoitetaan meditaation muotona, erityisesti hiljaisena versiona.</li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengitystietoisuus</a> — So Hamin ensimmäinen vaihe on puhdas hengitystietoisuusharjoitus.</li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Pranayama</a> — So Ham liittyy läheisesti hengitysharjoituksiin, vaikka se onkin eri tasolla kuin varsinainen pranayama.</li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Läsnäolo</a> — So Hamin syvin tarkoitus on tuoda mieli tähän hetkeen.</li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Todistaja</a> — So Ham voi toimia portina todistaja-asentoon, jossa tietoisuus erottautuu sen kohteesta.</li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Tyyni tila</a> — So Hamin hiljaiset versiot lähestyvät täydellistä hiljaisuutta.</li>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Lähimmäisenrakkaus</a> — So Ham valmistaa mieltä myötätuntoa varten, vaikkei suoraan ole metta-mantra.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Om ja So Ham ovat kaksi yksinkertaisinta <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantraa</a></strong>, ja niiden varaan voi halutessaan rakentaa koko käytännön. Niiden rinnalle on kuitenkin olemassa suuri joukko muita mantroja — erityisesti niin sanotut <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">bija-mantrat</a></strong>, joita käsittelemme seuraavassa oppitunnissa.</p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. "So Ham" yhdistyy luonnollisesti hengitykseen — käytä Open Focus Viewia ja sano mantra joka hengenvedolla.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Open Focus View" — minimalistinen hengitysnäyttö.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#focus" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23focus" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a class="prev" href="0002-om-aani.html">← Edellinen: Om — jooga-kirjallisuuden tärkein tavu</a>
+    <a class="next" href="0004-bija-mantrat.html">Seuraava oppitunti: Bija-mantrat — tavut joilla ei ole käännöstä →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Lähtökohta', '2. Harjoituksen aikana', '3. Harjoituksen jälkeen'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

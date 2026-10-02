@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: negative-feedback</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>negative-feedback</h1>
+  <p class="meta">Käsite · systeemiajattelu · säätöpiiri · tasapainottava silmukka</p>
+
+  <p class="lede">Negatiivinen takaisinkytkentä on järjestelmän käyttäytymistä vakauttava rakenne: kun systeemin tila poikkeaa tavoitteesta tai tasapainosta, se itse tuottaa korjaavan voiman, joka palauttaa tilan takaisin kohti tavoitearvoa. Se on tasapainon, homeostaasin ja kestävyyden ydinmekanismi niin koneissa, elimissä kuin yhteiskunnissa.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Negatiivinen takaisinkytkentä</strong> (engl. <em>negative feedback</em>, <em>balancing feedback</em>, <em>stabilizing feedback</em>) on takaisinkytkentäsilmukka, jossa järjestelmän tuotos toimii vastakkaiseen suuntaan tulokseen nähden ja näin vaimentaa tai kumoaa häiriön vaikutuksen. Toisin sanoen: jos jokin tekijä sysää järjestelmän pois tavoitearvosta, negatiivinen takaisinkytkentä synnyttää muutoksen, joka palauttaa järjestelmän kohti alkuperäistä tasapainoa.</p>
+
+  <p>Meadows nimeää tämän silmukkatyypin "tasapainottavaksi silmukaksi" (<em>balancing loop</em>, <em>B-loop</em>). Se on säätötekniikan klassinen peruspiiri: mittaus, vertailu, korjaus. Negatiivinen takaisinkytkentä on systeemin "älykkyys" — sen kyky vastustaa häiriöitä ja pysyä elinkelpoisena muuttuvassa ympäristössä.</p>
+
+  <p>Tyypillisiä esimerkkejä:</p>
+  <ul>
+    <li><strong>Termostaatti</strong> — kun huoneen lämpötila laskee tavoitearvon alapuolelle, termostaatti kytkee lämmityksen päälle; kun lämpötila nousee, kytkee pois.</li>
+    <li><strong>Verensokerin säätely</strong> — kun verensokeri nousee, haima erittää insuliinia, joka laskee sen takaisin; kun se laskee liikaa, glukagoni nostaa sitä.</li>
+    <li><strong>Kehon lämmönsäätely</strong> — hikoilu viilentää, vapina tuottaa lämpöä.</li>
+    <li><strong>Populaation säätely</strong> — petoeläin–saalis-suhteen vaihtelut pitävät lajien populaatiot kohtalaisen vakaina.</li>
+    <li><strong>Markkinahinta</strong> — jos kysyntä ylittää tarjonnan, hinta nousee, mikä vähentää kysyntää ja/tai lisää tarjontaa takaisin kohti tasapainoa.</li>
+    <li><strong>Oppiminen</strong> — virheen huomaaminen ja korjaaminen on mentaalinen negatiivinen takaisinkytkentä.</li>
+  </ul>
+
+  <p>On tärkeää ymmärtää, että "negatiivinen" ei tarkoita <em>huonoa</em> tai <em>epätoivottua</em>. Se on neutraali dynaaminen termi, joka kuvaa korjaavaa vaikutusta. Negatiivinen takaisinkytkentä on välttämätön elämälle, järjestykselle ja kestävyydelle — ilman sitä mikä tahansa järjestelmä joko kuolisi tai räjähtäisi.</p>
+
+  <blockquote>
+    <p>"Negatiivinen takaisinkytkentä tuottaa käyttäytymistä, jota kutsumme tasapainoksi, vakaudeksi tai kestävyydeksi. Se on luonnon tapa pitää asiat järjestyksessä."</p>
+  </blockquote>
+
+  <p>Negatiivinen takaisinkytkentä sisältää neljä rakenneosaa: reseptorin (mittaus), komparaattorin (vertailu tavoitteeseen), effectorin (korjaava toiminto) ja takaisinkytkentäpolun itse tarkasteltavaan muuttujaan. Tätä neljän osan rakennetta kutsutaan kyberneettiseksi silmukaksi.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Negatiivisen takaisinkytkennän käsitteellinen juuri on 1800-luvun fysiikassa ja tekniikassa. Vuonna 1868 <strong>James Clerk Maxwell</strong> julkaisi kuuluisan artikkelinsa "On Governors", jossa hän analysoi höyrykoneiden keskipakosäädintä — yhtä ensimmäisistä teollisista takaisinkytkentäjärjestelmistä. Maxwell osoitti differentiaaliyhtälöillä, milloin säätöpiiri on stabiili. E.J. Routh kehitti 1877 yleisen stabiilisuuskriteerin, joka on yhä käytössä säätötekniikassa.</p>
+
+  <p>1920- ja 1930-luvuilla <strong>Harold Black</strong> ja <strong>Hendrik Bode</strong> Bell Labsilla sovelsivat negatiivista takaisinkytkentää elektronisten vahvistimien stabiilisuuteen, mikä mahdollisti pitkän matkan puhelinyhteydet ja modernin tietoliikenteen.</p>
+
+  <p><strong>Norbert Wiener</strong> yleisti käsitteen 1948 teoksessaan <em>Cybernetics</em>: sama logiikka, joka pitää höyrykoneen kierrosluvun vakiona, pitää myös nisäkkään ruumiinlämmön vakiona ja yhteiskunnan markkinat tasapainossa. <strong>W. Ross Ashby</strong> (<em>An Introduction to Cybernetics</em>, 1956) muotoili yleisen säätöteorian lait ja esitteli Ashbyn lain (<em>requisite variety</em>): säätäjän on kyettävä tuottamaan vähintään yhtä monta erilaista vastevaihtoehtoa kuin ympäristön häiriöitä voidakseen säätää järjestelmää.</p>
+
+  <p>Biologiassa <strong>Claude Bernard</strong> käytti 1800-luvun lopulla käsitettä <em>milieu intérieur</em> (sisäinen ympäristö) ja <strong>Walter Cannon</strong> nimesi 1932 termin <em>homeostasis</em> kuvaamaan negatiivisen takaisinkytkennän tuottamaa fysiologista tasapainoa. Nykytermein <em>homeostasis</em> on biologian negatiivinen takaisinkytkentä.</p>
+
+  <p><strong>Jay Forrester</strong> kehitti 1950-luvulla systeemidynamiikan, jossa negatiivinen takaisinkytkentä on toinen kahdesta perussilmukkatyypistä. <strong>Donella Meadows</strong> tiivisti käsitteen teoksessaan <em>Thinking in Systems</em> (2008) seuraavasti: "Tasapainottavat silmukat ovat luonnon keino pitää järjestelmät elossa."</p>
+
+  <p>V.A. Shiva Ayyadurai korostaa <em>System and Revolution</em> -teoksessaan, että negatiivinen takaisinkytkentä on se rakenne, joka erottaa <em>systeemin</em> pelkästä kasaumasta: vain järjestelmä, jossa on negatiivisia takaisinkytkentöjä, pystyy säilyttämään identiteettinsä ympäristön paineessa. Tässä mielessä negatiivinen takaisinkytkentä on yksi <em>general-systems-theory</em>:n (Bertalanffy 1968) peruskivistä.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Negatiivinen takaisinkytkentä on koko säätöteorian, kybernetiikan ja homeostaasin ydinmekanismi. Se on vastapari <em>positive-feedback</em>-silmukalle, joka vahvistaa muutosta. Negatiivinen takaisinkytkentä tuottaa <em>equilibrium</em>- ja <em>dynamical-equilibrium</em>-tiloja sekä biologisen <em>homeostasis</em>-ilmiön. Käytännön mekanismeja ovat <em>cybernetic-loop</em>, <em>receptor</em>, <em>comparator</em> ja <em>effector</em>. Säätöpiirin laatua kuvaavat <em>delay</em> (viive), <em>requisite-variety</em> ja <em>non-linearity</em>. Ayyaduraín viitekehyksessä negatiivinen takaisinkytkentä ylläpitää <em>systems-health</em>-tilaa sekä klassisissa dosha-järjestelmissä (vata, pitta, kapha) että <em>natural-systems-state</em>- ja <em>integrated-systems-state</em>-malleissa.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Negatiivinen takaisinkytkentä esiintyy oppimispolun jokaisessa osassa. <em>foundations</em>-kansiossa se tulee vastaan oppitunneilla "Takaisinkytkennän perusteet", "Termostaatti-malli", "Säätöpiirit arjessa" ja "Homeostaasi". <em>cybernetics</em>-kansiossa se on keskeinen Wienerin ja Ashbyn käsitteistön kautta. <em>methods</em>-kansiossa se on <em>causal-loop-diagram</em>- ja <em>system-dynamics</em>-mallinnuksen perusta. <em>applications</em>-kansiossa sitä sovelletaan terveyteen, organisaatioiden ohjaukseen, oppimiseen ja ekologiaan.</p>
+
+  <h2>Lähteet</h2>
+  <p>James Clerk Maxwell, "On Governors" (Proceedings of the Royal Society, 1868). E.J. Routh, <em>The Stability of Motion</em> (1877). Harold Black, "Stabilized Feedback Amplifiers" (Bell System Technical Journal, 1934). Norbert Wiener, <em>Cybernetics</em> (MIT Press, 1948). W. Ross Ashby, <em>An Introduction to Cybernetics</em> (Chapman & Hall, 1956). Walter Cannon, <em>The Wisdom of the Body</em> (1932). Jay Forrester, <em>Industrial Dynamics</em> (MIT Press, 1961). Donella H. Meadows, <em>Thinking in Systems: A Primer</em> (Chelsea Green, 2008). Ludwig von Bertalanffy, <em>General System Theory</em> (1968). V.A. Shiva Ayyadurai, <em>System and Revolution</em> (2024).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — tämä käsite</li>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentäsilmukka, johon tämä kuuluu</li>
+    <li><a href="positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — vastakkainen silmukkatyyppi</li>
+    <li><a href="feedback.html" class="wikilink" data-concept="feedback">feedback</a> — takaisinkytkennän yleiskäsite</li>
+    <li><a href="equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — tasapainotila, jonka negatiivinen takaisinkytkentä tuottaa</li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — biologinen negatiivinen takaisinkytkentä</li>
+    <li><a href="dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — dynaaminen tasapaino virtaavassa järjestelmässä</li>
+    <li><a href="cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — neliosainen rakenne, johon negatiivinen takaisinkytkentä perustuu</li>
+    <li><a href="control-theory.html" class="wikilink" data-concept="control-theory">control-theory</a> — säätöteoria, jonka ydin negatiivinen takaisinkytkentä on</li>
+    <li><a href="receptor.html" class="wikilink" data-concept="receptor">receptor</a> — silmukan mittaava osa</li>
+    <li><a href="comparator.html" class="wikilink" data-concept="comparator">comparator</a> — silmukan vertaileva osa</li>
+    <li><a href="effector.html" class="wikilink" data-concept="effector">effector</a> — silmukan korjaava osa</li>
+    <li><a href="requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — Ashbyn laki säätäjän monimuotoisuudesta</li>
+    <li><a href="delay.html" class="wikilink" data-concept="delay">delay</a> — viive, joka voi aiheuttaa värähtelyä</li>
+    <li><a href="resilience.html" class="wikilink" data-concept="resilience">resilience</a> — joustavuus, johon negatiivinen takaisinkytkentä liittyy</li>
+    <li><a href="systems-health.html" class="wikilink" data-concept="systems-health">systems-health</a> — Ayyaduraín järjestelmän terveys -malli</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Maxwell (1868); Wiener (1948); Ashby (1956); Cannon (1932); Forrester (1961); Meadows (2008); Bertalanffy (1968); Ayyadurai (2024).
+  </p>
+</main>
+</body>
+</html>

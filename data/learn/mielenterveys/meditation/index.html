@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Meditaatio — tutkimusperustainen johdatus hengitysmeditaatioon, kehoskannaukseen, kävelymeditaatioon, mettaan ja zazeniin. Rehellinen hyödyistä JA rajoitteista.">
+<title>Meditaatio — hiljaisuuden polku</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #3b6b3b; --accent-soft: #e3edde; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #7fb878; --accent-soft: #1f2920; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  ul.lessons { list-style: none; padding-left: 0; margin: 1.4rem 0; }
+  ul.lessons li {
+    border-left: 3px solid var(--rule);
+    padding: .9rem 0 .9rem 1.2rem;
+    margin-bottom: 0;
+  }
+  ul.lessons li:hover { border-left-color: var(--accent); }
+  ul.lessons a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  ul.lessons a:hover { color: var(--accent); }
+  ul.lessons .desc {
+    display: block;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: .92rem;
+    margin-top: .25rem;
+  }
+  .tag {
+    display: inline-block;
+    font-size: .7rem;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: .35rem;
+    vertical-align: middle;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .related {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+    margin: 1.6rem 0;
+    font-size: .93rem;
+  }
+  .related h3 {
+    margin: 0 0 .6rem;
+    color: var(--accent);
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .related a {
+    display: inline-block;
+    margin: .15rem .35rem .15rem 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+  }
+  .related a:hover { border-color: var(--accent); color: var(--accent); }
+
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+
+  .footer-note {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: 2.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: .88em;
+    color: var(--blue);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Meditaatio — hiljaisuuden polku</h1>
+  <p class="meta">Kuusi oppituntia · noin 45 minuuttia · tutkimusperustainen, rehellinen, hyödyt JA rajoitteet näkyvillä</p>
+
+  <div class="hero">
+    <p>Meditaatio on <strong>mielen harjoittamista</strong> — ei tyhjentämistä, ei pakottamista, vaan tarkkaa ja ystävällistä läsnäoloa sille mitä on. Tämä polku opettaa tutkitusti toimivia muotoja: hengitysmeditaatio, kehoskannaus, kävelymeditaatio, metta ja zazen. Kerromme rehellisesti myös sen, missä meditaatio EI auta.</p>
+  </div>
+
+  <h2>Mikä polku on?</h2>
+
+  <p>Tämä polku nojaa vahvasti länsimaiseen tutkimukseen: MBSR (Jon Kabat-Zinn), Sharon Salzberg metta-traditiossa, Robert Wright evolutiivisessa mindfulness-tutkimuksessa, Daniel Goleman "Altered Traits" -kirjassa. Käytännön opetukset ovat selkeitä ja sovellettavia — ei uskonnollista kontekstia.</p>
+
+  <h2>Meditaation rehelliset hyödyt JA rajoitteet</h2>
+
+  <p>Tutkimusten mukaan säännöllinen meditaatio:</p>
+  <ul>
+    <li><strong>Vähentää ahdistusta ja stressiä</strong> — meta-analyysi Goyal et al. 2014 (JAMA Internal Medicine).</li>
+    <li><strong>Parantaa tarkkaavuutta ja työmuistia</strong> — lyhytaikaiset vaikutukset hyvin dokumentoituja.</li>
+    <li><strong>Voi auttaa kroonisessa kivussa</strong> — NCBI meta-analyysit 2017-2023.</li>
+    <li><strong>Lisää itsetuntemusta</strong> — lähtökohtana monet psykoterapiat.</li>
+  </ul>
+
+  <p>Meditaatio EI kuitenkaan sovi kaikille, eikä se korvaa terapiaa:</p>
+  <ul>
+    <li>Traumatisoituneille ihmisille mindfulness-meditaatio voi pahentaa oireita ilman ammattilaisen tukea.</li>
+    <li>Jotkut ihmiset kokevat meditaation ahdistavana — "en osaa, en pysty, miksi ei toimi".</li>
+    <li>Meditaation "kliininen" vaikutus (verrattuna vertailuryhmään) on pienempi kuin usein väitetään — monet hyödyt tulevat muista tekijöistä (lepo, päiväkirja, ohjaajan tuki).</li>
+    <li>Vakavaan masennukseen tai psykoosiin meditaatio ei yksin riitä.</li>
+  </ul>
+
+  <h2>Oppitunnit</h2>
+
+  <ul class="lessons">
+    <li>
+      <a href="lessons/0001-mita-meditaatio-on.html">0001 — Mitä meditaatio on <span class="tag">perusta</span></a>
+      <span class="desc">8 min · mitä meditaatio oikeasti on, eri koulukunnat, mitä EI ole, hyödyt tutkimusten valossa.</span>
+    </li>
+    <li>
+      <a href="lessons/0002-hengitysmeditaatio.html">0002 — Hengitysmeditaatio <span class="tag">tekniikka</span></a>
+      <span class="desc">7 min · anapanasati, breath-anchor, mielen harhautuessa palaaminen.</span>
+    </li>
+    <li>
+      <a href="lessons/0003-kehoskannaus.html">0003 — Kehoskannaus <span class="tag">tekniikka</span></a>
+      <span class="desc">8 min · body scan, MBSR-perinne, harjoitusohjeet, sovellus unen helpottamiseen.</span>
+    </li>
+    <li>
+      <a href="lessons/0004-kavelymeditaatio.html">0004 — Kävelymeditaatio <span class="tag">tekniikka</span></a>
+      <span class="desc">6 min · kävelymeditaatio, drishti, thaimaalainen metsäluostariperinne.</span>
+    </li>
+    <li>
+      <a href="lessons/0005-metta.html">0005 — Metta <span class="tag">tekniikka</span></a>
+      <span class="desc">8 min · rakastava ystävällisyys, Sharon Salzberg, itsemyötätunto, ero "positiiviseen ajatteluun".</span>
+    </li>
+    <li>
+      <a href="lessons/0006-zazen.html">0006 — Zazen <span class="tag">tekniikka</span></a>
+      <span class="desc">8 min · zazen = istuminen, shikantaza, kōan, japanilainen zen-perinne.</span>
+    </li>
+  </ul>
+
+  <h2>Käsitteet joita tulet kohtaamaan</h2>
+  <div class="related">
+    <a href="../concepts/meditation.html">meditaatio</a>
+    <a href="../concepts/mindfulness.html">mindfulness</a>
+    <a href="../concepts/samatha.html">samatha</a>
+    <a href="../concepts/vipassana.html">vipassana</a>
+    <a href="../concepts/metta.html">metta</a>
+    <a href="../concepts/presence.html">läsnäolo</a>
+    <a href="../concepts/stillness.html">hiljaisuus</a>
+    <a href="../concepts/witness.html">tarkkailija</a>
+    <a href="../concepts/breath-awareness.html">hengitystietoisuus</a>
+    <a href="../concepts/mantra.html">mantra</a>
+    <a href="../concepts/pranayama.html">pranayama</a>
+    <a href="../concepts/drishti.html">drishti</a>
+  </div>
+
+  <h2>Miten lukea tätä polkua</h2>
+
+  <ol>
+    <li><strong>Aloita 0001:stä</strong> — ymmärrä mitä meditaatio on ja ei ole, ennen kuin istut alas.</li>
+    <li><strong>Valitse yksi tekniikka</strong> ja harjoittele sitä 2 viikkoa ennen kuin siirryt seuraavaan.</li>
+    <li><strong>10 minuuttia päivässä riittää aluksi</strong> — laatuaika tärkeämpää kuin kesto.</li>
+    <li><strong>Kirjaa kokemuksia</strong> jos haluat — lyhyt päiväkirja auttaa havaitsemaan muutoksia.</li>
+  </ol>
+
+  <div class="hero" style="border-left-color: #b07000; background: #fff5e6;">
+    <p style="color: #6b4400;"><strong>Varoitus.</strong> Jos sinulla on traumaattisia kokemuksia, vakavaa masennusta, psykoottisia oireita tai itsetuhoisia ajatuksia, meditaatio ei korvaa terapiaa — keskustele ammattilaisen kanssa ennen säännöllistä harjoittamista. Tämä polku ei sovellu korvaamaan psykoterapiaa.</p>
+  </div>
+
+  <hr>
+
+  <p class="footer-note">
+    Lähteet: Jon Kabat-Zinn — "Full Catastrophe Living" (MBSR); Sharon Salzberg — "Lovingkindness"; Daniel Goleman & Richard Davidson — "Altered Traits"; Goyal et al. 2014 JAMA Internal Medicine meta-analyysi; modernit neurotutkimukset (Harvard, UCSF, Wisconsin).
+  </p>
+</main>
+</body>
+</html>

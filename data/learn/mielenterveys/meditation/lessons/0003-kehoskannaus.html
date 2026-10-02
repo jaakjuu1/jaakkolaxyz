@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — Kehoskannaus: body scan</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Kehoskannaus: body scan</h1>
+  <p class="meta">Oppitunti 0003 · ~10 min · harjoitus</p>
+
+  <p>Body scan eli <a href="../../concepts/body-scan.html" class="wikilink" data-concept="kehoskannaus">kehoskannaus</a> on MBSR-ohjelman ensimmäinen virallinen harjoitus. Se on samalla yksi käytännöllisimmistä työkaluista koko polulla — erityisesti ihmisille, joille hengitysmeditaatio tuntuu liian kapealta tai ahdistavalta, ja erityisesti univaikeuksista kärsiville.</p>
+
+  <p>Jos oppitunti 0002 oli "harjoittele palaamista", tämä oppitunti on "harjoittele olemassaolemista siellä, missä jo olet". Ero on merkittävä.</p>
+
+  <h2>Mikä body scan oikeastaan on?</h2>
+
+  <p>Body scan on systemaattinen, hidas huomion kuljettaminen kehon eri osien läpi — tyypillisesti päästä varpaisiin tai varpaista päähän — tarkoituksena <em>tuntea</em> kukin alue sellaisena kuin se on, ilman muuttamista. Se ei ole rentoutumisharjoitus (vaikka voi rentouttaa), se ei ole visualisaatio, se ei ole "parantaminen". Se on tarkkaa ja rehellistä läsnäoloa kehossa.</p>
+
+  <p>Jon Kabat-Zinnin alkuperäisessä ohjelmassa body scania tehdään makaavassa asennossa 30–45 minuuttia. Käytännössä tämä on paljon, ja useimmat nykyiset ohjelmat tarjoavat lyhyempiä versioita (10–20 minuuttia). Voit tehdä sen myös istuen.</p>
+
+  <p>Body scan ei ole länsimaisten keksintö. Vipassana-perinteessä on samankaltainen harjoitus nimeltä <em>sattipatthāna</em> (neljä perustaa), jossa keho on yksi niistä. Moderni MBSR-versio on kuitenkin systematisoitu ja tieteellisesti tutkittu, mikä tekee siitä erityisen hyödyllisen.</p>
+
+  <blockquote>
+    Et yritä rentouttaa kehoasi. Yrität <em>tavata</em> sen, missä se jo on.
+  </blockquote>
+
+  <h2>Miten se eroaa hengitysmeditaatiosta?</h2>
+
+  <p>Tämä on kysymys, johon jokainen eteenpäin menevä harjoittaja törmää. Ero ei ole tärkeysjärjestys vaan funktio:</p>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Hengitysmeditaatio (<a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">breath-awareness</a>)</h3>
+      <p>Yksi ankkuri, yksi kohde. Vahvistaa tarkkaavuutta nopeasti. Hyvä kun mieli on kohtalaisen rauhallinen ja halutaan syventää <a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">tyyntymistä</a>.</p>
+    </div>
+    <div class="col right">
+      <h3>Body scan</h3>
+      <p>Liikkuva huomio, laaja kenttä. Avaa tietoisuutta kehosta, tunnistaa jännityksiä ja tunteiden kehollisia ilmentymiä. Hyvä kun hengitysankkuri tuntuu liian kapealta tai ahdistavalta.</p>
+    </div>
+  </div>
+
+  <p>Sharon Salzberg käyttää body scan -tyyppistä harjoitusta ennen hengitysharjoitusta lähes aina, koska hänen kokemuksensa mukaan "kehoon laskeutuminen ennen hengitystä estää meditaation muuttumisen pelkäksi pään pyörittelyksi". Tämä on käytännön neuvo, joka toimii.</p>
+
+  <p>Robert Wright kirjoittaa, että body scan on erityisen hyödyllinen ihmisille, jotka ovat "irrallisia kehostaan" — mikä on yllättävän yleistä etenkin masennuksessa, traumaperäisissä tiloissa ja vahvassa kognitiivisessa kuormituksessa. Kehoon palaaminen on usein ensimmäinen askel läsnäolon harjoittamisessa.</p>
+
+  <h2>Käytännön ohje: 20 minuutin body scan</h2>
+
+  <p>Tämä on versio, joka soveltuu sekä päivällä että illalla ennen nukkumista. Varaa 20–30 minuuttia. Voit lukea ohjeen ensin ja sitten tehdä sen silmät kiinni.</p>
+
+  <ol>
+    <li><strong>Asento.</strong> Makaa selälläsi, kädet vartalon vierellä kämmenet ylöspäin tai alaspäin, jalat suorina tai hieman koukussa. Peitto voi olla päällä, koska kehon lämpötila laskee rentoutuessa. Voit tehdä tämän myös istuen.</li>
+    <li><strong>Alkuasetelma.</strong> Sulje silmät. Kolme syvää hengitystä. Anna kehon painua alustaa vasten. Tämä ei ole rentouttamista, tämä on <em>painovoiman hyväksymistä</em>.</li>
+    <li><strong>Jalat.</strong> Huomio vasempaan jalkaterään. Tunne sen paino, lämpö, kosketus alustaan. Siirry hitaasti vasempaan nilkkaan, sääreen, polveen, reiteen. Älä yritä <em>tuntea enemmän</em> — tunnet sen, mitä tunnet. Sama oikealle.</li>
+    <li><strong>Lantio ja vatsa.</strong> Huomio lantionpohjaan, alavatsaan, kylkiin. Huomaa hengityksen liike. Jos huomaat jännityksen — älä pura sitä, vain merkitse.</li>
+    <li><strong>Rinta ja selkä.</strong> Huomio rintakehään, lapaluihin, selkärankaan. Tunne selän kosketus alustaan.</li>
+    <li><strong>Kädet.</strong> Sormenpäistä ylös, kämmenet, ranteet, kyynärvarret, olkapäät.</li>
+    <li><strong>Pää ja niska.</strong> Leuka, suu, posket, silmät, otsa, päänahka, takaraivo. Niska usein pidättelee eniten — huomaa se, älä korjaa.</li>
+    <li><strong>Loppu.</strong> Kun olet käynyt koko kehon läpi, palaa hengitykseen. Kolme hengitystä. Liikuta varpaita ja sormia kevyesti, avaa silmät hitaasti.</li>
+  </ol>
+
+  <h3>Jos huomaat nukahdavasi</h3>
+
+  <p>Tämä on body scanin yleisin "sivuvaikutus" ja se on hyvä merkki — kehosi kaipasi tätä. Jos haluat harjoituksen, älä nuku, nosta kädet pään viereen (hieman raolleen) — tämä estää nukahtamista tehokkaasti. Tai pidä silmät auki, pehmeällä katseella kattoon.</p>
+
+  <h3>Jos huomaat epämukavuutta</h3>
+
+  <p>Kehoon pysähtyminen voi nostaa pintaan tunteita, jotka eivät liity rentoutumiseen. Tämä on erityisen yleistä, jos sinulla on traumaattisia kokemuksia. Brown Universityn tutkimusryhmä suosittelee tällöin:</p>
+
+  <ul>
+    <li>Lyhennä harjoitus 5 minuuttiin.</li>
+    <li>Ohjaa huomio vain <em>neutraaleihin</em> alueisiin (sormet, varpaat, käsivarret).</li>
+    <li>Jos tunteet ovat voimakkaita, siirry hengitysharjoitukseen tai keskustele terapeutin kanssa.</li>
+  </ul>
+
+  <p>Tämä ei ole varoitus luopua, vaan ohje mukauttaa.</p>
+
+  <h2>Sovellus: body scan ennen unta</h2>
+
+  <p>Tämä on ehkä body scanin merkittävin moderni käyttökohde. Tutkimusten mukaan (Black et al., 2015; Rusch et al., 2019) MBSR:n body scan -komponentti parantaa unen laatua kohtalaisesti sekä akuuteissa että kroonisissa univaikeuksissa, ja se toimii erityisesti henkilöillä, joilla unettomuus liittyy ylivireystilaan eikä puhtaasti kliiniseen unihäiriöön.</p>
+
+  <p>Mikä tekee body scanista niin hyvän ennen nukkumista:</p>
+
+  <ul>
+    <li>Se <em>irrottaa</em> mielen tulevasta ja menneestä — nukahtamisen yleisimmistä ansoista.</li>
+    <li>Se ohjaa huomion <em>kehoon</em>, joka on konkreettinen ja nykyhetkessä.</li>
+    <li>Se ei vaadi unen "pakottamista", mikä on usein juuri se, mikä pitää hereillä.</li>
+  </ul>
+
+  <p><strong>Käytännön versio illalle:</strong> Makaa sängyssä peiton alla. Sulje silmät. Lyhennä versio: vain jalat → lantio → käsivarret → kasvot, noin 5 minuuttia. Jos uni tulee kesken — anna tulla. Et "epäonnistunut" harjoitusta.</p>
+
+  <p>CBT-I (kognitiivinen käyttäytymisterapia unettomuuteen) sisältää usein body scanin kaltaisia rentoutusharjoituksia, mutta uniterapeutti Colleen Carney on korostanut, että body scan toimii parhaiten kun sitä ei tehdä <em>sängyssä joka ilta</em>, koska silloin siitä voi tulla suorituspaine. Vaihtoehto: tee body scan tuolilla olohuoneessa, sitten siirry sänkyyn.</p>
+
+  <h2>Tutkimusnäyttö ja vaikutukset</h2>
+
+  <p>Body scania on tutkittu pääasiassa osana MBSR-kokonaisuutta, mikä vaikeuttaa sen itsenäisen vaikutuksen eristämistä. Tässä mitä tiedetään:</p>
+
+  <ul>
+    <li><strong>Kipukokemukset.</strong> Meta-analyysit (Hilton et al., 2017) osoittavat, että mindfulness-perustaiset interventiot (joista body scan on keskeinen) vähentävät koettua kipua kohtalaisesti. Vaikutusmekanismi ei ole kivun poistaminen, vaan <em>suhteen muuttuminen kipuun</em> — kipu on edelleen, mutta sen ei tarvitse hallita koko tietoisuutta.</li>
+    <li><strong>Ahdistuneisuus.</strong> Body scan aktivoi parasympaattista hermostoa ja on tutkitusti tehokas ahdistuksen somaattisten oireiden (sydämentykytys, lihasjännitys, hengenahdistus) hallinnassa.</li>
+    <li><strong>Traumatisoituneet ihmiset.</strong> Varovaisuutta. Body scanin pitkä versio saattaa olla liian stimuloiva, mutta lyhyt ja ohjattu versio voi olla hyödyllinen. Tämä on yksilöllistä.</li>
+    <li><strong>Kehontietoisuus ja interoseptio.</strong> Body scan parantaa kykyä havaita kehon sisäisiä signaaleja (interoseptiota), mikä on yhteydessä tunnesäätelyyn (Critchley & Garfinkel).</li>
+  </ul>
+
+  <h2>Body scan ja tunteet: mitä siellä oikein tapahtuu?</h2>
+
+  <p>Tämä on kohta, joka yllättää monet. Body scan ei ole pelkkä "rentoutuskeino". Se on keino <em>kohdata</em> tunteita, jotka ovat piiloutuneet kehoon.</p>
+
+  <p>Surua kannetaan rinnassa. Pelko jännittää hartioita. Häpeä painaa vatsaa. Viha kiristää leukaa. Tämä ei ole runollista puhetta — nämä ovat toistuvasti tutkimuksissa havaittuja korrelaatioita.</p>
+
+  <p>Body scanin aikana saatat huomata:</p>
+
+  <ul>
+    <li>"Tämä alue tuntuu todella raskaalta" — voi olla vanhaa väsymystä, voi olla surua.</li>
+    <li>"Tämä alue tuntuu tyhjältä" — voi olla puolustusmekanismi (dissosiaatio-oire), jolloin tämä kannattaa ottaa terapeutin puheeksi.</li>
+    <li>"Tämä alue tuntuu kuumalta tai kylmältä" — voi olla tunnereaktio.</li>
+    <li>"Jokin alue on jatkuvasti poissa mielestä" — voi olla piilotettua jännitystä.</li>
+  </ul>
+
+  <p>Et tee mitään näistä havainnoista. Vain <em>nimeät</em>: "täällä on jännitystä", "täällä on raskautta", "täällä on tyhjyyttä". Nimeäminen itsessään vähentää niiden valtaa — tämä on <a href="../../concepts/witness.html" class="wikilink" data-concept="witness">inner witness</a> -harjoituksen ydin.</p>
+
+  <blockquote>
+    Tunne voi muuttua vasta, kun se on nähty. Kehoskannaus on tapa nähdä.
+  </blockquote>
+
+  <h2>Milloin tämä EI sovi</h2>
+
+  <ul>
+    <li><strong>Aktiivinen akuutti trauma.</strong> Jos kehotietoisuus nostaa esiin ylivuotavia muistoja, lopeta ja ota yhteyttä terapeuttiin.</li>
+    <li><strong>Dissosiaatio-oireilu.</strong> Jos huomaat "katoavasi" kehosta kesken harjoituksen, tämä on merkki siitä, ettei body scan ole vielä oikea työkalu — tarvitaan ensin turvallisuuden harjoittelemista terapeutin kanssa.</li>
+    <li><strong>Vaikea krooninen kipu.</strong> Kehoon keskittyminen voi pahentaa kipukokemusta. Tällöin kannattaa työskennellä lyhyillä jaksoilla ja ohjatusti.</li>
+  </ul>
+
+  <h2>Viikon harjoitusohjelma</h2>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Viikko 1</h3>
+      <p>10 minuuttia iltaisin, makaavassa asennossa. Käy vain jalat ja lantio läpi. Ei tavoitteita. Kirjaa ylös: "Mikä alue oli vaikein? Mikä oli helpoin?"</p>
+    </div>
+    <div class="col right">
+      <h3>Viikko 2</h3>
+      <p>15–20 minuuttia iltaisin. Käy koko keho läpi. Lisää yksi "kehotarkistus" päivään — 60 sekuntia missä tahansa, missä huomaat viisi aluetta joihin voit laskeutua.</p>
+    </div>
+  </div>
+
+  <p>Harjoituksen teho ei tule siitä, että teet sen täydellisesti, vaan siitä, että palaat siihen usein. Michael Stone puhui "kehon halaamisesta" — termi, joka aluksi kuulostaa hassulta, mutta tarkoittaa juuri tätä: suhtautumista kehoon <em>ystävällisesti ilman vaatimusta</em>.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Witness — sisäinen tarkkailija, joka huomaa kehon tuntemuksia tuomitsematta</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, johon kehon huomaaminen johtaa</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Stillness — kehon ja mielen hiljentyminen, jota body scan edistää</a></li>
+    <li><a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">Vipassana — kirkas näkeminen, jonka body scan avaa ennen hengitysharjoitusta</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Breath-awareness — hengitysankkuri, joka on body scanin jälkeinen luonteva kohde</a></li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness — tietoinen läsnäolo, jonka body scan konkretisoi kehoon</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Jon Kabat-Zinn — <em>Full Catastrophe Living</em> (1990); Sarah Silverton — <em>Mindfulness</em> (2013); Black et al. — meta-analyysi mindfulness-unen interventioista (2015); Shapiro & Carlson — <em>The Art and Science of Mindfulness</em> (2009); Britton et al. — varoitukset meditaation haittavaikutuksista.
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. "The Descending Light" -body-scan on suora vastine tälle oppitunnille.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Guided Meditations" — ääniohjattuja harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#meditations" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23meditations" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0002-hengitysmeditaatio.html">← Edellinen: Hengitysmeditaatio</a>
+    <a class="next" href="0004-kavelymeditaatio.html">Seuraava: Kävelymeditaatio →</a>
+  </div>
+</main>
+</body>
+</html>

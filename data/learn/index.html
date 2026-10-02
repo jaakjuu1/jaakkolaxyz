@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Avoin oppimiskirjasto uteliaille ja rakentajille — lähteistettyjä polkuja ymmärtämiseen, harjoitteluun ja digitaalisten tuotteiden tekemiseen.">
+<title>Oppimispolut — itseopiskeltavia työkaluja</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 42rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+  p { margin: 0 0 1rem; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+
+  .paths {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.4rem 0;
+  }
+  .path {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.2rem 1.3rem;
+    background: var(--bg);
+    transition: border-color .15s ease;
+  }
+  .path:hover { border-color: var(--accent); }
+  .path h3 { margin: 0 0 .35rem; font-size: 1.15rem; }
+  .path h3 a { color: var(--ink); text-decoration: none; }
+  .path h3 a:hover { color: var(--accent); }
+  .path .blurb {
+    color: var(--muted);
+    margin: 0 0 .7rem;
+    font-size: .95rem;
+  }
+  .path .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem 1rem;
+    color: var(--muted);
+    font-size: .85rem;
+  }
+  .path .stats span { display: inline-block; }
+  .path .stats strong { color: var(--green); font-weight: 600; }
+  .path .status {
+    display: inline-block;
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: .5rem;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+  .path .kind {
+    display: inline-block;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    border-radius: 999px;
+    padding: 2px 8px;
+    margin: 0 0 .7rem;
+    font-size: .72rem;
+    font-weight: 650;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+  }
+  .section-lead { color: var(--muted); margin: -.25rem 0 1rem; }
+  .path .status.live { color: var(--green); border: 1px solid var(--green); background: #f0f5ee; }
+  @media (prefers-color-scheme: dark) {
+    .path .status.live { background: #1d2520; }
+  }
+
+  /* Three quick reasons block — talks to any reader */
+  .reasons {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin: 1.6rem 0 2rem;
+  }
+  @media (max-width: 640px) { .reasons { grid-template-columns: 1fr; } }
+  .reason {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .reason .num {
+    display: inline-block;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.6rem;
+    margin-bottom: .5rem;
+    font-size: .9rem;
+  }
+  .reason h4 { margin: 0 0 .3rem; font-size: 1rem; }
+  .reason p { margin: 0; font-size: .92rem; color: var(--muted); }
+
+  .footer-note {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: 2.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 3px; font-size: .88em; color: var(--blue); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Oppimispolut</h1>
+  <p class="meta">Lähteistettyjä polkuja ymmärtämiseen, harjoitteluun ja tekemiseen</p>
+
+  <div class="hero">
+    <p>Tämä on avoin oppimiskirjasto <strong>uteliaille ja rakentajille</strong>. Polut auttavat ymmärtämään maailmaa ja omaa toimintaa, harjoittelemaan käytännössä sekä rakentamaan digitaalisia tuotteita — yksi kokonaisuus kerrallaan.</p>
+  </div>
+
+  <h2>Miksi tämä on olemassa</h2>
+
+  <div class="reasons">
+    <div class="reason">
+      <span class="num">1</span>
+      <h4>Lähteet näkyvät</h4>
+      <p>Jokainen polku kertoo, mihin sen tieto, menetelmät ja tulkinnat perustuvat.</p>
+    </div>
+    <div class="reason">
+      <span class="num">2</span>
+      <h4>Opittu viedään käytäntöön</h4>
+      <p>Mukana on harjoituksia, ajatuskokeita, laskureita ja rakennettavia työkaluja — ei vain lukemista.</p>
+    </div>
+    <div class="reason">
+      <span class="num">3</span>
+      <h4>Väitteiden luonne erotellaan</h4>
+      <p>Tutkimustieto, historiallinen lähde, tulkinta ja käytännön playbook eivät esiinny samana asiana.</p>
+    </div>
+  </div>
+
+  <h2>Ymmärtämisen ja harjoituksen polut</h2>
+  <p class="section-lead">Ihmisen, maailman, järjestelmien ja merkitysten tutkimiseen.</p>
+
+  <div class="paths">
+    <div class="path">
+      <h3><a href="fysiikka/">Fysiikka</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Luonnontiede</span>
+      <p class="blurb">Einsteinin silmin: yleinen suhteellisuusteoria hissistä GPS:ään, mustiin aukkoihin ja gravitaatioaaltoihin. Kahdeksan oppitunnin oivallusmatka, joka tekee aika-avaruudesta konkreettisen.</p>
+      <div class="stats">
+        <span><strong>8</strong> oppituntia</span>
+        <span>Yleinen suhteellisuusteoria</span>
+        <span>Ajatuskokeet · mittaukset · interaktiiviset harjoitukset</span>
+      </div>
+    </div>
+
+    <div class="path">
+      <h3><a href="systeemiajattelu/">Systeemiajattelu</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Ajattelumallit</span>
+      <p class="blurb">Kyky nähdä kokonaisuuksia, palautesilmukoita, emergenssiä. Perustuu Donella Meadowsin, Fritjof Capran ja muiden systeemiajattelijoiden teoksiin. Miten asettua tilanteeseen kuin tilanteeseen.</p>
+      <div class="stats">
+        <span><strong>30</strong> oppituntia</span>
+        <span>5 alipolkua: perusteet, menetelmät, kompleksisuus, kybernetiikka, sovellukset</span>
+      </div>
+    </div>
+
+    <div class="path">
+      <h3><a href="esoteria/">Esoteria — Hermeettinen perinne</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Historiallinen ja kriittinen lähiluku</span>
+      <p class="blurb">Hermeettinen polku pintaa syvemmältä — perusta, elämän puu, geometria, rituaalit, tietoisuus, harjoitus ja Rudolf Steinerin okkulttisen kehityksen vaarojen kriittinen lähiluku. Symbolit, meditaatio, käytäntö ja turvallinen arviointi.</p>
+      <div class="stats">
+        <span><strong>43</strong> oppituntia</span>
+        <span>7 alipolkua</span>
+        <span>Pyörivä 3D-animaatio · SVG-symbolit</span>
+      </div>
+    </div>
+
+    <div class="path">
+      <h3><a href="mielenterveys/">Mielenterveystaidot arkeen</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Tutkitut menetelmät</span>
+      <p class="blurb">Seitsemän työkalua kun pää tai keho menee solmuun — CBT, ACT, DBT, mindfulness, käyttäytymisen aktivointi, itsemyötätunto. Suunniteltu arjen käyttöön.</p>
+      <div class="stats">
+        <span><strong>7</strong> oppituntia</span>
+        <span><strong>~45 min</strong> kaikki yhteensä</span>
+        <span>Työkalupaketti</span>
+      </div>
+    </div>
+
+    <div class="path">
+      <h3><a href="hypnoterapia/">Hypnoterapia</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Oma käyttö · lähteistetty</span>
+      <p class="blurb">Tarkkaavuus ja ehdotus ilman lava-myyttejä. APA Div. 30, Yapko, Cochrane/VA. Kuusi oppituntia: malli → ehdotus → absorptio → paluu → yksi rata → oma protokolla. Ei piilohypnoosia, ei muistojen kaivua.</p>
+      <div class="stats">
+        <span><strong>6</strong> oppituntia julkaistu</span>
+        <span>Oma käytön kaari valmis</span>
+        <span>Kliininen lukutaito ja esoteerinen transsi myöhemmin</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Rakentajan polut</h2>
+  <p class="section-lead">Luovan teknologian ja digitaalisten tuotteiden tekemiseen.</p>
+
+  <div class="paths">
+    <div class="path">
+      <h3><a href="ai-music/">AI-musiikin tekniikka</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Luova teknologia</span>
+      <p class="blurb">Miten AI-musiikki oikeasti syntyy — teknisenä ilmiönä, ei napinpainalluksena. Spektrogrammin lukeminen, Suno/MusicGen-arkkitehtuurit, promptitiede.</p>
+      <div class="stats">
+        <span><strong>5</strong> oppituntia</span>
+        <span>Spektrogrammi + Suno + AudioCraft</span>
+      </div>
+    </div>
+
+    <div class="path">
+      <h3><a href="b2c-appit/">B2C-sovellus hypestä järjestelmäksi</a> <span class="status live">Julkaistu</span></h3>
+      <span class="kind">Tuoterakentaminen</span>
+      <p class="blurb">Viraali “10 appia / 10 kuukautta” -playbook purettuna kriittiseksi toimintajärjestelmäksi: validointi, ydinsilmukka, onboarding, App Store, jakelu ja yksikkötalous.</p>
+      <div class="stats">
+        <span><strong>7</strong> oppituntia</span>
+        <span>Interaktiiviset harjoitukset ja laskurit</span>
+        <span>Jatka · korjaa · lopeta · skaalaa</span>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Miten polkuja luetaan</h2>
+  <p>Jokainen polku on itsenäinen — voit aloittaa mistä tahansa aiheesta. Oppitunnit sisältävät polun luonteeseen sopivia harjoituksia, ajatuskokeita tai rakennustehtäviä. Lähteet ja tiedon luonne pidetään näkyvillä.</p>
+
+  <p>Jos jokin työkalu resonoi, kokeile sitä saman tien — ei tarvitse lukea koko polkua läpi yhdellä istumalla.</p>
+
+  <p class="footer-note">
+    Polut päivittyvät ajan myötä. Jokainen polku kertoo omasta lähde-, väite- ja turvallisuuskehyksestään. Mielenterveysmateriaali on itseopiskelua eikä korvaa lääkärin tai psykoterapeutin apua silloin kun sitä oikeasti tarvitaan.
+  </p>
+</main>
+</body>
+</html>

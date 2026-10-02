@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: observer</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>observer</h1>
+  <p class="meta">Käsite · systeemiajattelu · kybernetiikka · toisen asteen kybernetiikka</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Havainnoija</strong> (engl. <em>observer</em>) on kybernetiikassa ja systeemiajattelussa taho — ihminen, organismi tai järjestelmä — joka katsoo, mittaa, tulkitsee tai mallintaa toista järjestelmää. Havainnoija ei ole koskaan täysin ulkopuolinen: hän tuo tulkintaansa mukanaan käsitteelliset välineensä, arvonsa ja rajansa.</p>
+
+  <p>Havainnoijan käsite jakautuu kahteen päämuotoon:</p>
+  <ul>
+    <li><strong>Ensimmäisen asteen havainnoija</strong> (<a href="/learn/systeemiajattelu/concepts/first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order cybernetics</a>): tarkastelee järjestelmää ulkoapäin objektiivisesti ja pyrkii löytämään riippumattomia lakeja. Havainnoija oletetaan erilliseksi kohteesta.</li>
+    <li><strong>Toisen asteen havainnoija</strong> (<a href="/learn/systeemiajattelu/concepts/second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order cybernetics</a>): on osa tarkastelemaansa järjestelmää. Havainnoija ja havainnoitava ovat vuorovaikutuksessa, ja havainto muuttaa sekä kohdetta että havainnoijaa.</li>
+  </ul>
+
+  <p>Toisen asteen kybernetiikka korostaa, että <em>kuvaus kuvauksen tekijästä on osa kuvausta</em>. Kun tutkija tutkii omaa tietoisuuttaan, kun tietokone mallintaa itseään tai kun terapeutti kuuntelee omaa reaktiotaan asiakkaaseen, kyse on toisen asteen havainnoinnista. Tämä lähestymistapa paljastaa, että "objektiivinen tarkastelu" on aina osittain myytti.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Havainnoijan käsite kehittyi vaiheittain. Fyysikko ja tähtitieteilijä <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Johannes Kepler</a>, <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Galileo Galilei</a> ja <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Isaac Newton</a> edustivat ensimmäisen asteen havainnoijaa: he asettuivat luonnon ulkopuolelle ja mittasivat sitä "puolueettomasti".</p>
+
+  <p>Varsinaisen kybernetiikan käsitteenä havainnoija muotoutui 1940–1960-luvuilla. <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Norbert Wiener</a> kuvasi kybernetiikassa takaisinkytkentää, jossa havainnoija on välttämätön osa säätöpiiriä. <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Heinz von Foerster</a> formalisoi toisen asteen kybernetiikan 1970-luvulla teoksessa <em>Observing Systems</em> (1981, toimitettu yhdessä).</p>
+
+  <p>Filosofiassa havainnoijan rooli nousi keskeiseksi Edmund Husserlin fenomenologiassa (1900-luvun alku): havainnoija <em>intentoi</em> maailmaa, eikä voi koskaan tarkastella sitä ilman omaa tietoisuuttaan. Myöhemmin <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Karl Popper</a> ja <a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">Paul Feyerabend</a> korostivat tieteellisen havainnoijan teoria-latautuneisuutta. Nykyään havainnoijan käsite yhdistää kybernetiikan, fenomenologian, kognitiotieteen ja hermoneurotieteen.</p>
+
+  <p>Joillakin perinteillä — kuten <a href="/learn/systeemiajattelu/concepts/ayurveda.html" class="wikilink" data-concept="ayurveda">ayurvedalla</a>, <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">pranalla</a> ja joogafilosofialla — on syvällisiä havainnoijan käsitteitä, jotka edeltävät länsimaista kybernetiikkaa. Sisäinen tarkkailija (saksi, drashta) on meditaation ja itsetuntemuksen ydinkäsite.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order-cybernetics</a> — havainnoija ulkopuolelta.</li>
+    <li><a href="second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order-cybernetics</a> — havainnoija osana järjestelmää.</li>
+    <li><a href="recursion.html" class="wikilink" data-concept="recursion">recursion</a> — havainnoija havainnoi omaa havainnointiaan.</li>
+    <li><a href="modeling.html" class="wikilink" data-concept="modeling">modeling</a> — havainnoija rakentaa mallin.</li>
+    <li><a href="abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a> — havainnoija yksinkertaistaa.</li>
+    <li><a href="paradigm.html" class="wikilink" data-concept="paradigm">paradigm</a> — havainnoijan käsitteellinen kehys.</li>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — havainnoijan ja kohteen välinen silmukka.</li>
+    <li><a href="requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — havainnoijan erottelukyky.</li>
+    <li><a href="witness.html" class="wikilink" data-concept="witness">witness</a> — sisäinen tarkkailija mielenterveyden kontekstissa.</li>
+    <li><a href="self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — järjestelmä, joka havainnoi itseään.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Havainnoija esitellään <a href="/learn/systeemiajattelu/concepts/second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">toisen asteen kybernetiikan</a> johdannossa. Käsitettä syvennetään <a href="/learn/systeemiajattelu/concepts/recursion.html" class="wikilink" data-concept="recursion">rekursion</a>, <a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">mallinnuksen</a> ja <a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">itsensä organisoitumisen</a> oppitunneilla. Käytännön sovelluksia löytyy terapiatyön ja meditaation oppitunneilta.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>von Foerster, H. (1981). <em>Observing Systems</em>. Intersystems Publications.</li>
+    <li>Wiener, N. (1948). <em>Cybernetics</em>. MIT Press.</li>
+    <li>Husserl, E. (1913). <em>Ideen zu einer reinen Phänomenologie</em>. Niemeyer.</li>
+    <li>Maturana, H. & Varela, F. (1980). <em>Autopoiesis and Cognition</em>. Reidel.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/observer.html" class="wikilink" data-concept="observer">observer</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order-cybernetics</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order-cybernetics</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/recursion.html" class="wikilink" data-concept="recursion">recursion</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/paradigm.html" class="wikilink" data-concept="paradigm">paradigm</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/witness.html" class="wikilink" data-concept="witness">witness</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: von Foerster 1981; Wiener 1948; Husserl 1913; Maturana & Varela 1980.
+  </p>
+</main>
+</body>
+</html>

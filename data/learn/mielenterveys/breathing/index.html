@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Hengitysharjoitukset arjen säätelyyn — palleahengitys, nelion-hengitys, vaihtoehtoinen sierainhengitys, kapalabhati. Anatominen ja fysiologinen perusta, ei myyttiä.">
+<title>Hengitys — portti hermoston säätelyyn</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #355874; --accent-soft: #e1ebf3; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #7fa3c4; --accent-soft: #1f2933; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  ul.lessons { list-style: none; padding-left: 0; margin: 1.4rem 0; }
+  ul.lessons li {
+    border-left: 3px solid var(--rule);
+    padding: .9rem 0 .9rem 1.2rem;
+    margin-bottom: 0;
+  }
+  ul.lessons li:hover { border-left-color: var(--accent); }
+  ul.lessons a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  ul.lessons a:hover { color: var(--accent); }
+  ul.lessons .desc {
+    display: block;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: .92rem;
+    margin-top: .25rem;
+  }
+  .tag {
+    display: inline-block;
+    font-size: .7rem;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: .35rem;
+    vertical-align: middle;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .related {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+    margin: 1.6rem 0;
+    font-size: .93rem;
+  }
+  .related h3 {
+    margin: 0 0 .6rem;
+    color: var(--accent);
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+  .related a {
+    display: inline-block;
+    margin: .15rem .35rem .15rem 0;
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    text-decoration: none;
+    border: 1px solid var(--rule);
+  }
+  .related a:hover { border-color: var(--accent); color: var(--accent); }
+
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+
+  .footer-note {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: 2.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: .88em;
+    color: var(--blue);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Hengitys — portti hermoston säätelyyn</h1>
+  <p class="meta">Kuusi oppituntia · noin 40 minuuttia · aloitetaan kehosta, ei mielikuvista</p>
+
+  <div class="hero">
+    <p>Hengitys on <strong>ainut autonomisen hermoston osa, jota voit ohjata tietoisesti</strong>. Sydämen lyöntitiheyttä et voi säädellä, mutta hengityksen kautta voit vaikuttaa siihen, onko hermosto sympaattisessa (taistele/pakene) vai parasympaattisessa (lepo/sulatus) tilassa. Tämä polku opettaa tekemään sen turvallisesti ja tehokkaasti.</p>
+  </div>
+
+  <h2>Mikä polku on?</h2>
+
+  <p>Tämä on anatomia- ja fysiologiaperustainen johdatus hengitysharjoituksiin. Ei mystiikkaa, ei "prana-energian virtausta" — vain tapa, jolla pallea, vagus-hermo ja kemoreseptorit toimivat yhdessä. Perustuu tutkimukseen (Harvard Health, NIH, IAYT).</p>
+
+  <p>Polku etenee yksinkertaisesta monimutkaiseen:</p>
+
+  <ol>
+    <li>Miksi hengitys toimii (<a href="../concepts/pranayama.html" class="wikilink" data-concept="pranayama">pranayama</a>-harjoitusten fysiologia)</li>
+    <li>Palleahengitys (<a href="../concepts/diaphragm.html" class="wikilink" data-concept="diaphragm">pallean</a> anatomia)</li>
+    <li>Yksinkertainen rytmi (<a href="../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">sama vritti</a> — nelion-hengitys)</li>
+    <li>Epäsymmetrinen hengitys (<a href="../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">nadi shodhana</a>)</li>
+    <li>Nopea aktivointi (<a href="../concepts/kapala-bhati.html" class="wikilink" data-concept="kapala-bhati">kapalabhati</a>)</li>
+    <li>Rutiiniksi — kokoaminen yhdeksi päivittäiseksi käytännöksi</li>
+  </ol>
+
+  <h2>Oppitunnit</h2>
+
+  <ul class="lessons">
+    <li>
+      <a href="lessons/0001-miksi-hengitat.html">0001 — Miksi hengität <span class="tag">perusta</span></a>
+      <span class="desc">5 min · miten hengitys ohjaa vagus-hermoa ja miksi se on ainoa tahdonalainen osa autonomista hermostoa.</span>
+    </li>
+    <li>
+      <a href="lessons/0002-pallean-hengitys.html">0002 — Palleahengitys <span class="tag">tekniikka</span></a>
+      <span class="desc">7 min · pallean anatominen sijainti, harjoitus selinmakuulla, istuen ja seisten.</span>
+    </li>
+    <li>
+      <a href="lessons/0003-nelion-hengitys.html">0003 — Nelion-hengitys <span class="tag">tekniikka</span></a>
+      <span class="desc">5 min · box breathing 4-4-4-4, USAF-protokolla, sovellus ennen puhetta tai paniikin hetkellä.</span>
+    </li>
+    <li>
+      <a href="lessons/0004-vaihtoehtoinen-sierainhengitys.html">0004 — Vaihtoehtoinen sierainhengitys <span class="tag">tekniikka</span></a>
+      <span class="desc">7 min · nadi shodhana, vasen/oikea sierain, tutkimusnäyttö ja kliiniset sovellukset.</span>
+    </li>
+    <li>
+      <a href="lessons/0005-kapala-bhati.html">0005 — Kapalabhati <span class="tag">tekniikka + varoitukset</span></a>
+      <span class="desc">6 min · lyhyet uloshengitykset, pallean pommitus, vertailu bhastrikaan, kenelle EI sovi.</span>
+    </li>
+    <li>
+      <a href="lessons/0006-pranayama-rutiiniksi.html">0006 — Pranayama rutiiniksi <span class="tag">integraatio</span></a>
+      <span class="desc">10 min · 10-minuuttisen aamurutiinin rakentaminen, eteneminen 30 minuuttiin, integraatio meditaatioon.</span>
+    </li>
+  </ul>
+
+  <h2>Käsitteet joita tulet kohtaamaan</h2>
+  <div class="related">
+    <a href="../concepts/prana.html">prana</a>
+    <a href="../concepts/pranayama.html">pranayama</a>
+    <a href="../concepts/breath-awareness.html">hengitystietoisuus</a>
+    <a href="../concepts/diaphragm.html">pallea</a>
+    <a href="../concepts/nadi-shodhana.html">nadi shodhana</a>
+    <a href="../concepts/kapala-bhati.html">kapalabhati</a>
+    <a href="../concepts/bhastrika.html">bhastrika</a>
+    <a href="../concepts/ujjayi.html">ujjayi</a>
+    <a href="../concepts/sama-vritti.html">sama vritti</a>
+    <a href="../concepts/visama-vritti.html">visama vritti</a>
+    <a href="../concepts/bandha.html">bandha</a>
+    <a href="../concepts/meditation.html">meditaatio</a>
+    <a href="../concepts/presence.html">läsnäolo</a>
+  </div>
+
+  <h2>Miten lukea tätä polkua</h2>
+
+  <ol>
+    <li><strong>Aloita 0001:stä</strong> — ilman fysiologian ymmärrystä tekniikat jäävät tempuiksi.</li>
+    <li><strong>Harjoittele yhtä tekniikkaa viikossa</strong> — ei tarvitse oppia kaikkia kerralla.</li>
+    <li><strong>Huomaa vaikutus</strong> — syke, hengitystiheys, mieliala. Kirjaa ylös jos haluat.</li>
+    <li><strong>Siirry 0006:een</strong> kun sinulla on 2-3 tekniikkaa jotka toimivat — sieltä löytyy rutiinin rakennusohje.</li>
+  </ol>
+
+  <div class="hero" style="border-left-color: #b07000; background: #fff5e6;">
+    <p style="color: #6b4400;"><strong>Varoitus.</strong> Nopeat tekniikat kuten kapalabhati ja bhastrika eivät sovi kaikille. Jos sinulla on sydänvaivoja, korkea verenpaine, raskaus, epilepsia tai paniikkihäiriö, keskustele lääkärin kanssa ennen kokeilua. Polku ohjeistaa näissä kohdissa, mutta kuuntele kehoasi.</p>
+  </div>
+
+  <hr>
+
+  <p class="footer-note">
+    Lähteet: Harvard Health Publishing — "Relaxation techniques: Breath control helps quell errant stress response"; NIH NCCIH — "Mind and Body Practices for Stress"; IAYT — Yoga Therapy Today.
+  </p>
+</main>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002-viikko — Viikon sykli</title>
+<style>
+:root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+@media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+p { margin: 0.9rem 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+a:hover { border-bottom-color: var(--accent); }
+code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+nav.path a { color: var(--muted); border-bottom: none; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+.reflect h3 { margin-top: 0; }
+.svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+.svg-container svg { max-width: 100%; height: auto; }
+table { width:100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { padding: 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid var(--rule); }
+th { font-weight: bold; color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Harjoitus</a> › Oppitunti 2</nav>
+
+<h1>Viikon sykli</h1>
+<p class="meta">Oppitunti 2 / 6 · ~25 min</p>
+
+<h2>Aika on pyhä</h2>
+
+<p>Viikko on <strong>luonnollinen sykli</strong> — seitsemän päivää, joista jokainen voi edustaa eri voimaa. Tämä ajatus on yhteinen monille perinteille:</p>
+
+<ul>
+<li><strong>Babylonialainen</strong> — seitsemän planeettaa, seitsemän päivää</li>
+<li><strong>Hermetrinen</strong> — seitsemän sefiraa, seitsemän päivää</li>
+<li><strong>Kristillinen</strong> — seitsemän päivää, joista yksi lepopäivä</li>
+<li><strong>Kreikkalainen</strong> — seitsemän muusa, seitsemän taidetta</li>
+</ul>
+
+<p>Kun asetat <strong>teeman</strong> jokaiselle päivälle, viikko muuttuu <em>säestykseksi</em> — jokainen päivä on eri instrumentin vuoro.</p>
+
+<h2>Viikon seitsemän päivää</h2>
+
+<p>Tässä klassinen hermeettinen jako — jokaiselle päivälle oma teemansa:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Seitsemän päivää ympyränä -->
+  <circle cx="200" cy="200" r="150" stroke="#4a3a8a" stroke-width="2" fill="none" opacity="0.3"/>
+  <!-- Maanantai - Kuu -->
+  <circle cx="200" cy="80" r="35" fill="rgba(90,138,170,0.4)" stroke="#5a8aaa" stroke-width="2"/>
+  <text x="200" y="78" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Ma</text>
+  <text x="200" y="93" text-anchor="middle" fill="white" font-size="9" font-family="Georgia">Kuu</text>
+  <!-- Tiistai - Mars -->
+  <circle cx="290" cy="140" r="35" fill="rgba(210,100,100,0.4)" stroke="#d26464" stroke-width="2"/>
+  <text x="290" y="138" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Ti</text>
+  <text x="290" y="153" text-anchor="middle" fill="white" font-size="9" font-family="Georgia">Mars</text>
+  <!-- Keskiviikko - Merkurius -->
+  <circle cx="290" cy="260" r="35" fill="rgba(232,200,74,0.4)" stroke="#c8a838" stroke-width="2"/>
+  <text x="290" y="258" text-anchor="middle" fill="#1a1a1a" font-size="13" font-family="Georgia" font-weight="bold">Ke</text>
+  <text x="290" y="273" text-anchor="middle" fill="#1a1a1a" font-size="9" font-family="Georgia">Merkurius</text>
+  <!-- Torstai - Jupiter -->
+  <circle cx="200" cy="320" r="35" fill="rgba(155,127,184,0.4)" stroke="#8a6aaa" stroke-width="2"/>
+  <text x="200" y="318" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">To</text>
+  <text x="200" y="333" text-anchor="middle" fill="white" font-size="9" font-family="Georgia">Jupiter</text>
+  <!-- Perjantai - Venus -->
+  <circle cx="110" cy="260" r="35" fill="rgba(168,184,138,0.4)" stroke="#7a9a5a" stroke-width="2"/>
+  <text x="110" y="258" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Pe</text>
+  <text x="110" y="273" text-anchor="middle" fill="white" font-size="9" font-family="Georgia">Venus</text>
+  <!-- Lauantai - Saturnus -->
+  <circle cx="110" cy="140" r="35" fill="rgba(74,58,138,0.4)" stroke="#4a3a8a" stroke-width="2"/>
+  <text x="110" y="138" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">La</text>
+  <text x="110" y="153" text-anchor="middle" fill="white" font-size="9" font-family="Georgia">Saturnus</text>
+  <!-- Sunnuntai - Aurinko (keskellä) -->
+  <circle cx="200" cy="200" r="35" fill="rgba(255,220,80,0.6)" stroke="#c8a838" stroke-width="2"/>
+  <text x="200" y="198" text-anchor="middle" fill="#1a1a1a" font-size="13" font-family="Georgia" font-weight="bold">Su</text>
+  <text x="200" y="213" text-anchor="middle" fill="#1a1a1a" font-size="9" font-family="Georgia">Aurinko</text>
+  <text x="200" y="385" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">seitsemän planeettaa, seitsemän päivää</text>
+</svg>
+</div>
+
+<table>
+<tr><th>Päivä</th><th>Planeetta</th><th>Teema</th><th>Laatu</th></tr>
+<tr><td><strong>Sunnuntai</strong></td><td>Aurinko</td><td>Henkinen voima</td><td>Tietoisuus, tahto</td></tr>
+<tr><td><strong>Maanantai</strong></td><td>Kuu</td><td>Sisäinen</td><td>Tunteet, intuitio</td></tr>
+<tr><td><strong>Tiistai</strong></td><td>Mars</td><td>Toiminta</td><td>Voima, rohkeus</td></tr>
+<tr><td><strong>Keskiviikko</strong></td><td>Merkurius</td><td>Viestintä</td><td>Äly, oppiminen</td></tr>
+<tr><td><strong>Torstai</strong></td><td>Jupiter</td><td>Laajeneminen</td><td>Kasvu, runsaus</td></tr>
+<tr><td><strong>Perjantai</strong></td><td>Venus</td><td>Rakkaus</td><td>Kauneus, yhteys</td></tr>
+<tr><td><strong>Lauantai</strong></td><td>Saturnus</td><td>Rakenne</td><td>Kuri, raja, aika</td></tr>
+</table>
+
+<h2>Sunnuntai — auringon päivä</h2>
+
+<p>Sunnuntai on <strong>pyhä</strong> monissa perinteissä. Sen teema on <em>tietoisuus ja voima</em>.</p>
+
+<h3>Sunnuntain harjoitus</h3>
+<ul>
+<li>Pidempi meditaatio — 20-30 min</li>
+<li>Visualisoi <strong>kultaista valoa</strong> sydämessä</li>
+<li>Kysy: "mikä on tämän viikon tarkoitus?"</li>
+<li>Aseta <strong>viikon intentio</strong></li>
+</ul>
+
+<p>Tämä on viikon <strong>alotus</strong> — kirkkaus ja suunta.</p>
+
+<h2>Maanantai — kuun päivä</h2>
+
+<p>Maanantai on <strong>tunteiden ja intuitioiden</strong> päivä. Hyvä päivä kuunnella sisäistä.</p>
+
+<h3>Maanantain harjoitus</h3>
+<ul>
+<li>Hiljaisuusmeditaatio — 15 min</li>
+<li>Tunne keho: missä tunteet asuvat?</li>
+<li>Kirjoita <strong>unet</strong> ylös</li>
+<li>Kysy intuitiolta: "mitä minun tulee tietää?"</li>
+</ul>
+
+<h2>Tiistai — marsin päivä</h2>
+
+<p>Tiistai on <strong>toiminnan ja rohkeuden</strong> päivä. Hyvä päivä vaikeisiin päätöksiin.</p>
+
+<h3>Tiistain harjoitus</h3>
+<ul>
+<li>Lyhyt hengitys — 5 min</li>
+<li>Visualisoi <strong>punaista tulta</strong> solar plexus -kohdassa</li>
+<li>Tunnista <em>yksi vaikea tehtävä</em> — tee se</li>
+<li>Lopuksi kiitos: "minä olen voima"</li>
+</ul>
+
+<h2>Keskiviikko — merkuriuksen päivä</h2>
+
+<p>Keskiviikko on <strong>älyn ja oppimisen</strong> päivä. Hyvä päivä opiskella.</p>
+
+<h3>Keskiviikon harjoitus</h3>
+<ul>
+<li>Lyhyt keskittymismeditaatio — 10 min</li>
+<li>Opiskele jotain uutta — 30 min</li>
+<li>Kirjoita <strong>oppimispäiväkirjaa</strong></li>
+<li>Lopuksi: "minä olen oppija"</li>
+</ul>
+
+<h2>Torstai — jupiterin päivä</h2>
+
+<p>Torstai on <strong>laajenemisen ja kasvun</strong> päivä. Hyvä päivä suunnitteluun ja tulevaisuuteen.</p>
+
+<h3>Torstain harjoitus</h3>
+<ul>
+<li>Visualisoi <strong>violettia valoa</strong> otsalla</li>
+<li>Kysy: "minne haluan kasvaa?"</li>
+<li>Aseta <strong>pitkän aikavälin tavoite</strong></li>
+<li>Toivota kasvua</li>
+</ul>
+
+<h2>Perjantai — veneren päivä</h2>
+
+<p>Perjantai on <strong>rakkauden ja kauneuden</strong> päivä. Hyvä päivä ihmissuhteille.</p>
+
+<h3>Perjantain harjoitus</h3>
+<ul>
+<li>Sydänmeditaatio — 10 min</li>
+<li>Visualisoi <strong>vihreää tai vaaleanpunaista</strong> valoa sydämessä</li>
+<li><strong>Kiitä</strong> rakkaimpia ihmisiä</li>
+<li>Anna ja vastaanota rakkautta</li>
+</ul>
+
+<h2>Lauantai — saturnuksen päivä</h2>
+
+<p>Lauantai on <strong>rakenteen ja rajan</strong> päivä. Hyvä päivä katselmukseen ja suunnitteluun.</p>
+
+<h3>Lauantain harjoitus</h3>
+<ul>
+<li>Lyhyt maadoitusmeditaatio — 10 min</li>
+<li>Tunnista <strong>mustavalkoiset</strong> ajatukset</li>
+<li>Aseta <strong>rajat</strong> — mitä sanot ei?</li>
+<li>Kirjoita <strong>viikkokatsaus</strong></li>
+</ul>
+
+<h2>Viikon rytmi</h2>
+
+<p>Koko viikko on <strong>rytmi</strong> — seitsemän eri sävyä:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 100" width="400" height="100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Aaltoileva viiva seitsemällä eri värillä -->
+  <line x1="30" y1="50" x2="80" y2="50" stroke="#c8a838" stroke-width="8"/>
+  <line x1="80" y1="50" x2="130" y2="50" stroke="#5a8aaa" stroke-width="8"/>
+  <line x1="130" y1="50" x2="180" y2="50" stroke="#d26464" stroke-width="8"/>
+  <line x1="180" y1="50" x2="230" y2="50" stroke="#e8c84a" stroke-width="8"/>
+  <line x1="230" y1="50" x2="280" y2="50" stroke="#8a6aaa" stroke-width="8"/>
+  <line x1="280" y1="50" x2="330" y2="50" stroke="#7a9a5a" stroke-width="8"/>
+  <line x1="330" y1="50" x2="370" y2="50" stroke="#4a3a8a" stroke-width="8"/>
+  <text x="55" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">Su</text>
+  <text x="105" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">Ma</text>
+  <text x="155" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">Ti</text>
+  <text x="205" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">Ke</text>
+  <text x="255" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">To</text>
+  <text x="305" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">Pe</text>
+  <text x="350" y="80" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">La</text>
+</svg>
+</div>
+
+<p>Tämä luo <strong>luonnollisen vaihtelun</strong> — jokainen päivä on erilainen, mutta yhteenkuuluva.</p>
+
+<h2>Viikon näyte</h2>
+
+<p>Tässä yksi tapa elää viikko:</p>
+
+<table>
+<tr><th>Päivä</th><th>Teema</th><th>Harjoitus</th><th>Väri</th></tr>
+<tr><td><strong>Su</strong></td><td>Tietoisuus</td><td>20 min meditaatio, viikon intentio</td><td>Kultainen</td></tr>
+<tr><td><strong>Ma</strong></td><td>Intuitio</td><td>Hiljaisuus, unipäiväkirja</td><td>Hopea</td></tr>
+<tr><td><strong>Ti</strong></td><td>Toiminta</td><td>5 min tulta, vaikea tehtävä</td><td>Punainen</td></tr>
+<tr><td><strong>Ke</strong></td><td>Oppiminen</td><td>10 min älyä, opiskelu</td><td>Keltainen</td></tr>
+<tr><td><strong>To</strong></td><td>Kasvu</td><td>Visualisointi, suunnittelu</td><td>Violetti</td></tr>
+<tr><td><strong>Pe</strong></td><td>Rakkaus</td><td>Sydänmeditaatio, yhteys</td><td>Vihreä</td></tr>
+<tr><td><strong>La</strong></td><td>Rakenne</td><td>Maadoitus, viikkokatsaus</td><td>Musta/ruskea</td></tr>
+</table>
+
+<h2>Viikkokatsaus</h2>
+
+<p><strong>Lauantaisin</strong> tai <strong>sunnuntaisin</strong> tee viikkokatsaus:</p>
+
+<ol>
+<li><strong>Mikä meni hyvin?</strong> — kirjaa 3-5 asiaa</li>
+<li><strong>Mikä oli vaikeaa?</strong> — tunnista ilman tuomitsemista</li>
+<li><strong>Mitä opin?</strong> — 1-3 oivallusta</li>
+<li><strong>Mitähaluaisin muuttaa?</strong> — yksi selkeä asia</li>
+<li><strong>Kiitos viikosta</strong></li>
+</ol>
+
+<p>Tämä tekee viikosta <strong>näkyvän</strong> — ja muutoksen mahdolliseksi.</p>
+
+<h2>Päivän symbolit</h2>
+
+<p>Jokaiselle päivälle voi valita <strong>symbolin</strong> — kuvan tai esineen:</p>
+
+<ul>
+<li><strong>Sunnuntai</strong> — kynttilä, aurinko</li>
+<li><strong>Maanantai</strong> — hopeakoru, kuu</li>
+<li><strong>Tiistai</strong> — punainen kivi, tikari</li>
+<li><strong>Keskiviikko</strong> — kirja, sulka</li>
+<li><strong>Torstai</strong> — violetti kivi, sinetti</li>
+<li><strong>Perjantai</strong> — ruusu, peili</li>
+<li><strong>Lauantai</strong> — musta kivi, tiimalasi</li>
+</ul>
+
+<p>Symboli toimii <strong>muistutuksena</strong> päivän teemasta.</p>
+
+<h2>Vapaus vs. rakenne</h2>
+
+<p>Viikon rytmi on <strong>suositus</strong>, ei kahle. Voit:</p>
+
+<ul>
+<li>Valita vain <strong>2-3 päivää</strong> viikossa</li>
+<li>Vaihdella teemoja <strong>oman elämän</strong> mukaan</li>
+<li>Jättää väliin <strong>joskus</strong> — jousta säännöllisyyden sijaan</li>
+</ul>
+
+<p>Rakenne on <em>väline</em>, ei päämäärä.</p>
+
+<h2>Yhdistäminen arkeen</h2>
+
+<p>Viikon sykli <strong>vaikuttaa</strong> arkeen:</p>
+
+<ul>
+<li><strong>Ma</strong> — intuitio ohjaa päivää</li>
+<li><strong>Ti</strong> — toiminta on rohkeaa</li>
+<li><strong>Ke</strong> — opi jotain uutta</li>
+<li><strong>To</strong> — katso tulevaisuuteen</li>
+<li><strong>Pe</strong> — rakasta enemmän</li>
+<li><strong>La</strong> — aseta rajat</li>
+<li><strong>Su</strong> — lepää ja integroi</li>
+</ul>
+
+<p>Tämä on <strong>viikon sinfonia</strong> — jokainen päivä on eri soitin.</p>
+
+<h2>Yhteenveto</h2>
+
+<p>Aika on pyhä — viikko on seitsemän päivän sykli. Jokaiselle päivälle oma teemansa: aurinko, kuu, mars, merkurius, jupiter, venus, saturnus. Tämä antaa viikolle <strong>rytmin ja värin</strong>. Sunnuntai on tietoisuus, maanantai intuitio, tiistai toiminta, keskiviikko äly, torstai kasvu, perjantai rakkaus, lauantai rakenne. Viikkokatsaus sunnuntaisin tai lauantaisin tekee muutoksen näkyväksi. Rakenne on väline — ei kahle. Kun elät viikon tahtiin, huomaat: aika <strong>tukee</strong> sinua.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Harjoitus: Viikon suunnittelu (30 min)</h3>
+<ol>
+<li>Tee taulukko seitsemälle päivälle</li>
+<li>Aseta kullekin päivälle <strong>yksi teema</strong> (valitse 7 yllä olevasta tai omasta)</li>
+<li>Suunnittele <strong>yksi harjoitus</strong> kutakin päivää varten</li>
+<li>Elä viikon mukaan</li>
+<li>Lauantaina: <strong>viikkokatsaus</strong></li>
+</ol>
+<p>Toista useita viikkoja — huomaat, mikä toimii sinulle.</p>
+</div>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Miten koet viikon tällä hetkellä — rytminä vai kaaoksena? Mikä päivä tuntuu sinulle "omimmalta"? Mitä haluaisit lisätä viikkoon? Entä vähentää? Miten viikon rytmi voisi tukea henkistä polkuasi?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..." style="width:100%; min-height:100px; margin-top:0.8rem; padding:0.5rem; font-family:inherit; font-size:0.95rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:4px;"></textarea>
+</div>
+
+</main>
+</body>
+</html>

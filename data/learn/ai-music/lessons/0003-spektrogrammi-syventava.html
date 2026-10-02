@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppitunti 0003 — Syventävä spektrogrammi-analyysi</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --accent:#0a6e3a; --rule:#e5e5e5; --bg:#fcfcfb; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         color: var(--ink); max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; background: #fbfaf6; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; margin-top: 2.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .key { background: #f6f6f4; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  img.demo { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; margin: 1rem 0; background: white; }
+  audio { width: 100%; margin: 0.5rem 0 1rem 0; }
+  .sound-block { background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.2rem; margin: 1.5rem 0; }
+  .sound-block h3 { margin-top: 0; }
+  .sound-block .num { display: inline-block; background: var(--accent); color: white; width: 1.5em; height: 1.5em; line-height: 1.5em; text-align: center; border-radius: 50%; margin-right: 0.4rem; font-size: 0.9em; }
+  details { margin: 1rem 0; padding: 0.8rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+  details[open] summary { margin-bottom: 0.6rem; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.3rem 0; }
+  code { background: #f6f6f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+  pre { background: #f6f6f4; padding: 0.8rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; }
+  form { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); }
+  form input, form textarea { width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px; }
+  form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+  th, td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); text-align: left; }
+  th { background: #f6f6f4; font-weight: 600; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Syventävä spektrogrammi-analyysi</h1>
+<p class="meta">Oppitunti 0003 · AI-musiikin tuotanto · ~15 min + ääniharjoitus</p>
+
+<div class="key">
+  <strong>Ydinajatus:</strong> oppitunnissa 0002 opit tunnistamaan elementtejä. Nyt opit <em>miksi</em> ne näyttävät siltä — ja miten voit lukea äänestä paljon enemmän kuin "tämä on basso". Tämä on taito, joka erottaa sinut ihmisistä, jotka vain kuuntelevat.
+</div>
+
+<h2>1. Kolme ääntä, kolme sormenjälkeä</h2>
+
+<p>Alla on kolme <strong>synteettistä</strong> ääntä. Jokainen on rakennettu matemaattisesti tarkasti, jotta tiedämme <em>tasalleen</em> mitä spektrogrammissa pitäisi näkyä — ja voit sitten verrata sitä siihen, mitä kuulet.</p>
+
+<div class="sound-block">
+  <h3><span class="num">1</span>Puhdas siniaalto · 220 Hz</h3>
+  <p><strong>Matemaattinen muoto:</strong> <code>y(t) = A · sin(2π · 220 · t)</code> — vain yksi taajuus, ei mitään muuta.</p>
+  <audio controls preload="metadata"><source src="../reference/sound-pure.wav" type="audio/wav"></audio>
+  <p><strong>Spektrogrammissa näkyy:</strong> yksi ohut vaakaviiva 220 Hz kohdalla, ei mitään muualla. Tämä on referenssi — jokainen muu ääni "vertaa itseään" tähän.</p>
+</div>
+
+<div class="sound-block">
+  <h3><span class="num">2</span>Särökitara · square + tanh-clip</h3>
+  <p><strong>Matemaattinen muoto:</strong> square-aalto = perustaajuus 220 Hz + parittomat harmoniset (3×, 5×, 7×, 9×, 11×) pienenevin voimakkuuksin, sitten <code>tanh()</code>-funktio leikkaa huiput (särö).</p>
+  <audio controls preload="metadata"><source src="../reference/sound-guitar.wav" type="audio/wav"></audio>
+  <p><strong>Spektrogrammissa näkyy:</strong> useita vaakaviivoja 220, 660, 1100, 1540, 1980, 2420 Hz kohdilla — harmoninen sarja. Mitä enemmän säröä, sitä enemmän ylätaajuuksia ja sitä "tiheämpi" spektrogrammi.</p>
+</div>
+
+<div class="sound-block">
+  <h3><span class="num">3</span>Symbaali · kohina + ylipäästö 6 kHz</h3>
+  <p><strong>Matemaattinen muoto:</strong> valkoista kohinaa (satunnaista, kaikkia taajuuksia), suodatettuna niin että vain yli 6 kHz pääsee läpi (ylipäästösuodin), eksponentiaalisesti vaimenee.</p>
+  <audio controls preload="metadata"><source src="../reference/sound-cymbal.wav" type="audio/wav"></audio>
+  <p><strong>Spektrogrammissa näkyy:</strong> leveä vaalea alue ylhäällä, ei viivoja — kohina ei ole järjestäytynyttä. Vaimenee vasemmalta oikealle, koska isku tapahtuu 0.5s kohdalla.</p>
+</div>
+
+<h2>2. Visuaalinen vertailu</h2>
+
+<p>Tässä kaikki kolme vierekkäin, jotta voit nähdä erot selvästi:</p>
+
+<img class="demo" src="../reference/compare-three-sounds.png" alt="Kolme ääntä vertailussa">
+
+<table>
+  <thead>
+    <tr><th>Tyyppi</th><th>Spektrogrammi näyttää</th><th>Syy</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Puhdas siniaalto</td><td>Yksi kapea viiva</td><td>Vain yksi taajuuskomponentti</td></tr>
+    <tr><td>Särökitara</td><td>Useita viivoja harmonisesti</td><td>Square-aalto = harmoninen sarja</td></tr>
+    <tr><td>Symbaali</td><td>Leveä vaalea alue ylhäällä</td><td>Suodatettu kohina, ei taajuusrakennetta</td></tr>
+  </tbody>
+</table>
+
+<h2>3. Lineaarinen vai mel-spektrogrammi?</h2>
+
+<p>Toinen kysymys johon törmäät: <strong>miksi</strong> AI-musiikkimallit (varsinkaan diffusion-pohjaiset kuten Stable Audio) käyttävät usein <em>mel</em>-spektrogrammia tavallisen sijaan?</p>
+
+<p>Vastaus on ihmisen kuuloaisti. Mel-asteikko on suunniteltu matkimaan sitä, miten korva erottaa taajuuksia:</p>
+
+<ul>
+  <li>0–500 Hz: erotamme taajuudet tarkasti (50 Hz hyppäys kuuluu selvästi)</li>
+  <li>500–4000 Hz: tarkkuus heikkenee (tarvitaan ~100 Hz hyppäys)</li>
+  <li>4000+ Hz: karkeampi erotuskyky (tarvitaan useita satoja Hz)</li>
+</ul>
+
+<p>Mel-spektrogrammi <strong>skaalaa</strong> taajuusakselin tämän mukaan: matalilla taajuuksilla on enemmän "tarkkuutta" (enemmän kanavia), korkeilla vähemmän. Tuloksena:</p>
+
+<img class="demo" src="../reference/mel-vs-linear.png" alt="Mel-spektrogrammi vs lineaarinen">
+
+<p><strong>Mitä tämä tarkoittaa:</strong> mel-versiossa särökitaran harmoniset <em>erottuvat</em> alemmilla taajuuksilla paljon paremmin kuin lineaarisessa. Ihmiskorva kuulee ne eri tavalla — mel-spektrogrammi näyttää mitä korva oikeasti "kuulee".</p>
+
+<h2>4. Miksi tämä on kullanarvoinen taito AI-musiikissa</h2>
+
+<p>Kun kuuntelet AI-musiikkia ja jokin kuulostaa <em>ohuelta</em>, <em>tukkoiselta</em> tai <em>lasimaiselta</em>, mel-spektrogrammi kertoo miksi:</p>
+
+<ul>
+  <li><strong>Ohut soundi</strong> → spektrogrammissa näkyy energiaa vain keskitaajuuksilla (500-2000 Hz), ei juurikaan bassoa eikä ilmaa (8-12 kHz)</li>
+  <li><strong>Tukkoinen soundi</strong> → liikaa energiaa 200-500 Hz:ssä, tyypillinen merkki yliohjautuneesta masteroinnista</li>
+  <li><strong>Lasimainen / kylmä soundi</strong> → liikaa energiaa 5-8 kHz:ssä, mahdollisesti AI:n lisäämä "kirkkausboosti" ilman inhimillistä harkintaa</li>
+  <li><strong>"Märkä" soundi</strong> → transientit näkyvät pitkänä vanana eikä terävinä piikkeinä (overcompression)</li>
+</ul>
+
+<div class="key">
+  <strong>Pro-vinkki:</strong> ennen kuin julkaiset AI-kappaleen, avaa se Sonic Visualiser'issa tai Audacityssa ja katso mel-spektrogrammia. Etsi "mustia aukkoja" (alueita joissa ei ole energiaa lainkaan) — ne ovat usein merkki siitä, että malli ei ole tuottanut tasapainoista lopputulosta.
+</div>
+
+<h2>5. Harjoitus</h2>
+
+<p>Valitse jokin seuraavista ja raportoi tulokset:</p>
+
+<ol>
+  <li><strong>Avaa mikä tahansa oma kappaleesi</strong> Sonic Visualiser'issa (asenna jos ei ole) → katso mel-spektrogrammia → tunnista kolme aluetta: matalat (basso), keski (melodia/laulu), korkeat (symbaalit/ilma)</li>
+  <li><strong>Generoi Suno-kappale</strong> → avaa samaan työkaluun → vertaa: onko AI-musiikin spektrogrammi "täyteläisempi" vai "ohuempi" kuin oman kappaleesi?</li>
+  <li><strong>Lataa kolme esimerkkiääntä yllä</strong> → piirrä itse librosalla Pythonissa:
+    <pre>python3 -c "
+import librosa, librosa.display, matplotlib.pyplot as plt
+y, sr = librosa.load('reference/sound-guitar.wav')
+mel = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=128)
+librosa.display.specshow(librosa.power_to_db(mel, ref=np.max), sr=sr, y_axis='mel', x_axis='time')
+plt.colorbar()
+plt.show()
+"
+    </pre>
+  </li>
+</ol>
+
+<form id="quiz" onsubmit="return false;">
+  <div style="margin-bottom: 1rem;">
+    <label for="q1" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">1. Mitä uutta opit mel-spektrogrammin ja lineaarisen erosta?</label>
+    <textarea id="q1" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q2" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">2. Mikä kolmesta esimerkistä (siniaalto, kitara, symbaali) oli visuaalisesti selkein — ja miksi?</label>
+    <textarea id="q2" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q3" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">3. Mitä haluaisit syventää seuraavaksi — vai haluatko siirtyä promptitieteeseen?</label>
+    <textarea id="q3" rows="2"></textarea>
+  </div>
+  <div style="display:flex; gap: 0.5rem; align-items:center;">
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()" style="background: transparent; color: var(--muted); border: 1px solid var(--rule);">Tyhjennä</button>
+    <span id="status" style="color: var(--accent); font-size: 0.9rem;"></span>
+  </div>
+</form>
+
+<script>
+function copyAnswers() {
+  const a = [1,2,3].map(i => 'Q' + i + ': ' + (document.getElementById('q'+i).value.trim() || '(tyhjä)')).join('\n');
+  navigator.clipboard.writeText(a).then(() => {
+    document.getElementById('status').textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => document.getElementById('status').textContent = '', 4000);
+  });
+}
+function clearAnswers() {
+  [1,2,3].forEach(i => document.getElementById('q'+i).value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+
+<hr>
+
+<h2>📚 Lisäresursseja tekniseen syventämiseen</h2>
+
+<p>Jos haluat mennä pintaa syvemmälle spektrogrammien ja signaalinkäsittelyn maailmaan, nämä ovat parhaat löytämäni lähteet.</p>
+
+<h3>Interaktiiviset työkalut</h3>
+<ul>
+  <li><a href="https://www.sonicvisualiser.org/">Sonic Visualiser</a> (ilmainen, Win/Mac/Linux) — paras standalone-työkalu spektrogrammien katseluun. Tukee myös mel-asteikkoa ja vertailuanalyysiä.</li>
+  <li><a href="https://musiclab.chromeexperiments.com/Experiments">Chrome Music Lab</a> — selaimessa toimivia pieniä kokeiluja (Sound Waves, Spectrogram, Oscillators)</li>
+  <li><a href="https://www.audacityteam.org/">Audacity</a> + sen spektrogramminäkymä — yksinkertaisempi vaihtoehto Sonic Visualiser'ille</li>
+  <li><a href="https://academo.org/demos/spectrum-analyzer/">Academo Spectrum Analyzer</a> — selainpohjainen reaaliaikainen FFT-visualisointi mikrofonille</li>
+</ul>
+
+<h3>Kirjallisuus ja kurssit</h3>
+<ul>
+  <li><a href="https://www.dspguide.com/pdf.htm">The Scientist and Engineer's Guide to Digital Signal Processing</a> — Steven W. Smith, ilmainen PDF. Luku 8 (The Discrete Fourier Transform) ja luku 10 (Fourier Transform Properties) kattavat kaiken mitä tarvitset.</li>
+  <li><a href="https://haythamfayek.com/2016/04/01/speech-processing-for-machine-learning.html">Speech Processing for Machine Learning</a> — Haytham Fayek, ML-painotteinen johdanto STFT:hen, mel-spektrogrammiin ja MFCC:hen. Erinomainen ja selkeä.</li>
+  <li><a href="https://www.coursera.org/learn/audio-signal-processing">Coursera: Audio Signal Processing for Music Applications</a> — Xavier Serra & Emilia Gómez, akateeminen mutta käytännönläheinen</li>
+  <li><a href="https://mitpress.mit.edu/9780262014465/">Fundamentals of Music Processing</a> — Meinard Müller, kattava akateeminen teos (maksullinen)</li>
+</ul>
+
+<h3>Python-harjoittelua</h3>
+<ul>
+  <li><a href="https://musicinformationretrieval.com/">Music Information Retrieval</a> — Brian McFee, ilmainen IPython-kirja, sisältää käytännön harjoituksia librosa-kirjastolla</li>
+  <li><a href="https://librosa.org/doc/latest/tutorial.html">librosa-tutorial</a> — virallinen, nopea tapa oppia spektrogrammien laskenta</li>
+  <li><a href="https://www.kaggle.com/code/studentfr/understanding-audio-data-using-librosa">Kaggle: Audio Data with Librosa</a> — käytännön notebook-tyyli</li>
+</ul>
+
+<h3>Syventävä matematiikka</h3>
+<ul>
+  <li><a href="https://www.youtube.com/watch?v=spUNpyF58BY">3Blue1Brown: Fourier Transform</a> — paras visuaalinen johdanto Fourier-munnokseen, 20 minuuttia</li>
+  <li><a href="https://www.youtube.com/watch?v=r18Gi8lAfVA">But what is the Fourier Transform? — 3Blue1Brown</a> — pidempi versio, syvempi</li>
+</ul>
+
+<div class="key">
+  <strong>Suositus poluksi:</strong> jos sinulla on 2-3 tuntia, tee tämä järjestyksessä — (1) Chrome Music Lab Spectrogram -leikki, (2) Academo Spectrum Analyzer mikrofonilla, (3) Sonic Visualiser + oma kappaleesi, (4) librosa-tutorial Pythonissa. Neljä askelta, kukin noin 30 min, ja ymmärrät spektrogrammin loppuelämäksi.
+</div>
+
+<h2>Lähteet</h2>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Mel_scale">Wikipedia: Mel scale</a> — miksi mel-asteikko on olemassa</li>
+  <li><a href="https://haythamfayek.com/2016/04/01/speech-processing-for-machine-learning.html">Speech Processing for ML</a> — STFT, mel-spektrogrammi, MFCC</li>
+  <li><a href="https://librosa.org/doc/latest/generated/librosa.feature.melspectrogram.html">librosa.feature.melspectrogram</a></li>
+  <li><a href="https://www.sonicvisualiser.org/">Sonic Visualiser</a> — paras ilmainen työkalu spektrogrammien katseluun</li>
+</ul>
+
+<footer>
+  <p><strong>Muistutus:</strong> kysy jos jokin jäi epäselväksi. Sonic Visualiser on ilmainen ja toimii kaikilla alustoilla — suosittelen vahvasti asentamaan.</p>
+  <p><a href="../index.html">← Takaisin oppimateriaali-hakemistoon</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — Kävelymeditaatio</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Kävelymeditaatio</h1>
+  <p class="meta">Oppitunti 0004 · ~8 min · harjoitus</p>
+
+  <p>Jos hengitysmeditaatio on polun kapein ovi ja kehoskannaus sen tasainen lattia, kävelymeditaatio on <em>avoin ikkuna</em>. Se on portti ihmisille, joille istuminen ei sovi, ja se on historian pisimpään dokumentoituja liikkuvia meditaatiomuotoja.</p>
+
+  <p>Tämä oppitunti on erityisen arvokas ADHD:sta, ahdistuksesta tai traumaoireilusta kärsiville — sekä kaikille, jotka kokevat, että "oikea meditaatio on hiljaista, paikallaan olevaa istumista". Tämä on myytti, joka on syytä purkaa.</p>
+
+  <h2>Mikä on kävelymeditaatio?</h2>
+
+  <p>Kävelymeditaatio on <em>tietoisen kävelemisen</em> harjoittaminen — askeleen askeleelta, hitaasti ja tarkasti, huomion seuratessa liikettä. Se ei ole kävelyä kuulokkeet päässä, ei ole "lenkkeily meditatiivisesti", ei ole vaellusta kauniissa luonnossa. Se on harjoitus, jossa päätavoite on <em>käveleminen itse</em>, ei päämäärä.</p>
+
+  <p>Sharon Salzberg kertoo opettajansa Munindra-nimisen burmalaisen mestarin lauseen: <em>"Sinun ei tarvitse mennä mihinkään. Sinun ei tarvitse tehdä mitään. Sinun ei tarvitse olla kukaan muu kuin se, joka olet nyt."</em> Kävelymeditaatio on tämän konkretisointia.</p>
+
+  <blockquote>
+    Käveleminen on meditaatiomuoto, jossa keho ja mieli tekevät samaa työtä.
+  </blockquote>
+
+  <p>Kävelymeditaatiota on useita muotoja, jotka painottavat eri asioita:</p>
+
+  <ul>
+    <li><strong>Thaimaalainen metsäluostariperinne</strong> — hidas, pieni askel, huomio jalkapohjissa. Ajallisesti intensiivinen, usein tunnin tai pidempään.</li>
+    <li><strong>Zen-perinteen <em>kinhin</em></strong> — kohtalaisen nopea kävely dojossa (harjoitussali) istumisen välissä, yleensä 5–15 minuuttia.</li>
+    <li><strong>Vipassana liikkeessä</strong> — käytännönläheinen muoto, jossa kävellään jokapäiväisessä ympäristössä huomion kanssa.</li>
+  </ul>
+
+  <h2>Thaimaalainen metsäluostariperinne</h2>
+
+  <p>Thaimaalaisen metsäluostariperinteen (<em>Thai Forest Tradition</em>) panos kävelymeditaatioon on merkittävä, ja se on yksi polun tärkeimmistä esikuvista. Perinne juontaa Buddhan aikaan asti, mutta modernissa muodossaan se tunnetaan etenkin 1900-luvun opettajista kuten Ajahn Chah (1918–1992), Ajahn Mun (1870–1949) ja Ajahn Sumedho.</p>
+
+  <p>Tämän perinteen ydinajatuksia:</p>
+
+  <ul>
+    <li><strong>Metsä ympäristönä.</strong> Harjoitus tapahtuu usein luonnossa — poluilla, puiden alla, koska luonto <em>neutralisoi</em> aivojen haluavat hakeutua ärsykkeisiin.</li>
+    <li><strong>Hidas, tietoinen askel.</strong> Askel voi olla niin hidas, että yksi askel vie useita sekunteja — tarkoituksena tuntea jalan koko liikerata: kantaisku, jalkapohjan vieriminen, varpaiden irtoaminen maasta.</li>
+    <li><strong>Saapuminen ja poistuminen.</strong> Jokaiselle askeleelle annetaan läsnäolo "saapumisena" (maahan) ja "lähtemisenä" (maasta irtoamisena). Ajahn Chah opetti tämän erityisen konkreettisesti.</li>
+    <li><strong>Tahdistaminen hengitykseen.</strong> Jotkut opettajat ohjaavat kävelemään hengityksen tahdissa — kaksi askelmaa sisäänhengityksellä, kolme uloshengityksellä. Tämä on <a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">pranayama-</a> ja <a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitysmeditaation</a> yhdistelmä.</li>
+  </ul>
+
+  <p>Ajahn Chah'n neuvo oli yksinkertainen ja toistuva: <em>"Kun kävelet, tiedä että kävelet. Kun hengität, tiedä että hengität. Kun syöt, tiedä että syöt."</em> Tämä on <a href="../../concepts/presence.html" class="wikilink" data-concept="presence">presence</a>-harjoituksen ydin ilman että sitä kutsutaan sellaiseksi.</p>
+
+  <h2><a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">Katseen kohdistaminen</a> — drishti</h2>
+
+  <p>Jooga- ja meditaatioperinteessä <em>drishti</em> on katseen kohdistamisen harjoitus. Kävelymeditaatiossa drishti on erityisen merkityksellinen, koska silmät ovat avoinna — toisin kuin hengitysmeditaatiossa tai body scanissa.</p>
+
+  <p>Drishti-käytäntöjä on useita:</p>
+
+  <ul>
+    <li><strong>Katsella eteen noin kahden metrin päähän</strong>, ei lähelle eikä kaukaisuuteen — tämä on perusmuoto, joka rauhoittaa näköaivokuorta.</li>
+    <li><strong>Pehmeä, laaja katse</strong> — katseen ei tule tarkentaa, vaan se on noin 60 astetta leveä ja "märkä" (jatkuvasti liikkuva, ei jähmettynyt).</li>
+    <li><strong>Drishti pisteeseen</strong> — joissain perinteissä yksi piste, johon katse pysähtyy (esim. kynttilä, kivi, oma varjo).</li>
+  </ul>
+
+  <p>Tämä ei ole "staattinen tuijotus". Se on tarkoituksellinen, mutta <em>pehmeä</em> katseen asento. Kun mieli lähtee seuraamaan ohikulkijaa tai maisemaa, huomaat sen ja palaat.</p>
+
+  <blockquote>
+    Silmät ovat kuin koiran hihna — ne kertovat mihin mieli juoksi.
+  </blockquote>
+
+  <p>Wim Hof -menetelmässä ja joissain liikuntalähtöisissä meditaatiomuodoissa käytetään drishtia eri tavalla (esim. katse horisonttiin). Kaikki nämä toimivat, kunhan periaate on sama: <a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">katseen hallinta on mielen hallintaa</a>.</p>
+
+  <h2>Kävelymeditaation tutkimusnäyttö</h2>
+
+  <p>Kävelymeditaatiota on tutkittu vähemmän kuin istumista, mutta näyttö on lupaavaa ja kasvavaa:</p>
+
+  <ul>
+    <li><strong>Morgan et al. (2013, 2014)</strong> — satunnaistettu tutkimus kävelymeditaatiosta masennusoireisilla ikääntyneillä osoitti merkittävän parantumisen verrattuna kontrolliryhmään.</li>
+    <li><strong>Teut et al. (2013)</strong> — krooninen alaselkäkipu: kävelymeditaatio vähensi kipua ja paransi liikkuvuutta lumeryhmää enemmän.</li>
+    <li><strong>Aguiar et al. (2014)</strong> — mittasi aivotoiminnan muutoksia kävelymeditaation aikana: etummainen cingulate cortex ja tarkkaavuuteen liittyvät verkostot aktivoituivat samalla tavalla kuin istumismeditaatiossa.</li>
+    <li><strong>Haluat tietää enemmän?</strong> Kävelymeditaatio näyttää vaikuttavan erityisesti <em>toiminnan tietoisuuteen</em> — kykyyn huomata mitä on tekemässä.</li>
+  </ul>
+
+  <h2>Käytännön ohje: peruskävelymeditaatio 15 minuuttia</h2>
+
+  <p>Tämä on hyvä yleismuoto, joka ei vaadi metsää eikä temppeliä. Sen voi tehdä asunnon sisällä, takapihalla, lähiökäytävällä tai metsäpolulla.</p>
+
+  <ol>
+    <li><strong>Valitse reitti.</strong> 10–30 metriä suoraa, missä voit kääntyä. Sisällä voi olla käytävä, ulkona tie tai polku. Merkitse mielessäsi "alku" ja "loppu".</li>
+    <li><strong>Asento.</strong> Seiso aloituspisteessä. Kädet vartalon vierellä tai kevyesti yhdessä edessä. Hartiat rentoina. Pää pystyssä, mutta leuka hieman sisään.</li>
+    <li><strong>Katse.</strong> Aseta katse noin kahden metrin päähän, noin 60 astetta leveä. Ei kohdistamista mihinkään. Pehmeä, mutta tarkoituksellinen.</li>
+    <li><strong>Aloitus.</strong> Nosta toinen jalka. Tunne koko liikerata — kantaisku, jalkapohjan vieriminen, varpaiden työntö. Jos kävelet hitaasti, jokaisen askeleen pitäisi kestää 3–5 sekuntia.</li>
+    <li><strong>Palaaminen.</strong> Kun ajatus vie mukanaan — pysähdy, seiso hetki paikallasi, huomaa jalkojen tunne maata vasten. Palaa askeleeseen.</li>
+    <li><strong>Kääntyminen.</strong> Saavuttuasi reitin päähän, pysähdy. Seiso hetki. Hengitä. Käänny hitaasti. Jatka.</li>
+    <li><strong>Kesto.</strong> 15 minuuttia on hyvä yleismäärä, mutta lyhyemmätkin (5 minuuttia) toimivat. Kävelymeditaatio on yleensä helpompi kuin istuminen, koska keho on mukana harjoituksessa.</li>
+  </ol>
+
+  <h3>Muunnelma: hidas kävely</h3>
+
+  <p>Jos haluat syventää, hidasta entisestään. Ajahn Chah'n opetus: <em>"Kävele niin hitaasti, että voit tuntea jokaisen lihaksen liikkeen."</em> Tämä ei ole helppoa — se muuttuu helposti teatraaliseksi, jos sitä tekee liian tietoisesti "näyttääkseen" meditoivalta. Sisäinen intentio on ratkaisevampi kuin ulkoinen nopeus.</p>
+
+  <h3>Muunnelma: drishti-pisteeseen</h3>
+
+  <p>Aseta maahan pieni kivi tai teippaa merkki. Katso koko ajan sitä kohti, älä sivuille. Tämä on intensiivisempi versio, joka voi olla hyödyllinen erityisesti keskittymisen harjoittamisessa.</p>
+
+  <h3>Muunnelma: luonnossa</h3>
+
+  <p>Metsäpolku, järvenrantaa tai puisto. Anna <a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">katseen</a> liikkua pehmeästi ympäristössä. Lisäksi voit laajentaa huomiota ääniin — lintuihin, tuuleen, ohi kulkevaan ihmiseen. Tämä on laajempi versio, joka harjoittaa <em>avointa</em> tietoisuutta, ei pelkkää kohdistettua.</p>
+
+  <h2>Ero "kävelyyn luonnossa"</h2>
+
+  <p>Tämä on kysymys, johon moni palaa. Ero on merkityksellinen, mutta ei niin dikotominen kuin usein esitetään:</p>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Kävelymeditaatio</h3>
+      <p>Tarkoitus on <em>käveleminen itse</em>. Askel on kohde. Ei päämäärää, ei nopeutta, ei musiikkia, ei kuulokkeita. Huomio on kävelemisessä, ei sen sivutuotteissa.</p>
+    </div>
+    <div class="col right">
+      <h3>Kävely luonnossa</h3>
+      <p>Tarkoitus on <em>kokemus ympäristöstä</em>. Kävely on keino, ei kohde. Mieli saa laajentua, vaeltaa, nauttia. Voi olla yhtä lailla mindfulness-harjoitus, mutta keveämpi.</p>
+    </div>
+  </div>
+
+  <p>Molempia tarvitaan. Kävelymeditaatio on treeni — intensiivinen, suppea, tarkka. Kävely luonnossa on virkistys — laaja, pehmeä, avoin. Michael Stone sanoi: "Kävelymeditaatio on kuntosali, kävely luonnossa on metsä."</p>
+
+  <h2>Milloin tämä on erityisen hyödyllinen</h2>
+
+  <ul>
+    <li><strong>ADHD ja levoton mieli.</strong> Liikkuminen antaa keholle tekemistä, mikä vähentää tarvetta "ohjata" mieltä väkisin. Kävelymeditaatio on yksi tutkituimmista mindfulness-menetelmistä ADHD-aikuisilla.</li>
+    <li><strong>Ahdistus, jossa istuminen lisää oireita.</strong> Kehon liike tasaa autonomista hermostoa tehokkaasti.</li>
+    <li><strong>Fyysisen aktiivisuuden yhdistäminen.</strong> Urheilijat, jotka käyttävät lenkkeilyn osana mindfulnessia, raportoivat usein "tarkkaavuuden lisääntymistä" liikkeen aikana.</li>
+    <li><strong>Työpäivän keskellä.</strong> 5 minuutin kävelymeditaatio palaverien välissä on yksi tehokkaimmista tavoista palata läsnäoloon työelämässä.</li>
+</ul>
+
+  <h2>Milloin tämä EI ole oikea valinta</h2>
+
+  <ul>
+    <li><strong>Liikuntarajoitteet, jotka estävät kävelyn.</strong> Tällöin voi käyttää muita liikkuvia muotoja — pyörätuolilla liikkuminen, käden heiluttelu, jopa keinutuoli toimivat periaatteessa samalla tavalla.</li>
+    <li><strong>Vahva liikunta-riippuvuus.</strong> Jos liikunnasta on tullut keino välttää tunteita eikä kohdata niitä, kävelymeditaatio voi olla aluksi hankala — juuri siksi siitä on hyötyä.</li>
+    <li><strong>Krooninen väsymys.</strong> Kävely ilman voimia ei ole hyödyllistä — lepo on tällöin oikeampi valinta.</li>
+</ul>
+
+  <h2>Viikon harjoitusohjelma</h2>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Viikko 1</h3>
+      <p>10 minuutin kävelymeditaatio kerran päivässä — esim. lounastauolla, työmatkalla. Käytä <a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">katseen kohdistamista</a>: kaksi metriä eteen, pehmeä.</p>
+    </div>
+    <div class="col right">
+      <h3>Viikko 2</h3>
+      <p>15 minuuttia + lyhyt versio arjessa: kun nouset keittiöstä tai kävelet autoon, hidasta ja tunne askel. Lisää "drift-muunnelma": kerran viikossa metsäpolulla tai puistossa.</p>
+    </div>
+  </div>
+
+  <p>Ajahn Chah opetti, että kunnon harjoittaja tekee kävelymeditaatiota niin, ettei kukaan ulkopuolinen sitä katsoessaan tietäisi, että hän on "hengellisellä harjoituksella". Tämä on hieno muotoilu: kävelymeditaatio ei ole esitys, se on hiljainen tapa olla läsnä.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">Drishti — katseen kohdistaminen, kävelymeditaation keskeinen elementti</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, jota tietoinen kävely konkretisoi</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Breath-awareness — hengitysankkuri, jota voi yhdistää kävelyyn</a></li>
+    <li><a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">Vipassana — kirkas näkeminen, jota thaimaalainen metsäperinne korostaa</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Stillness — mielen hiljentyminen liikkeen keskellä</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio — yleiskäsite, johon kävelymeditaatio on tasavertainen muoto</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Ajahn Chah — <em>A Still Forest Pool</em> (1985); Ajahn Sumedho — <em>The Sound of Silence</em> (2010); Sharon Salzberg — <em>Real Happiness</em> (2010); Morgan et al. — <em>Mental Health and Physical Activity</em> (2013, 2014); Teut et al. — <em>BMC Complementary Medicine</em> (2013); Tiffany Field — kävelymeditaation terveyshyötyjen meta-katsaus.
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. "Inner Journeys" -osiossa on lyhyitä tilasiirtymiä joita voit tehdä myös kävellessä.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Inner Journeys" — tilasta toiseen -harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#journeys" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23journeys" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0003-kehoskannaus.html">← Edellinen: Kehoskannaus</a>
+    <a class="next" href="0005-metta.html">Seuraava: Metta — rakastava ystävällisyys →</a>
+  </div>
+</main>
+</body>
+</html>

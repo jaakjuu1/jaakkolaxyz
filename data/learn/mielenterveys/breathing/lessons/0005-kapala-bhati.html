@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Kapalabhati — aktivoiva hengitystekniikka. Nopeat palleapommitukset, vertailu bhastrikaan, varoitukset kenelle tekniikka ei sovi.">
+<title>Kapalabhati — aktivoiva hengitys</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #355874; --accent-soft: #e1ebf3; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #7fa3c4; --accent-soft: #1f2933; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  .warning {
+    background: #fff5e6;
+    border-left: 3px solid #b07000;
+    padding: 1rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+    margin: 1.6rem 0;
+    font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .warning { background: #2a2418; border-left-color: #d49a3a; }
+  }
+  .warning strong { color: #b07000; }
+  @media (prefers-color-scheme: dark) {
+    .warning strong { color: #d49a3a; }
+  }
+
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+
+  ol, ul { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  label { display: block; font-weight: 600; margin: 1rem 0 .35rem; }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: .88em;
+    color: var(--blue);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Kapalabhati — aktivoiva hengitys</h1>
+  <p class="meta">Oppitunti 0005 · ~7 min · tekniikka + varoitukset</p>
+
+  <div class="hero">
+    <p>Tämä on <strong>toinen aktivoiva tekniikka</strong> tällä polulla — eri tavalla kuin nadi shodhana. Jos nadi shodhana tasapainottaa, kapalabhati <em>herättää</em>. Se on lyhyitä, teräviä uloshengityksiä joissa pallea "pomppii" — ei sisäänhengitys vaan uloshengitys on aktiivinen.</p>
+  </div>
+
+  <h2>Mitä nimi tarkoittaa?</h2>
+
+  <p>Sanskritin <em>kapala</em> tarkoittaa kalloa tai päätä, <em>bhati</em> loistamista tai valaisemista. Yhdessä: "kallon loistaminen". Perinteessä uskottiin, että tekniikka kirkastaa mieltä ja "puhdistaa" pään aluetta. Moderni tulkinta: lisääntynyt verenkierto ja happi aivoihin, sympaattisen hermoston hetkellinen aktivointi, valveillaolon kohoaminen.</p>
+
+  <h2>Miten se eroaa normaalista hengityksestä?</h2>
+
+  <p>Normaalissa hengityksessä sekä sisään- että uloshengitys ovat passiivisia prosesseja — pallea tekee työn sisäänhengityksessä, uloshengitys tapahtuu "itsekseen" keuhkojen palautuessa. Kapalabhati kääntää tämän ympäri:</p>
+
+  <ul>
+    <li><strong>Sisäänhengitys</strong> on passiivinen — ilma virtaa sisään kun rentoutat pallean.</li>
+    <li><strong>Uloshengitys</strong> on aktiivinen — vedät palleaa voimakkaasti ylös, ilma ponnahtaa ulos.</li>
+  </ul>
+
+  <p>Tämä pieni muutos tekee suuren eron hermostollisesti.</p>
+
+  <h2>Kokeile: 30 vetoa</h2>
+
+  <p>Tämä on nopea tekniikka — 1-2 hengitystä sekunnissa, yhteensä 20-30 vetoa per kierros.</p>
+
+  <ol>
+    <li>Istu selkä suorana, kädet polvilla tai vatsan päällä.</li>
+    <li>Hengitä sisään normaalisti.</li>
+    <li>Anna pallean vetäytyä voimakkaasti sisään — ilma tulee ulos lyhyesti ja terävästi nenän kautta.</li>
+    <li>Päästä sisäänhengitys tapahtumaan automaattisesti pallean rentoutuessa.</li>
+    <li>Toista 20-30 kertaa tasaiseen tahtiin.</li>
+    <li>Pidä lopuksi hengitystä hetki (5-10 sekuntia).</li>
+    <li>Hengitä ulos hitaasti ja rauhallisesti.</li>
+    <li>Tauko 30-60 sekuntia, sitten uusi kierros.</li>
+  </ol>
+
+  <p>Jos koet huimausta, lopeta. Jos et tunne mitään erityistä, hidasta tahtia. Nopeus ei ole tavoite — selkeys on.</p>
+
+  <h2>Kapalabhati vs. bhastrika</h2>
+
+  <p>Nämä sekoitetaan usein. Ero on selvä:</p>
+
+  <table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+    <thead>
+      <tr style="border-bottom: 2px solid var(--rule);">
+        <th style="text-align:left; padding: .5rem; color: var(--muted); font-size: .85rem;">Ominaisuus</th>
+        <th style="text-align:left; padding: .5rem; color: var(--muted); font-size: .85rem;">Kapalabhati</th>
+        <th style="text-align:left; padding: .5rem; color: var(--muted); font-size: .85rem;">Bhastrika</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr style="border-bottom: 1px solid var(--rule);">
+        <td style="padding: .5rem;">Sisäänhengitys</td>
+        <td style="padding: .5rem;">Passiivinen, automaattinen</td>
+        <td style="padding: .5rem;">Aktiivinen, voimakas</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--rule);">
+        <td style="padding: .5rem;">Uloshengitys</td>
+        <td style="padding: .5rem;">Aktiivinen, nopea veto</td>
+        <td style="padding: .5rem;">Aktiivinen, voimakas työntö</td>
+      </tr>
+      <tr style="border-bottom: 1px solid var(--rule);">
+        <td style="padding: .5rem;">Tahti</td>
+        <td style="padding: .5rem;">1-2 vetoa/sekunti</td>
+        <td style="padding: .5rem;">1 veto/sekunti tai hitaampi</td>
+      </tr>
+      <tr>
+        <td style="padding: .5rem;">Vaikutus</td>
+        <td style="padding: .5rem;">Kevyesti aktivoiva</td>
+        <td style="padding: .5rem;">Voimakkaasti aktivoiva</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Kapalabhati on kuin napautus — bhastrika on kuin moukari. Molemmat ovat hyödyllisiä, mutta bhastrika vaatii enemmän kokemusta.</p>
+
+  <div class="warning">
+    <strong>Kenelle kapalabhati EI sovi:</strong>
+    <ul style="margin: .5rem 0 0;">
+      <li>Raskaana oleville (erityisesti toisen ja kolmannen kolmanneksen aikana)</li>
+      <li>Henkilöille joilla on sydänvaivoja, korkea verenpaine tai hallitsematon hypotensio</li>
+      <li>Epilepsiapotilaille (voi laukaista kohtauksen)</li>
+      <li>Jos sinulla on tyrä, glaukooma tai äskettäinen vatsaleikkaus</li>
+      <li>Aktiivisen paniikkikohtauksen aikana — tekniikka voi voimistaa oireita</li>
+      <li>Jos koet hapennälkää tai huimausta jo muutaman vedon jälkeen</li>
+    </ul>
+    <p style="margin: .5rem 0 0;"><em>Jos sinulla on jokin terveydellinen huolenaihe, keskustele lääkärin kanssa ennen säännöllistä harjoittamista.</em></p>
+  </div>
+
+  <h2>Mitä kehossa tapahtuu?</h2>
+
+  <p>Tutkimusten mukaan kapalabhati:</p>
+  <ul>
+    <li>Lisää sympaattisen hermoston hetkellistä aktivaatiota — virkistää.</li>
+    <li>Parantaa pallean voimaa ja koordinaatiota.</li>
+    <li>Voi parantaa kognitiivista suorituskykyä lyhytaikaisesti (tarkkaavuus, reaktionopeus).</li>
+    <li>Vaikuttaa vatsaontelon paineeseen — siksi vasta-aiheet vatsan alueen ongelmissa.</li>
+  </ul>
+
+  <p>Vaikutus ei ole pysyvä — siksi kapalabhati on hyvä "aloitus" ennen muuta harjoitusta. Se herättää kehon ilman, että kuluttaa sitä.</p>
+
+  <hr>
+
+  <h2>Koe itse: ensimmäinen kapalabhati</h2>
+
+  <p>Tee 2 kierrosta (20 vetoa per kierros), 30 sekunnin tauolla.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Miten keho reagoi? (huimaus, lämpö, pistely, levottomuus, rauhallisuus)</label>
+      <textarea id="q1" rows="2" placeholder="Esim. 'tunsin kuumotusta kasvoissa' / 'ei mitään erityistä' / 'päässä humisi hetken'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Miten mieli muuttui kierrosten välillä?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'kirkastui' / 'tunsin oloni epävakaaksi' / 'rentoutui yllättäen'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Voisitko kuvitella tekeväsi tämän aamulla ennen työn aloittamista? Miksi / miksi ei?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. 'kyllä — virkistäisi heti' / 'liian voimakas aamuksi' / 'voisin kokeilla viikon ajan'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Mihin tämä johtaa?</h2>
+
+  <p>Olet nyt käynyt läpi koko aktivoivan skaalan: palleahengitys (rauhoittava) → box breathing (tasapainottava) → nadi shodhana (tasapainottava+herättävä) → kapalabhati (aktivoiva). Seuraavassa oppitunnissa nämä kootaan yhdeksi aamurutiiniksi.</p>
+
+  <ul>
+    <li><strong>Oppitunti 0006</strong> — koko 10-minuuttinen aamurutiini, jossa nämä tekniikat yhdistyvät luontevaksi kokonaisuudeksi.</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Telles et al., <em>"Plasticity of autonomic functions after yoga"</em>; Sharma et al., <em>"Effects of kapalabhati on cognitive performance"</em> (2013); IAYT — Yoga Therapy Today; Bhavanani, <em>"Yogic techniques on respiratory endurance"</em> (2018).
+  </p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/kapala-bhati.html" class="wikilink" data-concept="kapala-bhati">Aktivoiva hengitystekniikka — lyhyet uloshengitykset</a></li>
+    <li><a href="../../concepts/bhastrika.html" class="wikilink" data-concept="bhastrika">Voimakkaampi versio kapalabhatista — koko hengityssykli aktiivinen</a></li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Kaikki hengityksen säätelyn tekniikat yhdessä</a></li>
+    <li><a href="../../concepts/diaphragm.html" class="wikilink" data-concept="diaphragm">Pallean rooli — tässä tekniikassa keskeinen työväline</a></li>
+    <li><a href="../../concepts/prana.html" class="wikilink" data-concept="prana">Esimerkki pranan aktivoimisesta hengityksen kautta</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Tietoisuus hengityksestä — perusta kaikille tekniikoille</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Kapalabhati sopii meditaation "avausrituaaliksi"</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Herättää läsnäoloa — toisin kuin rauhoittavat tekniikat</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Kapalbhatin jälkeinen hiljaisuus on erityisen syvä</a></li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Voidaan yhdistää — esim. "So Ham" jokaisen vedon aikana</a></li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Kapalbhatin jälkeinen tarkkailijan tila on helpompi saavuttaa</a></li>
+  </ul>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. "Breath of Fire" -osiossa on samanlainen nopea palleatekniikka äänimaisemalla.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Breath of Fire" — nopea hengitys + äänimaisema.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#fire" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23fire" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0004-vaihtoehtoinen-sierainhengitys.html">← Vaihtoehtoinen sierainhengitys</a>
+    <a class="next" href="0006-pranayama-rutiiniksi.html">Seuraava: Pranayama rutiiniksi →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Kehon reaktio', '2. Mielen muutos', '3. Aamurutiini'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

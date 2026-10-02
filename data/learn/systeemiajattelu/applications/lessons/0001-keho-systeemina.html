@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-keho-systeemina — Keho systeeminä</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Sovellukset</a> › Oppitunti 1</nav>
+
+<h1>Keho systeeminä</h1>
+<p class="meta">Oppitunti 1 / 6 · ~25 min · Panostettu</p>
+
+<h2>Mitä "keho systeeminä" oikeastaan tarkoittaa?</h2>
+<p>Länsimainen lääketiede on perinteisesti käsitellyt kehoa <strong>koneena</strong>: sydän on pumppu, keuhkot ovat tuuletin, munuaiset ovat suodatin. Tämä mekaaninen näkemys on tuottanut valtavia läpimurtoja — antibiootit, kirurgia, rokotteet. Mutta se on myös sokeuttanut meitä näkemästä kehoa <strong>kokonaisuutena</strong>, jossa kaikki vaikuttaa kaikkeen.</p>
+
+<p>Systeemiajattelu tarjoaa toisenlaisen näkökulman: keho ei ole joukko erillisiä elimiä, jotka sattuvat olemaan samassa paikassa. Keho on <strong>systeemi</strong> — dynaaminen, itseään säätelevä, monikerroksinen kokonaisuus, jossa mieli, ruumis ja ympäristö ovat jatkuvassa vuorovaikutuksessa.</p>
+
+<blockquote>"Et voi ymmärtää elävää järjestelmää osiinsa pilkkomalla — elämä syntyy osien <em>välisissä suhteissa</em>." — W. Ross Ashby</blockquote>
+
+<h2>V. A. Ayyadurai ja Systems Health</h2>
+<p><strong>V. A. Ayyadurai</strong>, MIT:n tutkija ja keksijä (hän tunnetaan myös sähköpostin keksijänä, vaikka väite on kiistanalainen), on kehittänyt <strong>Systems Health®</strong> -nimisen viitekehyksen, joka kuvaa kehoa täsmälleen tällä tavalla: dynaamisena säätelyjärjestelmänä, jossa kaikki ulottuvuudet — fyysinen, kemiallinen, emotionaalinen, mentaalinen — ovat jatkuvassa vuorovaikutuksessa.</p>
+
+<p>Ayyadurai ehdottaa, että kehoa voidaan mallintaa käyttäen <strong>systeemitekniikan peruskäsitteitä</strong>: syötteitä, sisäisiä muuttujia, ulostuloja, takaisinkytkentää. Tämä ei ole pelkkä akateeminen leikki — se on käytännöllinen työkalu, jota voi soveltaa omaan terveyteen.</p>
+
+<h3>MISO ja MIMO</h3>
+<p>Systeemitekniikassa erotetaan kahdenlaisia malleja:</p>
+
+<ul>
+<li><strong>MISO</strong> (Multiple Inputs, Single Output) — monta syötettä, yksi ulostulo. Esimerkki: moni tekijä vaikuttaa verenpaineeseen.</li>
+<li><strong>MIMO</strong> (Multiple Inputs, Multiple Outputs) — monta syötettä, monta ulostuloa. Esimerkki: ravinto, uni ja liikunta vaikuttavat samanaikaisesti energiaan, mielialaan ja immuniteettiin.</li>
+</ul>
+
+<p>Keho on enimmäkseen <strong>MIMO-järjestelmä</strong>: yksikään syöte ei vaikuta vain yhteen ulostuloon. Kun syöt kahvia, et vain "virkeäksi" — kahvi vaikuttaa myös sykeesi, ruoansulatukseesi, unenlaatuusi, jopa mielialaasi ja vuorovaikutukseesi muiden kanssa.</p>
+
+<h2>Natural Systems State (NSS)</h2>
+<p>Ayyadurai ehdottaa, että jokaisella ihmisellä on <strong>Natural Systems State (NSS)</strong> — yksilöllinen optimaalinen tasapainotila, jossa kaikki järjestelmät toimivat parhaalla mahdollisella tavalla. Tämä tila ei ole staattinen — se muuttuu iän, vuodenajan, elämäntilanteen mukaan. Mutta se on <em>löydettävissä ja tavoiteltavissa</em>.</p>
+
+<p>Avainajatus: terveys ei ole poissaoloa sairauksista. Terveys on <strong>systeeminen tasapaino</strong>, jossa kaikki ulottuvuudet ovat lähellä optimaaliaan.</p>
+
+<h3>Neljä pääulottuvuutta</h3>
+<p>Systems Health -mallissa tunnistetaan neljä ulottuvuutta, jotka jatkuvasti vuorovaikuttavat:</p>
+
+<ol>
+<li><strong>Fysiologinen tasapaino</strong> — ruumiin toiminnot: ruoansulatus, uni, hormonit, energia-aineenvaihdunta.</li>
+<li><strong>Kemiallinen tasapaino</strong> — ravinto, myrkyt, lääkkeet, ilmastoituminen (altistuminen ympäristömyrkkyille).</li>
+<li><strong>Emotionaalinen tasapaino</strong> — stressi, tunteet, sosiaaliset suhteet, mielekkyys.</li>
+<li><strong>Kognitiivinen tasapaino</strong> — ajattelun selkeys, muisti, päätöksenteko, mielenrauha.</li>
+</ol>
+
+<p>Nämä eivät ole erillisiä — ne <strong>kietoutuvat toisiinsa</strong>. Esimerkiksi huono uni (fysiologinen) aiheuttaa stressiä (emotionaalinen), joka heikentää päätöksentekoa (kognitiivinen), joka voi johtaa huonoihin ruokavalintoihin (kemiallinen), jotka taas huonontavat untasi. Tämä on <strong>noidankehä</strong>.</p>
+
+<h2>Käytännön esimerkki: stressireaktio systeeminä</h2>
+<p>Kun koet akuutin stressin, kehossasi tapahtuu samanaikaisesti:</p>
+
+<ul>
+<li><strong>Hermosto:</strong> sympaattinen hermosto aktivoituu ("taistele tai pakene"), parasympaattinen hiljenee.</li>
+<li><strong>Hormonit:</strong> adrenaliini ja kortisoli vapautuvat, nostavat sykettä ja verenpainetta.</li>
+<li><strong>Lihakset:</strong> jännittävät, valmistautuvat toimintaan.</li>
+<li><strong>Ruoansulatus:</strong> hidastuu, energia ohjautuu lihaksille.</li>
+<li><strong>Immuunijärjestelmä:</strong> hetkellisesti vahvistuu, mutta pitkittyessä heikkenee.</li>
+<li><strong>Kognitio:</strong> tarkkaavuus kaventuu, "ajattelu supistuu".</li>
+</ul>
+
+<p>Tämä on yksi <strong>yhtenäinen vaste</strong>, ei joukko erillisiä reaktioita. Keho reagoi systeemisesti, koska se <em>on</em> systeemi.</p>
+
+<h2>Toinen esimerkki: tulehdus systeeminä</h2>
+<p>Krooninen matala-asteinen tulehdus on yksi länsimaiden suurimmista terveysuhista — se liittyy sydänsairauksiin, diabetekseen, masennukseen, Alzheimerin tautiin. Mutta tulehdus ei ole "yksi asia" — se on <strong>monen tekijän summa</strong>:</p>
+
+<ul>
+<li>Ravinto (prosessoidut ruoat, sokeri, transrasvat)</li>
+<li>Uni (liian vähän tai huonolaatuista)</li>
+<li>Stressi (kortisoli vaikuttaa tulehdusmarkkereihin)</li>
+<li>Liikunta (liian vähän tai liian paljon)</li>
+<li>Suoliston mikrobiomi (bakteerikannan tasapaino)</li>
+<li>Ympäristömyrkyt (ilmansaasteet, kemikaalit)</li>
+<li>Sosiaaliset suhteet (yksinäisyys lisää tulehdusta)</li>
+</ul>
+
+<p>Länsimainen lääketiede hoitaa tulehdusta usein tulehduskipulääkkeillä, jotka vaikuttavat <em>yhteen</em> mekanismiin. Systeeminen lähestymistapa tunnistaa, että <strong>juurisyyt ovat verkosto</strong>, ja hoito täytyy kohdistaa koko verkkoon.</p>
+
+<h2>Kolmas esimerkki: autoimmuunisairaudet systeeminä</h2>
+<p>Autoimmuunisairaudet — joissa immuunijärjestelmä hyökkää omia kudoksia vastaan — ovat klassinen esimerkki systeemisestä sairaudesta. Yhtä yksittäistä syytä ei ole. Sen sijaan on <strong>monen tekijän summa</strong>:</p>
+
+<ul>
+<li>Geneettinen alttius (yksi tekijä)</li>
+<li>Suoliston mikrobiomin epätasapaino (toinen tekijä)</li>
+<li>Krooninen stressi (kolmas tekijä)</li>
+<li>Ravinnon laatu (neljäs tekijä)</li>
+<li>Ympäristömyrkyt (viides tekijä)</li>
+<li>Uni (kuudes tekijä)</li>
+</ul>
+
+<p>Kun nämä tekijät yhtyvät, immuunijärjestelmä "sekoaa" — se alkaa tulkita omia kudoksia uhkaksi. Systeeminen hoito ei etsi yhtä syytä, vaan <strong>kartoittaa koko verkoston</strong> ja puuttuu useisiin kohtiin.</p>
+
+<h2>Neljäs esimerkki: mielen ja kehon yhteys</h2>
+<p>Yksi merkittävimmistä systeemisistä oivalluksista on <strong>mielen ja kehon erottamattomuus</strong>. Perinteisesti länsimainen lääketiede on käsitellyt mieltä ja kehoa erillisinä. Systeemiajattelu sanoo: ne ovat yksi ja sama järjestelmä.</p>
+
+<p>Konkreettisia esimerkkejä:</p>
+
+<ul>
+<li><strong>Masennus ja tulehdus:</strong> masennuspotilailla on usein kohonneita tulehdusmarkkereita. Tulehduskipulääkkeet voivat lievittää masennusta joillakin potilailla.</li>
+<li><strong>Stressi ja sydän:</strong> jatkuva stressi lisää sydäntautiriskiä — ei vain psyykkisesti, vaan konkreettisesti kohonneen verenpaineen ja tulehduksen kautta.</li>
+<li><strong>Liikunta ja kognitio:</strong> liikunta ei vain vahvista kehoa, vaan parantaa kognitiivista suorituskykyä, muistia, jopa luovuutta.</li>
+<li><strong>Meditaatio ja geeniekspressio:</strong> säännöllinen meditaatio muuttaa geenien ilmentymistä — se vaikuttaa siihen, mitkä geenit ovat "päällä" tai "pois päältä".</li>
+</ul>
+
+<p>Nämä eivät ole anekdootteja — ne ovat tieteellisesti dokumentoituja ilmiöitä, jotka vahvistavat systeemistä näkemystä.</p>
+
+<h2>Mitä tämä tarkoittaa käytännössä?</h2>
+<p>Systeeminen kehonkäsitys muuttaa kolme asiaa:</p>
+
+<h3>1. Ei yhtä ihmelääkettä</h3>
+<p>Jos keho on systeemi, ei ole olemassa yhtä lääkettä, ruokavaliota tai liikuntamuotoa, joka "ratkaisee kaiken". Jokainen interventio vaikuttaa moniin ulottuvuuksiin, ja vaste riippuu yksilöllisestä tilasta.</p>
+
+<h3>2. Etusija juurisyille</h3>
+<p>Länsimainen lääketiede hoitaa usein oireita (päänsärkyyn särkylääke, masennukseen SSRI, unettomuuteen unilääke). Systeeminen näkemys etsii <strong>juurisyitä</strong>: miksi päänsärky, miksi masennus, miksi unettomuus. Vastaus on usein verkosto, ei yksittäinen tekijä.</p>
+
+<h3>3. Yksilöllisyys</h3>
+<p>Koska jokaisen keho on erilainen — eri genetiikka, eri mikrobiomi, eri elämänhistoria — ei ole yhtä oikeaa ruokavaliota, liikuntasuunnitelmaa tai stressinhallintatekniikkaa. Systeeminen lähestymistapa <em>kartoittaa yksilön tilan</em> ja räätälöi ratkaisut sen mukaan.</p>
+
+<h2>Kokeile käytännössä: oman kehosi systeeminen kartoitus</h2>
+<p>Valitse yksi oire tai haaste, jonka kanssa painit (esim. väsymys, ahdistus, kipu, uniongelmat). Vastaa seuraaviin kysymyksiin:</p>
+
+<ol>
+<li><strong>Fysiologinen ulottuvuus:</strong> Miten nukut? Miten syöt? Miten liikut? Onko kipuja tai sairauksia?</li>
+<li><strong>Kemiallinen ulottuvuus:</strong> Mitä lääkkeitä, lisäravinteita, kofeiinia, alkoholia käytät? Altistutko ympäristömyrkkyille?</li>
+<li><strong>Emotionaalinen ulottuvuus:</strong> Miten stressitasosi on? Onko sinulla merkityksellisiä ihmissuhteita? Tunnetko itsesi arvostetuksi?</li>
+<li><strong>Kognitiivinen ulottuvuus:</strong> Miten päätöksentekosi toimii? Onko keskittymisvaikeuksia? Onko mieli rauhaton?</li>
+</ol>
+
+<p>Tämä <em>ei korvaa lääketieteellistä diagnoosia</em>. Mutta se voi paljastaa <strong>verkostoja</strong>, joita et ole aiemmin huomannut — ja antaa suuntaa muutokselle.</p>
+
+<h2>Yhteenveto</h2>
+<p>Keho ei ole kone, jossa on erillisiä osia. Se on dynaaminen säätelyjärjestelmä, jossa fysiologia, kemia, mieli ja ympäristö ovat jatkuvassa vuorovaikutuksessa. Systems Health ja Natural Systems State -viitekehykset antavat käsitteelliset työkalut tämän ymmärtämiseen. Käytännössä tämä tarkoittaa juurisyihin keskittymistä, yksilöllisyyden kunnioittamista ja valmiutta nähdä keho kokonaisuutena.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Valitse yksi oire tai haaste. Kartoita se neljän ulottuvuuden kautta: fysiologinen, kemiallinen, emotionaalinen, kognitiivinen. Mitä yhteyksiä huomaat, joita et ole aiemmin nähnyt?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+<h3 style="margin-top: 3rem;">Systeeminen silmä</h3>
+<p>Tämän oppitunnin jälkeen sinulla on yksi uusi "silmä": kyky nähdä keho <em>kokonaisuutena</em> eikä vain yksittäisinä oireina tai eliminä. Kun seuraavan kerran koet fyysisen tai psyykkisen haasteen, kysy itseltäsi: <em>mitkä muut järjestelmät todennäköisesti osallistuvat tähän?</em> Tämä yksinkertainen kysymys voi avata oven ymmärrykseen, jota erillinen lähestymistapa ei tavoita.</p>
+
+</main>
+</body>
+</html>

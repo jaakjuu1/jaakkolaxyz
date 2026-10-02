@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: cybernetic-loop</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>cybernetic-loop</h1>
+  <p class="meta">Käsite · systeemiajattelu · kybernetiikka · ohjauspiiri · Wienerin perusmalli</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Kyberneettinen ohjauspiiri</strong> (engl. <em>cybernetic loop</em>) on Norbert Wienerin klassisen kybernetiikan perusyksikkö: suljettu takaisinkytkentäkehä, jossa <a href="/learn/systeemiajattelu/concepts/receptor.html" class="wikilink" data-concept="receptor">reseptori</a> mittaa järjestelmän nykytilan, <a href="/learn/systeemiajattelu/concepts/comparator.html" class="wikilink" data-concept="comparator">komparaattori</a> vertaa sitä tavoitearvoon ja <a href="/learn/systeemiajattelu/concepts/effector.html" class="wikilink" data-concept="effector">efektori</a> tuottaa korjaavan toimenpiteen. Sana <em>cybernetics</em> tulee kreikan sanasta <em>kybernetes</em> ("ohjaaja, perämies"), jonka Platon otti käyttöön teoksessaan <em>Alkiviisasten dialogit</em>.</p>
+
+  <p>Piiri on sulkeutuva: efektin vaikutus näkyy <a href="/learn/systeemiajattelu/concepts/receptor.html" class="wikilink" data-concept="receptor">reseptorille</a> uutena mittauksena ja synnyttää uuden vertailun. Sama rakenne on <a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negatiivisessa takaisinkytkennässä</a> ja laajemmin <a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">takaisinkytkentäsilmukassa</a>, mutta kyberneettinen piiri korostaa nimenomaan tiedon kulkua — ei energian tai aineen virtaa. Klassinen esimerkki on huoneen lämpötilan säätö: termostaatti mittaa, vertaa asetusarvoon ja käynnistää jäähdytyksen tai lämmityksen tarpeen mukaan.</p>
+
+  <p>Wienerin alkuperäisessä muotoilussa korostui analogia ihmisen ja koneen välillä — sama piiri selittää niin maalivahdin torjuntaa, höyrykoneen nopeudensäätöä kuin hermoston motorista ohjausta. Myöhemmin <a href="/learn/systeemiajattelu/concepts/first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">ensimmäisen kertaluvun kybernetiikka</a> rakentuu tämän perusrakenteen varaan: havainnoija on piirin ulkopuolella ja tarkastelee sen toimintaa objektiivisesti.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Konseptin muotoili Norbert Wiener teoksessaan <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em> (1948). Se pohjautui aiempaan tekniseen säätötekniikkaan (<a href="/learn/systeemiajattelu/concepts/control-theory.html" class="wikilink" data-concept="control-theory">control theory</a>) sekä wieniläisen matematiikkiyhteisön töihin, erityisesti sodanaikaisiin ennustetutkimuksiin ja kommunikaatioteoriaan. W. Ross Ashby yleisti piirin <em>Design for a Brain</em> -teoksessaan (1952) ja sovelsi sitä biologisten järjestelmien itseorganisaation selittämiseen.</p>
+
+  <p>Stafford Beer laajensi kyberneettisen piirin organisaatioiden johtamiseen <em>Brain of the Firm</em> -teoksessaan (1972) ja kehitti <a href="/learn/systeemiajattelu/concepts/vsm.html" class="wikilink" data-concept="vsm">elinkykyisen järjestelmän mallin</a>, jossa organisaatio koostuu sisäkkäisistä ohjauspiireistä. 1950-luvulta lähtien piiri levisi psykologiaan, ekologiaan ja taloustieteeseen. 1970-luvulla Heinz von Foerster ja <a href="/learn/systeemiajattelu/concepts/second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">toisen kertaluvun kybernetiikka</a> kritisoivat sitä liian mekaanisena — havainnoija on itsekin osa järjestelmää, ei sen ulkopuolinen tarkkailija.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="feedback-loop.html">feedback-loop</a> — yleinen takaisinkytkentäsilmukka, jonka erikoistapaus kyberneettinen piiri on.</li>
+    <li><a href="control-system.html">control-system</a> — säätöjärjestelmä, jonka perusrakenne.</li>
+    <li><a href="receptor.html">receptor</a> — piirin mittauspää eli sensoriosa.</li>
+    <li><a href="comparator.html">comparator</a> — piirin vertailukohta, jossa syntyy virhesignaali.</li>
+    <li><a href="effector.html">effector</a> — piirin toimilaite, joka muuttaa järjestelmän tilaa.</li>
+    <li><a href="negative-feedback.html">negative-feedback</a> — yleisin sovellus, virheen korjaus.</li>
+    <li><a href="positive-feedback.html">positive-feedback</a> — vahvistava versio samasta rakenteesta.</li>
+    <li><a href="homeostasis.html">homeostasis</a> — biologinen ilmenemismuoto Cannonilta ja Ashbylta.</li>
+    <li><a href="first-order-cybernetics.html">first-order-cybernetics</a> — kehys, jossa piiri on perustyökalu.</li>
+    <li><a href="second-order-cybernetics.html">second-order-cybernetics</a> — piirin myöhempi kritiikki ja laajennus.</li>
+    <li><a href="vsm.html">vsm</a> — Beerin organisaatiomalli, joka rakentuu sisäkkäisistä ohjauspiireistä.</li>
+    <li><a href="requisite-variety.html">requisite-variety</a> — piirin tehokkuuden yläraja.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p><a href="../lessons/säätöpiirin-perusteet.html">Säätöpiirin perusteet</a> -oppitunti esittelee käsitteen ja sen kolme osaa. Myöhemmissä oppitunneissa tarkastellaan <a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negatiivista</a> ja <a href="/learn/systeemiajattelu/concepts/positive-feedback.html" class="wikilink" data-concept="positive-feedback">positiivista</a> takaisinkytkentää, <a href="/learn/systeemiajattelu/concepts/requisite-variety.html" class="wikilink" data-concept="requisite-variety">vaadittua monimuotoisuutta</a> sekä <a href="/learn/systeemiajattelu/concepts/vsm.html" class="wikilink" data-concept="vsm">elinkykyisen järjestelmän mallia</a>, joka rakentuu sisäkkäisistä kyberneettisista piireistä.</p>
+
+  <h2>Lähteet</h2>
+  <p>Wiener, N. (1948). <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em>. MIT Press.</p>
+  <p>Ashby, W. R. (1952). <em>Design for a Brain</em>. Chapman & Hall.</p>
+  <p>Beer, S. (1972). <em>Brain of the Firm</em>. Allen Lane.</p>
+  <p>von Foerster, H. (1974). Notes on an epistemology for living things. BCL Report 9.3.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-system.html" class="wikilink" data-concept="control-system">control-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/receptor.html" class="wikilink" data-concept="receptor">receptor</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/comparator.html" class="wikilink" data-concept="comparator">comparator</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/effector.html" class="wikilink" data-concept="effector">effector</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order-cybernetics</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order-cybernetics</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/vsm.html" class="wikilink" data-concept="vsm">vsm</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Wiener, N. (1948) <em>Cybernetics</em>; Ashby, W. R. (1952) <em>Design for a Brain</em>; Beer, S. (1972) <em>Brain of the Firm</em>; von Foerster, H. (1974) BCL Report.
+  </p>
+</main>
+</body>
+</html>

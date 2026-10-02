@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006-tasapaino-ja-muutos — Tasapaino ja muutos</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Perusteet</a> · Oppitunti 0006/6</p>
+  <h1>Tasapaino ja muutos</h1>
+  <p class="lede">Elävä järjestelmä on aina liikkeessä — mutta voi silti olla tasapainossa. Tämä jännite on systeemiajattelun ydin.</p>
+
+  <p>Perusteet-sarjan päättää <strong>tasapainon</strong> ja <strong>muutoksen</strong> jännite. Tämä on käytännön systeemiajattelun ydin: kun tiedät milloin järjestelmä on tasapainossa ja milloin se on muutoksessa, tiedät <em>miten siihen voi vaikuttaa</em>.</p>
+
+  <p>Tämä oppitunti kokoaa kaikki viisi edellistä yhteen ja antaa viitekehyksen, jota voit soveltaa mihin tahansa järjestelmään — työelämästä terveyteen, ihmissuhteista politiikkaan.</p>
+
+  <h2>Kahdenlainen tasapaino</h2>
+
+  <p>Sanoja "tasapaino" ja "tasapainotila" käytetään huolimattomasti. Systeemiajattelussa ne tarkoittavat kahdenlaisia tiloja:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Staattinen tasapaino</h3>
+      <p>Järjestelmä ei liiku. Kuva seinällä, kirja pöydällä. Niiden tila on sama ajanhetkellä kuin seuraavalla. Tämä on kuolleen järjestelmän tasapaino.</p>
+    </div>
+    <div class="col">
+      <h3>Dynaaminen tasapaino</h3>
+      <p>Järjestelmä on jatkuvassa liikkeessä, mutta <em>tasapainossa</em> — se ei <em>poikkea</em> tavoitteesta. Solu, organismi, ekosysteemi, talous. Nämä ovat elävän järjestelmän tasapainoja.</p>
+    </div>
+  </div>
+
+  <p>Suurin osa kiinnostavista järjestelmistä on <strong>dynaamisessa tasapainossa</strong>. Ne eivät ole staattisia — ne virtaavat — mutta niiden keskimääräinen tila pysyy. Kehomme lämpö pysyy 37°:n lähellä, vaikka solut kuolevat ja syntyvät jatkuvasti.</p>
+
+  <h2>Homeostaasi — elävän järjestelmän taito</h2>
+
+  <p><strong>Homeostaasi</strong> on dynaamisen tasapainon erikoistapaus: järjestelmä ylläpitää sisäistä vakautta muuttuvassa ympäristössä.</p>
+
+  <p><strong>Claude Bernard</strong> (1813–1878), ranskalainen fysiologi, esitti käsitteen: <em>milieu intérieur</em> — sisäinen ympäristö. Hän ymmärsi, että elävä organismi ei elä ulkoisissa olosuhteissa vaan <em>omia sisäisiä olosuhteitaan varten</em>. Keho ylläpitää tarkkaa lämpöä, pH:ta, glukoositasoa — ei ulkoisen maailman vuoksi, vaan solujen toiminnan mahdollistamiseksi.</p>
+
+  <p><strong>Walter Cannon</strong> (1871–1945) kehitti käsitteen <em>homeostaasi</em> (kreik. <em>homoios</em> "samanlainen" + <em>stasis</em> "pysähtyneisyys"). Hän kuvasi, miten elimistöllä on useita sisäkkäisiä mekanismeja, jotka palauttavat sisäisen tasapainon häiriöiden jälkeen.</p>
+
+  <blockquote>
+    <p>"The wisdom of the body." — Walter Cannon, <em>The Wisdom of the Body</em> (1932)</p>
+  </blockquote>
+
+  <p>Homeostaasi ei ole yksi mekanismi, vaan <strong>kerros kerrokselta</strong> — nopeat reaktiot (aivorefleksit), keskipitkät (hormonaaliset), hitaat (käyttäytymiseen perustuvat). Jokainen taso ylläpitää tasapainoa eri aikaväleillä.</p>
+
+  <h2>Luonnollinen järjestelmätila (NSS)</h2>
+
+  <p>V.A. Shiva Ayyadurai'n <strong>Systems Health®</strong> -viitekehyksessä tärkeä käsite on <strong>Natural Systems State (NSS)</strong> — järjestelmän luonnollinen, optimaalinen toimintatila, jossa se kykenee uusiutumaan ja säilymään.</p>
+
+  <p>Ajatus on vanha: Ayurvedan ja Siddhan lääketieteessä on vuosituhansia tunnettu, että keholla on luontainen tasapainotila (<em>prakriti</em>), josta poikkeaminen tuottaa sairautta (<em>vikriti</em>).</p>
+
+  <p>Modernisti ajateltuna: <strong>terve järjestelmä on dynaamisesti tasapainossa, häiriintynyt järjestelmä on kaukana tasapainosta</strong>. Häiriö ei ole sairaus itse — se on järjestelmän <em>poikkeama luonnollisesta tilastaan</em>.</p>
+
+  <h2>Häiriö ja säätö</h2>
+
+  <p>Järjestelmään kohdistuu jatkuvasti <strong>häiriöitä</strong> (disturbance) — ympäristön muutoksia, sisäisiä vaihteluita, ulkoisia iskuja. Järjestelmä <strong>säätyy</strong> (adjustment) niihin.</p>
+
+  <p>Häiriöiden ja säätöjen suhde määrittää järjestelmän terveyden:</p>
+
+  <ul>
+    <li><strong>Terve järjestelmä:</strong> häiriö → tehokas säätö → paluu NSS:ään. Lyhyt palautumisaika.</li>
+    <li><strong>Stressi:</strong> häiriö jatkuvaa, säätö kuormittava. Järjestelmä toimii, mutta kaukana NSS:stä.</li>
+    <li><strong>Sairaus/murtuma:</strong> häiriö voittaa säädön. Järjestelmä poistuu tasapainosta, ei palaa omin voimin.</li>
+  </ul>
+
+  <p>Ayurvedan termi <em>vikriti</em> kuvaa tätä poikkeamaa. Lääkärin tehtävä on tukea järjestelmän paluuta NSS:ään — ei ainoastaan poistaa oiretta.</p>
+
+  <h2>Faasimuutos — kun tasapaino murtuu</h2>
+
+  <p>Joskus järjestelmä ei palaa entiseen tasapainoonsa. Se <strong>vaihtaa tilaa</strong>. Tätä kutsutaan <strong>faasimuutokseksi</strong> (phase transition).</p>
+
+  <p>Esimerkkejä:</p>
+
+  <ul>
+    <li>Vesi 100°C:ssa muuttuu höyryksi — nesteen ja kaasun faasimuutos.</li>
+    <li>Magnetin magnetoituminen katoaa kriittisessä lämpötilassa.</li>
+    <li>Kapinasta tulee vallankumous, kun tietty kynnys ylittyy.</li>
+    <li>Markkinat vaihtavat nousukaudesta laskukauteen.</li>
+  </ul>
+
+  <p>Faasimuutoksen lähellä pienet muutokset tuottavat suuria seurauksia. Järjestelmä on <strong>epästabiili</strong>. Tämä on vaarallinen — ja toisaalta mahdollisuuksien — hetki. Vipupisteitä etsitään usein juuri tästä.</p>
+
+  <h2>Miksi tasapaino voi olla vaarallinen</h2>
+
+  <p>Faasimuutoksia pelätään, mutta <em>tasapaino</em> voi olla yhtä vaarallinen — eri tavalla.</p>
+
+  <p>Järjestelmä, joka on <em>liian</em> vakaasti tasapainossa, on <strong>hauras</strong> (brittle). Se ei jousta häiriöistä — se murtuu. Esimerkki:</p>
+
+  <ul>
+    <li>Täydellisesti säädelty talous ilman joustoa: pieni sokki romahduttaa sen.</li>
+    <li>Yksilön identiteetti, joka on rakennettu "täydelliseen tasapainoon": yksi suuri häiriö vie pohjan.</li>
+    <li>Ekosysteemi, joka on yksinkertaistettu (monokulttuuri): tauti tuhoaa koko sadon.</li>
+  </ul>
+
+  <p><strong>Joustavuus (resilience)</strong> on kykyä <em>imeä häiriöitä säilyttäen toiminta</em>. Vastakohtana <em>hauraudelle</em> (brittleness) — kykyä <em>näyttää vakaalta mutta murtua äkisti</em>.</p>
+
+  <blockquote>
+    <p>"Stability is not the same as resilience. A system can be stable and brittle — calm until the moment it shatters." — Donella Meadows</p>
+  </blockquote>
+
+  <h2>Vipupisteet — missä pienet muutokset merkitsevät eniten</h2>
+
+  <p><strong>Leverage point</strong> on paikka järjestelmässä, jossa pieni muutos tuottaa suuren vaikutuksen. Meadows esitti 12 vipupistettä, yksinkertaisimmista monimutkaisimpiin:</p>
+
+  <ol>
+    <li>Vakiot, luvut, parametrit (heikoin — yleensä)</li>
+    <li>Varastot ja virrat</li>
+    <li>Stokastiset puskurit (varastot suhteessa virtoihin)</li>
+    <li>Viiveet</li>
+    <li>Negatiiviset takaisinkytkennät (suhteessa vahvistaviin)</li>
+    <li>Positiiviset takaisinkytkennät (kasvun tai romahduksen ajurit)</li>
+    <li>Tiedon virrat</li>
+    <li>Säännöt (lait, normit, palkkiot)</li>
+    <li>Itseorganisoitumisen kyky</li>
+    <li><strong>Tarkoitus</strong> — järjestelmän tavoite (vahva vipupiste)</li>
+    <li><strong>Paradigma</strong> — oletukset, joista järjestelmä rakentuu (erittäin vahva)</li>
+    <li><strong>Paradigman ylittäminen</strong> — kyky nähdä maailma ilman paradigmaa (vahvin)</li>
+  </ol>
+
+  <p>Käytännön oppi: <em>älä tuhlaa energiaasi vakioihin, kun voit muuttaa tarkoitusta tai paradigmaa</em>. Esimerkki: jos haluat muuttaa liikennekulttuuria, älä muuta nopeusrajoituksia (heikko vipupiste) — muuta <em>miksi liikumme</em> ja <em>miten yhdyskunta on rakennettu</em> (vahvat vipupisteet).</p>
+
+  <h2>Miten tunnistaa vipupiste</h2>
+
+  <p>Vipupisteen tunnistaminen vaatii kolmea asiaa:</p>
+
+  <ol>
+    <li><strong>Järjestelmäkartan piirtämistä</strong> — palautesilmukat, varastot, viiveet, säännöt.</li>
+    <li><strong>Historiaa</strong> — missä järjestelmä on aiemmin reagoi voimakkaasti pieniin muutoksiin?</li>
+    <li><strong>Kokeilua</strong> — pienet, turvalliset interventiot. Mikä niistä tuottaa suhteettoman suuren vasteen?</li>
+  </ol>
+
+  <p>Usein vipupiste on <em>ylätasolla</em> (tarkoitus, paradigma) eikä <em>alatasolla</em> (yksityiskohdat). Tämä on intuitiivinen vastakohta: haluamme korjata yksityiskohtia, mutta todellinen muutos on ylätasolla.</p>
+
+  <h2>Soveltaminen omaan elämään</h2>
+
+  <p>Tasapaino ja muutos eivät ole vain teoreettisia käsitteitä. Ne koskevat sinua joka päivä:</p>
+
+  <ul>
+    <li><strong>Uni:</strong> dynaaminen tasapaino. Häiriöitä (kahvi, stressi, valo) vastaan säätöjä (väsymys, melatoniini). Häiriö voittaa säädön → unettomuus.</li>
+    <li><strong>Terveys:</strong> keho pyrkii NSS:ään. Elintavat voivat tukea tai heikentää tätä. Pienet muutokset (uni, ravinto, liikunta) ovat vipupisteitä.</li>
+    <li><strong>Ihmissuhteet:</strong> jatkuvaa dynamiikkaa. Konfliktit ovat häiriöitä — kypsä suhde säätelee niitä, epäkypsä joko välttelee tai räjähtelee.</li>
+    <li><strong>Työ:</strong> organisaation dynamiikka. Vakaus on harhaa — jokainen järjestö on jatkuvasti tasapainottelemassa.</li>
+  </ul>
+
+  <p>Systeemiajattelun tarkoitus ei ole kuvata näitä monimutkaisemmaksi kuin ne ovat. Se on antaa <em>selkäranka</em> sille, mitä jo intuitiivisesti tiedät — ja kieli sille, mitä voit muuttaa.</p>
+
+  <hr>
+
+  <h2>Perusteet-sarjan yhteenveto</h2>
+
+  <p>Olet nyt käynyt läpi kuusi oppituntia, jotka muodostavat systeemiajattelun peruskurssin. Kerrataan:</p>
+
+  <ol>
+    <li><strong>Järjestelmä</strong> on osat, vuorovaikutukset ja tarkoitus — ei osien summa.</li>
+    <li><strong>Hierarkia</strong> järjestää monimutkaisuuden — jokainen taso on kokonaisuus ja osa.</li>
+    <li><strong>Rajat</strong> ovat päätöksiä — ja niillä on valtaa.</li>
+    <li><strong>Takaisinkytkentä</strong> määrittää käyttäytymisen — negatiivinen vakauttaa, posititiivinen vahvistaa.</li>
+    <li><strong>Emergenssi</strong> tuottaa uutta laatua — kokonaisuus on enemmän kuin osiensa summa.</li>
+    <li><strong>Tasapaino ja muutos</strong> ovat jatkuva jännite — vakaus on harhaa, muutos on ainoa pysyvä.</li>
+  </ol>
+
+  <p>Seuraavaksi voit syventyä <a href="../../complexity/">kompleksisuuteen</a> (miten sopeutuvat järjestelmät toimivat), <a href="../../cybernetics/">kybernetiikkaan</a> (säätöpiirien syvempi ymmärrys), <a href="../../methods/">menetelmiin</a> (käytännön työkalut) tai <a href="../../applications/">sovelluksiin</a> (keho, organisaatiot, yhteiskunta).</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Tämä on perusteet-sarjan loppu. Hyvä hetki katsoa taakse ja eteen.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi järjestelmä omassa elämässäsi, joka on dynaamisessa tasapainossa — jatkuvassa liikkeessä mutta vakaa?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. unirytmi, työviikko, ruokavalio, ihmissuhde..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä on yksi vipupiste, jonka olet tunnistanut — paikka, jossa pieni muutos tuottaisi suuren vaikutuksen?</label>
+      <textarea id="q2" rows="3" placeholder="Usein tämä on tarkoituksen tai tavan muutos, ei yksityiskohta..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mikä on yksi asia, jonka haluat ottaa mukaasi tästä polusta — ja soveltaa ensimmäisenä?</label>
+      <textarea id="q3" rows="3" placeholder="Konkreettinen teko tai tapa. Esim. 'piirrän palautesilmukoita ennen kuin päätän' tai 'kysyn kuka piirsi rajan'..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Perusteet eivät ole maali — ne ovat alkukartta. Hyvää matkaa.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — tasapaino — joko staattinen tai dynaaminen</li>
+    <li><a href="../../concepts/dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — liikkeessä pysyvä tasapaino</li>
+    <li><a href="../../concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — sisäistä vakautta ylläpitävä järjestelmä</li>
+    <li><a href="../../concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a> — järjestelmän optimaalinen toimintatila</li>
+    <li><a href="../../concepts/integrated-systems-state.html" class="wikilink" data-concept="integrated-systems-state">integrated-systems-state</a> — palautunut, eheä järjestelmätila</li>
+    <li><a href="../../concepts/disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a> — järjestelmää heilauttava tekijä</li>
+    <li><a href="../../concepts/adjustment.html" class="wikilink" data-concept="adjustment">adjustment</a> — järjestelmän säätöliike</li>
+    <li><a href="../../concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — tilasta toiseen siirtyminen</li>
+    <li><a href="../../concepts/leverage-point.html" class="wikilink" data-concept="leverage-point">leverage-point</a> — pienen muutoksen suuri vaikutus</li>
+    <li><a href="../../concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — kyky imeä häiriöitä joustavasti</li>
+    <li><a href="../../concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a> — kyky kestää häiriöitä rikkoutumatta</li>
+    <li><a href="../../concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — kynnys, jonka ylitys laukaisee muutoksen</li>
+    <li><a href="../../concepts/paradigm.html" class="wikilink" data-concept="paradigm">paradigm</a> — järjestelmän syvimmät oletukset</li>
+    <li><a href="../../concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a> — kokonaisvaltainen ajattelutapa</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0005-emergenssi.html">← Emergenssi</a>
+    <span class="empty"></span>
+  </div>
+
+  <p class="footer-note">Lähteet: Claude Bernard — <em>Leçons sur les phénomènes de la vie communs aux animaux et aux végétaux</em> (1878); Walter B. Cannon — <em>The Wisdom of the Body</em> (1932); Donella H. Meadows — <em>Thinking in Systems</em> (2008); V.A. Shiva Ayyadurai — <em>System and Revolution</em> (2016), <em>The Science of Everything</em> (2016).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

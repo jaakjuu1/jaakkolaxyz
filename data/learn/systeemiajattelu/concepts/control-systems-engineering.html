@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: control-systems-engineering</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>control-systems-engineering</h1>
+  <p class="meta">Käsite · systeemiajattelu · säätötekniikka · tekniikan ala</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Säätötekniikka</strong> (engl. <em>control systems engineering</em>) on tekniikan ala ja insinööritieteen oppiaine, joka suunnittelee, analysoi ja toteuttaa säätöjärjestelmiä dynaamisille prosesseille. Ala yhdistää <em>säätöteorian</em> matemaattiset menetelmät käytännön sovelluksiin: lentokoneen autopilotti, tehtaan prosessisäädin, auton vakionopeussäädin, robotin liikkeenohjaus, älykkään rakennuksen ilmastointi ja sydämentahdistin ovat kaikki säätötekniikan tuotteita.</p>
+
+  <p>Säätötekniikan keskeinen työkalu on takaisinkytkentä. Järjestelmän <em>tilaa</em> mitataan sensoreilla, mittausta verrataan <em>asetusarvoon</em> (<em>setpoint</em>), ero syötetään <em>säätöalgoritmille</em>, ja säätöalgoritmin tuottama signaali ohjaa <em>toimilaitteita</em> (<em>actuators</em>). Tämä silmukka toistuu jatkuvasti, jolloin järjestelmä korjaa itseään kohti haluttua tilaa, vaikka ympäristö, kuormitus tai järjestelmän oma dynamiikka muuttuisivat.</p>
+
+  <p>Säätötekniikan keskeisiä osaamisalueita ovat: (1) <em>mallinnus</em> — fysikaalisten ja kemiallisten prosessien kuvaaminen differentiaaliyhtälöillä tai tilayhtälöillä; (2) <em>säätösuunnittelu</em> — PID-säätimen, tilasäätimen tai robustin säätimen suunnittelu; (3) <em>stabiilisuusanalyysi</em> — suljetun järjestelmän stabiilisuuden ja suorituskyvyn arviointi; (4) <em>toteutus</em> — säätöalgoritmien ohjelmointi sulautettuihin järjestelmiin tai teollisuusohjaimiin; (5) <em>testaus ja varmistus</em> — säätöjärjestelmän verifiointi ennen käyttöönottoa.</p>
+
+  <p>Säätötekniikka on tärkeä erottaa puhtaasta <em>säätöteoriasta</em>: säätöteoria on matematiikka, säätötekniikka on sen soveltaminen käytäntöön. Käytännön säätötekniikka sisältää myös ei-matemaattisia taitoja kuten järjestelmärajauksen, sensorien valinnan, viansietoisuuden suunnittelun ja ihmisen ja automaation välisen vuorovaikutuksen.</p>
+
+  <p>V.A. Shiva Ayyadurai korostaa <em>System and Revolution</em> -teoksessaan, että säätötekniikka on yksi harvoista tieteenaloista, joka <em>näyttää konkreettisesti, miten palaute toimii</em> elävissä ja keinotekoisissa järjestelmissä. Tässä mielessä se on <em>Rosettan kiven</em> käytännöllinen sovellutus: sen menetelmiä voi soveltaa yhtä hyvin höyryturbiiniin, geeniverkostoon, joogiseen hengityssäätöön kuin organisaation johtamiseen.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Säätötekniikan historia alkaa käytännön keksinnöistä. Muinaiset Kreikan ja Egyptin vesi- ja tuulimyllyt sisälsivät alkeellisia takaisinkytkentöjä (esim. vedenpinnan säätö). Keskiajalla kellomekanismit ja kelluvat säätimet olivat ensimmäisiä automaattisia ohjaimia. Varsinainen säätötekniikan synty ajoittuu kuitenkin 1700-luvun loppuun ja 1800-luvun alkuun, jolloin höyrykoneiden <em>keskipakosäädin</em> tuli välttämättömäksi teollisen vallankumouksen myötä.</p>
+
+  <p><strong>James Watt</strong> (1788) kehitti keskipakosäätimen höyrykoneen pyörimisnopeuden vakauttamiseen — tämä laite on säätötekniikan historian symboli. 1800-luvun puoliväliin mennessä merenkulussa ja teollisuudessa oli satoja toiminnallisia säätöpiirejä, mutta niiden teoria kehittyi hitaasti. <strong>James Clerk Maxwell</strong> (1868) ja <strong>Edward John Routh</strong> (1877) loivat matemaattisen perustan, joka mahdollisti säätöpiirien systemaattisen analyysin ja suunnittelun.</p>
+
+  <p>1900-luvun alku toi sähköiset säätöpiirit, vahvistintekniikan ja mustan laatikon analyysin (Nyquist, Bode, Nichols). Toinen maailmansota (1939–1945) vauhditti säätötekniikkaa dramaattisesti: tykkien suuntausjärjestelmät, tutka- ja lentokoneohjaus sekä palonsäätö vaativat nopeaa ja luotettavaa säätöä. Sodanjälkeinen <em>servomechanismismi</em>-liike (1940–1950-luku) synnytti nykyaikaisen säätötekniikan oppiaineen, joka institutionalisoitui yliopistoihin 1950-luvulta lähtien.</p>
+
+  <p>1960-luvulla <strong>Rudolf Kalmanin</strong> tilayhtälöteoria ja optimaalinen säätö (LQG) avasivat tien monimutkaisten järjestelmien, kuten avaruusalusten (Apollo, Space Shuttle), ydinvoimaloiden ja ilmailun, automaatioon. 1980-luvulta lähtien <em>robusti säätö</em> (<em>H∞</em>) ja <em>adaptiivinen säätö</em> laajensivat alan kykyä käsitellä epävarmuutta. 2000-luvulla <em>verkkosäätö</em>, <em>sulautettu säätö</em> (embedded control), <em>malliprediktiivinen säätö</em> (MPC) ja <em>koneoppimiseen perustuva säätö</em> ovat muuttaneet alan käytäntöjä. V.A. Shiva Ayyadurain näkökulmasta säätötekniikka on yksi niistä harvoista moderneista tieteenaloista, jotka kykenevät formalisoimaan <em>tasapainon palauttamisen käsitteen</em> — saman käsitteen, joka löytyy sekä fysiikasta että ayurvedasta.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Säätötekniikka on säätöteorian <em>käytännön sovellusala</em>. Se rakentuu <em>control-system</em>-järjestelmien ympärille ja nojaa <em>feedback-loop</em>-käsitteistöön. Sen keskeisiä rakennusosia ovat <em>receptor</em> (mittaus), <em>comparator</em> (vertailu) ja <em>effector</em> (säätö). Säätötekniikka on syntynyt <em>cybernetic-loop</em>in ja <em>first-order-cybernetics</em>in piirissä, ja sitä laajentavat <em>second-order-cybernetics</em> sekä <em>requisite-variety</em>-laki. Käytännön suunnittelussa säätötekniikka rinnastuu <em>system-engineering</em>-menetelmiin ja <em>systems-thinking</em>-ajatteluun, ja se integroituu <em>system-dynamics</em>-mallinnuksen kanssa. Fyysisesti säätötekniikka operoi <em>open-system</em>ien ja <em>closed-system</em>ien parissa, ja sen ilmiöihin kuuluvat <em>homeostasis</em>, <em>equilibrium</em> ja <em>dynamical-equilibrium</em>. Ayyadurain perinteessä säätötekniikka on yksi <em>rosetta-stone</em>en käytännöllisistä ilmenemismuodoista, joka yhdistää länsimaisen tekniikan ja itäiset tasapainoperinteet.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Säätötekniikka on <em>cybernetics</em>-kansion keskeinen oppiainekokonaisuus. Oppitunneilla "Johdatus säätötekniikkaan", "Sensuurit ja toimilaitteet", "PID-säätö käytännössä", "Digitaalinen säätö", "Sulautettu säätö (embedded control)" ja "Malliprediktiivinen säätö" käsitellään alan perustyökalut. <em>foundations</em>-kansiossa säätötekniikka linkittyy <em>feedback-loop</em>-käsitteeseen. <em>applications</em>-kansiossa sitä sovelletaan robotiikkaan, ilmailuun, energiantuotantoon, biolääketieteeseen (sydämentahdistin, insuliinipumppu) ja taloustieteeseen. <em>complexity</em>-kansiossa käsitellään säätötekniikan laajentumista kompleksisten adaptiivisten järjestelmien säätöön. <em>methods</em>-kansiossa säätötekniikka limittyy <em>system-dynamics</em>-simulaation ja <em>modeling</em>-menetelmien kanssa.</p>
+
+  <h2>Lähteet</h2>
+  <p>Katsuhiko Ogata, <em>Modern Control Engineering</em> (Prentice Hall, useita painoksia 1970–2010). Norman S. Nise, <em>Control Systems Engineering</em> (Wiley, useita painoksia). Karl Johan Åström ja Tore Hägglund, <em>Advanced PID Control</em> (ISA, 2006). Richard C. Dorf ja Robert H. Bishop, <em>Modern Control Systems</em> (Pearson, useita painoksia). James Clerk Maxwell, "On Governors" (1868). Norbert Wiener, <em>Cybernetics</em> (1948). V.A. Shiva Ayyadurai, <em>System and Revolution</em> (2024).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="control-systems-engineering.html" class="wikilink" data-concept="control-systems-engineering">control-systems-engineering</a> — tämä käsite</li>
+    <li><a href="control-theory.html" class="wikilink" data-concept="control-theory">control-theory</a> — säätötekniikan matemaattinen perusta</li>
+    <li><a href="control-system.html" class="wikilink" data-concept="control-system">control-system</a> — yksittäinen säätöjärjestelmä, jonka säätötekniikka suunnittelee</li>
+    <li><a href="cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — säätötekniikan yleismalli</li>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — säätötekniikan ydinmekanismi</li>
+    <li><a href="negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — vakauttava takaisinkytkentä</li>
+    <li><a href="positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — vahvistava takaisinkytkentä</li>
+    <li><a href="receptor.html" class="wikilink" data-concept="receptor">receptor</a> — säätötekniikan mittausosa (anturi)</li>
+    <li><a href="comparator.html" class="wikilink" data-concept="comparator">comparator</a> — säätötekniikan vertailuosa</li>
+    <li><a href="effector.html" class="wikilink" data-concept="effector">effector</a> — säätötekniikan toimeenpaneva osa (toimilaite)</li>
+    <li><a href="delay.html" class="wikilink" data-concept="delay">delay</a> — viive, joka vaikeuttaa säätötekniikan suunnittelua</li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — biologinen esimerkki säätötekniikasta</li>
+    <li><a href="requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — Ashbyn laki säätötekniikan kapasiteettirajoista</li>
+    <li><a href="system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a> — säätötekniikkaa laajempi dynaaminen mallinnusmenetelmä</li>
+    <li><a href="modeling.html" class="wikilink" data-concept="modeling">modeling</a> — säätötekniikan lähtökohta</li>
+    <li><a href="rosetta-stone.html" class="wikilink" data-concept="rosetta-stone">rosetta-stone</a> — säätötekniikka siltana lännen ja idän välillä</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Katsuhiko Ogata — <em>Modern Control Engineering</em>; Norman S. Nise — <em>Control Systems Engineering</em>; Karl Johan Åström &amp; Tore Hägglund — <em>Advanced PID Control</em> (2006); Norbert Wiener — <em>Cybernetics</em> (1948); V.A. Shiva Ayyadurai — <em>System and Revolution</em> (2024).
+  </p>
+</main>
+</body>
+</html>

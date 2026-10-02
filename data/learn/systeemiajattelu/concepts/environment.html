@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: environment</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .lede { font-size: 1.05rem; color: var(--ink); margin: 0 0 1.6rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>environment</h1>
+  <p class="meta">Käsite · systeemiajattelu · konteksti · ympäristö</p>
+
+  <p class="lede">Ympäristö on kaikki se, mikä on järjestelmän ulkopuolella ja mikä voi olla vuorovaikutuksessa sen kanssa. Käsite on suhteellinen: sama asia voi olla osa järjestelmää tai sen ympäristöä riippuen siitä, miten tarkastelija rajaa järjestelmän.</p>
+
+  <h2>Määritelmä</h2>
+  <p>Environment (ympäristö) systeemiajattelussa tarkoittaa kaikkia niitä tekijöitä, muuttujia ja olioita, jotka ovat tarkasteltavan järjestelmän <a href="boundary.html">boundary</a>:n ulkopuolella ja jotka voivat vaikuttaa järjestelmään tai joihin järjestelmä voi vaikuttaa.</p>
+
+  <p>Ympäristö voidaan jakaa karkeasti kolmeen osaan:</p>
+  <ul>
+    <li><strong>Relevantti ympäristö</strong> — ne tekijät, jotka todella vaihtavat ainetta, energiaa tai informaatiota järjestelmän kanssa.</li>
+    <li><strong>Epärelevantti ympäristö</strong> — kaikki muu, joka voi olla olemassa mutta jolla ei ole vaikutusta järjestelmään.</li>
+    <li><strong>Sisäinen ympäristö</strong> — järjestelmän omien osajärjestelmien muodostama kokonaisuus (vrt. <a href="suprasystem.html">suprasystem</a>).</li>
+  </ul>
+
+  <p>Meadows korostaa, että ympäristön rajaaminen on analyytikon tekemä valinta, ei objektiivinen totuus. Väärin rajattu ympäristö tuottaa vääriä johtopäätöksiä: jos suljemme pois olennaisen vuorovaikutuksen, malli ei kuvaa järjestelmän käyttäytymistä oikein.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Ympäristön käsite on yhtä vanha kuin järjestelmän käsite. Antiikin filosofiassa korostettiin kontekstin merkitystä, mutta systemaattinen muotoilu tuli 1900-luvulla.</p>
+
+  <p>Norbert Wienerin kybernetiikassa (1948) ympäristö oli keskeinen: järjestelmä toimii viestien ja palautteen välittäjänä ympäristöönsä. Ludwig von Bertalanffy painotti erityisesti avoimen järjestelmän ja ympäristön välistä vaihtoa. Gregory Bateson laajensi käsitteen koskemaan myös sosiaalisia ja ekologisia järjestelmiä.</p>
+
+  <p>Ayyadurai kutsuu ympäristöä "kontekstiksi" ja korostaa, että järjestelmän terveys on ymmärrettävissä vain suhteessa ympäristöönsä — ei erillisenä ominaisuutena. Tämä on yksi <em>Systems Health</em> -lähestymistavan lähtökohdista.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="boundary.html">boundary</a> — erottaa järjestelmän ympäristöstä.</li>
+    <li><a href="open-system.html">open-system</a> — vaihtaa ainetta ja energiaa ympäristön kanssa.</li>
+    <li><a href="input.html">input</a> — tuleva virta ympäristöstä järjestelmään.</li>
+    <li><a href="output.html">output</a> — lähtevä virta järjestelmästä ympäristöön.</li>
+    <li><a href="suprasystem.html">suprasystem</a> — ympäröivä laajempi järjestelmä.</li>
+    <li><a href="feedback.html">feedback</a> — ympäristön palaute järjestelmälle.</li>
+    <li><a href="disturbance.html">disturbance</a> — ympäristöstä tuleva häiriö.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Käsite esitellään <a href="../lessons/jarjestelman-perusteet.html">Järjestelmän perusteet</a> -oppitunnilla. Syventävä käsittely <a href="../lessons/rajaus.html">Järjestelmän rajaaminen</a> -oppitunnilla sekä <a href="../lessons/systeemi-ja-ymparisto.html">Järjestelmä ja ympäristö</a> -oppitunnilla.</p>
+
+  <h2>Lähteet</h2>
+  <p>Donella Meadows — <em>Thinking in Systems: A Primer</em> (2008). Ludwig von Bertalanffy — <em>General System Theory</em> (1968). Fritjof Capra & Pier Luigi Luisi — <em>The Systems View of Life</em> (2014). V.A. Shiva Ayyadurai — <em>Systems Health</em> (2021).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/environment.html" class="wikilink" data-concept="environment">environment</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/boundary.html" class="wikilink" data-concept="boundary">boundary</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/open-system.html" class="wikilink" data-concept="open-system">open-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/suprasystem.html" class="wikilink" data-concept="suprasystem">suprasystem</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/input.html" class="wikilink" data-concept="input">input</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/output.html" class="wikilink" data-concept="output">output</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Ympäristön rajaaminen on analyyttinen valinta. Sama fyysinen kokonaisuus voidaan järjestelmän ja ympäristön suhteen kuvata monella tavalla.
+  </p>
+</main>
+</body>
+</html>

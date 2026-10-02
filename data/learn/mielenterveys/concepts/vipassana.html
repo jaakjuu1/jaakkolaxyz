@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: vipassana</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>vipassana</h1>
+  <p class="meta">Käsite · meditaatio · näkeminen · tietoisuus</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Vipassana</strong> (pali: <em>vipassanā</em>) on buddhalaisessa perinteessä "näkemisen" tai "erottelevan ymmärryksen" meditaatio, jossa mieli havainnoi todellisuuden muuttuvaisuutta sellaisena kuin se on. Sana tulee verbeistä <em>vi</em> ("erilleen") ja <em>passana</em> ("nähdä") — "nähdä asiat sellaisina kuin ne ovat".</p>
+
+  <p>Vipassana on kahden klassisen meditaation toinen päämuoto; toinen on <a href="samatha.html">samatha</a>. Samatha vakauttaa mielen, vipassana avaa silmät. Käytännössä vipassana tarkoittaa kehollisten tuntemusten, mielenliikkeiden ja ilmiöiden havainnointia ilman niihin tarttumista. Tavoitteena on nähdä, että kaikki ilmiöt ovat muuttuvia, kuvuttomia ytimestään ja ilman pysyvää itseä.</p>
+
+  <p>Vipassana-harjoitus on yleensä intensiivisempi kuin pelkkä mindfulness, ja se vaatii ohjausta tai vakiintuneen käytännön.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Vipassana perustuu Buddhan opetukseen kahdesta totuuden lajista — suhteellisesta (samvriti-satya) ja absoluuttisesta (paramartha-satya) — ja "kolmen tunnusmerkin" (tilakkhana) havainnoinnista: muuttuvaisuus (<em>anicca</em>), kuvuttomuus (<em>dukkha</em>) ja ei-itseys (<em>anattā</em>).</p>
+
+  <p>Intialaisen vipassana-liikkeen uudelleenherätti Burma-myöhemmin S. N. Goenka (1924–2013), joka opetti sitä maailmanlaajuisesti 10 päivän intensiivikursseina. Tekniikka on peräisin Burman perinteestä (Ledi Sayadaw, Mahasi Sayadaw). Nykyään vipassana-termiä käytetään myös laajemmin kaikista erottelevan ymmärryksen meditaatioista.</p>
+
+  <h2>Miten liittyy muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="meditation.html">meditation</a> — vipassana on sen syvällisin, erottelukykyä harjoittava muoto.</li>
+    <li><a href="samatha.html">samatha</a> — vipassana seuraa yleensä samathaa.</li>
+    <li><a href="vipassana.html">vipassana</a> itse kehittää syvempää tietoisuutta.</li>
+    <li><a href="mindfulness.html">mindfulness</a> — vipassanaa voidaan pitää mindfulnessin buddhalaisena esimuotona.</li>
+    <li><a href="witness.html">witness</a> — vipassana vahvistaa sisäistä tarkkailijaa.</li>
+  </ul>
+
+  <p>Vipassana ei pyri tuottamaan positiivisia tiloja, vaan näkemään kaikki ilmiöt — miellyttävät ja epämiellyttävät — tasavertaisina.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p><a href="../lessons/vipassana.html">Vipassana</a> -oppitunti esittelee käsitteen ja sen erot muihin meditaatiomuotoihin. Se viittaa <a href="../lessons/samatha.html">samatha-oppituntiin</a> ja <a href="../lessons/mindfulness.html">mindfulness-oppituntiin</a>.</p>
+
+  <h2>Esimerkki</h2>
+  <p>Body sweep -harjoitus: istu tai makaa, sulje silmät, vie huomio järjestelmällisesti päästä varpaisiin — tunne kunkin alueen fyysiset tuntemukset, lämpö, paine, värinä. Älä arvioi, älä muokkaa. Huomaa kaiken muuttuminen. Tämä on vipassana-tyyppinen havainnointi, joka voidaan tehdä 10–30 minuutissa.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/mielenterveys/concepts/meditation.html" class="wikilink" data-concept="meditation">meditation</a></li>
+    <li><a href="/learn/mielenterveys/concepts/samatha.html" class="wikilink" data-concept="samatha">samatha</a></li>
+    <li><a href="/learn/mielenterveys/concepts/vipassana.html" class="wikilink" data-concept="vipassana">vipassana</a> — tämä käsite</li>
+    <li><a href="/learn/mielenterveys/concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulness</a></li>
+    <li><a href="/learn/mielenterveys/concepts/witness.html" class="wikilink" data-concept="witness">witness</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Buddha — <em>Satipaṭṭhāna Sutta</em> (MN 10); Buddhaghosa — <em>Visuddhimagga</em>, XVIII–XXII; S. N. Goenka — <em>The Art of Living</em>; Mahasi Sayadaw — <em>The Progress of Insight</em>; David Shannahoff-Khalsa — <em>Sacred Therapies</em>.
+  </p>
+</main>
+</body>
+</html>

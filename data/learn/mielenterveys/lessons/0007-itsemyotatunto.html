@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0007 — Itsemyötätunto: itsekriittisen äänen kohtaaminen</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0; padding: .9rem 1.1rem; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); font-style: italic; border-radius: 0 4px 4px 0;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col { border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.1rem; }
+  .col.selffriend { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+  .col.friend { background: #f0f5ee; border-left: 3px solid var(--green); }
+  @media (prefers-color-scheme: dark) { .col.friend { background: #1d2520; } }
+  .col h3 { margin-top: 0; font-size: .95rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea { width: 100%; font: inherit; padding: .55rem .65rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); resize: vertical; }
+  button { margin-top: 1rem; margin-right: .6rem; font: inherit; padding: .55rem 1rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: .92rem; }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note { color: var(--muted); font-size: .85rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 1px dashed var(--rule); }
+  .warn {
+    background: #fff5e6; border-left: 3px solid #b07000;
+    padding: .9rem 1.1rem; margin: 1.6rem 0; border-radius: 0 4px 4px 0; font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) { .warn { background: #2a2418; border-left-color: #d49a3a; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Itsemyötätunto</h1>
+  <p class="meta">Oppitunti 0007 · ~7 min · taito itsekriittisyyttä vastaan</p>
+
+  <p>Moni ei kärsi vain tilanteesta, vaan siitä <em>miten julmasti puhuu itselleen</em> tilanteessa. Tämä oppitunti on viimeinen työkalu palettiin — suunnattu suoraan sille äänelle pään sisällä joka sanoo "minun pitäisi olla vahvempi", "miksi olen tällainen", "olen pilannut kaiken".</p>
+
+  <h2>Itsemyötätunto ei ole itsesääliä</h2>
+
+  <p>Tämä on tärkein ero ymmärtää aluksi. Kristin Neffin tutkimusperustainen määritelmä sisältää kolme komponenttia:</p>
+
+  <ul>
+    <li><strong>Mindfulness</strong> — kärsimyksen <em>huomaaminen</em> ilman ylikorostamista tai tukahduttamista (0005:n taito).</li>
+    <li><strong>Yhteinen inhimillisyys</strong> — muistutus että vaikeudet kuuluvat ihmisyyteen, eivät ole merkki siitä että <em>minä</em> olen viallinen.</li>
+    <li><strong>Itse-ystävällisyys</strong> — kyky kohdata oma kärsimys rehellisesti, ilman murskaavaa halveksuntaa.</li>
+  </ul>
+
+  <blockquote>
+    Itsemyötätunto on kykyä kohdata oma kärsimys samalla tavalla kuin kohtaisit hyvän ystävän kärsimyksen: rehellisesti, mutta ilman murskaavaa halveksuntaa.
+  </blockquote>
+
+  <p>Tämä ei ole "älä ole niin ankara itsellesi" -mantra. Se on tarkkaa, rehellistä kohtaamista — ilman sääliä tai teeskentelyä.</p>
+
+  <h2>Kokeile: yksi ajatus</h2>
+
+  <p>Helppo testi: otat jonkin itsekriittisen ajatuksen joka tulee usein mieleen, ja katsot miltä se kuulostaa ulkopuolisen korvaan.</p>
+
+  <div class="twocol">
+    <div class="col selffriend">
+      <h3>Itselle</h3>
+      <p>"Olet <em>taas</em> epäonnistunut — miksi et opi?"</p>
+      <p>"Sinun pitäisi olla vahvempi."</p>
+      <p>"Muut pärjäävät paremmin."</p>
+    </div>
+    <div class="col friend">
+      <h3>Ystävälle</h3>
+      <p>"Olet <em>taas</em> epäonnistunut — miksi et opi?"</p>
+      <p>— Tätä et koskaan sanoisi.</p>
+      <p>Kokeile: "Tämä oli vaikea tilanne. Mikä voisi olla ensimmäinen askel?"</p>
+    </div>
+  </div>
+
+  <p>Ero on melkein aina ilmeinen. Itselle sallitaan sävy jota ei koskaan käytettäisi kenellekään toiselle. Itsemyötätunto ei poista kriittistä ääntä — se <em>vähentää sen voimaa</em> ja antaa sille tarkemman, hyödyllisemmän sisällön.</p>
+
+  <h2>Tutkimusnäyttö</h2>
+
+  <p>PMC:n 2023 meta-analyysi löysi, että itsemyötätuntoon perustuvilla interventioilla on pieniä tai keskisuuria vaikutuksia masennuksen, ahdistuksen ja stressin vähentämisessä. Tutkimuksissa on laadullisia rajoitteita, joten menetelmä on hyödyllinen mutta ei ihmelääke.</p>
+
+  <p>Tärkeä rehellisyys: itsemyötätunto ei sovi kaikille kulttuureille automaattisesti, ja sen soveltaminen vaatii harjoitusta. Se ei ole pelkkä "ajattele positiivisesti" -tekniikka.</p>
+
+  <h2>Kolme käytännön harjoitusta</h2>
+
+  <h3>1. Ystävän suodatin</h3>
+  <p>Kuulet itsekriittisen ajatuksen. Kysy itseltäsi: <em>"Sanoisinko tämän läheiselleni joka on tässä tilanteessa?"</em> Jos ei, mieti mitä sanoisit. Sano se itselle — ei sentimentaalisesti, vaan täsmällisesti.</p>
+
+  <h3>2. Yhteinen inhimillisyys</h3>
+  <p>Vaikuttaa siltä että sinä yksin kamppailet tämän asian kanssa. Todennäköisesti näin ei ole — lähes jokainen ihminen on joskus kokenut saman. Sano itsellesi: <em>"Tämä on vaikeaa. Vaikeudet kuuluvat ihmisyyteen."</em></p>
+
+  <h3>3. Käden kosketus</h3>
+  <p>Aseta käsi rinnalle tai poskelle. Tämä <em>fyysinen</em> kosketus aktivoi parasympaattista hermostoa ja antaa keholle signaalin turvasta. Kristin Neff käyttää tätä harjoituksena ahdistavissa tilanteissa. Se voi kuulostaa oudolta mutta toimii.</p>
+
+  <h2>Itsemyötätunto ja tämä asti opittu</h2>
+
+  <ul>
+    <li><strong>0001</strong> — itsemyötätunto <em>täydentää</em> hyväksymistä kun kyse on itseen kohdistuvasta kriittisyydestä.</li>
+    <li><strong>0002</strong> — DBT-työkalut eivät riitä jos kehoon kohdistuva viha on jatkuvaa. Itsemyötätunto pehmentää tätä.</li>
+    <li><strong>0003</strong> — CBT-ajatuskupla tutkii ajatuksen totuutta; itsemyötätunto tutkii <em>sävyä</em> jolla puhut itsellesi.</li>
+    <li><strong>0004</strong> — ACT-arvot ilman itsemyötätuntoa voivat muuttua uudeksi keinoksi moittia itseä ("en toimi arvojeni mukaan").</li>
+    <li><strong>0005</strong> — mindfulness antaa tilan huomata itsekriittinen ääni ilman samaistumista siihen.</li>
+    <li><strong>0006</strong> — käyttäytymisen aktivointi vaikeutuu kun itsekriittinen ääni kertoo jokaisen pienen teon olevan merkityksetön.</li>
+  </ul>
+
+  <blockquote>
+    Itsemyötätunto on paletin "sisu-emali" — se ei ole erillinen työkalu vaan sävy jolla muita työkaluja käytetään.
+  </blockquote>
+
+  <hr>
+
+  <h2>Tee nyt: ystävän suodatin</h2>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi itsekriittinen ajatus joka toistuu sinulla usein — ehkä juuri nyt?</label>
+      <textarea id="q1" rows="2" placeholder="Esimerkki: 'Miksi en osaa hoitaa tätä.' Tai: 'Minun pitäisi olla parempi tässä.'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Sanoisitko tämän läheisellesi joka on täsmälleen tässä tilanteessa? Kirjoita sekä alkuperäinen että mitä sanoisit ystävälle.</label>
+      <textarea id="q2" rows="3" placeholder="Esimerkki: Alkuperäinen: 'miksi et opi'. Ystävälle: 'tämä oli vaikea tilanne, on ok että vie aikaa'."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mikä on sama asia mutta sanottuna itselle — <em>täsmällisesti</em> (ei sentimentaalisesti)?</label>
+      <textarea id="q3" rows="2" placeholder="Esimerkki: 'Tämä oli vaikea tilanne. Vaikeudet kuuluvat ihmisyyteen. Mikä on seuraava pieni askel?'"></textarea>
+    </div>
+    <div>
+      <label for="q4">4. Miltä tuo versio kuulostaa — rehellisesti? Ei tarvitse olla "hyvältä", riittää että on totta.</label>
+      <textarea id="q4" rows="2" placeholder="Esimerkki: Oudolta, mutta helpommalta. Tai: vielä etäiseltä mutta vähemmän murskaavalta."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <div class="warn">
+    <strong>Tärkeä rajaus:</strong> Itsemyötätunto ei tarkoita vastuuttomuutta. Voi silti tunnistaa virheitä ja tehdä korjauksia — ilman että käyttää kivun tuottamista motivaationa. Nämä ovat eri asioita.
+  </div>
+
+  <p class="footer-note">
+    Lähteet: PMC 2023 — <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10239723/">self-compassion intervention meta-analysis</a>; Kristin Neffin kolmen komponentin malli (mindfulness, common humanity, self-kindness).
+  </p>
+
+  <div class="pager">
+    <a href="0006-kayttaytymisen-aktivointi.html">← Edellinen: Käyttäytymisen aktivointi</a>
+    <a href="../index.html">↗ Takaisin polun etusivulle</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const ids = ['q1','q2','q3','q4'];
+  const labels = ['1. Itsekriittinen ajatus', '2. Ystävälle-versio', '3. Itselleni-versio', '4. Miltä kuulostaa'];
+  const fields = ids.map(id => document.getElementById(id));
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3','q4'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

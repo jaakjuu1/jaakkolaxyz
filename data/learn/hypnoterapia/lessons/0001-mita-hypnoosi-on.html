@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — Mitä hypnoosi on (ja ei ole)</title>
+<link rel="stylesheet" href="../reference/lesson.css">
+<style>
+:root{--bg:#fbfaf6;--ink:#1a1a1a;--muted:#666;--rule:#d8d4c7;--accent:#8a3a2a;--accent-soft:#f3e9e1;--code-bg:#f4f1e8;--max:38rem;--ok:#3b6b3b;--warn:#8a5a12}
+@media(prefers-color-scheme:dark){:root{--bg:#181715;--ink:#ece8de;--muted:#9a958a;--rule:#3a3530;--accent:#d28a72;--accent-soft:#2a2520;--code-bg:#221f1a;--ok:#7fb878;--warn:#e0b56a}}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif}
+.wrap{max-width:var(--max);margin:4rem auto;padding:0 1.4rem 4rem}
+h1{font-size:1.9rem;font-weight:700;line-height:1.15;margin:0 0 .3rem}
+h2{font-size:1.25rem;font-weight:700;margin:2.6rem 0 .8rem}
+h3{font-size:1.05rem;font-weight:600;margin:1.6rem 0 .5rem}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2rem}
+.crumb{color:var(--muted);font-size:.9rem;margin:0 0 .6rem}
+.crumb a{color:var(--accent);text-decoration:none}
+p{margin:0 0 1rem}
+blockquote{margin:1.6rem 0;padding:.9rem 1.1rem;border-left:3px solid var(--accent);background:var(--accent-soft);font-style:italic;border-radius:0 4px 4px 0}
+blockquote p{margin:0}
+hr{border:0;border-top:1px solid var(--rule);margin:2.4rem 0}
+a{color:var(--accent);text-underline-offset:2px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.4rem 0}
+@media(max-width:540px){.twocol{grid-template-columns:1fr}}
+.col{border:1px solid var(--rule);border-radius:4px;padding:1rem 1.1rem;min-width:0}
+.col h3{margin-top:0}
+.col.wrong h3::before{content:"✗ ";color:var(--accent)}
+.col.right h3::before{content:"✓ ";color:var(--ok)}
+.callout{border:1px solid var(--rule);border-radius:4px;padding:1rem 1.1rem;margin:1.4rem 0}
+.callout.warn{border-left:3px solid var(--warn)}
+.callout.safe{border-left:3px solid var(--ok)}
+ol.steps li{margin-bottom:.7rem}
+ul,ol{padding-left:1.4rem;margin:0 0 1rem}
+li{margin-bottom:.4rem}
+label{display:block;font-weight:600;margin:1rem 0 .35rem}
+textarea{width:100%;font:inherit;padding:.55rem .65rem;border:1px solid var(--rule);border-radius:3px;background:var(--bg);color:var(--ink)}
+.choices{display:flex;flex-direction:column;gap:.45rem;margin:.4rem 0 1rem}
+.choices label{font-weight:400;margin:0;display:flex;gap:.5rem;align-items:flex-start}
+button{margin-top:1rem;margin-right:.6rem;font:inherit;padding:.55rem 1rem;border:1px solid var(--rule);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
+#status{font-size:.88rem;color:var(--accent)}
+.pager{display:flex;justify-content:space-between;gap:1rem;margin:3rem 0 0;padding-top:1.5rem;border-top:1px solid var(--rule);font-size:.92rem}
+.pager a{color:var(--accent);text-decoration:none}
+.pager .next{text-align:right}
+.empty{flex:1}
+.footer-note{color:var(--muted);font-size:.85rem;margin-top:2.4rem;padding-top:1rem;border-top:1px dashed var(--rule)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="crumb"><a href="../../">Oppimispolut</a> · <a href="../index.html">Hypnoterapia</a></p>
+  <h1>Mitä hypnoosi on (ja ei ole)</h1>
+  <p class="meta">Oppitunti 0001 · ~8 min + 8 min harjoitus · oma käyttö</p>
+
+  <p>Jos tästä polusta jää yksi lause, se on tämä:</p>
+  <blockquote>
+    <p>Hypnoosi ei ole nukkumista eikä toisen valtaa. Se on tarkkaavuuden kaventamista niin, että ehdotus voi muuttua kokemukseksi.</p>
+  </blockquote>
+
+  <h2>Virallinen malli</h2>
+  <p>APA:n Psychological Hypnosis -jaosto (Division 30) määritti 2014:</p>
+  <blockquote>
+    <p>Hypnosis: a state of consciousness involving focused attention and reduced peripheral awareness characterized by an enhanced capacity for response to suggestion.</p>
+  </blockquote>
+  <p>Suomeksi kolme osaa, ei neljättä:</p>
+  <ol>
+    <li><strong>Keskittynyt tarkkaavuus</strong> — yksi asia etualalla.</li>
+    <li><strong>Reuna-alueen tietoisuus vähenee</strong> — huone, lista, somefeedi jäävät sivuun.</li>
+    <li><strong>Ehdotukseen vastaaminen helpottuu</strong> — kuva, tunne tai teko “tapahtuu” vähemmällä tahdonväännöllä.</li>
+  </ol>
+  <p>Sama jaosto erottaa <em>induktion</em> (toimenpide jolla hypnoosia haetaan) ja <em>hypnoosin</em> (se mitä mahdollisesti syntyy). Et ole hypnotisoitu vain siksi että joku luki rentoutustekstin.</p>
+  <p>Tämä määritelmä on tarkoituksella teoriasta riippumaton. Lynn ja kollegat (2015) arvostelivat sitä silti “tila”-sanan takia: sama ehdotus voi toimia ilman seremoniallista transsia. Pidä molemmat mielessä. Et tarvitse metafyysistä transsiteoriaa osataksesi käyttää työkalua.</p>
+
+  <h2>Viisi myyttiä, jotka APA:n esite tappaa</h2>
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Lavalla</h3>
+      <p>Hypnotisoija hallitsee.</p>
+      <p>Jäät jumiin.</p>
+      <p>Olet tajuton.</p>
+      <p>Vain herkkäuskoiset “menee”.</p>
+      <p>Joku tekee tämän sinulle.</p>
+    </div>
+    <div class="col right">
+      <h3>Klinikka</h3>
+      <p>Et tee mitä et hyväksy.</p>
+      <p>Voit lopettaa milloin tahansa.</p>
+      <p>Olet hereillä ja mukana.</p>
+      <p>Hypnotisoitavuus ≠ gullibility.</p>
+      <p>Se on taito, jonka opit itse.</p>
+    </div>
+  </div>
+  <p>Yapko tiivistää saman näin: hypnoosia ei tehdä <em>sinulle</em>, se tehdään <em>kanssasi</em>. Pelkkä induktio ei hoida. Hoito on se kehys, jossa otat vastaan hyödyllisen idean.</p>
+
+  <h2>Mitä näyttö oikeasti sanoo</h2>
+  <p><strong>Näyttää:</strong> VA:n Whole Health listaa positiivista näyttöä mm. toimenpideahdistukseen, osaan unihäiriöistä, IBS:ään ja kipuun. Williams ym. (2022) vertasivat veteraanien kroonisessa kivussa hypnoosia, mindfulnessia ja edukointia: kaikki auttoivat heti, hypnoosi ja mindfulness pitivät paremmin.</p>
+  <p><strong>Ei näytä:</strong> Cochrane (2007) IBS-katsauksessa 4 pientä, heikkoa tutkimusta — “lupaavaa, ei johtopäätöstä”. NICE CG61 voi harkita hypnoterapiaa <em>hoitoresistentissä</em> IBS:ssä muiden psykologisten interventioiden rinnalla, ei taikana.</p>
+  <p><strong>Älä käytä:</strong> “haudattujen traumamuistojen” kaivamiseen. Yapko: muisti vääristyy ehdotuksesta myös ilman hypnoosia. Tämä oppitunti ei kaiva muistoja.</p>
+
+  <div class="callout warn">
+    <h3>Stop</h3>
+    <p>Lopeta harjoitus, jos uni, työ, ihmissuhteet tai perushoito hajoavat; jos olo muuttuu pelottavaksi tai “ulos kehosta” ilman että voit palata; jos tulee itsetuhoisia ajatuksia. Hätä: 112. Mielenterveyden kriisi: <a href="https://www.mielenterveystalo.fi/">Mielenterveystalo</a>. Kortti: <a href="../reference/stop.html">stop.html</a>. Tämä ei ole psykoterapiaa eikä diagnosointia.</p>
+  </div>
+
+  <h2>Taito: 8 minuutin omahypnoosi</h2>
+  <p>Yksi ehdotus. Ei äänitettä. Istu tuolissa, jalat lattialla. Valitse etukäteen <em>yksi</em> lause, joka on totta-haluttu, nykyhetkessä, kehossa. Esimerkki-muoto, ei sinun tarinasi: “Hartiat laskeutuvat ja hengitys kulkee vapaasti.” Ei: “En saa enää murehtia.” Kielto pitää murehtimisen kuvassa.</p>
+  <ol class="steps">
+    <li><strong>0:00–1:00</strong> — Sano ääneen tai mielessä: “Teen tämän itse. Voin avata silmät milloin tahansa.”</li>
+    <li><strong>1:00–3:00</strong> — Kiinnitä katse yhteen pisteeseen, sitten anna luomien laskeutua. Huomaa kolme ulkoista ääntä, sitten kolme kehon tuntemusta. Tämä on induktio: tarkkaavuus kaventuu.</li>
+    <li><strong>3:00–6:00</strong> — Toista valittu lause hitaasti, kuin se tapahtuisi nyt. Jos mieli harhailee, palaa lauseeseen ilman moitetta. Tämä on sovellusvaihe.</li>
+    <li><strong>6:00–8:00</strong> — Laske 1–5, ojenna, avaa silmät, nimeä huoneesta kolme esinettä. Paluu on taito, ei sivuseikka.</li>
+  </ol>
+  <p class="callout safe">Havainto ennen tulkintaa: “luomet tuntuivat raskailta” on havainto. “Olin syvässä transsissa” on tulkinta. Kirjaa ensin havainto.</p>
+
+  <hr>
+  <h2>Koe</h2>
+  <p>Tee harjoitus ennen kuin vastaat kohtaan 3. Vastaukset voi kopioida talteen.</p>
+  <form id="quiz" onsubmit="return false;">
+    <fieldset style="border:0;padding:0;margin:0">
+      <legend style="font-weight:600;margin:1rem 0 .35rem">1. APA Div. 30:n mukaan hypnoosi on ensisijaisesti:</legend>
+      <div class="choices">
+        <label><input type="radio" name="q1" value="a"> Tajuton uni toisen tahdossa</label>
+        <label><input type="radio" name="q1" value="b"> Tila avoin yhdelle ehdotukselle</label>
+        <label><input type="radio" name="q1" value="c"> Heikon tahdon ihmisen temppu</label>
+      </div>
+    </fieldset>
+    <label for="q2">2. Kirjoita yksi ehdotuslause (myönteinen, nykyhetki, kehossa). Ei kieltoa.</label>
+    <textarea id="q2" rows="2" placeholder="Esimerkki-muoto: Hartiat laskeutuvat ja hengitys kulkee vapaasti."></textarea>
+    <label for="q3">3. Kahdeksan minuutin jälkeen: mikä oli havainto, mikä tulkinta?</label>
+    <textarea id="q3" rows="4" placeholder="Havainto: … Tulkinta: …"></textarea>
+    <button type="button" onclick="copyAnswers()">Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+  <p>Jos jokin kohta ei aukea, kysy opettajalta. Tämä sivu on oppitunti, ei live-chat.</p>
+
+  <h2>Ensisijainen lähde tälle tunnille</h2>
+  <p>Lue APA:n sivu määritelmistä ja esite myyteistä. Sitten Yapkon “What is Hypnosis”, erityisesti FAQ: ei tehdä sinulle; ei muistojen kaivuu.</p>
+  <ul>
+    <li><a href="https://www.apadivisions.org/division-30/about">APA Div. 30 määritelmät</a></li>
+    <li><a href="https://www.apadivisions.org/division-30/about/hypnosis-brochure.pdf">APA-esite (PDF)</a></li>
+    <li><a href="https://yapko.com/hypnosis/">Yapko — What is Hypnosis</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Elkins ym. 2015, <em>Am J Clin Hypn</em> 57:378–385;
+    Lynn ym. 2015 (määritelmän kritiikki);
+    Cochrane CD005110 (Webb ym. 2007);
+    NICE CG61;
+    VA Whole Health, Clinical Hypnosis;
+    Williams ym. 2022, <em>Pain</em> 163(10):1905–1918.
+    Sanasto: <a href="../reference/sanasto.html">reference/sanasto.html</a>.
+  </p>
+  <div class="pager">
+    <a href="../index.html">← Polku</a>
+    <span class="empty"></span>
+    <a class="next" href="0002-ehdotuksen-rakenne.html">Seuraava: Ehdotuksen rakenne →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const map = {a:'Tajuton uni toisen tahdossa', b:'Tila avoin yhdelle ehdotukselle', c:'Heikon tahdon ihmisen temppu'};
+  const out = [
+    'Q1: ' + (q1 ? map[q1.value] : '(tyhjä)'),
+    'Q2: ' + (document.getElementById('q2').value.trim() || '(tyhjä)'),
+    'Q3: ' + (document.getElementById('q3').value.trim() || '(tyhjä)')
+  ].join(String.fromCharCode(10)+String.fromCharCode(10));
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = 'Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('input[name="q1"]').forEach(r => { r.checked = false; });
+  document.getElementById('q2').value = '';
+  document.getElementById('q3').value = '';
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

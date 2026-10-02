@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: campbell-law</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Campbellin laki</h1>
+  <p class="meta">Käsite · systeemiajattelu · mittaaminen · heuristiikka · yhteiskuntatieteet</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Campbellin laki</strong> on yhdysvaltalaisen psykologin ja yhteiskuntatieteilijän Donald T. Campbellin vuonna 1976 esittämä havainto siitä, että kvantitatiiviset sosiaaliset indikaattorit — kuten koulujen testitulokset, hyvinvointi-indeksit tai taloudelliset mittarit — ovat alttiita vääristymiselle silloin, kun niitä käytetään päätöksenteon ja ohjauksen perustana.</p>
+
+  <blockquote>
+    <p>"The more any quantitative social indicator is used for social decision-making, the more subject it will be to corruption pressures and the more apt it will be to distort the processes it is intended to monitor."</p>
+  </blockquote>
+
+  <p>Lain ydin on, että mittari ei ole koskaan neutraali: kun se liitetään palkitsemiseen, sääntelyyn tai muuhun toimeen, ihmiset alkavat muokata käyttäytymistään suhteessa mittariin, eivät suhteessa siihen, mitä mittarin oli tarkoitus mitata. Käytännön seurauksena indikaattori menettää informatiivisen arvonsa.</p>
+
+  <p>Campbellin lain ja <a href="/learn/systeemiajattelu/concepts/goodhart-law.html" class="wikilink" data-concept="goodhart-law">Goodhartin lain</a> ero on hienovarainen mutta merkityksellinen. Goodhart tarkasteli ilmiötä rahapolitiikan ja taloustilastojen näkökulmasta, Campbell nimenomaisesti sosiaalisten indikaattorien — esimerkiksi koulutuksen, terveyden ja rikollisuuden — mittareiden kautta. Nykyään lakeja käsitellään yleensä yhdessä.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Donald T. Campbell (1916–1996) oli yhteiskuntatieteiden monitieteinen tutkija, joka tunnetaan erityisesti evolutionäärisestä epistemologiasta, monitieteisestä metodologiasta ja kokeellisen psykologian sovelluksista. Hän esitti lain vuonna 1976 konferenssipaperissa sekä myöhemmissä julkaisuissa, joissa käsitteli yhteiskuntatieteellisen tutkimuksen ja poliittisen päätöksenteon suhdetta.</p>
+
+  <p>Campbellin taustalla vaikutti Carl Hempelin kattava käsite <em>(covering law)</em> sekä Karl Popperin falsifikationismi. Campbell itse vaikutti vahvasti kvasikokeellisten tutkimusasetelmien kehittämiseen sekä siihen, miten mittareita tulisi arvioida kriittisesti.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/goodhart-law.html" class="wikilink" data-concept="goodhart-law">Goodhartin laki</a> — lähisukulaisilmiö.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reduktio</a> — yksi luku ei voi kuvata ilmiötä uskollisesti.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">mallinnus</a> — indikaattori on aina malli, joka yksinkertaistaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraktio</a> — abstraktiotasojen valinta vaikuttaa mittariin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systeemiajattelu</a> — mittari on osa laajempaa palautejärjestelmää.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/soft-systems-methodology.html" class="wikilink" data-concept="soft-systems-methodology">soft systems methodology</a> — Checklandin menetelmä korostaa ongelmien tilannekohtaisuutta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/wicked-problem.html" class="wikilink" data-concept="wicked-problem">wicked problem</a> — yhteiskunnalliset ongelmat ovat vaikeasti mittautuvia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/rich-picture.html" class="wikilink" data-concept="rich-picture">rich picture</a> — täydentävä visuaalinen menetelmä määrälliselle analyysille.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Campbellin laki käsitellään [[../lessons/mittarit-ja-mittauksen-vaarallisuus.html|Mittarit ja mittauksen vaarallisuus]] -oppitunnilla heti Goodhartin lain jälkeen. Sitä sivutaan myös [[../lessons/koulutuksen-tulosmittaus.html|koulutuksen tulosmittauksen]] ja [[../lessons/julkishallinnon-ohjaus.html|julkishallinnon ohjauksen]] oppitunneilla.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Campbell, D. T. (1976). <em>How to Use Research on Organizations to Develop Science Policy</em>. American Academy of Political and Social Science.</li>
+    <li>Campbell, D. T. (1988). <em>Guidelines for Monitoring the Government's Competence to Do Science Policy</em>. Knowledge.</li>
+    <li>Scriven, M. (1977). <em>Social Science Indicators: A Response to Campbell</em>. The American Sociologist.</li>
+    <li>Fischer, F. (2009). <em>Democracy and the Politics of Knowledge</em>. Polity.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/campbell-law.html" class="wikilink" data-concept="campbell-law">campbell-law</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/goodhart-law.html" class="wikilink" data-concept="goodhart-law">goodhart-law</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/soft-systems-methodology.html" class="wikilink" data-concept="soft-systems-methodology">soft-systems-methodology</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/wicked-problem.html" class="wikilink" data-concept="wicked-problem">wicked-problem</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/rich-picture.html" class="wikilink" data-concept="rich-picture">rich-picture</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Campbell (1976, 1988); Scriven (1977); Fischer (2009). Ks. myös Wikipedia-artikkeli <em>Campbell's law</em>.
+  </p>
+</main>
+</body>
+</html>

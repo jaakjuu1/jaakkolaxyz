@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — Om — jooga-kirjallisuuden tärkein tavu</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Om — jooga-kirjallisuuden tärkein tavu</h1>
+  <p class="meta">Oppitunti 0002 · ~8 min · ääntäminen, rakenne ja integraatio meditaatioon</p>
+
+  <p>Tämä oppitunti käsittelee <strong><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavua</a></strong>: missä se esiintyy, miten se äännetään, mitä sen sanotaan tarkoittavan ja miten se istuu <strong><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatio</a></strong>-harjoitukseen. Käymme myös läpi, miksi se on ansainnut paikkansa — ja mitkä sen ympärillä olevista myytteistä eivät kestä tarkastelua.</p>
+
+  <h2>Mistä Om tulee?</h2>
+
+  <p>Om (sanskritaksi ॐ, kirjoitetaan myös <em>Aum</em>) esiintyy ensimmäisen kerran säilyneissä teksteissä <em>Upanishadeissa</em>, noin 800–500 eaa., joissa sitä kutsutaan koko maailmankaikkeuden perusääneksi tai kaikkeuden alkuääneksi. Tätä ennen samat käsitteet ovat todennäköisesti olleet suullisessa perinteessä — suurin osa varhaisesta sanskrit-tiedosta eli suullisesti ennen kirjoitustaidon yleistymistä.</p>
+
+  <p>Myöhemmin Om virallistui jooga-filosofian keskeiseksi symboliksi. Erityisesti <em>Mandukya Upanishad</em> (n. 200 eaa.) analysoi Om-tavun neljänä osanaan, joista jokainen edustaa eri tietoisuudentilaa. Tähän palataan pian.</p>
+
+  <p>On tärkeä huomata, että Omin asema ei ole hindulaisuuden yksinoikeus. Buddhalaisuudessa ja jainalaisuudessa Om (tai sen muunnelmat) esiintyy myös, vaikkakin eri tavoin tulkittuna. Om on siis perinteisesti <em>eteläaasialainen</em> symboli, ei minkään yksittäisen uskonnon patentoima tavu.</p>
+
+  <h2>Mitkä myytit eivät kestä</h2>
+
+  <p>Om-tavun ympärille on kertynyt huomattava määrä väitteitä, joista osa on virheellisiä tai yksinkertaisesti keksittyjä. Nopea siivous ennen kuin mennään eteenpäin.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Om värähtelee 432 Hz</h3>
+      <p>Internetissä yleinen väite. Ei minkäänlaista fysikaalista pohjaa: Om on sävel, ei vakio-taajuus, ja ihmiset lausuvat sen eri korkeuksilla.</p>
+    </div>
+    <div class="col right">
+      <h3>Om on sävel</h3>
+      <p>Sävelkorkeus on konventionaalinen, ei mystinen. Tärkeintä on resonanssi omalla kurkunpäällä, ei taajuuslukema.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Om = luomisen ääni</h3>
+      <p>Monissa new age -lähteissä kerrotaan, että Om oli "ääni josta maailma syntyi". Tämä on myyttinen metafora, ei historiallinen tai tieteellinen totuus.</p>
+    </div>
+    <div class="col right">
+      <h3>Om on symboli</h3>
+      <p>Se on perinteinen merkki, joka <em>edustaa</em> kokonaisuutta — sen sijaan että kirjaimellisesti tuottaisi sitä.</p>
+    </div>
+  </div>
+
+  <h2>Ääntäminen — konkreettisesti</h2>
+
+  <p>Tässä kohtaa on tärkeää erottaa perinteinen sanskrit-ääntäminen ja moderni yksinkertaistus. Perinteinen tapa on kolmiosainen, moderni tapa on usein yksiosainen. Molemmat toimivat; tässä kerrotaan molemmat.</p>
+
+  <h3>Perinteinen kolmiosainen tapa (A-U-M)</h3>
+  <p>Om lausutaan kolmena virtana, jotka sulautuvat yhdeksi. Tämä perustuu Mandukya Upanishad -analyysiin.</p>
+
+  <ol>
+    <li><strong>A (aaa)</strong> — avautuva, suu aukeaa, kieli liukuu alas eteen, ääni syntyy rintakehästä. Tämä on <em>jagriti</em>-ääni, valveillaolon ääni. Kesto noin 1–2 sekuntia.</li>
+    <li><strong>U (ooo)</strong> — siirtymä, kieli nousee, huulet hieman pyöristyvät, värähtely siirtyy nieluun ja maskiin. Tämä on <em>svapna</em>-ääni, unennäkö. Kesto noin 1 sekunti.</li>
+    <li><strong>M (mmm)</strong> — sulkeutuminen, huulet sulkeutuvat kevyesti, ääni värähtelee nenässä ja kallossa. Tämä on <em>sushupti</em>-ääni, syvä uni. Kesto noin 2–3 sekuntia.</li>
+  </ol>
+
+  <p>Perään tulee usein neljäs, hiljainen osa — turya, "se joka ei ole mikään näistä". Tämä on hiljaisuus Omin jälkeen, ennen kuin uusi kierros alkaa. Tässä hiljaisuudessa on koko joogan tärkein opetus: tietoisuus ilman objektia.</p>
+
+  <h3>Moderni yksinkertaistus</h3>
+  <p>Useimmat länsimaiset opettajat ja meditoijat lausuvat Omin nykyään yhtenä virtana, noin 4–8 sekuntia uloshengityksen mittaisena. Tämä on <strong>toiminnallisesti sama asia</strong>: ääni lähtee rintakehästä, resonoi päässä ja päättyy huulten sulkeutumiseen. Jos kolmiosainen tekniikka tuntuu vaikealta, tee moderni versio — se riittää.</p>
+
+  <h3>Mihin kiinnittää huomiota ääntäessä</h3>
+  <ul>
+    <li><strong>Älä pakota ääntä</strong>. Om syntyy luonnollisesti, kun keho on rennossa tilassa. Pakottaminen tuottaa jännitystä kurkkuun.</li>
+    <li><strong>Tunne resonanssi</strong>. Omissa käsissä, kasvoissa, kallossa. Missä värähtely tuntuu?</li>
+    <li><strong>Päätä hiljaisuuteen</strong>. M-kirjain ei pääty ääneen vaan hiljaisuuteen. Pidä huulet kevyesti suljettuina ja anna tilan olla hetken tyhjä.</li>
+  </ul>
+
+  <h2>Mitä Om tarkoittaa — kolme yleisintä tulkintaa</h2>
+
+  <p>Perinteessä ei ole yhtä ainoaa tulkintaa, vaan useita rinnakkaisia. Tässä kolme tärkeintä, koska ne kaikki ovat yhä käytössä.</p>
+
+  <ol>
+    <li><strong>Myöntö ja kunnioitus</strong> — monissa intialaisissa kulttuureissa Om toimii tavallisena tervehdys- ja hyväksymis-sanana, "kyllä, kuulin". Tämä on arkisin tulkinta.</li>
+    <li><strong>Maailmankaikkeuden symboli</strong> — Mandukya Upanishad -tyyppinen tulkinta: Om edustaa koko todellisuutta ja sen kolmea tietoisuudentilaa.</li>
+    <li><strong>Mielen ankkuri</strong> — käytännöllinen tulkinta: Om on äänne, joka rytmittää hengitystä ja antaa mielelle kiinnittymiskohdan. Tämä on tulkinta, johon perustuu koko moderni meditaatiokäytäntö.</li>
+  </ol>
+
+  <p>Kolmas tulkinta on se, joka on tämän polun kannalta merkityksellisin. Kaksi muuta ovat kulttuurihistoriallisesti kiinnostavia, mutta ne eivät ole välttämättömiä harjoittelun kannalta.</p>
+
+  <h2>Om ja meditaatio — käytännön integraatio</h2>
+
+  <p>Om-käytäntö on yksi yksinkertaisimmista <strong><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatiotekniikoista</a></strong>, ja siksi se on hyvä lähtökohta.</p>
+
+  <h3>Pohjustus: istu tai seiso rennosti</h3>
+  <p>Tämä on sama kuin kaikissa muissakin hengitysharjoituksissa, joista keskusteltiin polun aiemmissa oppitunneissa. Selkä suoraksi mutta ei jäykäksi, hartiat rentoina, leukaperät pehmeinä.</p>
+
+  <h3>Sykli 1 — Om yhdellä uloshengityksellä</h3>
+  <ol>
+    <li>Hengitä sisään nenän kautta. Anna ilman täyttää vatsa.</li>
+    <li>Aloita Omin lausuminen heti uloshengityksen alussa, äännetään Om koko uloshengityksen ajan, noin 5–8 sekuntia.</li>
+    <li>Päätä Om hiljaisuuteen. Anna sisäänhengityksen alkaa itsestään.</li>
+    <li>Toista 5–10 kierrosta.</li>
+  </ol>
+
+  <h3>Sykli 2 — Om-meditointi ilman sisäänhengityksen ohjausta</h3>
+  <p>Kun perusta on tuttu, voit antaa hengityksen tapahtua itsestään ja lausua Omin omaan tahtiinsa, missä tahansa kohdassa hengityskiertoa:</p>
+  <ol>
+    <<li>Sulje silmät.</li>
+    <li>Anna mielen rauhoittua 30 sekuntia — tämä tapahtuu luonnollisesti <strong><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitystietoisuuden</a></strong> avulla.</li>
+    <li>Aloita Om äännetään hiljaa tai mielessä. Jatka 10–20 minuuttia.</li>
+    <li>Jos huomaat ajatusten vieneen huomion, palaa Om-tavuun. Tämä on harjoituksen ydin.</li>
+  </ol>
+
+  <h3>Sykli 3 — Om ja hiljaisuus yhdistettynä</h3>
+  <p>Kokeneemmille harjoittajille sopiva lisäys: joka kolmas tai viides Omin jälkeen, istu 30 sekuntia täydellisessä hiljaisuudessa ilman mitään äännettä. Tämä tuo esiin Omin ja hiljaisuuden välisen eron — molemmat ovat tietoisuuden tiloja, ei ääntä tarvita pysyvästi.</p>
+
+  <h2>Om ja pranayama</h2>
+
+  <p>Perinteisessä joogassa Om yhdistetään hengitysharjoituksiin, joita kutsutaan <strong><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">pranayamaksi</a></strong>:</p>
+
+  <ul>
+    <li><strong>Nadi Shodhana</strong> vuorotahti-hengitys, jossa Om lausutaan vaihdon hetkellä.</li>
+    <li><strong>Ujjayi</strong> "merenkuorsu"-hengitys, jossa kurkunpää on kevyesti supussa ja Om syntyy sen läpi.</li>
+    <li><strong>Bhramari</strong> mehiläisen surina -hengitys, jossa Om korvautuu surisevalla B-äänteellä mutta rakenne on sama.</li>
+  </ul>
+
+  <p>Nämä ovat selvästi edistyneempiä tekniikoita, eikä niitä tarvitse opetella <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a></strong>-polun alussa. Ne kannattaa ottaa vasta kun perus-Om on tuttu.</p>
+
+  <hr>
+
+  <h2>Kokeile itse: kolmen Omin kokeilu</h2>
+
+  <p>Tämä on ensimmäinen varsinainen harjoitus. Varaa rauhallinen hetki, 5 minuuttia riittää.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Ennen harjoitusta: kirjoita ylös yksi asia, joka on nyt mielessäsi — yksi ajatus, yksi tunne, yksi huoli.</label>
+      <textarea id="q1" rows="2" placeholder="Esimerkki: Työasia. Levottomuus. Aikataulu. Mitä tahansa."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Harjoituksen jälkeen: kirjoita ylös, mitä huomasit. Esimerkiksi: muuttuiko hengitys, hiljenikö mieli, tuliko uusia ajatuksia?</label>
+      <textarea id="q2" rows="2" placeholder="Esimerkki: Hengitys rauhoittui. Ajatukset palasivat monta kertaa. Lopussa oli hiljaisempi olo."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Vertaa lähtökohtaa ja lopputilaa. Mitä eroa?</label>
+      <textarea id="q3" rows="2" placeholder="Esimerkki: Sama asia oli mielessä, mutta sen painavuus oli erilainen."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Harjoituksen tärkein anti ei ole "täydellinen hiljaisuus" — sitä ei yleensä tule, eikä tarvitse. Tärkeintä on huomata, että <em>paluu Om-tavuun</em> on harjoitus itsessään. Joka kerta, kun huomaat ajatuksen vieneen huomion ja palaat takaisin Omiin, vahvistat tarkkaavuuskykyä. Tämä on sama periaate kuin <strong><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulness</a></strong>-harjoituksessa: huomaaminen ja palaaminen on koko treeni.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — itse oppitunnin aihe, jooga-kirjallisuuden tärkein bija-mantra.</li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — yläkäsite, johon Om kuuluu (oppitunti 0001).</li>
+    <li><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantra</a> — Om on yksi bijakokoelman jäsen, kuten Aim, Hreem ja Kleem (oppitunti 0004).</li>
+    <li><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a> — hengityksen luonnollinen mantra, joka on helpompi vaihtoehto Omin rinnalle (oppitunti 0003).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — tässä oppitunnissa kuvatut kolme harjoitussykliä ovat meditaatiotekniikoita.</li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengitystietoisuus</a> — perusta, jolle Om-harjoitus rakentuu (erityisesti sykli 3).</li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Pranayama</a> — Om liitetään joogan hengitysharjoituksiin, kuten Nadi Shodhana ja Ujjayi.</li>
+    <li><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a> — Omin toistamista tietyssä rakenteessa kutsutaan japaksi (oppitunti 0005).</li>
+    <li><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a> — 108 helmen rukousnauha, jota voi käyttää Om-toistojen laskemiseen (oppitunti 0005).</li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Tyyni tila</a> — Omin hiljaisuus neljäs osa, "turya", edustaa muodottomuutta ja hiljaisuutta.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Om on erinomainen ankkuri, mutta ei ainoa. Seuraavaksi tutustumme <strong><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Hamiin</a></strong>, joka on luonteeltaan erilainen: se syntyy hengityksen mukana ilman, että sitä tarvitsee erikseen opetella lausumaan.</p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Aloita hengitysrituaali, lisää ääneen "Om" jokaisella uloshengityksellä — kokeile mikä resonoi.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a class="prev" href="0001-mika-on-mantra.html">← Edellinen: Mikä on mantra oikeasti</a>
+    <a class="next" href="0003-so-ham.html">Seuraava oppitunti: So Ham — hengityksen luonnollinen mantra →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Lähtökohta', '2. Harjoituksen jälkeen', '3. Ero'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

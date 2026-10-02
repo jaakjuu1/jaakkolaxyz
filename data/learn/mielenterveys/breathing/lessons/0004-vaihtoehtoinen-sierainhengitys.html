@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004 — Vaihtoehtoinen sierainhengitys (nadi shodhana)</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Vaihtoehtoinen sierainhengitys (nadi shodhana)</h1>
+  <p class="meta">Oppitunti 0004 · ~10 min · klassikko</p>
+
+  <p>Tämä on intialaisen joogaperinteen tunnetuin hengitystekniikka. Se on tuhansia vuosia vanha — ja silti yksi tutkituimmista nykyaikaisissa laboratorioissa. Jos opit tältä polulta vain yhden tekniikan, tämä on vahva ehdokas.</p>
+
+  <h2>Nimi kertoo kaiken</h2>
+
+  <p><a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">Nadi shodhana</a> tarkoittaa kirjaimellisesti "<em>kanavien puhdistamista</em>" (nadi = kanava, shodhana = puhdistus). Joogafilosofiassa kehoa läpäisee kolme pääkanavaa:</p>
+
+  <ul>
+    <li><strong>Ida</strong> — vasen, kuukausi, viileä, parasympaattinen, liittyy mielikuvitukseen ja intuitioon.</li>
+    <li><strong>Pingala</strong> — oikea, aurinko, lämmin, sympaattinen, liittyy logiikkaan ja toimintaan.</li>
+    <li><strong>Sushumna</strong> — keskikanava, nousee selkärankaa pitkin, aktivoituu kun ida ja pingala ovat tasapainossa.</li>
+  </ul>
+
+  <p>Moderni tulkinta: <strong>vuorottelemalla sieraimia aktivoit vuorollaan vasenta ja oikeaa autonomista puolta</strong>. Tämä ei ole pelkkä symboliikkaa — anatominen ja fysiologinen mekanismi on todennettavissa.</p>
+
+  <h2>Miksi vasen ja oikea sierain eivät ole samanlaisia</h2>
+
+  <p>Tämä on yllättävän vähän tunnettu tosiasia: sierainten limakalvot turpoavat vuorotellen. Sykli on noin 2–6 tuntia, ja sitä ohjaa <strong>autonominen hermosto</strong>. Kun toinen sierain on avoimempi, toinen on tukkoisempi — ja tämä vaihtelu korreloi sympaattisen ja parasympaattisen tonuksen kanssa.</p>
+
+  <p>Konkreettinen koe (tee tämä nyt):</p>
+
+  <ol>
+    <li>Istu rauhassa.</li>
+    <li>Hengitä nenän kautta normaalisti.</li>
+    <li>Laita etusormi kummankin sieraimen viereen — ei paina vielä.</li>
+    <li>Tunnustele: kumpi sierain tuntuu avoimemmalta?</li>
+    <li>Tunnustele uudestaan 5 minuutin kuluttua — onko tilanne vaihtunut?</li>
+  </ol>
+
+  <blockquote>
+    Vasen sierain on yleensä avoimempi illalla ja rauhallisissa tilanteissa (parasympaattinen hallitsee). Oikea on avoimempi aamulla ja stressin aikana (sympaattinen hallitsee). Tämä on havaittavissa useimmilla ihmisillä.
+  </blockquote>
+
+  <h2>Tutkimusnäyttö — yllättävän vahva</h2>
+
+  <p>Vaikka perinne on ikivanha, moderni tutkimus on löytänyt konkreettisia vaikutuksia:</p>
+
+  <ul>
+    <li><strong>HRV ja parasympaattinen tonus:</strong> Subramanian et al. (2015) mittasivat HRV:tä nadi shodhanan aikana ja havaitsivat HF-HRV:n nousun verrattuna kontrolliryhmään. Tutkimus julkaistiin <em>International Journal of Yoga</em> -lehdessä.</li>
+    <li><strong>Verenpaine:</strong> Bhavanani et al. (2013) osoittivat, että nadi shodhana alensi sekä systolista että diastolista verenpainetta hypertensiivisillä potilailla — muutos oli tilastollisesti merkitsevä 8 viikon harjoittelun jälkeen.</li>
+    <li><strong>Kognitio ja tarkkaavaisuus:</strong> Joshi et al. (2016) havaitsivat, että nadi shodhana paransi tarkkaavuuden ylläpitoa (sustained attention) verrattuna pelkkään palleahengitykseen.</li>
+    <li><strong>Ahdistus:</strong> Sharma et al. (2013) vertasivat nadi shodhanaa lääkehoitoon yleistyneessä ahdistuneisuushäiriössä ja havaitsivat, että hengitysharjoitus oli yhtä tehokas kuin lääke (tässä tutkimuksessa pieni otoskoko — tulos on suuntaa-antava).</li>
+  </ul>
+
+  <p>On tärkeää huomata, että useimmat tutkimukset ovat pieniä ja menetelmällisesti vaihtelevia. Mutta <em>suunta on yhtenäinen: nadi shodhana lisää parasympaattista toimintaa, laskee verenpainetta ja vähentää koettua ahdistusta</em>. Tutkimuskirjallisuuden katsausartikkeli (Saoji et al., 2019, <em>Journal of Ayurveda and Integrative Medicine</em>) tiivistää: "Nadi shodhana has measurable effects on autonomic function, cardiovascular parameters, and cognitive performance."</p>
+
+  <hr>
+
+  <h2>Tekniikka — perusmuoto</h2>
+
+  <p>Tämä on klassinen, hyvin dokumentoitu muoto. Aloita tästä.</p>
+
+  <p><strong>Asento:</strong> istu ristissä lattialla tai tuolilla. Selkä suorana, kädet polvilla. Käytä oikean käden etusormea ja peukaloa sierainten sulkemiseen (ns. <em>vishnu mudra</em>).</p>
+
+  <p><strong>Perussuhde:</strong> 4-0-4-0 (sisään-vasemmalta, ei pitoa, ulos-oikealle, ei pitoa). Kun tämä sujuu, siirry 4-4-4-4:ään.</p>
+
+  <h3>Vaiheet</h3>
+
+  <ol>
+    <li><strong>Valmistus:</strong> vasen käsi polvella. Oikean käden etusormi ja keskisormi asetetaan otsalle (tai peukalo ja etusormi erilleen, valmiina sierainten sulkemiseen). Aloita hengittämällä vasemman sieraimen kautta.</li>
+    <li><strong>Sulje oikea sierain peukalolla.</strong> Hengitä sisään vasemman sieraimen kautta — 4 sekuntia.</li>
+    <li><strong>Sulje molemmat sieraimet</strong> (etusormi + peukalo). Pidä 4 sekuntia — tai ohita pito aluksi.</li>
+    <li><strong>Avaa oikea sierain.</strong> Hengitä ulos oikean sieraimen kautta — 4 sekuntia.</li>
+    <li><strong>Hengitä sisään oikean sieraimen kautta</strong> — 4 sekuntia.</li>
+    <li><strong>Sulje molemmat.</strong> Pidä 4 sekuntia.</li>
+    <li><strong>Avaa vasen sierain.</strong> Hengitä ulos vasemman sieraimen kautta — 4 sekuntia.</li>
+  </ol>
+
+  <p>Tämä on yksi täysi kierros. Toista 5–10 kertaa.</p>
+
+  <p>Kuviona:</p>
+
+  <blockquote>
+    Sulje oikea → sisään vasemmalta (4)<br>
+    Sulje molemmat → pidä (4)<br>
+    Avaa oikea → ulos oikealta (4)<br>
+    Sisään oikealta (4)<br>
+    Sulje molemmat → pidä (4)<br>
+    Avaa vasen → ulos vasemmalta (4)<br>
+    = yksi kierros
+  </blockquote>
+
+  <h2>Tekniikka — yksinkertaistettu muoto</h2>
+
+  <p>Jos sierainten sulkeminen käsin tuntuu kömpelöltä, voit käyttää yksinkertaistettua versiota: vain uloshengitys vuorottelee. Sisäänhengitys aina molemmista.</p>
+
+  <ol>
+    <li>Sulje oikea sierain, hengitä ulos vasemmasta.</li>
+    <li>Avaa oikea, hengitä sisään molemmista.</li>
+    <li>Sulje vasen sierain, hengitä ulos oikeasta.</li>
+    <li>Avaa vasen, hengitä sisään molemmista.</li>
+    <li>Toista.</li>
+  </ol>
+
+  <p>Tämä on kevyempi ja hyvä aloitusmuoto. Täysi muoto antaa kuitenkin vahvemman vaikutuksen, koska myös sisäänhengitys vuorottelee.</p>
+
+  <hr>
+
+  <h2>Miten nadi shodhana eroaa muista tekniikoista</h2>
+
+  <p>Box breathing on mekaaninen rytmi. Palleahengitys on mekaaninen liike. Nadi shodhana lisää <em>neurologisen</em> ulottuvuuden: se aktivoi vuorollaan vasenta ja oikeaa aivopuoliskoa.</p>
+
+  <p>Tämä on kiistanalainen väite. Aivopuoliskojen "erikoistuminen" on todellisuudessa paljon monimutkaisempi kuin 1960-luvun split-brain-tutkimukset antoivat ymmärtää. Mutta <strong>autonomisen hermoston epäsymmetria on todellinen</strong>: oikea aivopuolisko käsittelee enemmän tunteita ja tahdosta riippumattomia toimintoja, vasen enemmän kieltä ja toiminnanohjausta. Sierainten vuorottelu heijastelee tätä asymmetriaa.</p>
+
+  <p>Käytännön ero:</p>
+
+  <ul>
+    <li><strong>Palleahengitys</strong> — "perustaso", opetellaan ensin.</li>
+    <li><strong>Box breathing</strong> — "tasapaino" samalla kanavalla.</li>
+    <li><strong>Nadi shodhana</strong> — "tasapaino kahden kanavan välillä".</li>
+    <li><strong>Kapalabhati</strong> — "aktivaatio" (seuraava oppitunti).</li>
+  </ul>
+
+  <hr>
+
+  <h2>Sovellukset</h2>
+
+  <h3>1. Keskittyminen ennen tärkeää työtehtävää</h3>
+
+  <p>Nadi shodhana tasapainottaa sympaattista ja parasympaattista — ei rentouta liikaa (kuten pelkkä uloshengityspainotteinen tekniikka) eikä aktivoi liikaa (kuten kapalabhati). Tämä tekee siitä erinomaisen <em>esitykseen, neuvotteluun, tärkeään päätökseen</em>.</p>
+
+  <p>5–7 kierrosta, noin 3 minuuttia, riittää.</p>
+
+  <h3>2. Nukahtaminen</h3>
+
+  <p>Tässä käytetään pidempää uloshengitystä. Suhde 4-2-6-2 (sisään-pidä-ulos-pidä). Tämä on <a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">visama vritti</a> -muunnelma, joka painottaa vasenta (parasympaattista) puolta.</p>
+
+  <h3>3. Verenpaineen hallinta</h3>
+
+  <p>Bhavanani-tutkimuksen perusteella: säännöllinen 8 viikon harjoittelu (kaksi kertaa päivässä, 10 minuuttia kerrallaan) alensi verenpainetta merkittävästi. <em>Huom: tämä ei korvaa lääkitystä — keskustele lääkärin kanssa, jos sinulla on verenpainelääkitys.</em></p>
+
+  <hr>
+
+  <h2>Varoitukset ja rajoitukset</h2>
+
+  <ul>
+    <li><strong>Voimakas ahdistus:</strong> sierainten sulkeminen voi lisätä ahdistusta joillain ihmisillä. Kokeile yksinkertaistettua muotoa ensin.</li>
+    <li><strong>Nenän tukkoisuus:</strong> jos nenä on tukossa (flunssa, allergia), tekniikka on vaikea. Käytä box breathingia sillä välin.</li>
+    <li><strong>Raskaus:</strong> pidot voivat olla epämukavia. Lyhennä pitoja tai jätä ne pois.</li>
+    <li><strong>Sydänsairaudet:</strong> keskustele lääkärin kanssa ennen säännöllistä harjoittelua, jos sinulla on diagnosoitu sydänsairaus.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Koe itse: ensimmäinen nadi shodhana</h2>
+
+  <p>Tee 5 kierrosta perusmuotoa. Kirjaa havaintosi.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Kumpi sierain tuntui alussa avoimemmalta? Muuttuiko tilanne kierrosten aikana?</label>
+      <textarea id="q1" rows="2" placeholder="Esim. 'oikea avoimempi, ei muuttunut' / 'vasen auki, vaihtui kesken harjoituksen'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitä huomasit mielessäsi? (ajatukset, tunteet, tarkkaavuus)</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'ajatukset kirkastuivat' / 'tunsin oloni epätasapainoiseksi' / 'mieli rauhoittui'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Miten tämä eroaa pelkästä palleahengityksestä tai box breathingista?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. 'tuntui syvemmältä' / 'oli vaikeampi' / 'ei eroa'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Mihin tämä johtaa?</h2>
+
+  <p>Nadi shodhana on <em>tasapainottava</em> tekniikka. Seuraava oppitunti on <em>aktivoiva</em> — kapalabhati. Yhdessä ne muodostavat vastapainon: rauhoittava ja virkistävä.</p>
+
+  <ul>
+    <li><strong>Oppitunti 0005</strong> — <a href="../../concepts/kapala-bhati.html" class="wikilink" data-concept="kapala-bhati">kapalabhati</a> ("kallon loistaminen") — lyhyet uloshengitykset, pallean nopea liike.</li>
+    <li><strong>Oppitunti 0006</strong> — kaikki tekniikat yhdistettynä — missä järjestyksessä aamurutiini kannattaa rakentaa.</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Subramanian et al., <em>"Effects of nadi shodhana on HRV"</em> (2015); Bhavanani et al., <em>"Effects of slow and fast pranayamas on cardiovascular parameters"</em> (2013); Saoji et al., <em>"Effects of yogic breath on autonomic function"</em> (2019); IAYT — <a href="https://www.iayt.org/">Yoga Therapy in Practice</a>; Taimni, <em>"The Science of Yoga"</em> (klassinen teksti).
+  </p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">Sierainten vuorotteluhengitys — kanavien puhdistus</a></li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Kaikki hengityksen pidentämisen ja ohjaamisen tekniikat</a></li>
+    <li><a href="../../concepts/prana.html" class="wikilink" data-concept="prana">Elämänenergia, jota pranayama-tekniikat ohjaavat</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Huomion pitäminen hengityksen liikkeessä — nadi shodhanan pohja</a></li>
+    <li><a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">Tasainen hengitys — nadi shodhanan perussuhde</a></li>
+    <li><a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">Epipitkät hengitys — voidaan yhdistää nadi shodhanaan</a></li>
+    <li><a href="../../concepts/bandha.html" class="wikilink" data-concept="bandha">Energialukot — erityisesti mula bandha voidaan yhdistää nadi shodhanaan</a></li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Toistettu ääni tai ajatus, joka voi tukea hengityksen rytmiä</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Kaikki tekniikat, joissa tietoinen huomio pidetään yhdessä kohteessa</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Tietoinen läsnäolo — harjoituksen syventävä vaikutus</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Sisäinen hiljaisuus, joka syntyy kierrosten syvetessä</a></li>
+  </ul>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Nadi shodhana -rituaaleja löytyy Sanctumista eri kestoilla.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0003-nelion-hengitys.html">← Nelión hengitys</a>
+    <a class="next" href="0005-kapala-bhati.html">Seuraava: Kapalabhati — aktivoiva tekniikka →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Sierainten tila', '2. Mieli', '3. Ero muihin tekniikoihin'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

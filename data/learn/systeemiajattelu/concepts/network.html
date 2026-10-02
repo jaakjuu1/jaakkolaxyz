@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: network</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>network</h1>
+  <p class="meta">Käsite · systeemiajattelu · kompleksisuus · verkko</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Verkko</strong> (engl. <em>network</em>) on matemaattinen rakenne, joka koostuu solmuista (engl. <em>nodes</em> tai <em>vertices</em>) ja niitä yhdistävistä yhteyksistä (<em>edges</em> tai <em>links</em>). Verkko kuvaa sitä, miten kokonaisuuden osat liittyvät toisiinsa, ja se on yksi systeemiajattelun ja systeemitieteiden perusmalleista.</p>
+  <p>Verkkotyyppejä on useita, ja niillä on kullakin omat dynaamiset ominaispiirteensä:</p>
+  <ul>
+    <li><strong>Säännöllinen verkko</strong> — jokaisella solmulla on sama kytkentärakenne (esim. hilarakenteet).</li>
+    <li><strong>Satunnaisverkko</strong> — Erdős–Rényin malli: yhteydet muodostuvat toisistaan riippumatta ja satunnaisesti.</li>
+    <li><strong>Pienmaailmaverkko</strong> (small-world) — lyhyet polut, korkea klusteroituminen (Watts–Strogatz, 1998).</li>
+    <li><strong>Skaalautumaton verkko</strong> (scale-free) — solmujen kytkeytyvyys noudattaa potenssilakia; muutamalla solmulla on valtava määrä yhteyksiä (Barabási–Albert, 1999).</li>
+    <li><strong>Suunnattu ja painotettu verkko</strong> — yhteyksillä on suunta ja/tai voimakkuus.</li>
+  </ul>
+  <p>Systeemiajattelussa verkko ei ole vain staattinen kuva, vaan dynaaminen topologia: solmut ovat toimijoita ja yhteydet ovat virtoja, suhteita tai riippuvuuksia. Verkon rakenne määrittää pitkälti sen, miten informaatio, energia ja häiriöt leviävät.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Verkkoteorian historia alkaa sveitsiläisen matemaatikon <strong>Leonhard Eulerin</strong> vuonna 1736 ratkaisemasta Königsbergin siltaongelmasta, jossa hän osoitti, ettei kaupungin kaikkia seitsemää siltaa voi kulkea kertaalleen. Tämä synnytti graafiteorian — matematiikan haaran, joka tutkii solmuista ja yhteyksistä koostuvia rakenteita.</p>
+  <p>1960-luvulla sosiaalipsykologi <strong>Stanley Milgram</strong> esitti kokeen, jonka mukaan kaksi satunnaista ihmistä Yhdysvalloissa on yhdistettävissä noin kuuden askeleen ketjulla — <em>"six degrees of separation"</em>. Tämä synnytti sosiaalisten verkostojen analyysin ja inspiroi myöhempiä pienmaailmaverkkojen tutkimuksia.</p>
+  <p>Modernin verkostotieteen läpimurto tapahtui 1998–1999. <strong>Duncan Watts</strong> ja <strong>Steven Strogatz</strong> osoittivat Nature-lehdessä, että pienet satunnaiset muutokset säännöllisessä verkossa tuottavat rakenteita, joissa on sekä lyhyet polut että korkea klusteroituminen — <em>pienmaailma</em>. Pian sen jälkeen <strong>Albert-László Barabási</strong> ja <strong>Réka Albert</strong> osoittivat Science-lehdessä, että monet luonnolliset verkot — internet, WWW, solujen proteiinivuorovaikutukset — ovat <em>skaalautumattomia</em>. Nämä tulokset synnyttivät nykyisen verkostotieteen (<em>network science</em>) tutkimuskentän.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/node.html" class="wikilink" data-concept="node">solmu</a> — verkon peruselementti, joka edustaa toimijaa tai entiteettiä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/edge.html" class="wikilink" data-concept="edge">kaari</a> — solmuja yhdistävä sidos, joka edustaa vuorovaikutusta tai riippuvuutta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">palautesilmukka</a> — verkoissa kiertävät takaisinkytkentäsilmukat synnyttävät dynamiikkaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksinen adaptiivinen systeemi</a> — CAS-systeemit ovat tyypillisesti verkkomaisia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergenssi</a> — verkon käyttäytyminen emergoituu paikallisista yhteyksistä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">itseorganisaatio</a> — monet verkot syntyvät itseorganisaation tuloksena.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">epälineaarisuus</a> — verkkojen dynamiikka on luonteeltaan epälineaarista.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">kytkentä</a> — solmujen välinen kytkentä määrittää verkon dynamiikan.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/system-of-systems.html" class="wikilink" data-concept="system-of-systems">järjestelmien järjestelmä</a> — useiden toisistaan riippuvaisten verkostojen muodostama kokonaisuus.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Verkkoja käsitellään [[../lessons/kompleksisuus-ja-kaaos|Kompleksisuus ja kaaos]] -oppijaksossa osana systeemien topologioita ja [[../lessons/systeemiajattelun-perusteet|Systeemiajattelun perusteissa]] johdantona systeemien rakenteeseen. Käsite liittyy läheisesti myös [[../lessons/palaute-ja-silmukat|Palaute ja silmukat]] -jaksoon, jossa verkot ovat palautesilmukoiden analyyttinen pohja.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Euler, L. (1736). <em>Solutio problematis ad geometriam situs pertinentis</em>. Commentarii academiae scientiarum Petropolitanae, 8, 128–140.</li>
+    <li>Milgram, S. (1967). <em>The Small World Problem</em>. Psychology Today, 1(1), 61–67.</li>
+    <li>Watts, D. J. & Strogatz, S. H. (1998). <em>Collective dynamics of 'small-world' networks</em>. Nature, 393, 440–442.</li>
+    <li>Barabási, A.-L. & Albert, R. (1999). <em>Emergence of scaling in random networks</em>. Science, 286(5439), 509–512.</li>
+    <li>Newman, M. E. J. (2010). <em>Networks: An Introduction</em>. Oxford University Press.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/node.html" class="wikilink" data-concept="node">node</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/edge.html" class="wikilink" data-concept="edge">edge</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/system-of-systems.html" class="wikilink" data-concept="system-of-systems">system-of-systems</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/interconnection.html" class="wikilink" data-concept="interconnection">interconnection</a></li>
+  </ul>
+</main>
+</body>
+</html>

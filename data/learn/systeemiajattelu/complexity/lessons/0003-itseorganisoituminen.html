@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003-itseorganisoituminen — Itseorganisoituminen</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0003/6</p>
+  <h1>Itseorganisoituminen</h1>
+  <p class="lede">Järjestys ilman suunnitelmaa, johtajuus ilman johtajaa, äly ilman älyä. Tämä on itseorganisoituminen — kompleksisuuden tärkein mekanismi.</p>
+
+  <p>Jos edelliset kaksi oppituntia ovat antaneet kuvan <em>mitä</em> kompleksisuus on, tämä oppitunti kertoo <em>miten se syntyy</em>. Vastaus on <strong>itseorganisoituminen</strong> — järjestyksen syntyminen ilman, että kukaan suunnittelee sitä.</p>
+
+  <p>Tämä on ehkä syvällisin käsite koko systeemiajattelussa. Se mullistaa käsityksemme järjestyksen alkuperästä.</p>
+
+  <h2>Mitä itseorganisoituminen on</h2>
+
+  <p><strong>Itseorganisoituminen</strong> on järjestelmän kyky synnyttää <em>globaalia järjestystä</em> paikallisten vuorovaikutusten kautta — <strong>ilman keskusohjausta tai ulkoista suunnitelmaa</strong>.</p>
+
+  <p>Avainsanat:</p>
+
+  <ul>
+    <li><strong>Globaali järjestys</strong> — kokonaisuudessa näkyvä rakenne.</li>
+    <li><strong>Paikalliset säännöt</strong> — yksilöt noudattavat vain yksinkertaisia sääntöjä.</li>
+    <li><strong>Ei keskusohjausta</strong> — kukaan ei koordinoi kokonaisuutta.</li>
+    <li><strong>Ei suunnitelmaa</strong> — lopputulosta ei ennalta määrätty.</li>
+  </ul>
+
+  <p>Esimerkki: <strong>muurahaispesän arkkitehtuuri</strong> on ilmiömäisen säännöllinen — kammioita, ilmastointi, hygieniakäytävät. Mutta kukaan muurahainen ei piirrä suunnitelmaa. Jokainen noudattaa yksinkertaista sääntöä: kuljeta maahiukkasta samaan suuntaan kuin muut. Tuloksena on emergenssi.</p>
+
+  <blockquote>
+    <p>"Self-organization is the spontaneous formation of patterns and structures in non-equilibrium systems." — Yleinen määritelmä</p>
+  </blockquote>
+
+  <h2>Kolme itseorganisoitumisen mekanismia</h2>
+
+  <p>Tutkijat ovat tunnistaneet kolme keskeistä mekanismia:</p>
+
+  <ol>
+    <li><strong>Paikallinen vuorovaikutus</strong> — yksilöt vaikuttavat vain naapureihinsa, eivät koko järjestelmään.</li>
+    <li><strong>Ei keskitettyä ohjausta</strong> — mikään "suunnittelija" ei määrää kokonaisuutta.</li>
+    <li><strong>Dynaaminen tasapaino</strong> — järjestelmä virtaa, mutta säilyttää rakenteen.</li>
+  </ol>
+
+  <p>Nämä kolme ovat välttämättömiä — ei mikään yksinään riitä. Jos keskitetty ohjaus puuttuu mutta vuorovaikutus on satunnaista, tuloksena on kaaos, ei järjestys. Jos vuorovaikutus on paikallista mutta dynaaminen tasapaino puuttuu, rakenne haihtuu.</p>
+
+  <h2>Esimerkkejä luonnosta</h2>
+
+  <p><strong>Termiittipesät</strong> — arkkitehtoniset mestariteokset. Ilmanvaihto, lämpötilan säätö, jätehuolto — kaikki ilman suunnittelua. Yksittäiset termiitit toimivat feromonisignaalien perusteella.</p>
+
+  <p><strong>Koulukalojen parvi</strong> — satojen kalojen koordinoitu liike ilman johtajaa. Jokainen kala noudattaa kolmea sääntöä: vältä törmäystä, sovita nopeus naapureihin, liiku kohti parven keskustaa. Tuloksena parvi.</p>
+
+  <p><strong>Muurahaiset lyhyimmän reitin löytämisessä</strong> — kokeellisesti osoitettu (Goss & Deneubourg 1989). Muurahaiset eivät tiedä lyhintä reittiä, mutta feromonijäljet vahvistavat nopeinta reittiä.</p>
+
+  <p><strong>Biologiset kehitysprosessit</strong> — alkio kehittyy yhdestä solusta täydelliseksi organismiksi ilman "piirustusta". Jokainen solu kommunikoi paikallisesti naapureidensa kanssa, ja kokonaisuus syntyy.</p>
+
+  <h2>Iain Couzin ryhmä — koordinointi ilman johtajaa</h2>
+
+  <p><strong>Iain Couzin</strong>, Princetonin ekologi, on tutkinut eläinryhmien koordinointia 2000-luvulta lähtien. Hänen löydöksensä:</p>
+
+  <ul>
+    <li>Kalat, linnut ja hyönteiset koordinoituvat <em>muutamalla yksinkertaisella säännöllä</em>.</li>
+    <li>Näistä säännöistä voidaan johtaa <em>mielivaltaisen kokoinen</em> koordinointi.</li>
+    <li>Johtajuus ei ole yksilön ominaisuus — se syntyy <em>joukon tilasta</em>.</li>
+  </ul>
+
+  <p>Couzinin ryhmä on mitannut tämän GPS-seurantalaitteilla varustetulla parvella: 5 %:n johtajia seuraavista kaloista riittää ohjaamaan tuhansien kalojen parven. "Johtajuus" ei ole sisäsyntyinen ominaisuus — se on <em>tilanne</em>.</p>
+
+  <p>Tämä on tärkeä opetus ihmisille: monissa tilanteissa johtajuus ei ole henkilön ominaisuus, vaan ryhmän tilan heijastuma.</p>
+
+  <h2>Order parameter — järjestysparametri</h2>
+
+  <p><strong>Ilya Prigogine</strong> (1917–2003), kemian Nobel-palkinnon voittanut venäläinen fyysikko, kehitti käsitteen <strong>order parameter</strong> (järjestysparametri).</p>
+
+  <p>Prigoginen idea: <em>järjestys ei synny koska yksilöt sitä ohjaavat, vaan koska yksilöt noudattavat tiettyä makroskooppista tilaa</em>. Tämä tila on järjestysparametri — koko järjestelmän yhteinen ominaisuus.</p>
+
+  <p>Esimerkki — <strong>magneetin magnetoituminen</strong>:</p>
+
+  <ul>
+    <li>Yksittäinen atomi ei ole magneettinen — sillä on vain spin-suunta.</li>
+    <li>Järjestysparametri on <em>kokonaismagnetoituminen</em> — yhteenlaskettu spin.</li>
+    <li>Riittävän matalassa lämpötilassa kaikki spinit kääntyvät samaan suuntaan → magneettinen tila.</li>
+    <li>Tämä syntyy <em>ilman keskusohjausta</em> — jokainen atomi "tuntee" vain naapurinsa.</li>
+  </ul>
+
+  <p>Järjestysparametri ei ole "suunnitelma", mutta se on <em>vetovoimatila</em> joka ohjaa yksilöitä. Se on emergentti ominaisuus, joka syntyy kun yksilöt kytkeytyvät.</p>
+
+  <h2>Itseorganisoituminen vs. suunnittelu</h2>
+
+  <p>Nykyaikaisessa ajattelussa itseorganisoitumista <em>vastustetaan</em> usein. Intuitio sanoo: "tarvitaan suunnittelua, muuten syntyy kaaos". Mutta todellisuus on monimutkaisempi.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Suunnittelun vahvuus</h3>
+      <p>Tarkka ohjaus tietyssä mittakaavassa. Tehokas kun järjestelmä on <em>selvästi rajattu</em> ja ymmärretty.</p>
+    </div>
+    <div class="col">
+      <h3>Itseorganisoitumisen vahvuus</h3>
+      <p>Joustava, skaalautuva, sopeutuva. Tehokas kun järjestelmä on <em>laaja ja muuttuva</em>.</p>
+    </div>
+  </div>
+
+  <p>Useimmat mielenkiintoiset järjestelmät ovat <strong>näiden yhdistelmiä</strong>. Esimerkki:</p>
+
+  <ul>
+    <li><strong>Yritys:</strong> strategia on suunniteltu, mutta tiimin toiminta on itseorganisoitunutta.</li>
+    <li><strong>Kaupunki:</strong> kaavoitus on suunniteltu, mutta kahvilakulttuuri on itseorganisoitunutta.</li>
+    <li><strong>Aivot:</strong> karkea rakenne on geneettisesti määrätty, mutta hermoverkosto on itseorganisoitunut.</li>
+  </ul>
+
+  <p>Taitava suunnittelu <em>tukee</em> itseorganisoitumista — se asettaa <em>säännöt</em>, ei <em>suunnitelmaa</em>.</p>
+
+  <h2>Miten voit edistää itseorganisoitumista</h2>
+
+  <p>Jos haluat järjestelmän itseorganisoituvan:</p>
+
+  <ol>
+    <li><strong>Anna säännöt, älä suunnitelmaa.</strong> Kerro miten toimitaan, älä mitä tuloksen pitäisi olla.</li>
+    <li><strong>Vähennä keskitettyä ohjausta.</strong> Mitä vähemmän "johtajia", sitä enemmän paikallinen aloitteellisuus.</li>
+    <li><strong>Luo paikallista palautetta.</strong> Yksilöiden tulee nähdä toistensa toiminta — koulukala tarvitsee silmät.</li>
+    <li><strong>Salli epävarmuus.</strong> Itseorganisoituminen on joustavaa — älä pakota yhteen ratkaisuun.</li>
+    <li><strong>Kokeile pienesti, skaalaa hitaasti.</strong> Itseorganisoituminen toimii parhaiten kun aloitus on pieni.</li>
+  </ol>
+
+  <p>Nämä ovat <em>vipupisteitä</em> — pieniä panostuksia, jotka tuottavat suuria emergenttejä vaikutuksia.</p>
+
+  <h2>Varjopuoli — emergentit ongelmat</h2>
+
+  <p>Itseorganisoituminen ei ole pelkästään hyvästä. Samat mekanismit tuottavat myös ei-toivottuja emergenssejä:</p>
+
+  <ul>
+    <li><strong>Ryhmäajattelu</strong> — kun kaikki seuraavat samoja signaaleja, ryhmä menettää monimuotoisuuden.</li>
+    <li><strong>Kuplat</strong> — kun sijoittajat seuraavat toistensa toimintaa, syntyy hintakupla.</li>
+    <li><strong>Panic</strong> — joukossa yksilöt seuraavat toisiaan, syntyy joukkopako.</li>
+    <li><strong>Organisaation byrokratia</strong> — säännöt kasautuvat, järjestelmä jähmettää.</li>
+  </ul>
+
+  <p>Itseorganisoitumisen <em>tehtävä</em> ei ole vain edistää sitä — myös ymmärtää milloin se tuottaa toivottuja tai ei-toivottuja tuloksia.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Mieti järjestelmää jossa olet mukana. Missä se on itseorganisoitunut, missä suunniteltu?</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Missä yhdessä järjestelmässä näet selkeästi itseorganisoitumista — järjestystä, jota kukaan ei ohjaa?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. käytävän spontaanit kohtaamiset, kahvitauon keskustelut, parven käyttäytyminen..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat ne <em>yksinkertaiset säännöt</em>, joista järjestys syntyy?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'tervehdi kun ohitat', 'kysy apua kun tarvitset', 'tarjoa apua kun huomaat'..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitä voisit tehdä <em>tuottaaksesi</em> lisää itseorganisoitumista — ja mitä välttää?</label>
+      <textarea id="q3" rows="3" placeholder="Usein vähemmän kontrollia tuottaa enemmän järjestystä, kunhan säännöt ovat oikeat..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa näemme miten järjestelmä "vetää" tiloihinsa — attraktoreiden ja faasimuutosten kautta.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — tämän oppitunnin ydinkäsite</li>
+    <li><a href="../../concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">order-parameter</a> — Prigoginen vetovoimatila</li>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — syntyy itseorganisoitumisesta</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — CAS:n ilmenemismuoto</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — paikallisen palautteen rooli</li>
+    <li><a href="../../concepts/network.html" class="wikilink" data-concept="network">network</a> — vuorovaikutuksen rakenne</li>
+    <li><a href="../../concepts/holism.html" class="wikilink" data-concept="holism">holism</a> — kokonaisuus edellä</li>
+    <li><a href="../../concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a> — vasta-käsitys</li>
+    <li><a href="../../concepts/adaptation.html" class="wikilink" data-concept="adaptation">adaptation</a> — järjestelmän sopeutuminen</li>
+    <li><a href="../../concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — pienet syyt — suuret seuraukset</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0002-cas.html">← Kompleksiset sopeutuvat järjestelmät</a>
+    <a class="next" href="0004-attraktorit-ja-faasimuutokset.html">Seuraava oppitunti: Attraktorit ja faasimuutokset →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Ilya Prigogine & Isabelle Stengers — <em>Order Out of Chaos</em> (Bantam, 1984); Stuart Kauffman — <em>At Home in the Universe</em> (Oxford, 1995); Iain Couzin — <em>Collective Memory in Fish Schools</em> (Nature, 2010); Eric Bonabeau — <em>Swarm Intelligence</em> (Oxford, 1999); Serge Kernbach (ed.) — <em>Handbook of Collective Intelligence</em> (MIT Press, 2015).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

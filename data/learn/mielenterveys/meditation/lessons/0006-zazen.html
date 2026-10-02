@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — Zazen: pelkkä istuminen</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Zazen: pelkkä istuminen</h1>
+  <p class="meta">Oppitunti 0006 · ~10 min · harjoitus</p>
+
+  <p>Tämä on polun viimeinen oppitunti, ja se on samalla vaikein selittää — koska siinä ei ole selitettävää. Zazen on japanilainen sana, joka tarkoittaa kirjaimellisesti "istumismeditaatiota" (<em>za</em> = istua, <em>zen</em> = meditaatio, vrt. sanasta johdettu kiinalainen <em>chan</em> ja sanskritin <em>dhyan</em> → <em>zen</em>). Mutta "istumismeditaatio" ei ole selitys — se on kehotus.</p>
+
+  <p>Tämä on oppitunti, jonka tarkoitus on <em>lakata yrittämästä</em>.</p>
+
+  <h2>Mikä erottaa zazenin edellisistä?</h2>
+
+  <p>Olemme edenneet: hengitysmeditaatio (<a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitysankkuri</a>) → kehoskannaus (<a href="../../concepts/body-scan.html" class="wikilink" data-concept="kehoskannaus">body scan</a>) → kävelymeditaatio (<a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">katseen kohdistaminen</a>) → metta (<a href="../../concepts/metta.html" class="wikilink" data-concept="metta">rakastava ystävällisyys</a>). Jokaisessa on <em>kohde</em> — hengitys, keho, askel, sydän.</p>
+
+  <p>Zazenissa kohdetta ei enää tarvita.</p>
+
+  <blockquote>
+    Shikantaza — "pelkkä istuminen" — ei tekniikkaa, ei kohdetta, ei pyrkimystä. Vain istuminen.
+  </blockquote>
+
+  <p>Ei siis hengitystä, ei mantraa, ei kehotietoisuutta, ei myötätuntoa. Vain istuja, joka istuu. Tämä on helpommin sanottu kuin tehty, ja se on silti zen-harjoituksen ydin.</p>
+
+  <h2>Hieman historiaa</h2>
+
+  <p>Zen-buddhalaisuuden juuret ovat intialaisessa dhyāna-perinteessä, joka kulki Kiinaan (<em>chan</em>) ja sieltä Japaniin 1100–1200-luvuilla. Japanilaisen zenin kulta-aika oli 1200-luvulla, jolloin opettaja <strong>Dōgen</strong> kirjoitti <em>Shōbōgenzō</em> ("Oikean dhanan silmä-aarre") — keskeisen tekstin, joka määrittelee zazenin yhä.</p>
+
+  <p>Dōgenin kuuluisa lause on säilynyt:</p>
+
+  <blockquote>
+    <em>Shinjin datsuraku</em> — "mieli ja keho putoavat, putoavat pois".<br>
+    Tai toisessa luennassa: <em>Keho ja mieli putoavat, ja kaikki myötä.</em>
+  </blockquote>
+
+  <p>Tämä lause, joka on avoin monille tulkinnoille, on ehkä lähimpänä zazenin "määritelmää". Se ei tarkoita kuolemaa eikä lamaantumista — se tarkoittaa sitä, että pyrkimys <em>putoaa</em>. Et enää yritä tulla paremmaksi meditoijaksi. Istut vain.</p>
+
+  <p>Toinen japanilainen mestari, <strong>Kōdō Sawaki</strong> (1880–1965), sanoi: <em>"Zazen on hyödytöntä. Siksi se on tärkeää."</em> Tämä tiivistää zenin paradoksin: harjoitus, joka ei tuota mitään, on samalla syvin harjoitus.</p>
+
+  <p>Nykyaikana länsimaisista zazen-opettajista keskeisiä ovat olleet <strong>Shunryu Suzuki</strong> (<em>Zen Mind, Beginner's Mind</em>, 1970), <strong>Norman Fischer</strong>, <strong>Peter Levitt</strong> ja Kanadassa vaikuttanut <strong>Joan Halifax</strong> (Upaya Zen Center). He ovat kaikki tehneet zenistä saavutettavaa myös ihmisille, joille buddhalainen perinne ei ole uskonnollisesti merkityksellinen.</p>
+
+  <h2>Shikantaza — "pelkkä istuminen"</h2>
+
+  <p>Soto-zen-koulukunnan ydin on <strong>shikantaza</strong>. Sana "shikan" tarkoittaa "pelkkää", "taza" tarkoittaa "istumista". Yhdessä: pelkkä istuminen. Sana on tarkoituksella minimalistinen, ja sen tehtävä on ohittaa pyrkimysten koko kenttä.</p>
+
+  <p>Tämä kuulostaa helpolta, mutta se on zen-harjoituksen vaikein osa. Kun ihminen istuu ilman kohdetta, esiin nousee:</p>
+
+  <ul>
+    <li>Kehon kipu ja epämukavuus — täydet 30 minuuttia ilman, että "voi tehdä jotain".</li>
+    <li>Mielen kaikki puolet — suunnittelu, muisteleminen, arviointi, pettymys itseen.</li>
+    <li>Erityisesti ajatus "tämä ei toimi" tai "minä en osaa tätä".</li>
+</ul>
+
+  <p>Shikantazan harjoitus on <em>näiden kaikkien huomaamista ilman, että tekee niille mitään</em>. Et säätele hengitystä, et palaa mihinkään, et työnnä ajatuksia pois. Vain istut — ja kaikki mitä nousee, nousee.</p>
+
+  <p>Dōgen sanoi tämän konkreettisesti: <em>"Ajatukset nousevat kuin aallot, eivätkä ne ole este. Ne ovat itse harjoitus."</em></p>
+
+  <h2>Kōan — toinen zen-muoto</h2>
+
+  <p>Toinen pääkoulukunta zenissä on <strong>Rinzai</strong>, ja sen keskeinen menetelmä on <strong>kōan</strong>.</p>
+
+  <p>Kōan on lyhyt, usein paradoksaalinen lause tai kysymys, joka annetaan opettajan toimesta opiskelijalle. Klassisia esimerkkejä:</p>
+
+  <ul>
+    <li><em>"Mikä on ääni yhdellä kädellä taputettuna?"</em> — Hakuin Ekakun (1686–1769) klassinen kōan.</li>
+    <li><em>"Muo... mikä oli sinun alkuperäinen kasvosi ennen syntymääsi?"</em></li>
+    <li><em>"Koira on luonteeltaan buddha, mutta onko kissa sitä?"</em></li>
+  </ul>
+
+  <p>Kōan ei ole <em>pähkinä</em>, johon etsitään älyllistä vastausta. Se on <em>harjoitus</em>, joka haastaa koko käsitteellisen mielen. Opettaja ja opiskelija työskentelevät kōanin parissa usein vuosia, ja sen "ratkaisu" on pikemminkin transformaatio kuin vastaus — hetki, jossa looginen mieli väistyy ja jokin muu avautuu.</p>
+
+  <p>Tämä kuulostaa mystiikalta, mutta tutkimuksissa on havaittu, että kōan-harjoitus aktivoi aivojen otsalohkon ja ohimolohkon alueita epätyypillisellä tavalla, ja se liittyy vahvaan tarkkaavuuden uudelleen organisointiin (Hassed 2013, "Mindfulness or Mindlessness"). Kōan ei siis ole pelkkä rituaali — se on konkreettinen kognitiivinen haaste, joka tuottaa mitattavia muutoksia.</p>
+
+  <blockquote>
+    Kōan ei kysy mitä tiedät. Se kysyy kuka olet.
+  </blockquote>
+
+  <h2>Zazen nykyajan tutkimuksessa</h2>
+
+  <p>Zen-harjoitusta on tutkittu vähemmän kuin mindfulnessia, mutta kiinnostavasti:</p>
+
+  <ul>
+    <li><strong>Pace et al. (2009)</strong> — zazen-harjoittajilla on tavallista vahvemmat frontaaliset theta-aallot, jotka liittyvät sekä syvään rentoutumiseen että tarkkaavuuden ylläpitoon — paradoksi, joka on tyypillinen <em>kehittyneelle</em> meditaatiolle.</li>
+    <li><strong>Brewer et al. (2011)</strong> — kokenut zazen-harjottaja, kuvaannollisesti, näyttää aivot kuvantamisessa "default mode network" -alueiden hiljaisuutta — eli itsensä narratiivinen puhe vaimenee.</li>
+    <li><strong>Josipovic (2014)</strong> — eroaa frontaaliseen buddhalaisen "interbeing"-harjotuksen aikana, joka liittyy vahvaan "egon liukenemiseen" — kokemukseen minuuden rajojen pehmenemisestä.</li>
+  </ul>
+
+  <p>Robert Wright on sanonut, että zazen on <em>lopullinen</em> meditaatiomuoto, koska siinä harjoitetaan samaa prosessia, johon muut harjoitukset tähtäävät: itse mielen tarttumisen <em>lakkaamista</em>. <a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Sisäinen tarkkailija</a> lakkaa tarttumasta — ei pakotetusti, vaan luonnostaan.</p>
+
+  <h2>Käytännön ohje: zazen-istunto</h2>
+
+  <p>Tämä on kenties koko polun yksinkertaisin ja vaikein ohje. Varaa 25–40 minuuttia.</p>
+
+  <ol>
+    <li><strong>Asento.</strong> Tämä on zazenissa tärkeä, koska se <em>on</em> harjoitus. Joko:<br>
+      <strong>a)</strong> Perinteinen <em>kekkafuza</em> — täysi lootusasento, vasen jalka oikean reiden päälle, oikea jalka vasemman reiden päälle, kantapäät lähellä vartaloa, polvet lattiassa.<br>
+      <strong>b)</strong> <em>Hanbafuza</em> — puolilootusasento, vain toinen jalka toisen reiden päälle.<br>
+      <strong>c)</strong> Tuoli — selkä ei nojaa, jalat lattiassa, kädet reisille tai vatsan eteen.<br>
+      Kaikki kolme ovat kelvollisia. Lootus ei ole "oikeampi" — se on vain perinne.</li>
+    <li><strong>Kädet.</strong> <em>Cosmic mudra</em> — vasen käsi oikean päälle vatsan eteen, kämmenet ylöspäin, peukaloiden kärjet kevyesti vastakkain. Tämä ei ole salaperäinen asento — se tukee selkärankaa.</li>
+    <li><strong>Selkä.</li> Ei nojaa, ei jäykkä. Kuvittele naru, joka vetää pään yläpäästä kohti kattoa. Leukaperät kevyesti sisään, kieli kitalakeen kevyesti.</li>
+    <li><strong>Katse.</strong> Avoimet silmät, noin 45 astetta alaviistoon seinään (tai jos ulkona, noin 1–2 metriä maahan). Pehmeä, laaja katse. Ei kohdetta.</li>
+    <li><strong>Hengitys.</strong> Ei ohjaamista — hengitys kulkee kuten kulkee. Sierainten alla voi tuntea, ei tarvitse seurata. Perinteisesti: "tunne hengitys, mutta älä seuraa sitä".</li>
+    <li><strong>Mieli.</strong> Et tee mitään. Et seuraa, et palaa, et työnnä pois, et analysoi. Jos ajatus nousee — se nousee. Jos se kaatuu — se kaatuu. Sinun tehtäväsi on vain <em>istua</em>.</li>
+    <li><strong>Lopetus.</strong> Kun ajastin soi, älä nouse heti. Liikuta sormia ja varpaita, hengitä syvään, käännä päätä. Nouste hitaasti. Joissain dojossa lopetetaan kädet yhteen ja kumarrus — tämä ei ole palvonta, se on ele, joka sulkee istunnon.</li>
+  </ol>
+
+  <h3>Kolme yleistä virhettä</h3>
+
+  <ol>
+    <li><strong>"Yritän tyhjentää mielen."</strong> Tämä on edelleen yleisin virhe. Et tyhjennä mitään — vain istut.</li>
+    <li><strong>"Etsin kirkkautta / valoa / rauhaa."</strong> Tämä on <a href="../../concepts/presence.html" class="wikilink" data-concept="presence">presence-</a>harjoituksen harha. Zazen ei tavoittele erityistä tilaa. Se on tila, joka on <em>jo</em>.</li>
+    <li><strong>"Yritän olla rento."</strong> Rentous tulee, kun lakkaat yrittämästä. Pakotettu rentous on jäykkyyttä.</li>
+</ol>
+
+  <blockquote>
+    Aloittelijan mieli on paras mieli. — Shunryu Suzuki
+  </blockquote>
+
+  <h2>Miksi zazen on tämän polun päätös?</h2>
+
+  <p>Tämä polku alkoi oppitunnilla 0001, jossa kysyttiin: mikä meditaatio <em>oikeasti</em> on? Vastaus oli: tarkoituksellinen huomion harjoittaminen.</p>
+
+  <p>Tämä oppitunti vie saman kysymyksen loppuun: mitä tapahtuu, kun tarkoitus <em>lakkaa</em>? Vastaus on: jäljelle jää se, mikä oli ennen harjoittelua, ennen tekniikkaa, ennen koulua. Pelkkä istuva mieli, joka on juuri sellainen kuin on.</p>
+
+  <p>Shunryu Suzuki sanoo tämän kauniisti: <em>"Aloittelijan mieli on mieli, joka on avoin kaikille mahdollisuuksille — asiantuntijan mieli on mieli, joka on sulkeutunut muutamille."</em> Aloittaminen zazenissa ei ole "vaihe ennen oikeaa harjoitusta". Se <em>on</em> oikea harjoitus.</p>
+
+  <h2>Rajoitteet ja varoitukset</h2>
+
+  <p>Vaikka zen on kiehtova, sen rinnalle tarvitaan varoitukset:</p>
+
+  <ul>
+    <li><strong>Fyysiset rajoitteet.</strong> Polviongelmat, lonkkavaivat tai selkävaivat voivat tehdä lootusasennosta mahdotonta — tällöin tuoli on aivan kelvollinen. Zazen ei ole asentojen varassa.</li>
+    <li><strong>Masennus ja anhedonia.</strong> Pitkä, tavoitteeton istuminen voi pahentaa masennusta, koska se voi vahvistaa "en kykene mihinkään" -kokemusta. Tällöin MBSR-tyylinen ohjelma tai liikkuva meditaatio on todennäköisesti hyödyllisempi ensin.</li>
+    <li><strong>Psykoottiset häiriöt.</strong> Zazen <em>ei sovi</em> skitsofreniaa sairastaville ilman erityistä terapeuttista tukea. Tämä on Brown-tutkimusryhmän erityinen varoitus.</li>
+    <li><strong>"Zen-väkivalta".</strong> Jotkut opettajat opettavat zazenia niin tiukasti, että se muuttuu itsekuriksi. Hyvä opettaja ei vaadi fyysistä kipua eikä tuomitse epäonnistumista.</li>
+    <li><strong>Retriittiympäristöt.</strong> Usean päivän zazen-retriitti ilman ohjaajaa voi olla riski ihmisille, joilla on psyykkistä oireilua. Sesshins (tiiviit retriitit) kannattaa tehdä ohjatusti.</li>
+  </ul>
+
+  <p>Sharon Salzberg — joka itse edustaa enemmän vipassana- kuin zen-perinnettä — sanoo, että zazen <em>voi</em> olla hyödyllinen myös ei-buddhalaisille, mutta se vaatii opettajan tai yhteisön, joka ymmärtää kontekstin.</p>
+
+  <h2>Zazen arjessa: pieni versio</h2>
+
+  <p>Kaikki eivät istu 40 minuuttia. Mutta zazenin <em>ydin</em> onnistuu myös lyhyesti:</p>
+
+  <ul>
+    <li>5 minuuttia tuolilla, silmät auki, ilman ohjausta.</li>
+    <li>2 minuuttia ennen työpäivää — vain istu, älä yritä tehdä mitään.</li>
+    <li>30 sekuntia jonossa — hengitä, älä tartu ajatukseen.</li>
+</ul>
+
+  <p>Norman Fischer, yksi nykyzenin käännöskäännöistä, puhuu "mikro-zazenista" — muutaman hengenvedon tauoista, joissa lakkaa tekemästä mitään, jopa meditointia. Tämä on <a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">hiljaisuuden</a> upottaminen arkeen, ei harjoituksen lyhentämistä.</p>
+
+  <h2>Yhteenveto: koko polku yhdellä sivulla</h2>
+
+  <p>Kuusi oppituntia, yksi polku:</p>
+
+  <ol>
+    <li><strong>0001 Mitä meditaatio on</strong> — käsitteet, koulukunnat, rehelliset hyödyt ja rajoitteet.</li>
+    <li><strong>0002 Hengitysmeditaatio</strong> — ankkuri, johon palaat.</li>
+    <li><strong>0003 Kehoskannaus</strong> — kehoon laskeutuminen, erityisesti unen tueksi.</li>
+    <li><strong>0004 Kävelymeditaatio</strong> — liikkeen harjoitus, erityisesti levottomille.</li>
+    <li><strong>0005 Metta</strong> — sydämen avaaminen, itsemyötätunto.</li>
+    <li><strong>0006 Zazen</strong> — kaikkien tekniikoiden niukkeneminen.</li>
+</ol>
+
+  <p>Ei tarvitse tehdä niitä kaikkia. Ei tarvitse edetä järjestyksessä. Tärkeintä on, että harjoitus on <em>säännöllinen, rehellinen ja lempeä</em>. Polun loppu ei ole "zazen" — se on se, mitä sinulle sopii, niin kauan kuin sitä jatkaa.</p>
+
+  <blockquote>
+    Tie on tie. Ei alkua, ei loppua. Kävelemme vain.
+  </blockquote>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditation — yleiskäsite, jonka zazen on japanilainen muoto</a></li>
+    <li><a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">Samatha — tyynnyttäminen, josta zazen erityisesti sōtō-muodossa ammentaa</a></li>
+    <li><a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">Vipassana — kirkas näkeminen, jota kōanit edustavat</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, jonka shikantaza konkretisoi</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Stillness — hiljaisuus, joka on zazenin harjoittelun "tuote"</a></li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Witness — sisäinen tarkkailija, joka zazenissa lopulta hiljenee</a></li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness — läsnäolon tarkoitus, joka zazenissa muuttuu pelkäksi olemiseksi</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Eihei Dōgen — <em>Shōbōgenzō</em> (n. 1250); Shunryu Suzuki — <em>Zen Mind, Beginner's Mind</em> (1970); Norman Fischer — <em>Training in Compassion</em> (2013); Joan Halifax — <em>Being with Dying</em> (2008); Kōdō Sawaki — <em>Toitsu no Kokoro</em>; Hakuin Ekaku — <em>Wild Ivy</em>; Pace et al. — <em>Psychiatry Research: Neuroimaging</em> (2009); Josipovic — <em>Annals of the New York Academy of Sciences</em> (2014).
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Istumisharjoitukset Guided Meditations -osiossa sopivat zazen-harjoittelun tueksi.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Guided Meditations" — ääniohjattuja harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#meditations" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23meditations" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0005-metta.html">← Edellinen: Metta</a>
+    <span class="empty"></span>
+  </div>
+</main>
+</body>
+</html>

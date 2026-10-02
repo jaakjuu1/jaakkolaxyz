@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002-cas — Kompleksiset sopeutuvat järjestelmät (CAS)</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0002/6</p>
+  <h1>Kompleksiset sopeutuvat järjestelmät (CAS)</h1>
+  <p class="lede">Tuhannet yksinkertaiset toimijat, neljä mekanismia (aggregaatio, tunnisteet, epälineaarisuus, virrat), ja emergentti äly. Tämä on CAS.</p>
+
+  <p>Edellisessä oppitunnissa erottelimme kompleksin ja monimutkaisen. Nyt syvennämme tärkeimpään kompleksin järjestelmän tyyppiin — <strong>kompleksi sopeutuva järjestelmä</strong> (Complex Adaptive System, CAS). Tämä on käsite, joka yhdistää kaikki edelliset.</p>
+
+  <h2>CAS lyhyesti</h2>
+
+  <p>CAS on järjestelmä, jossa:</p>
+
+  <ul>
+    <li>On <strong>monta toimijaa</strong> (agenssia), joilla on kukin oma käyttäytymisensä.</li>
+    <li>Toimijat <strong>kytkeytyvät toisiinsa</strong> — vaikuttavat toistensa tilaan.</li>
+    <li>Toimijat <strong>oppivat ja sopeutuvat</strong> — muuttavat käyttäytymistään kokemuksesta.</li>
+    <li>Kokonaisuus synnyttää <strong>emergenttejä rakenteita</strong>, joita kukaan ei suunnitellut.</li>
+  </ul>
+
+  <p>Tämä määritelmä kuvaa <em>muurahaisyhdyskuntia</em>, <em>aivoja</em>, <em>ekosysteemejä</em>, <em>markkinoita</em>, <em>kaupunkeja</em> — ja kummallisin kyllä, myös <em>omia ajatuksiasi juuri nyt</em>.</p>
+
+  <h2>Neljä CAS:n tasoa</h2>
+
+  <p><strong>John Holland</strong> (1929–2015), kompleksisuustieteen pioneeri ja geneettisten algoritmien isä, kuvasi CAS:n neljällä tasolla:</p>
+
+  <ol>
+    <li><strong>Toiminnan taso (performance)</strong> — järjestelmän kyky käsitellä ympäristöä. Suoritetaan toimijoiden kautta.</li>
+    <li><strong>Anturit ja toimeenpanijat</strong> — toimijoiden keinot havaita ja vaikuttaa. Kartoittavat ympäristön omaan malliin.</li>
+    <li><strong>Sisäiset mallit</strong> — toimijoiden uskomukset säännöistä, jotka ohjaavat maailmaa. <em>Suurin osa päätöksistä syntyy näistä malleista, ei raakadatasta.</em></li>
+    <li><strong>Strategioiden armeija</strong> — joukko yksinkertaisia sääntöjä ("if-then"), joita toimija käyttää. Nämä <em>kehittyvät</em> kokemuksen myötä.</li>
+  </ol>
+
+  <p>Tärkeä pointti: <strong>sisäiset mallit ovat usein vääriä, mutta riittävän hyviä</strong>. Ne eivät kuvaa todellisuutta tarkasti — ne ovat "tyydyttäviä" heuristiikkoja (Herbert Simonin <em>satisficing</em>). Mutta ne toimivat tarpeeksi hyvin, jotta elämä jatkuu.</p>
+
+  <blockquote>
+    <p>"All complex adaptive systems share four basic mechanisms: aggregation, tagging, nonlinearity, and flows." — John Holland</p>
+  </blockquote>
+
+  <h2>CAS-mekanismit</h2>
+
+  <p><strong>Neljä mekanismia</strong> joita CAS käyttää:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Aggregaatio</h3>
+      <p>Yksilöt yhdistyvät ryhmiksi. Muurahainen → pesä. Ihminen → perhe → yhteisö → valtio. Aggregaatti käyttäytyy eri tavalla kuin yksilöt.</p>
+    </div>
+    <div class="col">
+      <h3>Tunnisteet (tagging)</h3>
+      <p>Toimijat "merkitään" — laji, status, ryhmä. Merkitseminen mahdollistaa yhteistyön ja erottautumisen. Solun pintamerkitseminen ohjaa immuunijärjestelmää.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Epälineaarisuus</h3>
+      <p>Syy ja seuraus eivät ole suoraan verrannollisia. Pieni muutos voi aiheuttaa suuren vasteen. Tämä tekee CAS:n ennustamisesta vaikeaa.</p>
+    </div>
+    <div class="col">
+      <h3>Virrat</h3>
+      <p>Resurssit, energia, informaatio virtaavat toimijoiden läpi. CAS:n dynamiikka on <em>virtojen dynamiikkaa</em> — varastot täyttyvät ja tyhjenevät.</p>
+    </div>
+  </div>
+
+  <p>Nämä neljä mekanismia <em>toistuvat</em> kaikissa CAS:issa. Ne ovat ikään kuin kompleksisuuden "fysiikkaa".</p>
+
+  <h2>Esimerkkejä CAS-järjestelmistä</h2>
+
+  <p>Katsotaan kolme esimerkkiä — ja tunnistetaan samat rakenteet.</p>
+
+  <p><strong>1. Muurahaisyhdyskunta</strong></p>
+  <ul>
+    <li>Toimijat: tuhansia muurahaisia, joista kukin on yksinkertainen.</li>
+    <li>Säännöt: jätä feromoni, seuraa vahvinta feromonia.</li>
+    <li>Käyttäytyminen: lyhin reitti ruokaan löytyy itse. Ei "johtajaa".</li>
+    <li>Emergentti rakenne: pesän arkkitehtuuri, "työnjako".</li>
+  </ul>
+
+  <p><strong>2. Aivot</strong></p>
+  <ul>
+    <li>Toimijat: 86 miljardia neuronia.</li>
+    <li>Säännöt: neuronit vahvistavat yhteyksiä, jotka laukeavat usein (Hebbin sääntö).</li>
+    <li>Käyttäytyminen: tietoinen kokemus, muisti, oppiminen.</li>
+    <li>Emergentti rakenne: tietoisuus.</li>
+  </ul>
+
+  <p><strong>3. Talousmarkkinat</strong></p>
+  <ul>
+    <li>Toimijat: miljoonia sijoittajia, yrityksiä, kuluttajia.</li>
+    <li>Säännöt: osta jos hinta nousee, myy jos laskee.</li>
+    <li>Käyttäytyminen: kuplat, romahdukset, hinta-trendit.</li>
+    <li>Emergentti rakenne: markkinahinta, volatiliteetti.</li>
+  </ul>
+
+  <p>Näissä kaikissa samat periaatteet. <strong>Eri mittakaavassa, mutta samat säännöt.</strong></p>
+
+  <h2>Mikä on "sopeutuva" CAS:ssa</h2>
+
+  <p>Sopeutuvuus (adaptation) on <em>oppimista</em> — mutta ei välttämättä tietoista. Se on käyttäytymismallien muuttumista kokemuksen perusteella.</p>
+
+  <p>CAS oppii kolmella tapaa:</p>
+
+  <ol>
+    <li><strong>Yksilötasolla</strong> — yksi toimija oppii.</li>
+    <li><strong>Sääntötasolla</strong> — toimijat muuttavat strategiaansa (evoluutio).</li>
+    <li><strong>Järjestelmätasolla</strong> — emergentti rakenne muuttuu (esim. ekosysteemi).</li>
+  </ol>
+
+  <p><strong>Stuart Kauffman</strong> kutsuu tällaista järjestelmää <em>adjacent possible</em> -tilaksi — jokainen hetki tarjoaa uusia mahdollisuuksia, jotka eivät olleet mahdollisia aiemmin.</p>
+
+  <h2>CAS vs. perinteinen tiede</h2>
+
+  <p>Perinteinen tiede redusoi — pilkkoo osiin ja tutkii niitä. CAS on eri lähtökohta:</p>
+
+  <ul>
+    <li>Perinteinen: <em>vähennä</em> monimutkaisuutta, tavoittele yksinkertaisia lakeja.</li>
+    <li>CAS-tiede: <em>kohtaa</em> monimutkaisuus, etsi rakenteita emergenssistä.</li>
+  </ul>
+
+  <blockquote>
+    <p>"At the Santa Fe Institute we don't seek the simple laws of complex systems. We seek the patterns that emerge from complexity itself." — Murray Gell-Mann</p>
+  </blockquote>
+
+  <h2>Mikä on agenttipohjainen mallinnus?</h2>
+
+  <p>Koska CAS on vaikea analysoida matemaattisesti, sitä tutkitaan usein <strong>agenttipohjaisella mallinnuksella</strong> (ABM). Siinä:</p>
+
+  <ul>
+    <li><strong>Toimijat</strong> (agenssit) ohjelmoidaan yksinkertaisilla säännöillä.</li>
+    <li>Jokaisella on oma <strong>tila</strong> ja <strong>käyttäytymissäännöt</strong>.</li>
+    <li>Toimijat <strong>kytkeytyvät</strong> toisiinsa ja ympäristöönsä.</li>
+    <li>Tutkija <em>ajaa</em> simulaation ja katsoo mitä emergenssiä syntyy.</li>
+  </ul>
+
+  <p>ABM on erinomainen CAS-työkalu, koska se tunnustaa: <em>emme voi ennustaa tulosta, voimme vain kokeilla</em>. Toistuvat simulaatiot tuottavat todennäköisyysjakaumia.</p>
+
+  <h2>Mikä on CAS:n suurin valta</h2>
+
+  <p>CAS <em>ratkaisee ongelmia</em>, joita perinteinen suunnittelu ei osaa. Esimerkkejä:</p>
+
+  <ul>
+    <li><strong>Googlen PageRank</strong> — hakutulosjärjestys emergoituu linkkirakenteesta, ei keskitetystä suunnittelusta.</li>
+    <li><strong>Linux-käyttöjärjestelmä</strong> — ydin syntyy tuhansien kehittäjien yhteistyöstä ilman keskusjohtoa.</li>
+    <li><strong>Ihmisen immuniteetti</strong> — oppii uusia patogeeneja ilman, että tarvitsee suunnitella jokaista.</li>
+  </ul>
+
+  <p>Näissä on sama kaava: <strong>antaa säännöt, ei suunnitelmaa</strong>. Säännöt ovat yksinkertaisia, tulokset emergenttejä.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Etsi yksi CAS omasta elämästäsi — järjestelmä jossa toimijat oppivat ja mukautuvat.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on jokin järjestelmä elämässäsi, joka "elää" ilman keskusohjausta — kuitenkin synnyttää järjestystä?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. työyhteisön sosiaalinen dynamiikka, ystäväpiirin tapaamiset, perheen ruokailutottumukset..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat sen "säännöt" — yksinkertaiset heuristiikat joita toimijat noudattavat?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'kysy neuvoa kun olet epävarma', 'tule paikalle kun sinua kutsutaan', 'tarjoa apua kun näet tarpeen'..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitä <em>emergenttejä</em> piirteitä syntyy, joita kukaan ei suunnitellut?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. yhteinen kieli, piilotettu valta, yllättävä luovuus..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa näemme miten tämä järjestys syntyy <em>ilman keskussuunnittelua</em> — itseorganisoitumisen kautta.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — tämän oppitunnin ydinkäsite (CAS)</li>
+    <li><a href="../../concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — yleiskäsite</li>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — syntyy CAS:n tasolla</li>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — ilman keskussuunnittelua</li>
+    <li><a href="../../concepts/adaptation.html" class="wikilink" data-concept="adaptation">adaptation</a> — oppiminen ja sopeutuminen</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — sääntöjen moottori</li>
+    <li><a href="../../concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — pieni syy → suuri seuraus</li>
+    <li><a href="../../concepts/system.html" class="wikilink" data-concept="system">system</a> — yleiskäsite</li>
+    <li><a href="../../concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a> — ABM — agenttipohjainen mallinnus</li>
+    <li><a href="../../concepts/holism.html" class="wikilink" data-concept="holism">holism</a> — kokonaisuus edellä</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0001-kompleksisuus-vs-monimutkaisuus.html">← Kompleksisuus vs. monimutkaisuus</a>
+    <a class="next" href="0003-itseorganisoituminen.html">Seuraava oppitunti: Itseorganisoituminen →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: John Holland — <em>Emergence</em> (Perseus, 1998), <em>Hidden Order</em> (Addison-Wesley, 1995); Stuart Kauffman — <em>At Home in the Universe</em> (Oxford, 1995); W. Brian Arthur — <em>Inductive Reasoning and Bounded Rationality</em> (AER, 1994); Eric Bonabeau, Marco Dorigo, Guy Theraulaz — <em>Swarm Intelligence</em> (Oxford, 1999).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

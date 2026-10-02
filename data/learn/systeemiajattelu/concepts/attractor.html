@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: attractor</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>attractor</h1>
+  <p class="meta">Käsite · systeemiajattelu · kompleksisuus · dynamiikka</p>
+
+  <p class="lede">Vetovoima eli attraktori on systeemin <a href="phase-space.html">faasiavaruudessa</a> oleva tila tai tilojen joukko, johon systeemi ajautuu ajan myötä — kuin magneetin tapaan vetäen liikettä kohti itseään riippumatta lähtötilasta (tietyn vetovoima-alueen sisällä).</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Attraktori</strong> (engl. <em>attractor</em>, lat. <em>attrahere</em> = "vetää puoleensa") on dynaamisessa systeemissä tila, jota kohti viereiset tilat kehittyvät. Matemaattisesti kyse on invariantista joukosta <em>A</em>, jolle on olemassa ympäristö <em>U</em> siten, että kaikki <em>U</em>:n sisällä aloittavat radat lähestyvät <em>A</em>:ta ajan kuluessa.</p>
+
+  <p>Attraktoreita on useita päätyyppejä:</p>
+  <ul>
+    <li><strong>Pisteattraktori</strong> — systeemi päätyy yhteen ainoaan tilaan (esim. heilurin lepoasento).</li>
+    <li><strong>Jaksollinen attraktori (rajasykli)</strong> — systeemi kiertää toistuvasti saman suljetun kierroksen (esim. sydämen syke, kemiallinen oskillaattori).</li>
+    <li><strong>Toroidaalinen attraktori</strong> — kaksi toisistaan riippumatonta taajuutta muodostavat monimutkaisen, toistuvan kuvion.</li>
+    <li><strong>Outo attraktori (strange attractor)</strong> — fraktaalinen, äärettömän monikerroksinen vetovoima, jonka lähellä olevat radat eroavat eksponentiaalisesti. Klassinen esimerkki on Lorenzin systeemin perhosen muotoinen attraktori ilmastodynamiikassa.</li>
+  </ul>
+
+  <blockquote>
+    <p>"The attractor is what the system <em>remembers</em> — the pattern it returns to after every disturbance." — Francisco Varela</p>
+  </blockquote>
+
+  <p>Attraktorin käsite on systeemiajattelussa keskeinen, koska se paljastaa systeemin <em>pitkän aikavälin käyttäytymisen</em>. Kun hahmotetaan attraktori, ymmärretään, mihin tiloihin systeemi voi asettua — ja toisaalta, mitkä tilat ovat sille mahdottomia. Esimerkiksi elimistön <a href="homeostasis.html">homeostaasi</a> voidaan nähdä fysiologisena attraktorina: häiriöistä huolimatta elimistö palaa kohti samaa tasapainotilaa.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Termi <em>attractor</em> vakiintui 1900-luvun jälkipuoliskolla dynaamisten systeemien teoriassa. Matemaattiset juuret ovat 1800-luvun lopun differentiaaliyhtälöteoriassa (Henri Poincaré, 1880-luku), jossa hän tutki planeettojen ratojen vakautta ja löysi niin sanotut homokliiniset rakenteet.</p>
+
+  <p>Edward Lorenz mullisti käsitteen vuonna 1963, kun hän säämalleissa havaitsi, että pienet muutokset lähtötilassa tuottavat radikaalisti erilaisia lopputuloksia. Hän kuvasi ilmakehän konvektiota kuvaavan yhtälöryhmän <em>outoa attraktoria</em>, joka sai popularisoidun nimen "Lorenzin perhonen". Tämä loi perustan <a href="chaos-theory.html">kaaosteorialle</a> ja systeemien herkkyydelle.</p>
+
+  <p>Stuart Kauffman (1990-luku) laajensi käsitettä biologisesti: elävän solun ja kokonaisen ekosysteemin tila voidaan nähdä geneettisen ja ekologisen maiseman attraktoreina. Donella Meadows ja systeemidynamiikan koulukunta omaksuivat attraktorin keskeiseksi työkaluksi yhteiskunnallisten systeemien mallintamisessa.</p>
+
+  <p>Nykyisin attraktori-käsite esiintyy yhtä lailla neurotieteessä (aivodynamiikka vetää kohti lepotilan attraktoreita), taloustieteessä (markkinoiden tasapainotilat), ekologiassa (lajiston vakaat tilahilaat) ja psykologiassa (mielentilojen attraktorit).</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="phase-space.html">phase-space</a> — faasiavaruus, jossa attraktori sijaitsee.</li>
+    <li><a href="bifurcation.html">bifurcation</a> — attraktorin haarautuminen kontrolliparametrin muuttuessa.</li>
+    <li><a href="equilibrium.html">equilibrium</a> — tasapainotila on yksinkertaisin attraktori.</li>
+    <li><a href="dynamical-equilibrium.html">dynamical-equilibrium</a> — dynaaminen tasapaino on liikkuva attraktori.</li>
+    <li><a href="homeostasis.html">homeostasis</a> — fysiologinen attraktori biologisessa systeemissä.</li>
+    <li><a href="complexity.html">complexity</a> — outo attraktori syntyy usein kompleksisissa systeemeissä.</li>
+    <li><a href="complex-adaptive-system.html">complex-adaptive-system</a> — attraktorit ohjaavat sopeutuvien systeemien käyttäytymistä.</li>
+    <li><a href="phase-transition.html">phase-transition</a> — faasimuutos siirtää systeemin attraktorista toiseen.</li>
+    <li><a href="self-organization.html">self-organization</a> — itseorganisoituminen luo uusia attraktoreita.</li>
+    <li><a href="resilience.html">resilience</a> — resilientti systeemi palaa nopeasti attraktoriinsa.</li>
+    <li><a href="feedback-loop.html">feedback-loop</a> — takaisinkytkennät muovaavat attraktorin rakennetta.</li>
+    <li><a href="state.html">state</a> — systeemin tila on piste faasiavaruudessa, joko lähellä tai kaukana attraktorista.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Attraktori esitellään <a href="../lessons/dynaamiset-systeemit.html">Dynaamiset systeemit</a> -moduulissa yhdessä <a href="phase-space.html">faasiavaruuden</a> ja <a href="bifurcation.html">bifurkaation</a> kanssa. Käsite syvenee moduuleissa, joissa tarkastellaan ilmastoa, taloutta ja fysiologiaa <a href="complex-adaptive-system.html">sopeutuvina järjestelminä</a>.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — faasiavaruus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — bifurkaatio</li>
+    <li><a href="/learn/systeemiajattelu/concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — tasapaino</li>
+    <li><a href="/learn/systeemiajattelu/concepts/dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — dynaaminen tasapaino</li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — homeostaasi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — kompleksisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — sopeutuva järjestelmä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — faasisiirtymä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — itseorganisoituminen</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — resilienssi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentäsilmukka</li>
+    <li><a href="/learn/systeemiajattelu/concepts/state.html" class="wikilink" data-concept="state">state</a> — tila</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Poincaré 1890 — <em>Sur le problème des trois corps</em>; Lorenz 1963 — <em>Deterministic Nonperiodic Flow</em>; Strogatz 1994 — <em>Nonlinear Dynamics and Chaos</em>; Kauffman 1995 — <em>At Home in the Universe</em>; Wikipedia-artikkelit: <em>Attractor</em>; <em>Strange attractor</em>; <em>Chaos theory</em>.
+  </p>
+</main>
+</body>
+</html>

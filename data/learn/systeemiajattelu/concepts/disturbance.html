@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: disturbance</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>disturbance</h1>
+  <p class="meta">Käsite · systeemiajattelu · kontroliteoria · tasapainon horjuttaminen</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Disturbance</strong> (häiriö) on mikä tahansa ulkoinen tai sisäinen tekijä, joka työntää systeemin pois sen tasapainotilasta. Käsite on peräisin klassisesta kontroliteoriasta ja yleisestä systeemiteoriasta, ja <a href="general-systems-theory.html">V. C. Ayyadurai</a> nostaa sen keskeiseksi osaksi <a href="architecture-of-existence.html">olemassaolon arkkitehtuuria</a>. Sana tulee latinasta <em>disturbare</em> — "sekoittaa, häiritä".</p>
+
+  <p>Disturbance ei ole sinänsä "paha" eikä "hyvä". Se on neutraali sysäys, joka pakottaa systeemin reagoimaan. Reaktion laatu — ja se, palautuuko systeemi <a href="equilibrium.html">tasapainoon</a>, siirtyykö uuteen tilaan vai hajoaako — riippuu disturbanceen voimakkuudesta, systeemin <a href="resilience.html">resilienssistä</a> ja sen <a href="adjustment.html">adjustment</a>-mekanismeista.</p>
+
+  <p>Ayyadurain viitekehyksessä disturbance voidaan luokitella kolmella akselilla:</p>
+  <ul>
+    <li><strong>Alkuperä:</strong> eksogeeninen (ympäristöstä tuleva) tai endogeeninen (systeemin itsensä tuottama).</li>
+    <li><strong>Muoto:</strong> impulsiivinen (hetkellinen sysäys), jatkuva (jatkuva kuormitus) tai stokastinen (satunnainen).</li>
+    <li><strong>Voimakkuus:</strong> mikro (pieni, systeemi vaimentaa), meso (näkyvä muutos) tai makro (systeemin rakennetta uhkaava).</li>
+  </ul>
+
+  <h2>Alkuperä</h2>
+  <p>Disturbance-käsite vakiintui 1940-luvun kontroliteoriassa, erityisesti <a href="control-theory.html">Norbert Wienerin</a> kybernetiikassa ja <a href="control-systems-engineering.html">W. R. Ashbyn</a> homeostaasin teoriassa. Walter Cannon esitteli 1932 käsitteen <em>homeostasis</em> — elimistön kyvyn vastustaa ulkoisia häiriöitä — josta disturbance-käsite saa biologisen perustansa.</p>
+
+  <p>Ayyadurai laajentaa disturbance-käsitteen <a href="ayurveda.html">ayurvedan</a> ja <a href="siddha.html">sidhan</a> kehyskertomukseen. Hänen mukaansa dosha-epätasapaino — <a href="vata.html">vatan</a>, <a href="pitta.html">pitan</a> tai <a href="kapha.html">kaphan</a> poikkeama niiden <a href="natural-systems-state.html">luonnollisesta tilasta</a> — on disturbance. Samoin mielen häiriö, sosiaalinen kriisi tai ekologinen muutos. Tässä viitekehyksessä disturbance ei ole vain tekninen termi vaan filosofinen peruskäsite: kaikki olemassaolo on jatkuvaa disturbanceen ja adjustmenten vuoropuhelua.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="disturbance.html">disturbance</a> itse — tämän sivun käsite.</li>
+    <li><a href="adjustment.html">adjustment</a> — disturbanceen vaste; säätöliike kohti tasapainoa.</li>
+    <li><a href="equilibrium.html">equilibrium</a> — tila, josta disturbance systeemin irrottaa.</li>
+    <li><a href="homeostasis.html">homeostasis</a> — biologinen disturbanceen vastustamisen mekanismi.</li>
+    <li><a href="feedback.html">feedback</a> — disturbanceen havaitsemisen kanava.</li>
+    <li><a href="negative-feedback.html">negative-feedback</a> — disturbanceen vaimentava säätösilmukka.</li>
+    <li><a href="positive-feedback.html">positive-feedback</a> — disturbanceen voimistava säätösilmukka.</li>
+    <li><a href="state.html">state</a> — systeemin tila, jota disturbance muuttaa.</li>
+    <li><a href="dynamical-equilibrium.html">dynamical-equilibrium</a> — tasapaino, joka joustaa disturbanceen mukana.</li>
+    <li><a href="resilience.html">resilience</a> — systeemin kyky kestää disturbanceja hajoamatta.</li>
+    <li><a href="vata.html">vata</a>, <a href="pitta.html">pitta</a>, <a href="kapha.html">kapha</a> — ayurvedan kolme doshaa, joiden epätasapaino on klassinen disturbance.</li>
+    <li><a href="natural-systems-state.html">natural-systems-state</a> — tila, johon disturbance pyrkii sysäämään.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Disturbance esitellään <a href="../lessons/control-systems.html">control systems</a> -oppitunnilla osana klassista säätöteoriaa, ja <a href="../lessons/homeostasis.html">homeostaasi</a>-oppitunnilla biologisena ilmiönä. Ayyadurain viitekehyksessä disturbance on keskeinen <a href="../lessons/ayurveda-and-systems-thinking.html">ayurveda ja systeemiajattelu</a> -oppitunnilla sekä <a href="../lessons/integrated-systems-state.html">ISS-tilan</a> saavuttamisen logiikassa.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Wiener, N. (1948) — <em>Cybernetics</em>.</li>
+    <li>Ashby, W. R. (1956) — <em>An Introduction to Cybernetics</em>.</li>
+    <li>Cannon, W. B. (1932) — <em>The Wisdom of the Body</em>.</li>
+    <li>Ayyadurai, V. C. — <em>The Intelligent System of the Universe</em>, <em>The Rosetta Stone</em>, <em>Vellamami</em>.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/adjustment.html" class="wikilink" data-concept="adjustment">adjustment</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a></li>
+  </ul>
+</main>
+</body>
+</html>

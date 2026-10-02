@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: feedback-loop</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>feedback-loop</h1>
+  <p class="meta">Käsite · systeemiajattelu · säätömekanismi · ydinmekanismi</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Takaisinkytkentäsilmukka</strong> (engl. <em>feedback loop</em>, <em>feedback system</em>) on järjestelmän rakennepiirre, jossa järjestelmän tuotos syötetään takaisin syötteeksi ja vaikuttaa siten seuraavaan toimintaan. Se on yksi systeemiajattelun ja kybernetiikan keskeisimmistä käsitteistä: lähes kaikki kiinnostava järjestelmäkäyttäytyminen — tasapaino, värähtely, kaaos, kasvu, romahdus — syntyy takaisinkytkentäsilmukoista ja niiden keskinäisistä vuorovaikutuksista.</p>
+
+  <p>Takaisinkytkentäsilmukoita on kahdenlaisia: <em>negatiivinen takaisinkytkentä</em> (<em>negative feedback</em>) pyrkii vakauttamaan järjestelmän tavoitearvoon — kun tila poikkeaa tavoitteesta, säätö korjaa sitä kohti takaisin. Termostaatti, verensokerin säätely, oppimisen virhekontrolli sekä kehon homeostaasi ovat negatiivisia takaisinkytkentöjä. <em>Positiivinen takaisinkytkentä</em> (<em>positive feedback</em>) vahvistaa muutosta entisestään — kun tila muuttuu, muutos voimistuu. Pankkiuokka, lumivyöry, kriittisen massan ylittäminen ja vallankumouksellinen sosialisaatio ovat positiivisia takaisinkytkentöjä.</p>
+
+  <p>On tärkeää huomata, että "positiivinen" ja "negatiivinen" eivät tässä tarkoita <em>hyvää</em> ja <em>huonoa</em> — ne ovat neutraaleja matemaattisia ja dynaamisia termejä. Positiivinen takaisinkytkentä voi olla hyödyllinen (oppiminen, luovuus) tai tuhoisa (joukkomuutto, ilmastokriisi). Negatiivinen takaisinkytkentä voi olla välttämätön (hengitys) tai estävä (muutosvastarinta organisaatiossa). Arvio syntyy kontekstin ja tavoitteiden kautta.</p>
+
+  <p>Takaisinkytkentäsilmukka sisältää tyypillisesti neljä osaa: <em>reseptori</em> (vastaanottaa tiedon tilasta), <em>komparaattori</em> (vertaa tilaa tavoitteeseen), <em>effektori</em> (tuottaa korjaavan toiminnon) ja itse tarkasteltava muuttuja. Tätä rakennetta kutsutaan <em>kyberneettiseksi silmukaksi</em> (<em>cybernetic-loop</em>) ja se on perusta koko <em>säätötekniikalle</em> (<em>control-theory</em>).</p>
+
+  <h2>Alkuperä</h2>
+  <p>Takaisinkytkennän käsite syntyi 1800-luvun tekniikassa. James Clerk Maxwell analysoi 1868 keskipakossäätimen dynamiikkaa — yhtä ensimmäisistä konkreettisista takaisinkytkentäsilmukoista teollisessa käytössä. Vuosikymmen myöhemmin (1877) E.J. Routh kehitti matemaattiset kriteerit sille, milloin säätöpiiri on stabiili. 1920- ja 1930-luvuilla Harold Black ja Hendrik Bode Bell Labsilla kehittivät negatiivisen takaisinkytkennän elektroniikan vahvistimiin, mikä mahdollisti modernin tietoliikenteen.</p>
+
+  <p>Toisen maailmansodan aikana ja sen jälkeen <strong>Norbert Wiener</strong> yleisti käsitteen biologisiin ja sosiaalisiin järjestelmiin vuoden 1948 teoksessaan <em>Cybernetics</em>. Hän osoitti, että sama takaisinkytkennän logiikka pätee sekä koneissa että elävissä organismeissa. Myöhemmin <strong>W. Ross Ashby</strong> (<em>An Introduction to Cybernetics</em>, 1956) muotoili säätöteorian yleiset lait ja esitteli käsitteen <em>välttämätön monimuotoisuus</em> (<em>requisite variety</em>): säätäjällä on oltava riittävästi erilaisia vasteita voidakseen säätää järjestelmää.</p>
+
+  <p><strong>Jay Forrester</strong> kehitti 1950-luvulla systeemidynamiikan, jossa takaisinkytkentäsilmukka on keskeinen mallinnuskohde. Donella Meadows popularisoi käsitteen teoksessaan <em>Thinking in Systems</em> (2008). Hänen luokittelunsa — vahvistavat ja tasapainottavat silmukat — on nykyään standardi.</p>
+
+  <p>V.A. Shiva Ayyadurai korostaa teoksissaan <em>System and Revolution</em> ja <em>The Science of Everything</em>, että takaisinkytkentäsilmukka on yksi universaaleimmista rakennepiirteistä: se esiintyy yhtä lailla fysikaalisessa järjestelmässä (termostaatti), biologisessa järjestelmässä (DNA:n korjausmekanismi), mentaalisessa järjestelmässä (mielen tietoinen säätely) ja sosiaalisessa järjestelmässä (yhteisön palaute). Tässä mielessä takaisinkytkentä on yksi Rosettan kiven avainkäsitteistä, joka yhdistää länsimaisen tieteen ja itäiset perinteet.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Takaisinkytkentäsilmukka on järjestelmäkäyttäytymisen ydinmekanismi ja kytkeytyy lähes kaikkiin oppimispolun käsitteisiin. Se jakautuu kahteen päätyyppiin, <em>negative-feedback</em> ja <em>positive-feedback</em>, joista ensimmäinen synnyttää <em>homeostasis</em>-, <em>equilibrium</em>- ja <em>dynamical-equilibrium</em>-ilmiöt ja jälkimmäinen <em>emergence</em>-, <em>phase-transition</em>- ja <em>critical-mass</em>-ilmiöt. Takaisinkytkentä on koko <em>säätötekniikan</em> ja <em>kybernetiikan</em> ydin, ja sen osia ovat <em>receptor</em>, <em>comparator</em> ja <em>effector</em>. Käytännön mallinnuksessa silmukoita kuvataan <em>causal-loop-diagram</em>- ja <em>loop-diagram</em>-kaavioilla. Ayyadurai-perinteessä takaisinkytkentä toimii myös <em>systems-health</em>-tilan ylläpitäjänä: elävä järjestelmä säätelee itseään useilla takaisinkytkentäsilmukoilla.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Takaisinkytkentäsilmukka on oppimispolun varhaisimpia ja eniten toistuvia käsitteitä. Se esiintyy <em>foundations</em>-kansiossa oppitunneilla "Johdatus takaisinkytkentään", "Negatiivinen ja positiivinen palaute", "Viiveet ja säätöpiirit" sekä "Homeostaasi". <em>cybernetics</em>-kansiossa käsite on keskeinen (Wiener, Ashby, toisen asteen kybernetiikka). <em>methods</em>-kansiossa se on systeemidynamiikan ja <em>causal-loop-diagram</em>-mallinnuksen perusta. <em>applications</em>-kansiossa se toistuu terveyden, organisaatioiden ja yhteiskunnan oppitunneilla.</p>
+
+  <h2>Lähteet</h2>
+  <p>Norbert Wiener, <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em> (MIT Press, 1948). W. Ross Ashby, <em>An Introduction to Cybernetics</em> (Chapman & Hall, 1956). Jay Forrester, <em>Industrial Dynamics</em> (MIT Press, 1961). Donella H. Meadows, <em>Thinking in Systems: A Primer</em> (Chelsea Green, 2008). James Clerk Maxwell, "On Governors" (1868). Stafford Beer, <em>Brain of the Firm</em> (1972). V.A. Shiva Ayyadurai, <em>System and Revolution</em> (2024) ja <em>The Science of Everything</em> (2023).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — tämä käsite</li>
+    <li><a href="feedback.html" class="wikilink" data-concept="feedback">feedback</a> — takaisinkytkennän yleiskäsite</li>
+    <li><a href="negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — vakauttava takaisinkytkentä</li>
+    <li><a href="positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — vahvistava takaisinkytkentä</li>
+    <li><a href="cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — takaisinkytkentäsilmukka säätötekniikan osina</li>
+    <li><a href="control-theory.html" class="wikilink" data-concept="control-theory">control-theory</a> — säätötekniikka, jonka ydin takaisinkytkentä on</li>
+    <li><a href="control-system.html" class="wikilink" data-concept="control-system">control-system</a> — järjestelmä, jonka käyttäytymistä takaisinkytkentä säätelee</li>
+    <li><a href="receptor.html" class="wikilink" data-concept="receptor">receptor</a> — silmukan vastaanottava osa</li>
+    <li><a href="comparator.html" class="wikilink" data-concept="comparator">comparator</a> — silmukan vertailuosio</li>
+    <li><a href="effector.html" class="wikilink" data-concept="effector">effector</a> — silmukan toimeenpaneva osa</li>
+    <li><a href="delay.html" class="wikilink" data-concept="delay">delay</a> — viive, joka muuttaa silmukan käyttäytymistä</li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — negatiivisen takaisinkytkennän biologinen ilmenemismuoto</li>
+    <li><a href="causal-loop-diagram.html" class="wikilink" data-concept="causal-loop-diagram">causal-loop-diagram</a> — silmukoiden piirtäminen</li>
+    <li><a href="loop-diagram.html" class="wikilink" data-concept="loop-diagram">loop-diagram</a> — vaihtoehtoinen nimi syy-seuraus-silmukalle</li>
+    <li><a href="non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — epälineaarisuus, joka synnyttää kiinnostavaa käyttäytymistä silmukoissa</li>
+    <li><a href="requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — Ashbyn laki säätäjän monimuotoisuudesta</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Norbert Wiener — <em>Cybernetics</em> (1948); W. Ross Ashby — <em>An Introduction to Cybernetics</em> (1956); Jay Forrester — <em>Industrial Dynamics</em> (1961); Donella Meadows — <em>Thinking in Systems</em> (2008); James Clerk Maxwell — "On Governors" (1868); Stafford Beer — <em>Brain of the Firm</em> (1972); V.A. Shiva Ayyadurai — <em>System and Revolution</em> ja <em>The Science of Everything</em>.
+  </p>
+</main>
+</body>
+</html>

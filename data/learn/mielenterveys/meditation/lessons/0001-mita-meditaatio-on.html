@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — Mitä meditaatio oikeasti on</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Mitä meditaatio oikeasti on</h1>
+  <p class="meta">Oppitunti 0001 · ~7 min · meditation-polk</p>
+
+  <p>Tämä oppitunti on koko polun lähtökohta. Jos et lue mitään muuta, lue tämä — ja lue se hitaasti. Sana <em>meditaatio</em> on niin kulutettu, että se on lähes merkityksetön ennen kuin se palautetaan alkuperäiseen muotoonsa.</p>
+
+  <h2>Sana, joka tarkoittaa yksinkertaista asiaa</h2>
+
+  <p>Latinalainen <em>meditatio</em> tulee sanasta <em>mederi</em> — "harjoittaa huomiota", "tulla tietoiseksi". Ei "tyhjentää mieltä", ei "rentoutua lattialla", ei "nähdä valoa". Sana on tuhansia vuosia vanhempi kuin mikään uskonto, ja nykyinen tieteellinen käyttö on palannut tähän juureen.</p>
+
+  <p>Jon Kabat-Zinn, joka 1979 perusti MBSR-ohjelman (Mindfulness-Based Stress Reduction) Massachusettsin yliopistolliseen sairaalaan, määritteli <strong>mindfulness</strong>-käsitteen sanalla, joka on nyt kaikkialla: <em>"tarkoituksellinen, ei-tuomitseva huomion kohdistaminen hetkeen kerrallaan"</em>. Tämä määritelmä on tarkka ja hyödyllinen, koska se ei sisällä mystiikkaa eikä vaadi uskoa mihinkään.</p>
+
+  <p>Sharon Salzberg, yksi länsimaisten insight-meditaation opettajien puhutuimmista, sanoo toisin: kyse ei ole tyhjyydestä, vaan <em>ystävällisestä huomiosta</em>. Hänen mukaansa meditaatio ei ole tekniikka "onnellisuuden tuottamiseen" — se on tapa <em>olla suhteessa siihen, mitä jo on</em>.</p>
+
+  <blockquote>
+    Meditaatio ei ole pakenemista. Se on kotiinpaluuta.
+  </blockquote>
+
+  <h2>Mitkä ovat pääkoulukunnat?</h2>
+
+  <p>Meditaatio ei ole yksi asia. Eri perinteet painottavat eri asioita, ja nykytutkimus on alkanut ymmärtää, että nämä ovat eri mielentiloja, eivät saman asian eri versioita.</p>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Samatha — tyynnyttäminen</h3>
+      <p>Pala-rahilla (burmalainen) ja muut perinteet: mielen hiljentäminen yhteen kohteeseen. Hengitys, mantran ääneenlausuminen, visuaalinen kohde (<a href="../../concepts/drishti.html" class="wikilink" data-concept="drishti">näky</a>). Tarkoitus on <a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">tyyneys</a>: ei niinkään tyhjyys kuin tasaisuus.</p>
+    </div>
+    <div class="col right">
+      <h3>Vipassana — näkeminen</h3>
+      <p>Burmalainen ja thaimaalainen perinne: kun mieli on tyyni, sitä käytetään <em>kirkkaasti näkemiseen</em> — kokemuksen läpinäkyväksi tekemiseen ilman tarinoita. Vipassana tarkoittaa kirjaimellisesti "erityistä näkemistä".</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Zazen — pelkkä istuminen</h3>
+      <p>Japanilainen zen (Dōgen, 1200-luku): shikantaza — "pelkkä istuminen". Ei kohdetta, ei tekniikkaa, ei edistymistä. Tämä on ehkä vaikein ja yksinkertaisin muoto, ja palaamme siihen oppitunnissa 0006.</p>
+    </div>
+    <div class="col right">
+      <h3>Metta — rakastava ystävällisyys</h3>
+      <p>Theragāthasta lähtöisin: sydämen avaaminen systemaattisesti — ensin itselle, sitten läheiselle, sitten neutraalille, sitten vaikealle, sitten kaikille. Tämä on tunteiden <em>kouluttamista</em>, ei pelkkää ajattelua. Palaamme siihen oppitunnissa 0005.</p>
+    </div>
+  </div>
+
+  <p>Robert Wright ("Why Buddhism Is True") on koonnut saman havainnon moderniin muotoon: näitä ei kannata sotkea yhdeksi "meditaatioksi", koska ne harjoittavat eri mielen osa-alueita. Tutkimus vahvistaa tätä: esimerkiksi <a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">insight-meditaatio</a> ja <a href="../../concepts/metta.html" class="wikilink" data-concept="metta">rakastava ystävällisyys</a> aktivoivat aivoissa eri alueita ja tuottavat osittain erilaisia vaikutuksia.</p>
+
+  <h2>Meditaatio ei ole...</h2>
+
+  <p>Koska nykykulttuuri ylikuormittaa sanan, on yhtä tärkeää tietää mitä se ei ole. Tässä kaksi yleisintä väärinkäsitystä:</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>...mielen tyhjentämistä</h3>
+      <p>Et istu hiljaa ja odota, että ajatukset loppuvat. Ajatukset eivät lopu koskaan. Harjoitus on siinä, että <em>huomaat ajatuksen</em> ja palaat takaisin — tuhat kertaa istunnon aikana, ja se <em>on</em> harjoitus.</p>
+    </div>
+    <div class="col wrong">
+      <h3>...rentoutumista</h3>
+      <p>Meditaatio <em>voi</em> rentouttaa, mutta rentoutuminen ei ole tarkoitus. Joillain istuminen on aluksi ahdistavampaa kuin moni arkiaktiviteetti, koska omaan mieleensä pysähtyy ensimmäistä kertaa vuosiin.</p>
+    </div>
+  </div>
+
+  <p>Sam Harris on sanonut tämän suoraan: meditaatio ei ole rentoutumista, ei hyvänolon hakemista, ei hengellistä kokemusta. Se on <em>harjoitus</em> — kuntosali mielelle. Joskus miellyttävä, usein ei, aina rehellinen.</p>
+
+  <h2>Rehellinen lista hyödyistä</h2>
+
+  <p>Daniel Goleman ja Richard Davidson kirjassa <em>Altered Traits</em> (2017) kävivät läpi tuhansia tutkimuksia ja jakoivat tulokset kahteen koriin: <strong>tilanne-edut</strong> (jotka tulevat kenelle tahansa kerran istuttuaan) ja <strong>muuttuneet piirteet</strong> (jotka näkyvät vain säännöllisesti, vuosia harjoittaneilla).</p>
+
+  <ol>
+    <li><strong>Stressi- ja ahdistusvälitteinen säätely paranee.</strong> MBSR:n ja MBCT:n (mindfulness-based cognitive therapy) meta-analyysit osoittavat kohtalaisen ja kestävän hyödyn yleistyneessä ahdistuksessa. Tämä on vahvin näyttöalue.</li>
+    <li><strong>Työmuisti ja tarkkaavuus paranee lyhyellä aikavälillä.</strong> Jo 4–10 päivän MBSR-jakso parantaa tarkkaavuuden säätelyä.</li>
+    <li><strong>Tunne-elämän joustavuus lisääntyy.</strong> Ihminen ei ole <em>vähemmän</em> tunteva, hän on <em>tarkemmin</em> tunteva — ja siksi vähemmän reaktiivinen.</li>
+    <li><strong>Itsemyötätunto kasvaa.</strong> Erityisesti <a href="../../concepts/metta.html" class="wikilink" data-concept="metta">metta</a>-harjoituksilla — myötätunto itseä kohtaan nousee kohtalaisesti.</li>
+    <li><strong>Uni paranee välillisesti.</strong> Erityisesti MBSR:n <a href="../../concepts/body-scan.html" class="wikilink" data-concept="kehoskannaus">body scan</a> -komponentti, jota käsittelemme oppitunnissa 0003.</li>
+  </ol>
+
+  <h2>Rehellinen lista rajoitteista ja varoituksista</h2>
+
+  <p>Tässä kohtaa moni meditaatiokirja menee hiljaiseksi. Ei syystä. David Shonin ja Willoughby Brittonin työ Brown Universityssä on tuonut esiin asioita, joista pitää puhua suoraan.</p>
+
+  <ul>
+    <li><strong>Meditaatio ei sovi kaikille, ei aina.</strong> Noin 8–10 %:lle harjoittajista tulee haittavaikutuksia — ahdistus, depersonalisaatio, traumaattisten muistojen pintaan nousu, paniikkikohtauksia. Tämä ei ole harvinaista, ja siksi harjoitusta ei tule tehdä yksin vaikeiden traumojen kanssa.</li>
+    <li><strong>Meditaatio <em>ei korvaa</em> terapiaa kliinisissä häiriöissä.</strong> MBSR ja MBCT on suunniteltu <em>täydentämään</em> hoitoa, ei korvaamaan sitä. Skitsofrenian, kaksisuuntaisen mielialahäiriön tai akuutin PTSD:n kanssa pelkkä meditaatio ilman ammattilaista on riski, ei ratkaisu.</li>
+    <li><strong>Vääriä lupauksia on markkinoilla paljon.</strong> "Meditaatio parantaa kaiken" -puhe on markkinointia, ei tutkimusta. Goleman ja Davidson itse varoittavat, että monet mediateitossa kehutut tulokset ovat heikkoja tai epäjohdonmukaisia.</li>
+    <li><strong>Vaikutukset vaativat säännöllisyyttä.</strong> Kymmenen minuuttia kerran kuussa ei muuta ketään. Tutkimusten vaikuttavat annokset ovat tyypillisesti 10–45 minuuttia päivässä, useimmat viikot, kuukausien ajan.</li>
+    <li><strong>"Henkinen ohitus" on todellinen ilmiö.</strong> Ihminen voi käyttää meditaatiota välttääkseen vaikeita tunteita, ei kohdatakseen niitä. Tämä näkyy erityisesti retriiteissä, joissa pitkä hiljaisuus ilman ohjausta voi syventää eristäytymistä.</li>
+  </ul>
+
+  <blockquote>
+    Meditaatio on työkalu, ei pelastus. Se voi avata huoneen — mutta se ei kerro mitä tehdä sen huoneen sisällä, jos huone on täynnä traumaa.
+  </blockquote>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Tässä polussa opettelemme neljä käytännön harjoitusta, joista kukin painottaa eri asiaa:</p>
+  <ul>
+    <li><strong>0002</strong> — hengitysmeditaatio (<a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitysankkuri</a>), joka on perusta ja "palaaminen"-harjoitus.</li>
+    <li><strong>0003</strong> — <a href="../../concepts/body-scan.html" class="wikilink" data-concept="kehoskannaus">body scan</a>, joka avaa kehon huomion väyläksi ja on erityisen hyödyllinen univaikeuksiin.</li>
+    <li><strong>0004</strong> — kävelymeditaatio, joka tuo harjoituksen ihmisille, joille istuminen ei sovi.</li>
+    <li><strong>0005</strong> — <a href="../../concepts/metta.html" class="wikilink" data-concept="metta">metta</a>, joka laajentaa huomion <em>suhteisiin</em>.</li>
+    <li><strong>0006</strong> — zazen, jossa kaikki tekniikka niukkenee ja jäljelle jää pelkkä istuminen.</li>
+  </ul>
+
+  <p>Nämä eivät ole paremmuusjärjestyksessä, eivätkä kaikki sovi kaikille. Voit harjoittaa yhtä kuukausia ennen seuraavaan siirtymistä. Tai voit kokeilla kaikkia ja huomata, mikä puhuu sinulle. Tärkeintä on, että harjoitus on <em>säännöllinen</em>, <em>rehellinen</em> ja <em>lempeä</em> itseä kohtaan.</p>
+
+  <hr>
+
+  <h2>Pieni harjoitus ennen seuraavaa oppituntia</h2>
+
+  <p>Istu tuolilla, jalat lattiassa, selkä suorana mutta ei jäykkänä. Anna käsien levätä reisillä. Aseta ajastin viideksi minuutiksi. Sulje silmät jos haluat, tai jätä ne puoliavoimeksi pehmeällä katseella.</p>
+
+  <p>Seuraa hengitystä sisään ja ulos. Kun huomaat ajatuksen vieneen huomion — palaat takaisin hengitykseen. Et taistele ajatusta vastaan, et seuraa sitä, vain palaat. Tämä on koko polun ydin. Se on helpommin sanottu kuin tehty, ja se on silti harjoituksen ydin.</p>
+
+  <p>Jos viisi minuuttia tuntuu liian pitkältä, aloita kahdella. Ei ole olemassa liian lyhyttä meditaatiota — on olemassa liian suuria odotuksia.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio — yleiskäsite: tarkoituksellinen huomion harjoittaminen</a></li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness — Kabat-Zinnin määritelmä: tarkoituksellinen, ei-tuomitseva huomio hetkessä</a></li>
+    <li><a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">Samatha — tyynnyttäminen, mielen hiljentäminen yhteen kohteeseen</a></li>
+    <li><a href="../../concepts/vipassana.html" class="wikilink" data-concept="vipassana">Vipassana — kirkas näkeminen, kokemuksen läpinäkyväksi tekeminen</a></li>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Metta — rakastava ystävällisyys, tunteiden suunnattu harjoittaminen</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, tietoinen tässä-hetkessä oleminen</a></li>
+    <li><a href="../../concepts/stillness.html" class="wikilink" data-concept="stillness">Stillness — mielen tasaisuus, ei tyhjyys vaan epäjärjestyksen väheneminen</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Jon Kabat-Zinn — <em>Full Catastrophe Living</em> (1990); Sharon Salzberg — <em>Real Happiness</em> (2010); Sam Harris — <em>Waking Up</em> (2014); Daniel Goleman & Richard Davidson — <em>Altered Traits</em> (2017); Willoughby Britton — <em>The Dark Side of Meditation</em> (Brown University); Khenshin Sangha — "Anapanasati: A Practical Guide".
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. "Guided Meditations" antaa konkreettisen esimerkin ääniohjatuista istumisharjoituksista.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Guided Meditations" — ääniohjattuja harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#meditations" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23meditations" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-hengitysmeditaatio.html">Seuraava: Hengitysmeditaatio — anapanasati →</a>
+  </div>
+</main>
+</body>
+</html>

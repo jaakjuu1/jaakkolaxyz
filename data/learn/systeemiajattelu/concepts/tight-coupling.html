@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: tight-coupling</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Tight coupling</h1>
+  <p class="meta">Käsite · systeemiajattelu · kytkentä · hauraus · normalisointi</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Tight coupling</strong> (suom. <em>vahva kytkentä</em>) tarkoittaa järjestelmän rakennetta, jossa osien välillä on voimakkaita, välittömiä ja pakottavia riippuvuuksia. Yhden osan muutos heijastuu lähes välittömästi, voimakkaasti ja väistämättä toisiin osiin. Osat eivät voi toimia itsenäisesti — ne ovat lukkiutuneet yhteen.</p>
+
+  <p>Vahvasti kytketty järjestelmä on tyypillisesti <em>nopea, tehokas ja tarkka</em>, mutta samalla <em>hauras ja altis ketjureaktioille</em>. Pieni häiriö yhdessä osassa voi edetä hallitsemattomasti koko järjestelmään. Tämä ilmiö tunnetaan kirjallisuudessa termillä <em>normal accident</em> — Charles Perrow käytti sitä kuvaamaan onnettomuuksia, jotka <em>väistämättä</em> seuraavat monimutkaisissa, vahvasti kytketyissä järjestelmissä.</p>
+
+  <p>Perrow'n (1984) mukaan vahva kytkentä syntyy, kun</p>
+  <ul>
+    <li>osien välillä on <strong>aikariippuvuus</strong>: toimenpiteet on tehtävä täsmälleen oikeassa järjestyksessä ja oikeaan aikaan,</li>
+    <li>osien välillä on <strong>sekvenssiriippuvuus</strong>: yhden osan tuotos menee suoraan seuraavan syötteeksi ilman puskureita,</li>
+    <li>ja järjestelmä on <strong>monimutkainen</strong>: vuorovaikutuksia on niin paljon, että niitä ei voi ennakoida.</li>
+  </ul>
+
+  <blockquote>
+    <p>"Tightly coupled systems invite disaster precisely because they leave no slack, no buffer, no margin for error." — Charles Perrow, <em>Normal Accidents</em></p>
+  </blockquote>
+
+  <p>Vahva kytkentä on <em>ei-toivottavaa</em> silloin, kun järjestelmän on oltava joustava ja resilienssi. Se on kuitenkin <em>välttämätöntä</em> monissa suorituskykykriittisissä yhteyksissä — esimerkiksi korkeataajuisessa rahoituskaupankäynnissä, reaaliaikaisessa säätötekniikassa tai kirurgisissa toimenpiteissä. Kysymys ei siis ole "onko vahva kytkentä hyvä vai huono", vaan <em>missä olosuhteissa se on sopivaa</em>.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Tight coupling -käsite tuli systeemiajatteluun 1970-luvulla, kun organisaatioteoreetikot alkoivat analysoida, miten eri järjestelmät kestävät häiriöitä. <strong>Karl Weick</strong> (1976) asetti käsitteen vastapariksi loose couplingille. <strong>James Reason</strong> (1990) jatkoi kehittämällä <em>sveitsinjuustomallin</em>, jossa vahvasti kytketyssä järjestelmässä yhdenkin kerroksen pettäessä virhe etenee suojaamattomaan ytimeen.</p>
+
+  <p>Keskeisin muotoilu on kuitenkin <strong>Charles Perrow'n</strong> <em>Normal Accidents</em> (1984), joka syntyi Three Mile Islandin ydinvoimalaonnettomuuden (1979) analyysistä. Perrow osoitti, että ydinvoimalat ovat sekä <em>monimutkaisia</em> (kompleksisia) että <em>vahvasti kytkettyjä</em>, mikä tekee niistä rakenteellisesti alttiita katastrofaalisille ketjureaktioille.</p>
+
+  <p>1990- ja 2000-luvuilla käsite levisi <strong>ohjelmistotekniikkaan</strong> (tightly coupled architectures vs. microservices), <strong>tuotantotalouteen</strong> (Toyota Production Systemin just-in-time -logistiikka) ja <strong>monimutkaisten järjestelmien tutkimukseen</strong> (Sagan, <em>The Limits of Safety</em>, 1993). Tight coupling on nykyään keskeinen käsite riskianalyysissä, infrastruktuurien tutkimuksessa ja <a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksisten adaptiivisten systeemien</a> analyysissä.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a> — yläkäsite, jonka ääripää tight coupling on.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a> — vastakkainen ääripää: joustava ja resilienssi.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a> — rakenteellinen vastakeino vahvalle kytkennälle.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — vahva kytkentä yhdistettynä kompleksisuuteen tuottaa haurautta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — epälineaarisuus pahentaa vahvan kytkennän riskejä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">feedback</a> — vahvasti kytketyissä järjestelmissä takaisinkytkentä on nopeaa ja voi kiihtyä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — erityisen vaarallinen yhdistelmä vahvan kytkennän kanssa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/delay.html" class="wikilink" data-concept="delay">delay</a> — vahvasti kytketyssä järjestelmässä viiveet voivat aiheuttaa epävakautta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a> — vahva kytkentä heikentää järjestelmän robustisuutta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — vahva kytkentä on ristiriidassa resilienssin kanssa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — vahvasti kytketyissä verkoissa kriittinen massa voi laukaista hallitsemattomia muutoksia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-systems-engineering.html" class="wikilink" data-concept="control-systems-engineering">control-systems-engineering</a> — säätötekniikka, jossa vahvaa kytkentää käytetään tarkoituksellisesti.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Tight coupling esitellään [[../lessons/modularity.html|Modulaarisuus ja kytkentä]] -oppitunnilla vastapariksi <a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a>ille. Käsite toistuu [[../lessons/resilience.html|resilienssin]], [[../lessons/risk-analysis.html|riskianalyysin]] ja [[../lessons/complex-adaptive-systems.html|kompleksisten adaptiivisten systeemien]] oppitunneilla. Perrow'n normal accidents -malli käydään läpi [[../lessons/safety-engineering.html|safety engineering]] -oppitunnilla.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Perrow, C. (1984). <em>Normal Accidents: Living with High-Risk Technologies</em>. Princeton University Press.</li>
+    <li>Weick, K. E. (1976). "Educational Organizations as Loosely Coupled Systems." <em>Administrative Science Quarterly</em> 21(1).</li>
+    <li>Reason, J. (1990). <em>Human Error</em>. Cambridge University Press.</li>
+    <li>Sagan, S. D. (1993). <em>The Limits of Safety: Organizations, Accidents, and Nuclear Weapons</em>. Princeton University Press.</li>
+    <li>Taleb, N. N. (2007). <em>The Black Swan</em>. Random House.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Perrow 1984; Weick 1976; Reason 1990; Sagan 1993; Taleb 2007. Ks. myös Wikipedia-artikkelit <em>Tight coupling</em>, <em>Normal Accident Theory</em> ja <em>Swiss cheese model</em>.
+  </p>
+</main>
+</body>
+</html>

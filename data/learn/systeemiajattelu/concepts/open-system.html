@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: open-system</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>open-system</h1>
+  <p class="meta">Käsite · systeemiajattelu · järjestelmäluokittelu · peruskäsite</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Avoin järjestelmä</strong> (engl. <em>open system</em>) on järjestelmä, joka vaihtaa sekä energiaa että ainetta (ja yleisemmin: informaatiota, resursseja) ympäristönsä kanssa. Se on vastakohtana suljetulle järjestelmälle (<em>closed system</em>), joka vaihtaa vain energiaa, ja eristetylle järjestelmälle (<em>isolated system</em>), joka ei vaihda kumpaakaan. Käsite on peräisin termodynamiikasta, mutta sitä käytetään nykyään laajasti kaikilla tieteenaloilla biologiasta organisaatioteoriaan.</p>
+
+  <p>Avoimen järjestelmän tunnusmerkkejä ovat muun muassa: (1) jatkuva syötteiden (<em>input</em>) ja tuotosten (<em>output</em>) virta, (2) kyky ylläpitää dynaamista tasapainoa (<em>dynamical-equilibrium</em>) sisäisesti, (3) riippuvuus ympäristöstä ja (4) taipumus kehittyä ja monimutkaistua, koska se ei joudu termodynaamiseen maksimientropian tilaan. Käytännössä lähes kaikki biologiset, sosiaaliset ja taloudelliset järjestelmät ovat avoimia.</p>
+
+  <p>Esimerkkejä avoimista järjestelmistä: yksittäinen solu (vaihtaa ATP:tä, happea, ravinteita), keho (vaihtaa ilmaa, vettä, ruokaa, lämpöä), kaupunki (vaihtaa ihmisiä, tavaroita, pääomaa, tietoa), organisaatio (vaihtaa työntekijöitä, tietoa, rahaa, materiaaleja) ja ekosysteemi (vaihtaa energiaa ja ravinteita muiden ekosysteemien kanssa). Myös oppiva mieli ja tietoinen yksilö voidaan ymmärtää avoimena järjestelmänä: tieto virtaa sisään, käyttäytyminen ja päätökset virtaavat ulos.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Käsite juontaa juurensa klassiseen termodynamiikkaan. Ludwig Boltzmannin ja myöhemmin Ilya Prigoginen työ osoitti, että vain avoimet järjestelmät voivat ylläpitää rakennetta ja tuottaa <em>järjestystä</em> (order) ilman, että ne putoavat suoraan termodynaamiseen tasapainoon. Prigogine kutsui näitä "dissipatiivisiksi rakenteiksi" (dissipative structures): ne tarvitsevat jatkuvaa aineen ja energian virtaa pysyäkseen olemassa.</p>
+
+  <p>Ludwig von Bertalanffy sovelsi käsitettä biologiaan 1930-luvulta lähtien: elävät organismit ovat luonteeltaan avoimia järjestelmiä, koska ne vaihtavat jatkuvasti ainetta ympäristönsä kanssa. Hänen mukaansa tämä on perustava ero elottomiin järjestelmiin, joissa tasapaino tarkoittaa entropian maksimointia. Käsite levisi yhteiskuntatieteisiin 1960-luvulla, erityisesti organisaatioteorian (Katz ja Kahn, <em>The Social Psychology of Organizations</em>, 1966) ja hallintotieteiden kautta.</p>
+
+  <p>Nykyään avoimen järjestelmän käsite on integroitu myös <em>systeemibiologiaan</em> ja <em>systeemilääketieteeseen</em>. V.A. Shiva Ayyadurai korostaa teoksissaan, että terveys on avoimen järjestelmän dynaamista tasapainoa (<em>systems-health</em>): elävä organismi pysyy terveenä vain, kunhan se ylläpitää riittävää vaihtoa ravinnon, energian, tiedon ja sosiaalisten suhteiden kanssa. Tämän ajatuksen juuret ovat ayurvedassa, jossa elimistön tasapaino (dosha-suhde) edellyttää jatkuvaa vaihtoa ravinnon, hengityksen ja ympäristön kanssa.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Avoin järjestelmä on yksi kolmesta järjestelmäluokasta: <em>closed-system</em>- ja <em>isolated-system</em>-käsitteet määrittävät sen kontrastina. Käsite kytkeytyy suoraan järjestelmän <em>rajaan</em> (boundary) ja <em>ympäristöön</em> (environment), joita ilman "avoimuus" ei olisi mielekäs. Avoimuus mahdollistaa <em>input</em>- ja <em>output</em>-virrat sekä <em>homeostasis</em>- ja <em>dynamical-equilibrium</em>-ilmiöt. Se on välttämätön edellytys <em>feedback-loop</em>-mekanismien toiminnalle ja siten koko säätöteorialle (<em>control-theory</em>). Käytännön ilmenemismuotoja ovat <em>system-of-systems</em>-rakenteet ja monitasoiset (<em>hierarchy</em>, <em>holon</em>) organisaatiot. Ayyadurai-perinteessä avoin järjestelmä on sama kuin <em>natural-systems-state</em>, jossa järjestelmä virtaa vapaasti ympäristönsä kanssa.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Avoin järjestelmä on yksi järjestelmäteorian peruskäsitteistä ja sitä käsitellään varhaisessa vaiheessa oppimispolkua. <em>foundations</em>-kansiossa avoimuuden käsite esiintyy oppitunneilla "Järjestelmäluokat" (yhdessä closed- ja isolated-järjestelmien kanssa), "Termodynamiikka ja elävät järjestelmät" sekä "Järjestelmän raja ja ympäristö". <em>applications</em>-kansiossa käsite toistuu terveyden (<em>systems-health</em>), organisaatioiden ja kaupunkien oppitunneilla. <em>methods</em>-kansiossa avoin järjestelmä tulee vastaan systeemidynamiikan ja <em>viable-system-model</em>-malleissa.</p>
+
+  <h2>Lähteet</h2>
+  <p>Ludwig von Bertalanffy, <em>General System Theory</em> (1968). Daniel Katz ja Robert Kahn, <em>The Social Psychology of Organizations</em> (Wiley, 1966). Ilya Prigogine ja Isabelle Stengers, <em>Order out of Chaos: Man's New Dialogue with Nature</em> (Bantam, 1984). Ervin Laszlo, <em>The Systems View of Life</em> (Cambridge University Press, 2014). Fritjof Capra ja Pier Luigi Luisi, <em>The Systems View of Life</em> (Cambridge University Press, 2014). V.A. Shiva Ayyadurai, <em>System and Revolution</em> (2024) ja <em>The Science of Everything</em> (2023).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="open-system.html" class="wikilink" data-concept="open-system">open-system</a> — tämä käsite</li>
+    <li><a href="closed-system.html" class="wikilink" data-concept="closed-system">closed-system</a> — suljettu järjestelmä, joka vaihtaa vain energiaa</li>
+    <li><a href="isolated-system.html" class="wikilink" data-concept="isolated-system">isolated-system</a> — eristetty järjestelmä, joka ei vaihda mitään ympäristön kanssa</li>
+    <li><a href="boundary.html" class="wikilink" data-concept="boundary">boundary</a> — järjestelmän raja, jonka yli virrat kulkevat</li>
+    <li><a href="environment.html" class="wikilink" data-concept="environment">environment</a> — järjestelmän ympäristö, josta syötteet tulevat ja johon tuotokset menevät</li>
+    <li><a href="input.html" class="wikilink" data-concept="input">input</a> — syöte, järjestelmään tuleva virta</li>
+    <li><a href="output.html" class="wikilink" data-concept="output">output</a> — tuotos, järjestelmästä lähtevä virta</li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — avoimen järjestelmän kyky ylläpitää sisäistä tasapainoa</li>
+    <li><a href="equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — yleinen tasapainon käsite</li>
+    <li><a href="dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — avoimen järjestelmän dynaaminen tasapaino</li>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — säätömekanismi, joka edellyttää avoimuutta</li>
+    <li><a href="systems-biology.html" class="wikilink" data-concept="systems-biology">systems-biology</a> — tiede, joka tutkii eläviä järjestelmiä avoimina systeemeinä</li>
+    <li><a href="systems-health.html" class="wikilink" data-concept="systems-health">systems-health</a> — terveys avoimen järjestelmän dynaamisena tilana</li>
+    <li><a href="natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a> — Ayyadurai-perinteen avoimen järjestelmän tila</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Ludwig von Bertalanffy — <em>General System Theory</em> (1968); Katz & Kahn — <em>The Social Psychology of Organizations</em> (1966); Prigogine & Stengers — <em>Order out of Chaos</em> (1984); Capra & Luisi — <em>The Systems View of Life</em> (2014); V.A. Shiva Ayyadurai — <em>System and Revolution</em> ja <em>The Science of Everything</em>.
+  </p>
+</main>
+</body>
+</html>
