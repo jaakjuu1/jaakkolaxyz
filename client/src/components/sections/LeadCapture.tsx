@@ -73,7 +73,7 @@ export function LeadCapture({ content }: LeadCaptureProps) {
                   <p className="text-sm text-muted-foreground">{content.booking.subtitle}</p>
                 </div>
               </div>
-              <a href="https://calendly.com" target="_blank" rel="noopener noreferrer">
+              <a href="https://calendly.com/juuso-jaakkola/consultation" target="_blank" rel="noopener noreferrer">
                 <Button variant="link" className="px-0 text-primary underline" data-testid="link-booking">
                   {content.booking.cta} &rarr;
                 </Button>
@@ -161,7 +161,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
         </div>
         <h3 className="text-2xl font-serif">{content.success}</h3>
         <Button onClick={() => setIsSuccess(false)} variant="outline" data-testid="button-send-another">
-          Send another
+          Lähetä uusi viesti
         </Button>
       </motion.div>
     );
@@ -183,7 +183,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
               <FormItem>
                 <FormLabel>{content.name}</FormLabel>
                 <FormControl>
-                  <Input placeholder="John Doe" {...field} data-testid="input-name" />
+                  <Input placeholder={content.placeholders?.name || ""} {...field} data-testid="input-name" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -197,7 +197,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <FormItem>
                   <FormLabel>{content.email}</FormLabel>
                   <FormControl>
-                    <Input placeholder="john@company.com" {...field} data-testid="input-email" />
+                    <Input placeholder={content.placeholders?.email || ""} {...field} data-testid="input-email" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -210,7 +210,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <FormItem>
                   <FormLabel>{content.company}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Acme Inc" {...field} data-testid="input-company" />
+                    <Input placeholder={content.placeholders?.company || ""} {...field} data-testid="input-company" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,7 +226,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger data-testid="select-budget">
-                      <SelectValue placeholder="Select range" />
+                      <SelectValue placeholder={content.placeholders?.budget || ""} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -247,7 +247,7 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
               <FormItem>
                 <FormLabel>{content.message}</FormLabel>
                 <FormControl>
-                  <Textarea className="min-h-[120px]" placeholder="..." {...field} data-testid="input-message" />
+                  <Textarea className="min-h-[120px]" placeholder={content.placeholders?.message || ""} {...field} data-testid="input-message" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

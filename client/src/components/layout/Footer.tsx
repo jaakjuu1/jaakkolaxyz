@@ -1,7 +1,13 @@
-import { content } from "@/data/content";
+interface FooterLink {
+  label: string;
+  url: string;
+}
 
 interface FooterProps {
-  content: any;
+  content: {
+    copyright: string;
+    links: FooterLink[];
+  };
 }
 
 export function Footer({ content }: FooterProps) {
@@ -13,9 +19,9 @@ export function Footer({ content }: FooterProps) {
         </div>
         
         <div className="flex gap-8 text-sm font-mono text-background/60">
-          {content.links.map((link: string, i: number) => (
-            <a key={i} href="#" className="hover:text-white transition-colors">
-              {link}
+          {content.links.map((link, i) => (
+            <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              {link.label}
             </a>
           ))}
         </div>
