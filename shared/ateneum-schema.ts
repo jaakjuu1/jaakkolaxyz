@@ -117,6 +117,7 @@ export const ateneumActivities = sqliteTable("ateneum_activities", {
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
+  googleEventId: text("google_event_id"),
 });
 
 export const ateneumActivityAcceptances = sqliteTable(

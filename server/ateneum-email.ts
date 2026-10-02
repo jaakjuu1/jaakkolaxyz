@@ -191,6 +191,8 @@ export async function shouldNotify(
     | "wish_added"
     | "wish_fulfilled"
     | "activity_planned"
+    | "plan_shared"
+    | "body_practice_week"
     | "inactivity_reminder"
     | "custom_message",
 ): Promise<boolean> {
@@ -217,6 +219,11 @@ export async function shouldNotify(
       return prefs.wishFulfilled;
     case "activity_planned":
       return prefs.activityPlanned;
+    // Rich plan proposals use the same partner-attention preference as time proposals.
+    case "plan_shared":
+      return prefs.activityPlanned;
+    case "body_practice_week":
+      return prefs.weeklySuggestion || prefs.activityPlanned;
     case "inactivity_reminder":
       return prefs.inactivityReminder;
   }
@@ -504,6 +511,150 @@ export async function sendActivityPlanned(opts: {
     html: layout({ title: "Uusi aikaehdotus", body, unsubscribeUrl: unsub }),
     kind: "activity_planned",
     meta: { activityId: opts.activity.id, fromUserId: opts.fromUser.id },
+  });
+}
+
+export async function sendBodyPracticeWeek(opts: {
+  user: AteneumUser;
+  weekKey: string;
+  slots: Array<{
+    title: string;
+    kind: string;
+    instructions: string;
+    durationMin: number;
+    scheduledFor: Date | string | number;
+    activityId?: string;
+  }>;
+  fromName?: string;
+}): Promise<{ sent: boolean; skipped?: boolean; error?: string }> {
+  if (!(await shouldNotify(opts.user.id, "body_practice_week"))) {
+    return { sent: false, skipped: true };
+  }
+  if (!opts.slots.length) {
+    return { sent: false, skipped: true, error: "no-slots" };
+  }
+
+  const kindLabel: Record<string, string> = {
+    training: "Treeni",
+    recovery: "Rentoutus",
+    connection: "Yhteys",
+  };
+
+  const items = opts.slots
+    .map((slot) => {
+      const when =
+        slot.scheduledFor instanceof Date
+          ? slot.scheduledFor
+          : typeof slot.scheduledFor === "number"
+            ? new Date(slot.scheduledFor < 1e12 ? slot.scheduledFor * 1000 : slot.scheduledFor)
+            : new Date(slot.scheduledFor);
+      const whenStr = when.toLocaleString("fi-FI", {
+        weekday: "short",
+        day: "numeric",
+        month: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+      const label = kindLabel[slot.kind] ?? slot.kind;
+      const dur =
+        slot.durationMin >= 60
+          ? `${Math.floor(slot.durationMin / 60)} h${slot.durationMin % 60 ? ` ${slot.durationMin % 60} min` : ""}`
+          : `${slot.durationMin} min`;
+      const shortInstr =
+        slot.instructions.length > 160
+          ? `${slot.instructions.slice(0, 157)}…`
+          : slot.instructions;
+      return `
+        <tr>
+          <td style="padding: 12px 0; border-bottom: 1px solid #e5efe8; vertical-align: top;">
+            <div style="font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #0a6e3a; font-weight: 600;">${escapeHtml(label)}</div>
+            <div style="font-size: 16px; font-weight: 600; margin: 2px 0 4px;">${escapeHtml(slot.title)}</div>
+            <div style="font-size: 13px; color: #555;">${escapeHtml(whenStr)} · ${escapeHtml(dur)}</div>
+            <div style="font-size: 13px; color: #333; margin-top: 6px; line-height: 1.4;">${escapeHtml(shortInstr)}</div>
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  const body = `
+    <p>Hei ${escapeHtml(opts.user.displayName)},</p>
+    <p>Tässä viikon <strong>liikunta- ja rentoutussuunnitelma</strong>${opts.fromName ? ` (${escapeHtml(opts.fromName)})` : ""} — lyhyesti kirjastosta.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 12px 0;">${items}</table>
+    <p style="font-size: 13px; color: #555;">Hyväksykää ajat Ateneumissa → ne siirtyvät yhteiseen kalenteriin.</p>
+    ${button(`${PUBLIC_URL}/ateneum/`, "Avaa Ateneum")}
+  `;
+
+  const unsub = await buildUnsubscribeUrl(opts.user);
+  const trainN = opts.slots.filter((s) => s.kind === "training").length;
+  const recN = opts.slots.filter((s) => s.kind === "recovery").length;
+  return sendEmail({
+    to: opts.user.email,
+    subject: `Keho & palautus ${opts.weekKey}: ${trainN} treeniä, ${recN} rentoutusta`,
+    html: layout({ title: "Keho & palautus", body, unsubscribeUrl: unsub }),
+    kind: "body_practice_week",
+    meta: {
+      userId: opts.user.id,
+      weekKey: opts.weekKey,
+      slotCount: opts.slots.length,
+      activityIds: opts.slots.map((s) => s.activityId).filter(Boolean),
+    },
+  });
+}
+
+export async function sendPlanShared(opts: {
+  toUser: AteneumUser;
+  fromUser: AteneumUser;
+  plan: {
+    id: string;
+    title: string;
+    summary?: string | null;
+    startDate?: string | null;
+    endDate?: string | null;
+    version?: number | null;
+  };
+}): Promise<{ sent: boolean; skipped?: boolean; error?: string }> {
+  if (!(await shouldNotify(opts.toUser.id, "plan_shared"))) {
+    return { sent: false, skipped: true };
+  }
+  const dateBits = [opts.plan.startDate, opts.plan.endDate].filter(Boolean);
+  const dateLine =
+    dateBits.length === 2
+      ? `${dateBits[0]} – ${dateBits[1]}`
+      : dateBits[0] ?? null;
+  const summary = (opts.plan.summary ?? "").trim();
+  const summaryBlock = summary
+    ? `<div style="font-size: 14px; color: #555; margin-top: 8px;">${escapeHtml(
+        summary.length > 280 ? `${summary.slice(0, 277)}…` : summary,
+      )}</div>`
+    : "";
+  const dateBlock = dateLine
+    ? `<div style="font-size: 14px; color: #555; margin-top: 4px;">${escapeHtml(dateLine)}</div>`
+    : "";
+  const body = `
+    <p>Hei ${escapeHtml(opts.toUser.displayName)},</p>
+    <p><strong>${escapeHtml(opts.fromUser.displayName)}</strong> jakoi sinulle suunnitelmaehdotuksen:</p>
+    <div style="background: #e9f4ec; border-radius: 6px; padding: 16px; margin: 16px 0;">
+      <div style="font-size: 16px; font-weight: 600;">${escapeHtml(opts.plan.title)}</div>
+      ${dateBlock}
+      ${summaryBlock}
+    </div>
+    <p>Suunnitelmasta tulee yhteinen vasta, kun hyväksyt saman version Ateneumissa.</p>
+    ${button(
+      `${PUBLIC_URL}/ateneum/plan.html?id=${encodeURIComponent(opts.plan.id)}`,
+      "Avaa suunnitelma",
+    )}
+  `;
+  const unsub = await buildUnsubscribeUrl(opts.toUser);
+  return sendEmail({
+    to: opts.toUser.email,
+    subject: `Suunnitelmaehdotus: ${opts.plan.title}`,
+    html: layout({ title: "Uusi suunnitelmaehdotus", body, unsubscribeUrl: unsub }),
+    kind: "plan_shared",
+    meta: {
+      planId: opts.plan.id,
+      fromUserId: opts.fromUser.id,
+      version: opts.plan.version ?? null,
+    },
   });
 }
 

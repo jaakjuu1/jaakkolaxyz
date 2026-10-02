@@ -4,9 +4,13 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { loadAteneumEnvFiles } from "./ateneum-env";
 import { initAteneumSchema, migrateAteneumSchema } from "./ateneum-db";
 import { seedAteneum } from "./ateneum-seed";
 import { registerAteneumRoutes } from "./ateneum-routes";
+
+// Load local .env / .env.google before reading process.env in modules below.
+loadAteneumEnvFiles();
 
 const app = express();
 const httpServer = createServer(app);

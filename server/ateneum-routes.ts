@@ -43,13 +43,22 @@ import {
   sendWeeklySuggestion,
   sendWishAdded,
   sendActivityPlanned,
+  sendPlanShared,
   sendInactivityReminder,
   sendCustomMessage,
+  sendBodyPracticeWeek,
   getNotificationPrefs,
   isoWeekKey,
   claimWeeklyEmail,
   finishWeeklyEmailClaim,
 } from "./ateneum-email";
+import {
+  clearStoredGoogleEventId,
+  removeActivityCalendarEvent,
+  syncActivityCalendarAfterMutualAccept,
+} from "./ateneum-calendar";
+import { listBodyLibrary, proposeBodyPracticeWeek } from "./ateneum-body-program";
+
 export function requireHumanWrite(
   req: AteneumAuthedRequest,
   res: Response,
@@ -965,6 +974,7 @@ function serializeActivity(row: any) {
     rating: row.rating,
     notes: row.notes,
     details: parseDetails(row.details),
+    googleEventId: row.googleEventId ?? null,
     createdBy: row.createdBy,
     createdAt:
       row.createdAt instanceof Date
@@ -1104,9 +1114,15 @@ function updateActivityState(
   actor: ActivityViewer,
   authKind: "session" | "api_token",
   input: z.infer<typeof activityPatchBodySchema>,
-): void {
+): { clearedGoogleEventId: string | null } {
+  let clearedGoogleEventId: string | null = null;
   const transition = ateneumRawDb.transaction(() => {
     const current = readRawActivityState(id);
+    const previousEvent = ateneumRawDb
+      .prepare(
+        `SELECT google_event_id AS googleEventId FROM ateneum_activities WHERE id = ?`,
+      )
+      .get(id) as { googleEventId: string | null } | undefined;
     const connectionCycle = ateneumRawDb
       .prepare("SELECT 1 FROM ateneum_connection_cycles WHERE activity_id = ?")
       .get(id);
@@ -1181,6 +1197,14 @@ function updateActivityState(
     if (startsNewProposal && current.planningMode === "mutual") {
       assignments.push("status = 'planned'", "completed_at = NULL", "rating = NULL");
       add("proposed_by", actor.id);
+      if (previousEvent?.googleEventId) {
+        clearedGoogleEventId = previousEvent.googleEventId;
+        add("google_event_id", null);
+      }
+    }
+    if (input.status === "skipped" && previousEvent?.googleEventId) {
+      clearedGoogleEventId = previousEvent.googleEventId;
+      add("google_event_id", null);
     }
     add("version", nextVersion);
     add("updated_by", actor.id);
@@ -1223,6 +1247,7 @@ function updateActivityState(
     }
   });
   transition();
+  return { clearedGoogleEventId };
 }
 
 function respondActivityTransitionError(res: Response, error: unknown) {
@@ -3028,7 +3053,35 @@ export function registerAteneumRoutes(app: Express): void {
             .run(plan.id);
         });
         share();
-        return res.json({ plan: serializePlanForViewer(readRawPlan(req.params.id), user) });
+        const sharedPlan = serializePlanForViewer(readRawPlan(req.params.id), user);
+
+        // Email: notify the other human that a rich plan was proposed, not agreed.
+        try {
+          const others = await ateneumDb.select().from(ateneumUsers);
+          const other = selectHumanPartner(others, user);
+          if (other && sharedPlan) {
+            sendPlanShared({
+              toUser: other,
+              fromUser: user,
+              plan: {
+                id: String(sharedPlan.id),
+                title: String(sharedPlan.title ?? "Suunnitelma"),
+                summary:
+                  typeof sharedPlan.summary === "string" ? sharedPlan.summary : null,
+                startDate:
+                  typeof sharedPlan.startDate === "string" ? sharedPlan.startDate : null,
+                endDate:
+                  typeof sharedPlan.endDate === "string" ? sharedPlan.endDate : null,
+                version:
+                  typeof sharedPlan.version === "number" ? sharedPlan.version : null,
+              },
+            }).catch((e) => console.error("[ateneum] plan share email failed:", e));
+          }
+        } catch (e) {
+          console.error("[ateneum] plan share email setup failed:", e);
+        }
+
+        return res.json({ plan: sharedPlan });
       } catch (error) {
         return respondPlanTransitionError(res, error);
       }
@@ -3338,12 +3391,17 @@ export function registerAteneumRoutes(app: Express): void {
       }
       try {
         const id = req.params.id;
-        updateActivityState(
+        const { clearedGoogleEventId } = updateActivityState(
           id,
           req.ateneumUser!,
           req.ateneumAuth!.kind,
           parsed.data,
         );
+        if (clearedGoogleEventId) {
+          removeActivityCalendarEvent(clearedGoogleEventId).catch((e) =>
+            console.error("[ateneum] calendar delete after edit failed:", e),
+          );
+        }
         const updated = await ateneumDb
           .select()
           .from(ateneumActivities)
@@ -3399,7 +3457,7 @@ export function registerAteneumRoutes(app: Express): void {
             .run(id, user.id, current.version);
         });
         accept();
-        const updated = await ateneumDb
+        let updated = await ateneumDb
           .select()
           .from(ateneumActivities)
           .where(eq(ateneumActivities.id, id))
@@ -3407,8 +3465,29 @@ export function registerAteneumRoutes(app: Express): void {
         if (!updated[0]) {
           return res.status(404).json({ message: "Activity not found" });
         }
+
+        let calendar: Awaited<
+          ReturnType<typeof syncActivityCalendarAfterMutualAccept>
+        > | null = null;
+        if (hasBothActivityAcceptances(id, Number(updated[0].version ?? 1))) {
+          calendar = await syncActivityCalendarAfterMutualAccept(id);
+          if (calendar.ok && calendar.eventId) {
+            updated = await ateneumDb
+              .select()
+              .from(ateneumActivities)
+              .where(eq(ateneumActivities.id, id))
+              .limit(1);
+          } else if (calendar && !calendar.ok && !calendar.skipped) {
+            console.error(
+              "[ateneum] calendar sync after mutual accept failed:",
+              calendar.error,
+            );
+          }
+        }
+
         return res.json({
           activity: serializeActivityForViewer(updated[0], user),
+          ...(calendar ? { calendar } : {}),
         });
       } catch (error) {
         return respondActivityTransitionError(res, error);
@@ -3818,6 +3897,306 @@ export function registerAteneumRoutes(app: Express): void {
         suggestion: suggestion ? serializeIdea(suggestion) : null,
         alternates: alternates.map((idea) => serializeIdea(idea)),
       });
+    },
+  );
+
+
+  // —— Body practice (training + recovery library) ——
+
+  app.get(
+    "/api/ateneum/body-practice/week",
+    requireAteneumAuth,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const weekKey = isoWeekKey();
+      const rows = ateneumRawDb
+        .prepare(
+          `SELECT id, title, scheduled_for AS scheduledFor, duration_min AS durationMin,
+                  details, version, status, planning_mode AS planningMode
+           FROM ateneum_activities
+           WHERE details LIKE ?
+           ORDER BY scheduled_for ASC`,
+        )
+        .all(`%"weekKey":"${weekKey}"%`) as Array<{
+        id: string;
+        title: string;
+        scheduledFor: number;
+        durationMin: number;
+        details: string | null;
+        version: number;
+        status: string;
+        planningMode: string;
+      }>;
+      const activities = rows.map((row) => {
+        let parsed: any = {};
+        try {
+          parsed = row.details ? JSON.parse(row.details) : {};
+        } catch {
+          parsed = {};
+        }
+        return {
+          id: row.id,
+          title: row.title,
+          kind: parsed.kind ?? null,
+          libraryId: parsed.libraryId ?? null,
+          instructions: parsed.instructions ?? "",
+          durationMin: row.durationMin,
+          scheduledFor: new Date(row.scheduledFor * 1000).toISOString(),
+          version: Number(row.version ?? 1),
+          status: row.status,
+          planningMode: row.planningMode,
+          planState: undefined as string | undefined,
+        };
+      });
+      // Enrich mutual planState via existing serializer when possible
+      const fullRows = [];
+      for (const a of activities) {
+        const dbRows = await ateneumDb
+          .select()
+          .from(ateneumActivities)
+          .where(eq(ateneumActivities.id, a.id))
+          .limit(1);
+        if (dbRows[0]) fullRows.push(dbRows[0]);
+      }
+      const viewer = req.ateneumUser!;
+      const serialized = serializeActivitiesForViewer(fullRows, viewer);
+      const byId = new Map(serialized.map((s: any) => [s.id, s]));
+      return res.json({
+        weekKey,
+        activities: activities.map((a) => {
+          const s = byId.get(a.id);
+          return {
+            ...a,
+            planState: s?.planState,
+            acceptedByMe: s?.acceptedByMe,
+            acceptedByPartner: s?.acceptedByPartner,
+            googleEventId: s?.googleEventId ?? null,
+          };
+        }),
+      });
+    },
+  );
+
+  app.post(
+    "/api/ateneum/body-practice/weekly-run",
+    async (req: Request, res: Response) => {
+      const secret = (process.env.ATENEUM_CRON_SECRET ?? "").trim();
+      const provided = (req.get("x-ateneum-cron-secret") ?? "").trim();
+      if (!secret || !provided || provided !== secret) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      try {
+        const proposer = ateneumRawDb
+          .prepare(
+            `SELECT id, display_name AS displayName, email, role
+             FROM ateneum_users
+             WHERE role = 'partner_a'
+             LIMIT 1`,
+          )
+          .get() as
+          | { id: string; displayName: string; email: string; role: string }
+          | undefined;
+        if (!proposer) {
+          return res.status(500).json({ message: "No partner_a user for cron propose" });
+        }
+        const program = proposeBodyPracticeWeek({
+          proposerUserId: proposer.id,
+          includeConnection: false,
+          force: false,
+        });
+        const humans = (
+          await ateneumDb.select().from(ateneumUsers)
+        ).filter((u) => u.role === "partner_a" || u.role === "partner_b");
+        const slotPayload = program.slots.map((slot) => ({
+          title: slot.title,
+          kind: slot.kind,
+          instructions: slot.instructions,
+          durationMin: slot.durationMin,
+          scheduledFor: slot.scheduledFor,
+          activityId: slot.activityId,
+        }));
+        const emailResults: Array<Record<string, unknown>> = [];
+        for (const human of humans) {
+          const claimKind = "body_practice_week_mail";
+          const claimKey = `${human.id}:${program.weekKey}`;
+          const claimed = claimWeeklyEmail({
+            toEmail: claimKey,
+            kind: claimKind,
+            weekKey: program.weekKey,
+          });
+          if (!claimed) {
+            emailResults.push({
+              userId: human.id,
+              skipped: true,
+              reason: "already-sent-this-week",
+            });
+            continue;
+          }
+          try {
+            const r = await sendBodyPracticeWeek({
+              user: human,
+              weekKey: program.weekKey,
+              slots: slotPayload,
+              fromName: "Ateneum",
+            });
+            finishWeeklyEmailClaim({
+              toEmail: claimKey,
+              kind: claimKind,
+              weekKey: program.weekKey,
+              status: r.sent ? "sent" : "failed",
+              error: r.sent
+                ? undefined
+                : r.error ?? (r.skipped ? "notification-disabled" : "send-failed"),
+            });
+            emailResults.push({ userId: human.id, ...r });
+          } catch (err: any) {
+            finishWeeklyEmailClaim({
+              toEmail: claimKey,
+              kind: claimKind,
+              weekKey: program.weekKey,
+              status: "failed",
+              error: err?.message ?? "send-failed",
+            });
+            emailResults.push({
+              userId: human.id,
+              sent: false,
+              error: err?.message ?? "send-failed",
+            });
+          }
+        }
+        return res.json({
+          ok: true,
+          weekKey: program.weekKey,
+          reused: program.reused,
+          activityCount: program.slots.length,
+          email: emailResults,
+        });
+      } catch (err: any) {
+        console.error("[ateneum] body-practice weekly-run:", err);
+        return res.status(500).json({ ok: false, message: "weekly-run failed" });
+      }
+    },
+  );
+
+
+  app.get(
+    "/api/ateneum/body-practice/library",
+    requireAteneumAuth,
+    async (_req: AteneumAuthedRequest, res: Response) => {
+      return res.json({ items: listBodyLibrary() });
+    },
+  );
+
+  app.post(
+    "/api/ateneum/body-practice/propose",
+    requireAteneumAuth,
+    requireHumanSession,
+    async (req: AteneumAuthedRequest, res: Response) => {
+      const me = req.ateneumUser!;
+      const includeConnection = Boolean((req.body ?? {}).includeConnection);
+      const force = Boolean((req.body ?? {}).force);
+      const sendEmailFlag =
+        (req.body ?? {}).sendEmail === undefined
+          ? true
+          : Boolean((req.body ?? {}).sendEmail);
+
+      try {
+        const program = proposeBodyPracticeWeek({
+          proposerUserId: me.id,
+          includeConnection,
+          force,
+        });
+
+        const emailResults: Array<{
+          userId: string;
+          sent?: boolean;
+          skipped?: boolean;
+          error?: string;
+        }> = [];
+
+        if (sendEmailFlag && program.slots.length > 0) {
+          const humans = (
+            await ateneumDb.select().from(ateneumUsers)
+          ).filter((u) => u.role === "partner_a" || u.role === "partner_b");
+
+          const slotPayload = program.slots.map((slot) => ({
+            title: slot.title,
+            kind: slot.kind,
+            instructions: slot.instructions,
+            durationMin: slot.durationMin,
+            scheduledFor: slot.scheduledFor,
+            activityId: slot.activityId,
+          }));
+
+          for (const human of humans) {
+            const claimKind = "body_practice_week_mail";
+            const claimKey = `${human.id}:${program.weekKey}`;
+            const claimed = claimWeeklyEmail({
+              toEmail: claimKey,
+              kind: claimKind,
+              weekKey: program.weekKey,
+            });
+            if (!claimed && !force) {
+              emailResults.push({
+                userId: human.id,
+                skipped: true,
+                error: "already-sent-this-week",
+              });
+              continue;
+            }
+            try {
+              const r = await sendBodyPracticeWeek({
+                user: human,
+                weekKey: program.weekKey,
+                slots: slotPayload,
+                fromName: me.displayName,
+              });
+              finishWeeklyEmailClaim({
+                toEmail: claimKey,
+                kind: claimKind,
+                weekKey: program.weekKey,
+                status: r.sent ? "sent" : "failed",
+                error: r.sent
+                  ? undefined
+                  : r.error ?? (r.skipped ? "notification-disabled" : "send-failed"),
+              });
+              emailResults.push({ userId: human.id, ...r });
+            } catch (err: any) {
+              finishWeeklyEmailClaim({
+                toEmail: claimKey,
+                kind: claimKind,
+                weekKey: program.weekKey,
+                status: "failed",
+                error: err?.message ?? "send-failed",
+              });
+              emailResults.push({
+                userId: human.id,
+                sent: false,
+                error: err?.message ?? "send-failed",
+              });
+            }
+          }
+        }
+
+        return res.json({
+          weekKey: program.weekKey,
+          reused: program.reused,
+          activities: program.slots.map((slot) => ({
+            id: slot.activityId,
+            title: slot.title,
+            kind: slot.kind,
+            libraryId: slot.libraryId,
+            instructions: slot.instructions,
+            durationMin: slot.durationMin,
+            scheduledFor: slot.scheduledFor.toISOString(),
+          })),
+          email: sendEmailFlag ? emailResults : [],
+        });
+      } catch (err: any) {
+        console.error("[ateneum] body-practice propose:", err);
+        return res
+          .status(500)
+          .json({ message: err?.message || "Failed to propose body practice week" });
+      }
     },
   );
 
