@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-mika-on-jarjestelma — Mikä on järjestelmä?</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Perusteet</a> · Oppitunti 0001/6</p>
+  <h1>Mikä on järjestelmä?</h1>
+  <p class="lede">Järjestelmä ei ole osien summa. Se on kolmen asian yhteispeli: osat, niiden vuorovaikutukset ja yhteinen tarkoitus.</p>
+
+  <p>Sanalla <em>järjestelmä</em> on tapana lentää ohi. Puhumme talousjärjestelmästä, ekosysteemeistä, järjestelmästä joka on rikki, järjestelmästä jota vastaan taistellaan. Mutta harvoin pysähdytään kysymään: <strong>mitä järjestelmä oikeasti on?</strong></p>
+
+  <p>Tämä oppitunti tekee juuri sen. Se on koko oppimispolun peruskivi, ja lähes kaikki myöhemmät käsitteet — takaisinkytkennästä emergenssiin — rakentuvat tämän oppitunnin varaan.</p>
+
+  <h2>Kolme ainesosaa</h2>
+
+  <p><strong>Donella Meadows</strong>, systeemiajattelun selkeä ääni, antaa työkalun: järjestelmä on jotain, joka koostuu <strong>kolmesta</strong> osasta. Ei kahdesta, ei neljästä — kolmesta.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>1. Osat (elements)</h3>
+      <p>Näkyvin, helpoin osa. Jos järjestelmä on pyörä, osat ovat pinnoja, runkoa, kettinkiä, renkaita.</p>
+    </div>
+    <div class="col">
+      <h3>2. Vuorovaikutukset (interconnections)</h3>
+      <p>Miten osat vaikuttavat toisiinsa. Renkaan pitää istua vanteelle, polkimen liikkeen pitää siirtyä kiekon läpi takapyörään. Vuorovaikutukset ovat usein näkymättömiä — sääntöjä, voimia, riippuvuuksia.</p>
+    </div>
+  </div>
+
+  <p>Ja kolmas — se jonka useimmiten unohtavat:</p>
+
+  <blockquote>
+    <p><strong>3. Tarkoitus tai funktio (purpose)</strong> — se minkä vuoksi järjestelmä on olemassa, sen tuottama tulos. Pyörän tarkoitus on kuljettaa ihmisen paino paikasta toiseen. Tarkoitus ei ole osa itsessään, mutta se on järjestelmän tärkein ominaisuus — sillä <em>se</em> määrittää mitä järjestelmä oikeasti tekee.</p>
+  </blockquote>
+
+  <h2>Miksi järjestely ei ole järjestelmä</h2>
+
+  <p>Kuvittele kasa pyörän osia lattialla. Runko, renkaat, kammet, ketju — kaikki siellä. Onko tämä järjestelmä? Ei. Se on <em>kokoelma</em>.</p>
+
+  <p>Mitä puuttuu? Vuorovaikutukset. Osat eivät vaikuta toisiinsa. Runko ei kannata renkaita, ketti ei välitä liikettä, jarrut eivät pura. Vaikka osat ovat täsmälleen samat kuin koottussa pyörässä, tämä kasa ei ole järjestelmä, koska <strong>se ei tee mitään</strong>.</p>
+
+  <p>Tämä on tärkeä oivallus: järjestelmä ei ole osien summa. Järjestelmä syntyy vasta, kun osien välille muodostuu <em>vuorovaikutussuhteita</em>, jotka yhdessä tuottavat <em>jotain</em>, mitä yksittäiset osat eivät voi tuottaa yksin.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Pelkkä osajoukko ei riitä</h3>
+      <p>Kasa tiiliä ei ole järjestelmä — vaikka tiiliä olisi tuhat. Mutta ne samat tiilet, laatoitettuna muuriksi ja sidottuna laastilla, muodostavat kantavan rakenteen. Kantavuus ei ole minkään yksittäisen tiilen ominaisuus.</p>
+    </div>
+    <div class="col right">
+      <h3>Vuorovaikutus tekee järjestelmän</h3>
+      <p>Jalkapallojoukkue ei ole viisitoista pelaajaa. Se on viisitoista pelaajaa, joiden <em>suhteet</em> — kuka antaa kenelle, kuka painaa kumpaankin suuntaan, kuka on paikallaan silloin kun kukaan muu ei ole — tekevät siitä ryhmän joka voi voittaa tai hävitä.</p>
+    </div>
+  </div>
+
+  <h2>Tarkoitus — järjestelmän salatumpi puoli</h2>
+
+  <p>Meadows tekee terävän erottelun: järjestelmällä on <strong>esitetty tarkoitus</strong> (mitä sen suunnittelijat sanovat sen tekevän) ja <strong>havaittu tarkoitus</strong> (mitä se <em>todellisuudessa</em> tekee). Nämä kaksi eivät ole sama asia.</p>
+
+  <blockquote>
+    <p>"The best way to deduce the system's purpose is to watch for a while and see what the system actually does." — Donella Meadows</p>
+  </blockquote>
+
+  <p>Esimerkki: yliopiston <em>esitetty tarkoitus</em> on tuottaa tietoa ja kouluttaa kriittisiä ajattelijoita. Sen <em>havaittu tarkoitus</em> — se mitä se todellisuudessa toistuvasti tekee — saattaa olla tutkimusrahoituksen maksimointi, tutkintojen tuottaminen teollisuuden tarpeisiin ja oman instituution kasvattaminen. Nämä eivät ole sama asia, ja erojen ymmärtäminen on systeemiajattelun ydintä.</p>
+
+  <p>Tämä oivallus on kaikkialla. Autotehtaan esitetty tarkoitus on valmistaa laadukkaita autoja. Sen havaittu tarkoitus saattaa olla voittoa tuottavien yksiköiden puolustaminen. Sosiaalihuollon esitetty tarkoitus on suojella heikkoja. Sen havaittu tarkoitus on usein byrokratian itsensä ylläpitäminen.</p>
+
+  <h2>Ackoff ja kokonaisuus joka on enemmän</h2>
+
+  <p><strong>Russell Ackoff</strong> (1919–2009), Wharton Schoolin systeemiajattelija, ilmaisi asian tiukemmin: järjestelmä on kokonaisuus, joka <strong>ei voi toimia osiensa summana</strong>. Jos otat järjestelmästä osan pois, järjestelmä menettää jotain olennaista — ei vain vähennä.</p>
+
+  <p>Autosta moottorin poisottaminen ei tee autosta "80 % autoa". Se tekee siitä <em>ei-auton</em>. Kehosta sydämen poisottaminen ei tee kehosta "99 % ihmistä". Se tekee ruumiista.</p>
+
+  <p>Tämä erottaa järjestelmän kumulatiivisesta kokonaisuudesta. Kasassa rahaa on summa. Pankki — joka koostuu ihmisistä, prosesseista, pääomasta ja tavoitteista — on järjestelmä, koska se tekee asioita joita pelkkä rahasumma ei voisi.</p>
+
+  <h2>Avoimen ja suljetun jako</h2>
+
+  <p>Kaikki järjestelmät voidaan jakaa sen mukaan, vaihtavatko ne <em>mitä</em> ympäristönsä kanssa:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Avoin järjestelmä</h3>
+      <p>Vaihtaa ainetta, energiaa <em>tai</em> informaatiota ympäristönsä kanssa. Elimistö on avoin: syömme, hengitämme, opimme. Yritys on avoin: ostamme, myymme, palkkaamme.</p>
+    </div>
+    <div class="col">
+      <h3>Suljettu järjestelmä</h3>
+      <p>Vaihtaa vain energiaa tai informaatiota — ei ainetta. Tietokoneen suoritin on suurelta osin suljettu: sähkö menee sisään, lämpö tulee ulos, mutta materia ei vaihdu.</p>
+    </div>
+  </div>
+
+  <p>Lisäksi on <em>eristetty järjestelmä</em> — ideaalinen fysiikan käsite, joka ei käytännössä vaihda mitään. Termospullo on likieristetty lyhyellä aikavälillä, mutta pitkällä aikavälillä kaikki järjestelmät ovat avoimia.</p>
+
+  <p><strong>Tärkeä käytännön sääntö:</strong> lähes kaikki kiinnostavat järjestelmät ovat avoimia. Suljettuja järjestelmiä on lähinnä laboratoriossa. Kun alat etsiä järjestelmiä omassa elämässäsi, oleta avoimuus — ja kysy sitten: mitä se vaihtaa, ja minkä suunnan?</p>
+
+  <h2>Miksi tämä kaikki merkitsee</h2>
+
+  <p>Tämä oppitunti ei ole vain sanasto. Se on tapa <em>katsoa</em>. Kun ymmärrät järjestelmän kolme osaa, alat nähdä maailman eri tavalla:</p>
+
+  <ul>
+    <li><strong>Kun järjestelmä ei toimi, ensimmäinen kysymys ei ole "mikä osa on rikki"</strong> — vaan "ovatko vuorovaikutukset ehjiä". Usein osat ovat kunnossa mutta suhteet ovat katkenneet.</li>
+    <li><strong>Kun järjestelmä tekee jotain odottamatonta, kysyt "mikä on sen todellinen tarkoitus"</strong> — ei mihin sen on tarkoitus kykeneä, vaan mitä se <em>tekee</em>.</li>
+    <li><strong>Kun haluat muuttaa järjestelmää, et aloita osista</strong> — aloitat tarkoituksesta ja vuorovaikutuksista. Osien vaihtaminen samalla rakenteella ei muuta järjestelmää.</li>
+  </ul>
+
+  <p>Tämä on systeemiajattelun siemen. Kaikki seuraavat oppitunnit — takaisinkytkennästä emergenssiin — perustuvat tähän kolmijakoon.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Valitse jokin järjestelmä omasta elämästäsi — työpaikka, perhe, kerho, sijoitussalkku, liikennejärjestely. Sitä ei tarvitse sanoa ääneen.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mitkä ovat tämän järjestelmän osat? Luettele ainakin viisi.</label>
+      <textarea id="q1" rows="3" placeholder="Esim. työpaikassa: johto, työntekijät, tilat, palkkasysteemi, tuote, asiakaskunta..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat sen tärkeimmät vuorovaikutukset — säännöt ja suhteet, jotka saavat osat toimimaan yhdessä?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. työpaikassa: pomon päätökset siirtyvät työntekijöille, palkka sidottu työaikaan, tuotteen laatu riippuu työntekijöiden motivaatiosta..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mikä on järjestelmän esitetty tarkoitus? Ja mikä sen todellinen, havaittu tarkoitus — se mitä se oikeasti toistuvasti tekee?</label>
+      <textarea id="q3" rows="3" placeholder="Esitetty: tuottaa laadukasta tuotetta. Havaittu: ehkä ylläpitää vanhoja tapoja, ehkä suojella tiettyjä henkilöitä..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Jos kolmas kysymys tuntui vaikealta — hyvällä tavalla. Ero esitetyn ja havaitun tarkoituksen välillä on usein paikka, jossa järjestelmä paljastaa itsensä.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/system.html" class="wikilink" data-concept="system">system</a> — tämän oppitunnin ydinkäsite</li>
+    <li><a href="../../concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a> — ajattelutapa jonka peruskohde järjestelmä on</li>
+    <li><a href="../../concepts/systems-theory.html" class="wikilink" data-concept="systems-theory">systems-theory</a> — järjestelmän muodollinen akateeminen teoria</li>
+    <li><a href="../../concepts/open-system.html" class="wikilink" data-concept="open-system">open-system</a> — ympäristönsä kanssa vaihtava järjestelmä</li>
+    <li><a href="../../concepts/closed-system.html" class="wikilink" data-concept="closed-system">closed-system</a> — suljettu järjestelmä</li>
+    <li><a href="../../concepts/isolated-system.html" class="wikilink" data-concept="isolated-system">isolated-system</a> — eristetty järjestelmä</li>
+    <li><a href="../../concepts/environment.html" class="wikilink" data-concept="environment">environment</a> — järjestelmän ulkopuolinen todellisuus</li>
+    <li><a href="../../concepts/boundary.html" class="wikilink" data-concept="boundary">boundary</a> — järjestelmän raja</li>
+    <li><a href="../../concepts/subsystem.html" class="wikilink" data-concept="subsystem">subsystem</a> — järjestelmän osa, joka on itsessään järjestelmä</li>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — järjestelmän tasolla syntyvä uusi ominaisuus</li>
+  </ul>
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-osat-ja-kokonaisuus.html">Seuraava oppitunti: Osat ja kokonaisuus →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Donella H. Meadows — <em>Thinking in Systems</em> (Chelsea Green, 2008); Russell L. Ackoff — <em>Redesigning the Future</em> (Wiley, 1974); Ludwig von Bertalanffy — <em>General System Theory</em> (1968).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

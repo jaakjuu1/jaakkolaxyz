@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: bifurcation</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>bifurcation</h1>
+  <p class="meta">Käsite · systeemiajattelu · dynamiikka · kriittiset pisteet</p>
+
+  <p class="lede">Bifurkaatio on dynaamisessa systeemissä tapahtuva laadullinen muutos: kun jokin <a href="control-parameter.html">kontrolliparametri</a> ylittää kriittisen kynnyksen, systeemin tilojen rakenne — sen <a href="attractor.html">attraktorit</a> — haarautuu äkillisesti uuteen muotoon.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Bifurkaatio</strong> (engl. <em>bifurcation</em>, lat. <em>bi-</em> = "kaksi" + <em>furca</em> = "haarukka") on dynaamisessa systeemissä tapahtuva topologinen muutos, jossa systeemin tasapainotilojen lukumäärä, vakaus tai luonne muuttuu äkillisesti parametrin pienen muutoksen seurauksena. Bifurkaatiopiste on parametrin kriittinen arvo, jossa tämä tapahtuu.</p>
+
+  <p>Yleisimpiä bifurkaatiotyyppejä:</p>
+  <ul>
+    <li><strong>Satula-solmu-bifurkaatio</strong> — vakaa tasapaino menettää vakautensa ja syntyy kaksi uutta tilaa (tai päinvastoin).</li>
+    <li><strong>Transkriittinen bifurkaatio</strong> — kaksi tasapainotilaa vaihtavat vakautta keskenään.</li>
+    <li><strong>Piikki-bifurkaatio (pitchfork)</strong> — symmetrinen tila haarautuu kahteen symmetriseen tilaan (tai käänteisesti).</li>
+    <li><strong>Hopf-bifurkaatio</strong> — kiintopisteestä syntyy suljettu jaksollinen rata (rajasykli). Tämä on esimerkiksi sydämen rytmihäiriöiden matemaattinen perusta.</li>
+    <li><strong>Periodin tuplaantumisbifurkaatio</strong> — jaksollisen kuvion jakso kaksinkertaistuu. Tämä on reitti kohti <a href="chaos-theory.html">kaaosta</a>.</li>
+  </ul>
+
+  <blockquote>
+    <p>"Bifurcation is where the future of a system forks — small parameter changes lead to qualitatively different long-term behaviors." — James Yorke</p>
+  </blockquote>
+
+  <p>Bifurkaatio on systeemiajattelun keskeisiä käsitteitä, koska se selittää <em>miksi</em> systeemit käyttäytyvät yllättävästi. Pienetkin muutokset olosuhteissa voivat laukaista suuren, laadullisen muutoksen — eikä muutos ole lineaarinen eikä asteittainen. Esimerkiksi padon murtuminen ei ole asteittainen vaan kriittinen: paine ylittää kynnyksen, ja tuhansien vuosien kerrostuma virtaa hetkessä.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Bifurkaation matemaattinen teoria syntyi 1800-luvun lopun differentiaaliyhtälöiden tutkimuksessa. Henri Poincaré kuvasi 1880-luvulla kvalitatiivisia muutoksia dynaamisten systeemien ratakentissä, ja Aleksandr Andronov kehitti 1930-luvulla systemaattisen bifurkaatioteorian venäläisessä koulukunnassa.</p>
+
+  <p>Modernin bifurkaatioteorian keskeinen hahmo on John Guckenheimer, joka 1980-luvulla jäsensi luokittelun, jota käytetään yhä. Myös Stephen Smale ja Robert May vaikuttivat merkittävästi: Mayn vuoden 1976 artikkeli <em>Simple mathematical models with very complicated dynamics</em> osoitti, että jopa yksinkertainen loogistinen yhtälö voi bifurkoitua kaaokseksi.</p>
+
+  <p>Bifurkaatiosta tuli systeemiajattelun ja kompleksisuustieteen kulmakivi 1980- ja 1990-luvuilla. Ilya Prigogine, joka sai Nobelin palkinnon vuonna 1977 dissipatiivisten rakenteiden tutkimuksesta, käytti bifurkaatiota kuvaamaan, miten systeemit <a href="phase-transition.html">faasisiirtymien</a> kautta synnyttävät uutta järjestystä. Donella Meadows ja Peter Senge toivat käsitteen systeemidynamiikan ja organisaatio-oppimisen kenttään.</p>
+
+  <p>Nykyisin bifurkaatiota sovelletaan kaikkialla: ilmastotieteessä (kriittiset kynnysarvot), ekologiassa (lajiston romahtaminen), taloustieteessä (markkinakriisit), neurotieteessä (aivotoiminnan tilanvaihdokset) ja yhteiskuntatieteissä (vallankumoukset ja trendien kääntyminen).</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="phase-space.html">phase-space</a> — bifurkaatio on faasiavaruuden rakenteen muutos.</li>
+    <li><a href="attractor.html">attractor</a> — bifurkaatiossa attraktori syntyy, hajoaa tai haarautuu.</li>
+    <li><a href="control-parameter.html">control-parameter</a> — bifurkaation laukaiseva parametri.</li>
+    <li><a href="phase-transition.html">phase-transition</a> — faasisiirtymä on fysikaalinen ilmentymä bifurkaatiosta.</li>
+    <li><a href="critical-mass.html">critical-mass</a> — kriittinen massa on usein bifurkaatiopisteen laukaisija.</li>
+    <li><a href="leverage-point.html">leverage-point</a> — vipupisteet ovat paikkoja, joissa pieni muutos voi laukaista bifurkaation.</li>
+    <li><a href="tipping-point.html">tipping-point</a> — sosiaalinen vastine bifurkaatiolle.</li>
+    <li><a href="non-linearity.html">non-linearity</a> — epälineaarisuus tekee bifurkaatiot mahdollisiksi.</li>
+    <li><a href="complexity.html">complexity</a> — kompleksisissa systeemeissä bifurkaatioita on runsaasti.</li>
+    <li><a href="complex-adaptive-system.html">complex-adaptive-system</a> — sopeutuvissa systeemeissä bifurkaatiot synnyttävät uusia tiloja.</li>
+    <li><a href="feedback-loop.html">feedback-loop</a> — positiivinen takaisinkytkentä vahvistaa bifurkaation vaikutusta.</li>
+    <li><a href="stability.html">stability</a> — bifurkaatio rikkoo tai synnyttää stabiilisuutta.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Bifurkaatio esitellään <a href="../lessons/dynaamiset-systeemit.html">Dynaamiset systeemit</a> -moduulissa, välittömästi <a href="attractor.html">attraktorin</a> ja <a href="phase-space.html">faasiavaruuden</a> jälkeen. Syventäviä sovelluksia on moduuleissa: ilmastokriittiset pisteet, ekosysteemien romahtaminen, talouskriisien dynamiikka ja aivotoiminnan tilanvaihdokset.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — faasiavaruus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — attraktori</li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-parameter.html" class="wikilink" data-concept="control-parameter">control-parameter</a> — kontrolliparametri</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — faasisiirtymä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — kriittinen massa</li>
+    <li><a href="/learn/systeemiajattelu/concepts/leverage-point.html" class="wikilink" data-concept="leverage-point">leverage-point</a> — vipupiste</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — epälineaarisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — kompleksisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system</a> — sopeutuva järjestelmä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentäsilmukka</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Poincaré 1885; Andronov & Chaikin 1937; May 1976 — <em>Nature</em>; Guckenheimer & Holmes 1983 — <em>Nonlinear Oscillations, Dynamical Systems, and Bifurcations of Vector Fields</em>; Prigogine 1997; Strogatz 1994; Wikipedia-artikkelit: <em>Bifurcation theory</em>; <em>Hopf bifurcation</em>; <em>Period-doubling bifurcation</em>.
+  </p>
+</main>
+</body>
+</html>

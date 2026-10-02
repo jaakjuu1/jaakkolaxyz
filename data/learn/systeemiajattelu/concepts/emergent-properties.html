@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: emergent-properties</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Emergentit ominaisuudet</h1>
+  <p class="meta">Käsite · systeemiajattelu · emergenssi · kompleksisuus · epistemologia</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Emergentit ominaisuudet</strong> ovat järjestelmän tason ominaisuuksia, joita sen yksittäisillä osilla ei ole, ja joita ei voida ennustaa tutkimalla osia erillisinä. Kun osat järjestyvät vuorovaikutukseen keskenään, syntyy kokonaisuuden tasolle uusia piirteitä — kuten märkyys vedessä, tietoisuus neuroneista, myrskyn voima ilmamolekyyleistä tai markkinahinta yksittäisistä ostopäätöksistä.</p>
+
+  <blockquote>
+    <p>"Kokonaisuus on enemmän kuin osiensa summa." — Aristoteles, <em>Metafysiikka</em></p>
+  </blockquote>
+
+  <p>Emergentti ominaisuus on systeemin <em>makroskaalan</em> ilmiö, jota ei voi palauttaa osiensa mikroskaalan ominaisuuksiin. Tämä ei tarkoita, etteikö emergenssi perustuisi osiin — kaikki emergentit ilmiöt ovat lopulta seurausta osien vuorovaikutuksesta. Se tarkoittaa, ettei selitys palaudu yksinomaan osiin.</p>
+
+  <p>Systeemiajattelussa emergenssi on peruskäsite. Se perustelee, miksi systeemin analysointi vaatii kokonaisvaltaista lähestymistapaa pelkän <a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reduktion</a> sijaan.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Filosofinen juuri on Aristoteleen lauseessa <em>"το ὅλον πρό τι τῶν μερῶν"</em> ("kokonaisuus on jotain ylitse osiensa"). Käsite tuli nykyaikaiseen tieteeseen 1800-luvulla muun muassa G. H. Lewesin teoksessa <em>Problems of Life and Mind</em> (1875), joka erotti <em>resultantin</em> (summautuvan) ja <em>emergentin</em> ilmiön.</p>
+
+  <p>1900-luvulla emergenssi sai vahvan jalansijan yleisen systeemiteorian (<a href="/learn/systeemiajattelu/concepts/general-systems-theory.html" class="wikilink" data-concept="general-systems-theory">general-systems-theory</a>), kybernetiikan ja myöhemmin kompleksisuustieteen piirissä. Buckminster Fuller puhui synergeettisistä ominaisuuksista, ja Philip Anderson julkaisi kuuluisan esseen <em>More Is Different</em> (1972), joka puolusti emergenssiä reduktionismia vastaan.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergenssi</a> — laajempi synonyyminen ilmiö.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/holism.html" class="wikilink" data-concept="holism">holismi</a> — filosofinen kanta, joka korostaa kokonaisuutta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reduktio</a> — vastakohtainen lähestymistapa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/holon.html" class="wikilink" data-concept="holon">holoni</a> — kokonaisuus, joka on samalla osa suurempaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">faasisiirtymä</a> — tyypillinen emergenttien ilmiöiden lähde.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">itsensä organisoituminen</a> — järjestäytyminen ilman keskitettyä ohjausta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksinen adaptiivinen systeemi</a> — emergentin käyttäytymisen tyyssija.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">kompleksisuus</a> — ilmiöiden yhteinen nimittäjä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/hierarchy.html" class="wikilink" data-concept="hierarchy">hierarkia</a> — emergentit tasot organisoituvat usein kerroksittain.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/general-systems-theory.html" class="wikilink" data-concept="general-systems-theory">yleinen systeemiteoria</a> — Bertalanffyn kehys.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Emergentit ominaisuudet ovat keskeinen käsite [[../lessons/emergenssi.html|Emergenssi]]-oppitunnilla sekä [[../lessons/reduktio-vs-holismi.html|reduktio vs. holismi]] -oppitunnilla. Käytännön esimerkkejä käsitellään [[../lessons/kompleksisuus.html|kompleksisuuden]] ja [[../lessons/faasisiirtymat.html|faasisiirtymien]] oppitunneilla.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Lewes, G. H. (1875). <em>Problems of Life and Mind</em>. Trübner.</li>
+    <li>Anderson, P. W. (1972). <em>More Is Different</em>. Science, 177(4047).</li>
+    <li>Goldstein, J. (1999). <em>Emergence as a Construct: History and Issues</em>. Complexity, 4(3).</li>
+    <li>Bedau, M. A. & Humphreys, P. (eds., 2008). <em>Emergence: Contemporary Readings in Philosophy and Science</em>. MIT Press.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/emergent-properties.html" class="wikilink" data-concept="emergent-properties">emergent-properties</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/holism.html" class="wikilink" data-concept="holism">holism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/holon.html" class="wikilink" data-concept="holon">holon</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/hierarchy.html" class="wikilink" data-concept="hierarchy">hierarchy</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/general-systems-theory.html" class="wikilink" data-concept="general-systems-theory">general-systems-theory</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Aristoteles — <em>Metafysiikka</em>; Lewes (1875); Anderson (1972); Goldstein (1999); Bedau &amp; Humphreys (2008).
+  </p>
+</main>
+</body>
+</html>

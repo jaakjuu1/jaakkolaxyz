@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004-attraktorit-ja-faasimuutokset — Attraktorit ja faasimuutokset</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0004/6</p>
+  <h1>Attraktorit ja faasimuutokset</h1>
+  <p class="lede">Järjestelmä hakeutuu tiettyyn tilaan — mutta voi vaihtaa tilaansa äkisti. Tätä ovat attraktorit ja faasimuutokset.</p>
+
+  <p>Itseorganisoituminen tuottaa järjestystä — mutta mihin järjestys asettuu? Miksi jotkut tilat "vetävät puoleensa" järjestelmiä, toiset eivät? Tämä oppitunti esittelee kaksi toisiinsa kytkeytyvää käsitettä: <strong>attraktorit</strong> ja <strong>faasimuutokset</strong>.</p>
+
+  <p>Nämä selittävät miksi järjestelmät usein käyttäytyvät yllättävän vakaasti — ja miksi ne joskus äkisti muuttavat tilaansa kokonaan.</p>
+
+  <h2>Attraktori</h2>
+
+  <p><strong>Attraktori</strong> on systeemin <em>vetovoimatila</em> — tila, johon järjestelmä pyrkii ajan myötä.</p>
+
+  <p>Ajatus tulee fysiikasta. Kivi pudotessaan päätyy aina maan pinnalle — tämä on "vetovoimatila". Pallo suppilon pohjalle jää aina keskelle — tämä on myös vetovoimatila, mutta suppilon muotoinen.</p>
+
+  <p>Dynaamisissa järjestelmissä attraktori ei ole yksittäinen piste vaan <em>kokonainen tila</em> johon järjestelmä hakeutuu. Tämä on paljon voimakkaampi käsite:</p>
+
+  <ul>
+    <li><strong>Pisteattraktori</strong> — yksittäinen vakaa tila (kivi maan pinnalla).</li>
+    <li><strong>Jaksollinen attraktori</strong> — järjestelmä kiertää silmukkaa (vuorovesi).</li>
+    <li><strong>Oudokkeinen attraktori (strange attractor)</strong> — monimutkainen, fraktaalinen vetovoima-alue (sää).</li>
+  </ul>
+
+  <blockquote>
+    <p>"An attractor is a set of states toward which the system evolves over time." — Yleinen määritelmä</p>
+  </blockquote>
+
+  <h2>Oudokkeinen attraktori — sään kauneus</h2>
+
+  <p>Oudokkeinen attraktori on tärkeä konsepti. Se on <strong>määrätty mutta ennustamaton</strong> — järjestelmä hakeutuu tiettyyn tila-avaruuden alueeseen, mutta ei koskaan samoille tarkoille pisteille.</p>
+
+  <p>Esimerkki: <strong>sää</strong>. Sään tila-avaruus on ääretön, mutta järjestelmä pysyy tietyissä attraktoreissa (esim. suihkuvirtaus). Sää on siis <em>säännöllisen kaoottista</em>.</p>
+
+  <p>Toinen esimerkki: <strong>ekosysteemi</strong> — lajien runsaudet vaihtelevat vuosien välillä, mutta pysyvät tietyissä rajoissa. Tämä on attraktori.</p>
+
+  <p>Kolmas esimerkki: <strong>oma mieliala</strong> — päivästä toiseen vaihtelua, mutta pysyy "tietyn tunnelman" ympärillä. Kun on "poissa tolaltaan", palaa yleensä takaisin.</p>
+
+  <h2>Faasimuutos — äkkinäinen tilan vaihdos</h2>
+
+  <p><strong>Faasimuutos</strong> (phase transition) on tilan äkkinäinen vaihdos, kun jokin parametri ylittää kriittisen kynnyksen.</p>
+
+  <p>Tuttuja esimerkkejä fysiikasta:</p>
+
+  <ul>
+    <li>Vesi 0°C:ssa jäätyy — muutos nestestä kiinteäksi.</li>
+    <li>Vesi 100°C:ssa kiehuu — muutos kaasuksi.</li>
+    <li>Magneetti menettää magnetoitumisensa Curie-lämpötilassa.</li>
+  </ul>
+
+  <p>Näissä kaikissa <em>pieni parametrin muutos tuottaa äkkinäisen, laadullisen muutoksen</em>. Sama ilmiö esiintyy sosiaalisissa järjestelmissä:</p>
+
+  <ul>
+    <li>Taloustieteessä: "Minsky-momentti" — rahoitusmarkkinoiden äkkinäinen romahdus.</li>
+    <li>Yhteiskunnassa: vallankumous — pitkä epävakaus, sitten äkkinäinen muutos.</li>
+    <li>Ekologiassa: ekosysteemin romahdus — kriittisen kynnyksen ylitys.</li>
+    <li>Ihmissuhteissa: "tippumispiste" — yksi lisäkipinaus saa ihmisen lähtemään.</li>
+  </ul>
+
+  <p>Faasimuutoksia on kahta tyyppiä:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Ensimmäisen kertaluvun</h3>
+      <p>Äkkinäinen, hyppäyksellinen. Esim. vesi jäätyy — lämpötila voi pysyä samana kun tila muuttuu.</p>
+    </div>
+    <div class="col">
+      <h3>Toisen kertaluvun</h3>
+      <p>Jatkuva, mutta epälineaarinen. Esim. ferromagneetin magnetoituminen — kasvaa tasaisesti mutta kiihtyvästi kriittisen pisteen lähellä.</p>
+    </div>
+  </div>
+
+  <h2>Kriittinen massa — kynnyksen ylittäminen</h2>
+
+  <p><strong>Kriittinen massa</strong> (critical mass) on vähimmäismäärä, joka tarvitaan muutoksen aikaansaamiseen.</p>
+
+  <p>Esimerkkejä:</p>
+
+  <ul>
+    <li><strong>Ydinreaktio:</strong> uraanin kriittinen massa — sen alle reaktio pysähtyy, sen yli hallitsematon ketjureaktio.</li>
+    <li><strong>Ilmastonmuutos:</strong> 2°C:n kynnys — usein pidetään "turvallisena rajana".</li>
+    <li><strong>Sosiaalinen liike:</strong> tarvitsee kriittisen määrän kannattajia ennen kuin se "syttyy".</li>
+    <li><strong>Tautiepidemia:</strong> perustarttumisaste R₀ = 1 — sen yli leviää, sen alle hiipuu.</li>
+  </ul>
+
+  <p><strong>Malcolm Gladwell</strong> popularisoi kriittisen massan käsitteen (<em>The Tipping Point</em>, 2000). Hän kuvasi miten yksinkertaiset syyt voivat saada aikaan massiivisia muutoksia — kunhan kynnys ylittyy.</p>
+
+  <h2>Bifurkaatio — järjestelmän "haarautuminen"</h2>
+
+  <p><strong>Bifurkaatio</strong> on kohta, jossa järjestelmällä on useita vakaita tiloja. Kun parametri muuttuu kriittisesti, järjestelmä <em>valitsee</em> yhden niistä.</p>
+
+  <p>Tunnettu esimerkki: <strong>Lorenz-attractori</strong>. Kolmen yhtälön systeemi, joka tuottaa kaoottista käyttäytymistä — klassinen "perhosvaikutus". Bifurkaatioita tapahtuu kun säädettävä parametri ylittää kriittisiä arvoja.</p>
+
+  <p>Toinen esimerkki: <strong>veden virtaus</strong>. Hidas virtaus on tasaista (laminaarinen). Nopeus ylittää kriittisen arvon → virtaus muuttuu kaoottiseksi (turbulenttinen). Vesi "valitsee" uuden tilan.</p>
+
+  <h2>Miksi tämä on tärkeää</h2>
+
+  <p>Attraktorit ja faasimuutokset selittävät <em>miksi järjestelmät ovat sekä vakaita että yllätyksellisiä</em>:</p>
+
+  <ul>
+    <li>Vakaus: järjestelmä palaa attraktorilleen useimmissa olosuhteissa.</li>
+    <li>Yllätyksellisyys: kun kriittinen kynnys ylittyy, muutos voi olla äkkinäinen ja dramaattinen.</li>
+  </ul>
+
+  <p>Tämä on erityisen tärkeää <strong>ennustamisessa</strong>:</p>
+
+  <ul>
+    <li>Kaukana kriittisestä pisteestä — järjestelmä on ennustettavissa (attraktorilla).</li>
+    <li>Lähellä kriittistä pistettä — pienet häiriöt voivat laukaista suuria muutoksia.</li>
+  </ul>
+
+  <p>Siksi <strong>varoitusmerkkien tunnistaminen</strong> on tärkeää. Monet suuret tapahtumat (pankkikriisi, vallankumous, ekosysteemin romahdus) olivat ennustettavissa — mutta vain jos osasi katsoa oikeita merkkejä.</p>
+
+  <h2>Kriittinen piste on hauras hetki</h2>
+
+  <p>Kriittisen pisteen läheisyydessä pienet asiat merkitsevät paljon. Tätä kutsutaan <em>kriittiseksi hitaudeksi</em> (critical slowing down) — järjestelmä reagoi hitaasti häiriöihin.</p>
+
+  <p>Esimerkki: kliimajärjestelmä ennen romahdusta. Pienet häiriöt palautuvat yhä hitaammin. Aika "flicker" — palautuminen kestää yhä kauemmin. Tämä on varhaisvaroitusmerkki.</p>
+
+  <h2>Faasimuutosten tunnistaminen</h2>
+
+  <p>Faasimuutoksen lähestyessä voi nähdä:</p>
+
+  <ol>
+    <li><strong>Vaihtelun kasvu</strong> — järjestelmä alkaa "heilua" enemmän.</li>
+    <li><strong>Kriittinen hitaus</strong> — paluu tasapainoon kestää yhä kauemmin.</li>
+    <li><strong>Epänormaali korrelaatio</strong> — kaukaiset osat alkavat käyttäytyä samoin.</li>
+    <li><strong>Vaihtoehtoisten tilojen esiintyminen</strong> — "shadow" -ratkaisut alkavat näkyä.</li>
+  </ol>
+
+  <p>Nämä ovat universaaleja merkkejä, sovellettavissa niin fysiikkaan, ekologiaan kuin talouteen.</p>
+
+  <h2>Praktinen sovellus</h2>
+
+  <p>Jos haluat välttää ei-toivotun faasimuutoksen, sinun on ymmärrettävä:</p>
+
+  <ul>
+    <li><strong>Nykyinen attraktorisi</strong> — mihin järjestelmäsi vakaasti hakeutuu?</li>
+    <li><strong>Kriittiset parametrisi</strong> — mitkä tekijät voivat aiheuttaa muutoksen?</li>
+    <li><strong>Varhaisvaroitusmerkit</strong> — mitä muutoksia järjestelmässä näkyy?</li>
+  </ul>
+
+  <p>Tämä on syvällisempi versio "riskinhallinnasta" — ei yksittäisten uhkien tunnistamista, vaan järjestelmän <em>tyypillisten reagointimallien</em> ymmärtämistä.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Etsi tilanne, jossa saatat lähestyä kriittistä pistettä — tai jossa olet jo faasimuutoksen jälkeisessä tilassa.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi järjestelmä elämässäsi, jossa on selkeä vetovoimatila — attraktori, johon palaat aina?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. mielialan perustaso, unirytmi, työn intensiteetti..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä parametri voisi aiheuttaa äkkinäisen tilan muutoksen — faasimuutoksen?</label>
+      <textarea id="q2" rows="3" placeholder="Esim. ylityömäärä, unen puute, merkittävä elämäntapahtuma, ihmissuhteen muutos..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitä varhaismerkkejä voisit seurata, jotta tietäisit lähestyväsi kriittistä pistettä?</label>
+      <textarea id="q3" rows="3" placeholder="Varhaismerkit ovat yleensä pieniä — unen katkonaisuus, kärttyisyys, vetäytyminen..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa tarkastelemme <em>verkostoja</em> — miten järjestelmän rakenne määrää sen käyttäytymisen.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — tämän oppitunnin ydinkäsite — vetovoimatila</li>
+    <li><a href="../../concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — äkkinäinen tilanvaihdos</li>
+    <li><a href="../../concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — kynnys, jonka ylitys laukaisee muutoksen</li>
+    <li><a href="../../concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — järjestelmän valinta eri tilojen välillä</li>
+    <li><a href="../../concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — tila-avaruus, jossa attraktori sijaitsee</li>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — attraktori voi syntyä itseorganisoitumalla</li>
+    <li><a href="../../concepts/order-parameter.html" class="wikilink" data-concept="order-parameter">order-parameter</a> — järjestyksen mittari</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — CAS toimii attraktoreilla</li>
+    <li><a href="../../concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — faasimuutoksen matemaattinen syy</li>
+    <li><a href="../../concepts/delay.html" class="wikilink" data-concept="delay">delay</a> — kriittinen hitaus — varhaismerkki</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0003-itseorganisoituminen.html">← Itseorganisoituminen</a>
+    <a class="next" href="0005-verkostot-ja-kytkennat.html">Seuraava oppitunti: Verkostot ja kytkennät →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Edward Lorenz — <em>Deterministic Nonperiodic Flow</em> (J. Atmos. Sci., 1963); Ilya Prigogine — <em>Order Out of Chaos</em> (Bantam, 1984); Malcolm Gladwell — <em>The Tipping Point</em> (Back Bay, 2000); Didier Sornette — <em>Why Stock Markets Crash</em> (Princeton, 2003); Marten Scheffer — <em>Critical Transitions in Nature and Society</em> (Princeton, 2009).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

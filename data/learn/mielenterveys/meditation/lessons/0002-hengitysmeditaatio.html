@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002 — Hengitysmeditaatio: anapanasati</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Hengitysmeditaatio: anapanasati</h1>
+  <p class="meta">Oppitunti 0002 · ~10 min · harjoitus</p>
+
+  <p>Tämä on polun käytännöllisin oppitunti. Jos opit vain yhden harjoituksen koko tästä kokonaisuudesta, opi tämä. Hengitysmeditaatio — pali-kielellä <em>anapanasati</em>, "sisään- ja uloshengityksen huomaaminen" — on vanhin dokumentoitu meditaatiomuoto, ja se on lähes kaikkien nykyisten tutkittujen ohjelmien perusta.</p>
+
+  <h2>Miksi hengitys?</h2>
+
+  <p>Hengitys on käytännöllisin ankkuri, mitä ihmisellä on. Kolme syytä:</p>
+
+  <ul>
+    <li>Se on aina saatavilla — ei tarvitse astua kuvain tai mantra-keskittymän eteen.</li>
+    <li>Se on automaattinen mutta tahdonalainen: voit seurata sitä ilman, että sinun täytyy hallita sitä.</li>
+    <li>Se on <em>kaksisuuntainen silta</em> tahdonalaisen ja autonomisen hermoston välillä. Hidastamalla uloshengitystä aktivoit vagushermoa — samaa reittiä, jota DBT:n TIPP-tekniikka käyttää.</li>
+  </ul>
+
+  <p>Tämä kolmas kohta on tärkeä. Hengitysmeditaatio ei siis ole vain "mielen harjoitus" — se on suoraan yhteydessä siihen fysiologiaan, joka ohjaa stressireaktioita. Tutkimukset osoittavat, että jo 4–6 viikon säännöllinen harjoittelu muuttaa hengityksen ja sykkeen välistä vaihtelua (HRV) parempaan suuntaan, mikä kertoo parasympaattisen hermoston joustavuudesta.</p>
+
+  <h2>Anapanasati-palikan ydin</h2>
+
+  <p>Anapanasati tarkoittaa kirjaimellisesti <em>sisään-</em> (ana) ja <em>uloshengityksen</em> (apana) <em>huomaamista</em> (sati). Sana "sati" kääntyy usein "mindfulness"-muotoon, mutta tarkempi vastine on <em>muisti</em> tai <em>tarkkaavuus</em> — kyky muistaa olla läsnä.</p>
+
+  <p>Perinteinen jako on neljä vaihetta — ne eivät ole lineaarinen portaikko, vaan kerroksia:</p>
+
+  <ol>
+    <li><strong>Keho</strong> — hengityksen tunteminen kehossa (nenänpää, rintakehä, vatsa).</li>
+    <li><strong>Tunne</strong> — hengitykseen liittyvien mielihyvän tai epämiellyttävyyden sävyjen huomaaminen.</li>
+    <li><strong>Mieli</strong> — mielen sisältöjen (toivottujen, ei-toivottujen, neutraalien) kirkas näkeminen.</li>
+    <li><strong>Ilmiöt</strong> — huomion itse kohteen tutkiminen, kun se on tarpeeksi tyyni.</li>
+  </ol>
+
+  <p>Tässä polussa työskentelemme pääasiassa kahden ensimmäisen kerroksen kanssa. Kerrokset 3 ja 4 ovat syvempiä, ja niihin ei pidä kiirehtiä — ne syntyvät, kun edelliset ovat kypsyneet.</p>
+
+  <blockquote>
+    Hengitys ei ole harjoituksen kohde — se on köysi, jonka avulla palaat, kun olet lähtenyt.
+  </blockquote>
+
+  <h2>Käytännön ohje: breath-anchor</h2>
+
+  <p>Tämä on varsinainen harjoitus, ja se kannattaa tehdä — ei vain lukea. Varaa ensimmäisellä kerralla kymmenen minuuttia.</p>
+
+  <ol>
+    <li><strong>Asento.</strong> Tuoli, jossa selkä ei nojaa, tai tyyny lattialla. Selkä suorana mutta ei jäykkänä. Kädet reisille tai vatsan päälle. Jos haluat maata — käy, mutta tiedosta, että uni voi viedä sinut helpommin.</li>
+    <li><strong>Ajaminen.</strong> Aseta ajastin. Sulje silmät tai pidä niitä pehmeästi puoliavoimina pehmeällä, noin metrin päähän suuntautuvalla katseella.</li>
+    <li><strong>Paikka.</strong> Valitse yksi paikka, jossa tunnet hengityksen: sierainten alapuolella, rintakehällä tai vatsan liikkeessä. Suositus aloittelijalle: sierainten alapuolella, koska siellä hengitys on kapeinta ja tarkimmin havaittavissa.</li>
+    <li><strong>Huomio.</strong> Seuraa hengitystä sisään ja ulos. Ei tarvitse hengittää erityisellä tavalla — hengitys on juuri sellainen kuin se on. Jos hengität lyhyesti, seuraat lyhyttä. Jos syvästi, seuraat syvää.</li>
+    <li><strong>Harhautuminen.</strong> Huomaat ajatuksen vieneen sinut mukanaan. Se on <em>odotettua</em> eikä epäonnistumista. Huomaat sen, ja palaat takaisin hengitykseen — ystävällisesti, ilman tuomiota.</li>
+    <li><strong>Toistaminen.</strong> Tämä viides vaihe toistuu kymmeniä, ehkä satoja kertoja kymmenessä minuutissa. Jokainen palaaminen on yksi "toisto" — kuntosaliliike, joka vahvistaa tarkkaavuuden lihasta.</li>
+    <li><strong>Päättäminen.</strong> Kun ajastin soi, älä nouse heti. Pidä silmät kiinni hetken, huomaa miltä keho tuntuu. Vasta sitten avaa silmät.</li>
+  </ol>
+
+  <h3>Vaihtoehto: laskeminen</h3>
+
+  <p>Jos mieli on erityisen levoton, voit lisätä kevyen laskemisen. Laske yksi uloshengityksellä, kaksi seuraavalla, kolmas, neljäs — ja sitten takaisin yhteen. Jos päädyt numeroon 11, et tiedä mistä, palaat yhteen.</p>
+
+  <p>Tämä on perinteinen apuväline, ja se on hyödyllinen. Mutta sitä ei pidä käyttää loputtomiin — se on kuin kengurtenauhat harjoittelussa. Kun huomio pysyy paremmin, laskeminen jää pois.</p>
+
+  <h3>Toinen vaihtoehto: mantra-ankkuri</h3>
+
+  <p>Jotkut perinteet (<a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">tyynnyttäminen</a>) käyttävät hengityksen rinnalla mantraa: hiljaista, mielessä toistettua sanaa tai äännettä, joka ankkuroi huomion. Klassinen buddhalainen mantra "budho" (hereillä oleva) on yksi esimerkki; hindulaisuudessa "Om". Tämä voidaan yhdistää hengitykseen: "bu" sisäänhengityksellä, "dho" uloshengityksellä.</p>
+
+  <p>Sharon Salzberg käyttää metta-mantraa, mutta puhtaassa hengitysharjoituksessa "budho" tai pelkkä sisään–ulos toimii. Mantra ei ole uskonnollinen hyväksyntä — se on <a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">toistuva ääni, joka kokoaa hajanaista mieltä</a>.</p>
+
+  <h2>Tutkimusnäyttö</h2>
+
+  <p>Hengitysmeditaatio on tutkituin <a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaation</a> muoto, koska MBSR:n ensimmäinen ja keskeisin elementti on juuri tämä. Jon Kabat-Zinnin alkuperäisessä 8-viikon ohjelmassa noin 40–45 minuuttia päivittäistä hengitysharjoittelua tuottaa mitattavia muutoksia:</p>
+
+  <ul>
+    <li>Työmuisti paranee (Mrazek et al., 2012).</li>
+    <li>Tarkkaavuuden säätely paranee (miyake et al., kootut meta-analyysit).</li>
+    <li>Ahdistusoireet vähenevät kohtalaisesti (Hofmann et al., 2010).</li>
+    <li>Stressi-kortisolitasot laskevat kohtalaisesti.</li>
+  </ul>
+
+  <p>Sam Harris painottaa toista asiaa: hengitysmeditaatio on tehokas <em>koska se on yksinkertainen</em>. Ei tarvitse uskoa mihinkään, ei tarvitse ymmärtää buddhalaista metafysiikkaa, ei tarvitse kuvain tai pyhää tilaa. Tarvitaan hengitys ja palaaminen.</p>
+
+  <h2>Milloin tämä EI toimi</h2>
+
+  <p>Rehellisyyden vuoksi: tämä harjoitus ei sovi kaikille, ei kaikissa tilanteissa.</p>
+
+  <ul>
+    <li><strong>Hyperventilaatio ja paniikkihäiriö.</strong> Jos hengitys on jo kiihtynyt, voi suljettu, hiljainen, hidas hengitys laukaista tai syventää ahdistusta. Tällöin voi aloittaa lyhyemmillä jaksoilla (30 sekuntia) tai siirtyä <a href="../../concepts/body-scan.html" class="wikilink" data-concept="kehoskannaus">kehoskannaukseen</a>.</li>
+    <li><strong>Aktiivinen trauma.</strong> Jos hiljaisuus ja sisäänpäinkääntyminen laukaisevat traumaattisia muistoja, hengitysharjoitusta ei tule tehdä yksin ilman terapeutin tukea. Tämä on Brown Universityn tutkimusten keskeinen varoitus.</li>
+    <li><strong>ADHD.</strong> Erittäin hajanaista tarkkaavuutta ei kannata pakottaa 45 minuuttiin — muutaman minuutin jaksot liikkeellä ovat hyödyllisempiä.</li>
+  </ul>
+
+  <p>Nämä eivät ole esteitä oppia tekniikka, mutta ne ovat <em>syitä mukauttaa</em> sitä. Michael Stone (jo edesmennyt zen-opettaja ja psykologi) sanoi suoraan: "jos istutuminen on sinulle tuskaa, harjoittele toisin, älä lopeta — mutta älä myöskään väkisin pakota."</p>
+
+  <hr>
+
+  <h2>Viikon harjoitusohjelma</h2>
+
+  <p>Tämä ei ole kuntosaliohjelma, mutta rinnastus on hyödyllinen: aluksi lyhyemmät ja kevyemmät "tunnit", sitten vähitellen pidemmät. Ehdotus kahdeksi ensimmäiseksi viikoksi:</p>
+
+  <div class="twocol">
+    <div class="col right">
+      <h3>Viikko 1</h3>
+      <p>5 minuuttia aamulla, 2 minuuttia illalla. Ei tavoitteita. Vain istu ja seuraa hengitystä. Kirjaa ylös vain montako kertaa huomasit lähteneesi mukaan — ilman arviointia.</p>
+    </div>
+    <div class="col right">
+      <h3>Viikko 2</h3>
+      <p>10 minuuttia aamulla, 5 minuuttia illalla. Lisää yksi "yhden hengityskerran" jakso päivän mittaan (esim. bussissa, jonossa, ennen kokousta). Tämä on "microdose" — harjoituksen tuominen arkeen.</p>
+    </div>
+  </div>
+
+  <p>Jos viikon jälkeen koet, että harjoitus on <em>miellyttävämpää</em> kuin alussa, olet todennäköisesti tekemässä sitä oikein. Jos se on <em>epämiellyttävämpää</em> ja vaikeampaa — olet myös todennäköisesti tekemässä sitä oikein, mutta tarkkaile. Pitkään jatkuva ahdistus on signaali mukauttaa.</p>
+
+  <blockquote>
+    Et meditoi hengitystäsi. Meditoit palaamisia.
+  </blockquote>
+
+  <h2>Reflektio ennen siirtymistä eteenpäin</h2>
+
+  <p>Vastaa itsellesi — ei tarvitse näyttää kenellekään:</p>
+
+  <ul>
+    <li>Miten monta kertaa huomasit palaavasi hengitykseen ensimmäisellä viikolla?</li>
+    <li>Mikä vei huomion yleisimmin? (Tuleva tehtävä, mennyt keskustelu, kehotuntemus, suunnittelu.)</li>
+    <li>Oliko jotain, mikä yllätti sinut?</li>
+  </ul>
+
+  <p>Nämä eivät ole oikeita eikä vääriä vastauksia. Tärkeintä on, että <em>aloitit</em>. Jatkuva harjoitus synnyttää syvemmän ymmärryksen kuin yksittäinen "täydellinen" istunto.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Breath-awareness — hengitysankkuri, yksinkertaisin ja luotettavin meditaation kohde</a></li>
+    <li><a href="../../concepts/samatha.html" class="wikilink" data-concept="samatha">Samatha — tyynnyttämisen perinne, johon anapanasati kuuluu</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Presence — läsnäolo, johon breath-awareness johtaa</a></li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Witness — sisäinen tarkkailija, joka huomaa palaamiset</a></li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra — toistuva ääni tai sana, joka voi toimia ankkurina hengityksen rinnalla</a></li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Pranayama — joogan hengitysharjoitukset, joista osa on kontrolloivampia kuin anapanasati</a></li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness — Kabat-Zinnin määritelmä, johon breath-awareness on käytännön tie</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Jon Kabat-Zinn — <em>Full Catastrophe Living</em> (1990); Bhante Gunaratana — <em>Mindfulness in Plain English</em> (1991); Sam Harris — <em>Waking Up</em> (2014); Anapanasati Sutta (MN 118); Christopher Hayward et al. — "Non-randomized trial of MBSR and HRV" (2016); Willoughby Britton — varoitukset meditaation haittavaikutuksista.
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Hengitysmeditaatio löytyy Guided Meditationsista — esim. "Breath of Life".</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Guided Meditations" — ääniohjattuja harjoituksia.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#meditations" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23meditations" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0001-mita-meditaatio-on.html">← Edellinen: Mitä meditaatio on</a>
+    <a class="next" href="0003-kehoskannaus.html">Seuraava: Kehoskannaus — body scan →</a>
+  </div>
+</main>
+</body>
+</html>

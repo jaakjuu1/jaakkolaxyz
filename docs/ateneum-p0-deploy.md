@@ -15,7 +15,7 @@ Tämä runbook on **suunnitelma, ei deploy-lupa**. Tuotantotiedostojen kirjoitta
 | SQLite | `/home/clawdbot/jaakkolaxyz/data/ateneum.db` (oletus) |
 | Julkinen osoite | `https://jaakkola.xyz/ateneum/` |
 
-Tuotannon git-työpuu on likainen ja sisältää muuta live-driftiä. **Älä käytä `git pull`, `git reset`, `git clean` tai koko repon rsynciä.** Alla käytetään vain eksplisiittistä tiedostolistaa.
+Tuotannon git-työpuu oli 2026-07-13 likainen ja sisälsi muuta live-driftiä; se on sittemmin täsmäytetty `main`iin (ks. [deploy.md](deploy.md), "Keeping production's git checkout aligned"). **Älä käytä `git pull`, `git reset --hard`, `git clean` tai koko repon rsynciä.** Alla käytetään vain eksplisiittistä tiedostolistaa.
 
 ## Hyväksytty tiedostoscope
 
@@ -28,6 +28,10 @@ server/index.ts
 server/ateneum-auth.ts
 server/ateneum-db.ts
 server/ateneum-email.ts
+server/ateneum-env.ts
+server/ateneum-calendar.ts
+server/ateneum-body-library.ts
+server/ateneum-body-program.ts
 server/ateneum-routes.ts
 server/ateneum-seed-data.ts
 server/ateneum-seed.ts
@@ -37,9 +41,13 @@ public-static/ateneum/activity.html
 public-static/ateneum/plan.html
 tests/ateneum/p0.test.ts
 tests/ateneum/seed.test.ts
+tests/ateneum/calendar.test.ts
+tests/ateneum/body-practice.test.ts
 tests/ateneum/browser_qa.py
 tests/ateneum/migration_qa.py
 docs/ateneum-p0-deploy.md
+docs/ateneum-calendar-p0.md
+docs/ateneum-body-practice-email-p0.md
 dist/index.cjs
 dist/server-metafile.json
 dist/runtime-externals.json
@@ -48,7 +56,8 @@ dist/public/ateneum/activity.html
 dist/public/ateneum/plan.html
 ```
 
-Muita tuotantotiedostoja, dashboardia tai salaista `.env`-tiedostoa ei korvata.
+Muita tuotantotiedostoja, dashboardia tai salaista `.env`-tiedostoa ei korvata.  
+Poikkeus: deployn yhteydessä voidaan **lisätä puuttuva** `ATENEUM_CRON_SECRET` ja Google Calendar -avaimet `.env`:iin ylikirjoittamatta muita rivejä.
 
 ## Esiehdot
 

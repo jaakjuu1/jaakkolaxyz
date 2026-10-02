@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-kompleksisuus-vs-monimutkaisuus — Kompleksisuus vs. monimutkaisuus</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0001/6</p>
+  <h1>Kompleksisuus vs. monimutkaisuus</h1>
+  <p class="lede">Kaksi sanaa, jotka sekoitetaan — ja niiden eron ymmärtäminen on koko tämän alipolun lähtökohta.</p>
+
+  <p>Perusteet-polussa opimme mitä järjestelmä on. Menetelmät-polussa opimme miten niitä tutkitaan. Nyt <strong>kompleksisuus-polussa</strong> opimme mistä systeemiajattelun hämmentävin piirre syntyy: kun yksinkertaisista säännöistä syntyy järjestystä, jota kukaan ei suunnitellut.</p>
+
+  <p>Tämä oppitunti aloittaa polun määrittelemällä mitä "kompleksi" tarkoittaa. Se ei ole sama kuin "monimutkainen".</p>
+
+  <h2>Kaksi sanaa, jotka sekoitetaan</h2>
+
+  <p>Suomessa "monimutkainen" ja "kompleksi" tuntuvat tarkoittavan samaa. Systeemiajattelussa ne <em>eroavat</em>:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Monimutkainen (complicated)</h3>
+      <p>Paljon osia, mutta osien väliset suhteet ovat <em>selvitettävissä</em>. Kello on monimutkainen — sen toiminta voidaan ymmärtää osa kerrallaan.</p>
+      <p><strong>Tyypillinen vastaus:</strong> asiantuntija osaa selittää.</p>
+    </div>
+    <div class="col">
+      <h3>Kompleksi (complex)</h3>
+      <p>Osien välillä on <em>palautesilmukoita ja sopeutumista</em>. Käyttäytyminen voi muuttua radikaalisti pienestä muutoksesta.</p>
+      <p><strong>Tyypillinen vastaus:</strong> käyttäytyminen on emergenttiä, vaikea ennustaa.</p>
+    </div>
+  </div>
+
+  <p>Esimerkki: <strong>auto</strong> on monimutkainen. <strong>liikenne</strong> on kompleksi. Auto on suunniteltavissa; liikenne on systeemi, joka tuottaa ruuhkia, vaikka yksikään kuljettaja ei niitä suunnittele.</p>
+
+  <h2>Miksi ero on tärkeä</h2>
+
+  <p>Ero johtaa eri lähestymistapoihin:</p>
+
+  <ul>
+    <li><strong>Monimutkainen järjestelmä</strong> voidaan <em>optimoida</em>. Ratkaisu löytyy analysoimalla osia.</li>
+    <li><strong>Kompleksi järjestelmä</strong> voidaan <em>oppia ymmärtämään</em>. Ratkaisu ei ole optimoiminen vaan säännöt, jotka ohjaavat kokonaisuutta.</li>
+  </ul>
+
+  <p>Tämä on syy, miksi perinteiset komennot eivät toimi kompleksisissa järjestelmissä. "Tee autoja vähemmän ruuhkaksi" ei toimi — yksikään auto ei ole ruuhka.</p>
+
+  <blockquote>
+    <p>"A complex system is one whose behavior is not easily predicted from its parts considered in isolation." — Yleinen määritelmä</p>
+  </blockquote>
+
+  <h2>Murray Gell-Mann — tehokas monimutkaisuus</h2>
+
+  <p><strong>Murray Gell-Mann</strong> (1929–2019), Nobel-fyysikko ja kvarkkien löytäjä, perusti Santa Fe -instituutin 1987. Hän kehitti käsitteen <strong>effective complexity</strong> — tehokas monimutkaisuus.</p>
+
+  <p>Gell-Mannin idea: kompleksisuus ei ole vain "osien määrä". Se on <em>säännönmukaisuuksien määrä lyhyessä kuvauksessa</em>. Ihminen on monimutkaisempi kuin kivi — mutta yksinkertaisempi kuin yhteen paikkaan jähmettynyt tähtisumu, jossa jokainen atomi on eri asennossa.</p>
+
+  <p>Kompleksi järjestelmä on sellainen, jossa lyhyt kuvaus (säännöt) tuottaa pitkän käyttäytymisen (emergenssi). Jos tarvitset yhtä pitkän kuvauksen kuin käyttäytyminen, järjestelmä on vain satunnainen, ei kompleksi.</p>
+
+  <h2>Kompleksisuuden mittaaminen</h2>
+
+  <p>Kompleksisuutta voi mitata monella tavalla:</p>
+
+  <ul>
+    <li><strong>Algoritminen monimutkaisuus</strong> — lyhyimmän ohjelman pituus, joka tuottaa käyttäytymisen (Kolmogorov-kompleksisuus).</li>
+    <li><strong>Shannon-entropia</strong> — informaation epävarmuus.</li>
+    <li><strong>Laskennallinen syvyys</strong> — aika jonka yksinkertainen järjestelmä tarvitsee tuottaakseen kohteen.</li>
+  </ul>
+
+  <p>Nämä eivät ole sama asia. Satunnaisuus on korkea-entrooppinen mutta matala-algoritminen (lyhyt ohjelma: "anna satunnaislukuja"). Säännöllinen järjestys on matala-entrooppinen. Kompleksi järjestelmä on <em>josain näiden välissä</em> — epäsäännöllistä, mutta säännönmukaista.</p>
+
+  <h2>Neljä kompleksisuuden ulottuvuutta</h2>
+
+  <p>S. Randall, P. Coulibaly ja B. Eric Koli täsmentävät neljä ulottuvuutta:</p>
+
+  <ol>
+    <li><strong>Vuorovaikutuksen heterogeenisyys</strong> — osat ovat erilaisia ja kytkeytyvät monin tavoin.</li>
+    <li><strong>Vuosilokeroitu muisti</strong> — järjestelmä kantaa menneisyyttä mukanaan.</li>
+    <li><strong>Adaptiivinen oppiminen</strong> — järjestelmä muuttaa käyttäytymistään kokemuksesta.</li>
+    <li><strong>Sisäkkäiset palautteet</strong> — toimijat reagoivat toistensa toimintaan, mikä synnyttää emergenttejä rakenteita.</li>
+  </ol>
+
+  <p>Kun kaikki neljä toteutuvat, järjestelmä on aidosti kompleksi — kuten ekosysteemit, taloudet, aivot, kielet.</p>
+
+  <h2>Kompleksisuus vs. kaoottisuus</h2>
+
+  <p>Vielä yksi ero: <strong>kompleksi</strong> ja <strong>kaoottinen</strong> ovat eri asioita.</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Kompleksi</h3>
+      <p>Sisältää <em>palautteita</em>, <em>sopeutumista</em>, <em>emergenssiä</em>. Järjestelmä voi kehittyä, oppia, muuttua. Sää on kompleksi.</p>
+    </div>
+    <div class="col">
+      <h3>Kaotinen</h3>
+      <p>Herkkä alkuehdoille — perhosvaikutus. Mutta deterministinen ja ilman oppimista. Tuuletusmittari on kaoottinen.</p>
+    </div>
+  </div>
+
+  <p>Kompleksi järjestelmä voi sisältää kaoottista dynamiikkaa — mutta ei ole siihen rinnastettavissa. Kaoottinen järjestelmä ei <em>op</em>i. Kompleksi voi.</p>
+
+  <h2>Miksi tämä koskee sinua</h2>
+
+  <p>Useimmat elämäsi järjestelmät — perhe, työ, kaveripiiri, keho, mieli, yhteiskunta — ovat <em>komplekseja</em>. Ei monimutkaisia, ei kaoottisia. Ne oppivat, sopeutuvat, tuottavat emergenttejä ilmiöitä.</p>
+
+  <p>Siksi sinä et voi vain "optimoida" niitä. Siksi yksinkertaiset ratkaisut eivät usein toimi. Siksi pieni muutos voi aiheuttaa suuren vaikutuksen — ja toisin päin.</p>
+
+  <blockquote>
+    <p>"The behaviour of complex systems cannot be understood by examining their parts in isolation. Their behaviour emerges from the interaction of the parts." — Yleistäen</p>
+  </blockquote>
+
+  <p>Tämä oppitunti on pohja. Seuraavissa näemme <em>miten</em> kompleksisuus syntyy — sopeutuvat järjestelmät, itseorganisoituminen, attraktorit.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Etsi yksi järjestelmä elämästäsi jossa on kompleksisuuden piirteitä.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi järjestelmä elämässäsi, joka tuntuu "elävältä" — sopeutuu, muuttuu, oppii — vaikka kukaan ei sitä ohjaa?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. perheen dynamiikka, työporukka, sosiaalinen piiri, oma mieliala..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat tämän järjestelmän osat, ja miten ne kytkeytyvät toisiinsa?</label>
+      <textarea id="q2" rows="3" placeholder="Yritä nähdä vähintään kolme osaa ja kolme kytkentää..."</textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitä <em>emergenttejä</em> ominaisuuksia järjestelmällä on — sellaisia, jotka eivät ole yhdenkään osan ominaisuuksia?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. tunnelma, ilmapiiri, dynamiikan rytmi, 'me-henki'..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa näemme millä säännöillä tällaiset järjestelmät syntyvät — ilman, että kukaan suunnittelee niitä.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — tämän oppitunnin ydinkäsite</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — sopeutuva kompleksi järjestelmä (CAS)</li>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — kokonaisuuden tasolla syntyvä ominaisuus</li>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — järjestys ilman keskussuunnittelua</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — palautesilmukka — kompleksisuuden moottori</li>
+    <li><a href="../../concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a> — ajattelutapa, jolle kompleksisuus on ydin</li>
+    <li><a href="../../concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a> — erottaa olennaisen epäolennaisesta</li>
+    <li><a href="../../concepts/holism.html" class="wikilink" data-concept="holism">holism</a> — kokonaisuus edellä -näkemys</li>
+    <li><a href="../../concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a> — kompleksisuuden vastakohta</li>
+    <li><a href="../../concepts/adaptation.html" class="wikilink" data-concept="adaptation">adaptation</a> — mukautuminen</li>
+  </ul>
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-cas.html">Seuraava oppitunti: Kompleksiset sopeutuvat järjestelmät →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Murray Gell-Mann — <em>The Quark and the Jaguar</em> (W.H. Freeman, 1994); Stuart Kauffman — <em>At Home in the Universe</em> (Oxford, 1995); John Holland — <em>Emergence</em> (Perseus, 1998); Donella H. Meadows — <em>Thinking in Systems</em> (2008); Santa Fe Institute — <em>Complexity Research</em> (1987-luku lähtien).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

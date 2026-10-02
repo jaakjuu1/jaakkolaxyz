@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — Mikä on mantra oikeasti?</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Mikä on mantra oikeasti?</h1>
+  <p class="meta">Oppitunti 0001 · ~7 min · mantrat-polun ydin</p>
+
+  <p>Tämä oppitunti käsittelee sitä, mitä <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a></strong> sananmukaisesti tarkoittaa, mitä se on käytännössä ja mitä se ei ole. Tämän polun muut oppitunnit rakentavat tämän päälle, joten jos hyppäät suoraan johonkin myöhempään, palaa tänne.</p>
+
+  <h2>Sana kertoo jo melkein kaiken</h2>
+
+  <p>Sana <em>mantra</em> tulee sanskritista ja on koottu kahdesta osasta:</p>
+
+  <ul>
+    <li><strong>man-</strong> juuresta <em>manas</em> = mieli, ajatus, sisäinen puhe</li>
+    <li><strong>-tra</strong> päätteestä = työkalu, väline, suoja</li>
+  </ul>
+
+  <p>Kirjaimellisesti mantra on siis <em>mielen työkalu</em> tai <em>mielen suoja</em>. Se ei ole mystinen taikasana eikä rukous, vaan instrumentti, jonka avulla mieltä ohjataan — samaan tapaan kuin ohjauspyörä on ohjauspyörä: ei mystiikkaa, vaan mekaniikkaa.</p>
+
+  <blockquote>
+    "Mantra on se ääni, joka suojaa mieltä hajaantumasta."
+  </blockquote>
+
+  <p>Tämä määritelmä onnistuu jo mainiosti. Käytännön määritelmä menee kuitenkin hieman pidemmälle: mantra on lyhyt, toistettava äänne, joka ohjaa tarkkaavaisuutta, hengitystä ja tunnetilaa tietyn kaavan mukaisesti.</p>
+
+  <h2>Mitä mantra ei ole — kolme yleistä väärinymmärrystä</h2>
+
+  <p>Ennen kuin mennään syvemmälle, on hyvä siivota yleisimmät harhat. Nämä kaikki kuulee länsimaisessa keskustelussa jatkuvasti, ja ne eivät kestä kriittistä tarkastelua.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Mantra on maailman ääni</h3>
+      <p>"Om on koko kosmoksen värähtely, joka resonoi jokaisen atomin kanssa."</p>
+      <p>Ei ole olemassa fysikaalista näyttöä siitä, että mikään tavu "resonoisi atomien kanssa". Tämä on runollista kieltä, ei fysiikkaa.</p>
+    </div>
+    <div class="col right">
+      <h3>Mantra on akustinen ankkuri</h3>
+      <p>Äänne ohjaa tarkkaavaisuutta, rytmittää hengitystä ja tuottaa mitattavia fysiologisia muutoksia — tästä on tutkimusnäyttöä.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Mantra on rukous</h3>
+      <p>"Toistamalla tarpeeksi mantraa jumalat vastaavat."</p>
+      <p>Mantra ei lähtökohtaisesti ole anomus yliluonnolliselle olennolle. Se on tekniikka, ei kauppaa.</p>
+    </div>
+    <div class="col right">
+      <h3>Mantra on mielen harjoitusväline</h3>
+      <p>Klassisissa jooga-teksteissä mantra on neutraali menetelmä, jota voi käyttää mihin tahansa tarkoitukseen — ilman uskontoa.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Mantra vaatii initiaation</h3>
+      <p>"Et voi lausua tätä mantraa ilman opettajan antamaa valtuutusta."</p>
+      <p>Perinteisesti joissakin tietyissä linjoissa näin on, mutta se on perinne, ei universaali totuus. Suurinta osaa mantroista voi käyttää vapaasti.</p>
+    </div>
+    <div class="col right">
+      <h3>Mantra on tapa käyttää ääntä</h3>
+      <p>Äänne on julkinen työkalu, ei salattu esine. Joku opettaja voi nopeuttaa oppimista, mutta ei ole portinvartijaa.</p>
+    </div>
+  </div>
+
+  <h2>Mantra on neljä asiaa yhtä aikaa</h2>
+
+  <p>Kun puhut, laulat tai ajattelet mantran, siinä on aina mukana neljä ulottuvuutta. Näiden ymmärtäminen on koko oppitunnin tärkein juttu.</p>
+
+  <ol>
+    <li><strong>Ääni (nada)</strong> — fyysinen värähtely ilmassa. Kurkunpää, kieli, huulet ja poskiontelot muokkaavat sen. Tämä on konkreettisin taso.</li>
+    <li><strong>Tahdin rytmi (chandas)</strong> — toisto, joko tasainen tai hengitykseen sidottu. Rytmi ohjaa hermostoa, kuten kävely tai juoksu tekevät.</li>
+    <li><strong>Tarkoitus (sankalpa)</strong> — toistamisen motiivi ja suunta. Sama äänne eri tarkoituksella on eri asia.</li>
+    <li><strong>Toisto (japa)</strong> — itse toistamisen akti. Toisto syventää vaikutusta, koska ihmismieli oppii rutiineiksi.</li>
+  </ol>
+
+  <p>Mantra ei siis ole pelkkä tavu eikä pelkkä ajatus. Se on näiden kaikkien yhteispeli.</p>
+
+  <h2>Ero rukoukseen</h2>
+
+  <p>Tämä on tärkeä ero, koska sekä mantra että rukous sisältävät toistettavaa puhetta, ja ne usein sekoittuvat länsimaissa.</p>
+
+  <h3>Rukous</h3>
+  <p>Rukous on tyypillisesti <em>anomus</em> tai <em>kiitos</em> johonkin persoonaan tai voimaan, jonka uskotaan voivan vaikuttaa asioihin. Rukouksella on yleensä sisältö: "anna minulle", "kiitos että", "suojaa minua". Rukous olettaa, että joku kuulee.</p>
+
+  <h3>Mantra</h3>
+  <p>Mantra taas on tekniikka, jonka vaikutus on sisäinen: se muuttaa toistajan omaa mieltä ja kehoa. Perinteisesti mantra ei odota vastausta ulkopuolelta. Se toimii, koska ihminen itse tekee jotain toistollaan.</p>
+
+  <p>Tämä ei tarkoita, etteikö mantroja voisi käyttää uskonnollisessa kontekstissa — voi, ja Suomessakin niitä käytetään hengellisenä apuvälineenä. Mutta tekniikkana ne eivät <em>edellytä</em> uskoa mihinkään.</p>
+
+  <h2>Eri mantratyypit — lyhyt kartoitus</h2>
+
+  <p>Perinteinen jooga- ja tantra-kirjallisuus tuntee useita mantraluokkia. Tämä auttaa sinua ymmärtämään, mihin myöhemmissä oppitunneissa viitataan.</p>
+
+  <h3>Bija-mantrat (siemenet)</h3>
+  <p>Yksittäisiä tai muutaman foneetin tavu, joilla ei ole kielellistä merkitystä. Klassinen esimerkki on <strong><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om</a></strong>. Bija-mantrat syntyvät ilman selittävää käännöstä — ne ovat <em>ääniä ennen sanoja</em>, ja siksi niillä on perinteessä erityinen asema. Käsittelemme niitä tarkemmin oppitunnissa <strong><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">bija-mantrat</a></strong>.</p>
+
+  <h3>Vedic-mantrat</h3>
+  <p>Veda-kirjojen runomuotoiset, mittavat hymnit, joita papit lausuivat tarkkojen ääntämisohjeiden mukaan. Esimerkkinä Gayatri-mantra. Nämä ovat kielellisiä ja niillä on selvä käännös. Ne ovat rituaalinen kategoria, eivät meditaatioyksinkertaisuudessaan.</p>
+
+  <h3>Nama-mantrat (nimet)</h3>
+  <p>Jumaluuden tai pyhän hahmon nimi tai sen lyhenne. Esimerkiksi "Ram", "Shiva", "Krishna", tai hindulaisperinteiden ulkopuolella vaikkapa buddhalainen "Om Mani Padme Hum". Nämä ovat laajimpia ja suosituimpia harjoittelussa, koska niissä on selkeä kielellinen ankkuri.</p>
+
+  <h3>So Ham ja muut luonnolliset mantrat</h3>
+  <p>Äänteet, jotka syntyvät itsestään hengityksen mukana. <strong><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a></strong> ("minä olen") on tunnetuin ja synkronoituu hengitysrytmin kanssa. Käsittelemme sitä oppitunnissa <strong><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a></strong>.</p>
+
+  <h3>Saguna ja nirguna</h3>
+  <p>Perinteinen jako: <em>saguna</em>-mantra viittaa konkreettiin muotoon tai ominaisuuteen (esim. "Krishna"); <em>nirguna</em>-mantra viittaa muodottomaan, käsitteelliseen totuuteen (esim. "Om", "So Ham", tyhjyyttä symboloivat tavut). Käytännössä ero on siinä, kuinka paljon mielikuvitusta ja tunnesisältöä mukana on.</p>
+
+  <h2>Mitä tutkimus sanoo</h2>
+
+  <p>Tämä on tärkein osio skeptisestä näkökulmasta. Kaikki ei ole uskon asia.</p>
+
+  <h3>Benson ja "relaxation response"</h3>
+  <p>Harvardin lääketieteen professori <strong>Herbert Benson</strong> julkaisi 1970-luvulla tutkimuksen, jossa hän osoitti, että lyhyt toistettava sana tai lause — uskonnosta riippumatta — yhdistettynä säännölliseen hengitykseen tuottaa mitattavan fysiologisen muutoksen: syke laskee, verenpaine tasaantuu, aineenvaihdunta rauhoittuu. Hän nimesi tämän <em>relaxation response</em> -termillä (rentoutusvaste) vastineena Cannonin aiemmin kuvaamaan <em>fight-or-flight</em>-vasteelle.</p>
+
+  <p>Benson tutki erityisesti TM-meditoijia (Transcendental Meditation), jossa käytetään henkilökohtaista mantraa, mutta korosti että mekanismi ei ole mantran tekstisisällössä, vaan <em>toistossa, säännöllisyydessä ja tahdonalaisessa hengityksessä</em>.</p>
+
+  <h3>Mitä mekanismi oikeasti on</h3>
+  <p>Tieteellisesti tunnistettuja mekanismeja:</p>
+  <ul>
+    <li><strong>Auditory attention</strong> — jatkuva äänne antaa mielelle purukumimaisen kohteen, johon tarttua ilman, että tarvitsee ajatella mitään.</li>
+    <li><strong>Respiratory slowing</strong> — mantra sanotaan hengityksen tahdissa, mikä pakottaa hengityksen rauhoittumaan, mikä vuorostaan aktivoi parasympaattista hermostoa.</li>
+    <li><strong>Cognitive load reduction</strong> — yksinkertainen toisto työllistää kieltä ja kuuloa tarpeeksi vähentääkseen kapasiteettia toistavalle sisäiselle monologille.</li>
+    <li><strong>Default mode network rauhoittuminen</strong> — nykyinen neurotiedetutkimus osoittaa, että mantramaiset tekniikat vähentävät aivojen "default mode network" -toimintaa, eli sitä verkostoa joka pitää yllä minä-tarinaa ja huolta.</li>
+  </ul>
+
+  <p>Kaikki nämä ovat normaaleja psykologisia ja neurotieteellisiä mekanismeja. Mitään "kosmisia värähtelyjä" ei tarvita.</p>
+
+  <hr>
+
+  <h2>Kokeile itse: yhden hengityskierroksen tarkastelu</h2>
+
+  <p>Tämä ei ole vielä varsinainen harjoitus — se on pikatesti mantran toimintamekanismista. Lue ensin, sitten tee.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Valitse mikä tahansa yksinkertainen tavu (esim. oma nimi, "koti", "valo"). Toista sitä ääneen yhden hengityskierron ajan — sisäänhengitys, uloshengitys.</label>
+      <textarea id="q1" rows="2" placeholder="Huomasitko mitään? Esim. hengitys muuttui, mieli hiljeni, huomio kiinnittyi?"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Toista sitten samaa tavua mielessäsi ilman ääntä. Miten se eroaa?</label>
+      <textarea id="q2" rows="2" placeholder="Esim. ääniversio tuntuu konkreettisemmalta, hiljaisempi versio häipyy helpommin."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Anna mielen sitten vain olla hiljaa 30 sekuntia. Miten mieli käyttäytyy?</label>
+      <textarea id="q3" rows="2" placeholder="Esim. ponnahtaa ajatuksia, kaipaa tekemistä, tylsistyy."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Jos kokeilu toimi kuten useimmilla, huomaat kolme asiaa: ääniversio ankkuroi tehokkaimmin, mieliversio vaatii enemmän keskittymistä, ja hiljaisuus yksinään on <em>vaikeampaa</em> kuin kumpikaan. Tämä on koko pointti: mantra ei ole mystiikkaa, se on tapa tehdä jotain, jonka mieli muuten tekisi huonosti — eli olla paikallaan.</p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — mielen työkalu, ääni, tarkoitus ja toisto yhdessä.</li>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — jooga-kirjallisuuden tärkein bija-mantra, jota käsitellään oppitunnissa 0002.</li>
+    <li><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantra</a> — yksittäinen siementavu, jolla ei ole kielellistä käännöstä (käsitellään oppitunnissa 0004).</li>
+    <li><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a> — mantran tietoinen ja laskettu toisto, jota harjoitetaan usein mala-rukousnauhalla (oppitunti 0005).</li>
+    <li><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a> — 108 helmen rukousnauha, perinteinen japa-laskuri (oppitunti 0005).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — menetelmä, jossa mantra toimii ankkurina (oppitunti 0006).</li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness</a> — avoimeen tarkkaavuuteen perustuva lähestymistapa, vertailukohta mantra-meditaatiolle (oppitunti 0006).</li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengitystietoisuus</a> — harjoitus, joka usein yhdistyy mantran kanssa ja tuottaa fysiologista rauhoittumista.</li>
+    <li><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a> — hengityksen mukana syntyvä mantratekniikka, jonka tarkastelu alkaa oppitunnissa 0003.</li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Pranayama</a> — joogan hengitysharjoitusten järjestelmä, johon Om ja So Ham istuvat luontevasti.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Tämä oppitunti jättää jälkeensä kolme asiaa, joihin seuraavat pureutuvat:</p>
+
+  <ol>
+    <li><strong>Om — prototyyppi</strong> (oppitunti 0002). Tutustumme tarkemmin yhteen tavuun, joka on koko jooga-kirjallisuuden tärkein.</li>
+    <li><strong>So Ham — luonnollisin hengitysmantra</strong> (oppitunti 0003). Mielenkiintoisin yksittäinen harjoitus, koska se syntyy ilman että tarvitsee opetella mitään.</li>
+    <li><strong>Bija-mantrat ja muut siemenet</strong> (oppitunti 0004). Tarkempi katsaus tavuihin, joilla ei ole käännöstä.</li>
+  </ol>
+
+  <p>Jos jokin tässä tuntui vielä epäselvältä — etenkin ero rukoukseen tai mekanismi-kappale — kysy. Epävarmuus on hyvä signaali, että olet kiinnittänyt huomiota.</p>
+
+  <p class="footer-note">
+    Lähteet: Benson, H. (1975). <em>The Relaxation Response</em>. Harvard Medical School. Sekä Harwardin <a href="https://www.health.harvard.edu/mind-and-mood/relaxation-techniques-breath-control-helps-quell-erroring-stress-response">terveysjulkaisu</a> rentoutusvasteesta; sekä lyhyt etymologinen vertailu sanskritin <em>man</em> + <em>tra</em> -juuresta (Monier-Williams Sanskrit Dictionary).
+  </p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Avaa Sanctum ja kokeile äänimaisemalla varustettuja hengitysrituaaleja — mantra on niiden henkinen ydin.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-om-aani.html">Seuraava oppitunti: Om — jooga-kirjallisuuden tärkein tavu →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Toiston vaikutus', '2. Ääni vs mieliversio', '3. Hiljaisuus ilman mantaa'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

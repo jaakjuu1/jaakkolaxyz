@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invokaatio ja evokaatio · Rituaalit</title>
+<style>
+:root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+@media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+p { margin: 0.9rem 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+a:hover { border-bottom-color: var(--accent); }
+code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+nav.path a { color: var(--muted); border-bottom: none; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+.reflect h3 { margin-top: 0; }
+.svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+.svg-container svg { max-width: 100%; height: auto; }
+.pager { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.6rem; padding-top: 1rem; border-top: 1px solid var(--rule); }
+.pager a { border-bottom: none; }
+@media (max-width: 600px) { .pager { flex-direction: column; } }
+@media print { .pager { display: none; } }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Rituaalit</a> › Oppitunti 7</nav>
+
+<h1>Invokaatio ja evokaatio</h1>
+<p class="meta">Oppitunti 7 / 7 · ~28 min</p>
+
+<h2>Kaksi suuntaa</h2>
+
+<p>Rituaalin "voiman kanavointi" -vaiheessa on kaksi pääsuuntaa: <strong>invokaatio</strong> ja <strong>evokaatio</strong>. Ne ovat rituaalin kaksi tietä — alas ja ylös.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 300" width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Kaksi polkua -->
+  <!-- Invokaatio: ylhäältä alas -->
+  <text x="100" y="30" text-anchor="middle" fill="#4a3a8a" font-size="16" font-family="Georgia" font-weight="bold">INVOKAATIO</text>
+  <text x="100" y="50" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">kutsutaan alas</text>
+  <line x1="100" y1="70" x2="100" y2="270" stroke="#4a3a8a" stroke-width="3"/>
+  <polygon points="95,260 105,260 100,275" fill="#4a3a8a"/>
+  <circle cx="100" cy="70" r="15" fill="rgba(74,58,138,0.2)" stroke="#4a3a8a" stroke-width="2"/>
+  <text x="100" y="75" text-anchor="middle" fill="#4a3a8a" font-size="11" font-family="Georgia">Korkeampi</text>
+  <circle cx="100" cy="270" r="15" fill="rgba(74,58,138,0.4)" stroke="#4a3a8a" stroke-width="2"/>
+  <text x="100" y="275" text-anchor="middle" fill="white" font-size="11" font-family="Georgia">Ihminen</text>
+  
+  <!-- Evokaatio: alhaalta ylös -->
+  <text x="300" y="30" text-anchor="middle" fill="#d28a72" font-size="16" font-family="Georgia" font-weight="bold">EVOKAATIO</text>
+  <text x="300" y="50" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">herätetään ylös</text>
+  <line x1="300" y1="270" x2="300" y2="70" stroke="#d28a72" stroke-width="3"/>
+  <polygon points="295,80 305,80 300,65" fill="#d28a72"/>
+  <circle cx="300" cy="270" r="15" fill="rgba(210,138,114,0.4)" stroke="#d28a72" stroke-width="2"/>
+  <text x="300" y="275" text-anchor="middle" fill="white" font-size="11" font-family="Georgia">Ihminen</text>
+  <circle cx="300" cy="70" r="15" fill="rgba(210,138,114,0.2)" stroke="#d28a72" stroke-width="2"/>
+  <text x="300" y="75" text-anchor="middle" fill="#d28a72" font-size="11" font-family="Georgia">Sisäinen voima</text>
+</svg>
+</div>
+
+<h2>Invokaatio — kutsuminen ylhäältä</h2>
+
+<p><strong>Invokaatio</strong> on korkeamman voiman <em>kutsumista alas</em> ihmisen tietoisuuteen. Sana tulee latinasta: <em>in</em> (sisään) + <em>vocare</em> (kutsua).</p>
+
+<h3>Mitä invokoidaan?</h3>
+
+<ul>
+<li><strong>Jumaluus</strong> — korkein, kaiken takana oleva voima</li>
+<li><strong>Enkeli</strong> — erityinen sanansaattaja tai opettaja</li>
+<li><strong>Hengen</strong> — esi-isä, opettaja, mestari</li>
+<li><strong>Arkkityyppi</strong> — viisas vanhus, rakastaja, sankari</li>
+</ul>
+
+<h3>Invokaation tarkoitus</h3>
+
+<p>Invokaatio <strong>täyttää</strong> ihmisen korkeammalla voimalla — se on "lataus ylhäältä". Kun kutsut korkeampaa, tulet itse osaksi sitä.</p>
+
+<p>Symbolisesti: <strong>taivas tulee maan päälle</strong>.</p>
+
+<h3>Invokaation mekanismi</h3>
+
+<ol>
+<li><strong>Tunnista</strong> mikä voima palvelee tarkoitustasi</li>
+<li><strong>Puhdista itsesi</strong> — LBRP ensin</li>
+<li><strong>Kutsu</strong> — lausu nimi, mantta, rukous</li>
+<li><strong>Avaa</strong> — visualisoi valo laskeutuvan</li>
+<li><strong>Vastaanota</strong> — anna voiman täyttää sinut</li>
+<li><strong>Integroi</strong> — yhdistä voima arkeen</li>
+</ol>
+
+<h2>Evokaatio — herättäminen alhaalta</h2>
+
+<p><strong>Evokaatio</strong> on sisäisen voiman <em>herättämistä</em>. Sana tulee latinasta: <em>e</em> (ulos) + <em>vocare</em> (kutsua).</p>
+
+<h3>Mitä evokoidaan?</h3>
+
+<ul>
+<li><strong>Elementti</strong> — tuli, ilma, vesi, maa</li>
+<li><strong>Sefira</strong> — elämänpuun voima</li>
+<li><strong>Sisäinen jumala</strong> — korkeampi minä</li>
+<li><strong>Henkinen opas</strong> — sisäinen ääni</li>
+</ul>
+
+<h3>Evokaation tarkoitus</h3>
+
+<p>Evokaatio <strong>herättää</strong> ihmisen sisäiset voimat — se on "sytytys alhaalta". Kun herätät sisäisen, tulet tietoiseksi kyvyistäsi.</p>
+
+<p>Symbolisesti: <strong>maa nousee taivaaseen</strong>.</p>
+
+<h3>Evokaation mekanismi</h3>
+
+<ol>
+<li><strong>Puhdista itsesi</strong> — LBRP ensin</li>
+<li><strong>Meditoi</strong> — hiljenny, kuuntele sisäistä</li>
+<li><strong>Kutsu</strong> — herätä voima (nimi, mantra, ele)</li>
+<li><strong>Visualisoi</strong> — näe voiman heräävän</li>
+<li><strong>Tunne</strong> — anna voiman nousta kehossa</li>
+<li><strong>Ohjaa</strong> — suuntaa voima tarkoitukseen</li>
+</ol>
+
+<h2>Invokaatio vs. evokaatio — käytännön erot</h2>
+
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+<tr style="border-bottom: 1px solid var(--rule);">
+<th></th><th>Invokaatio</th><th>Evokaatio</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Suunta</strong></td><td>Ylhäältä alas</td><td>Alhaalta ylös</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Kohde</strong></td><td>Ulkoinen voima</td><td>Sisäinen voima</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Tekniikka</strong></td><td>Rukous, kutsuminen</td><td>Meditaatio, herättäminen</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Tunne</strong></td><td>Vastaanottaminen</td><td>Sisäinen voima</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td><strong>Riski</strong></td><td>Riippuvuus ulkoisesta</td><td>Itsepetos, egon korostus</td>
+</tr>
+<tr>
+<td><strong>Sopii</strong></td><td>Aloittelijalle</td><td>Kokeneelle harjoittajalle</td>
+</tr>
+</table>
+
+<h2>Mikä sopii sinulle?</h2>
+
+<p>Eri ihmiset <em>tuntevat</em> eri suunnat luontevammiksi:</p>
+
+<ul>
+<li><strong>Invokaatio</strong> sopii, jos olet <em>vastaanottavainen</em> — jos haluat oppia, tulla opastetuksi, tuntea yhteyden</li>
+<li><strong>Evokaatio</strong> sopii, jos olet <em>aktiivinen</em> — jos haluat luoda, manifestoida, tulla tietoiseksi kyvyistäsi</li>
+</ul>
+
+<p>Totuus on, että <strong>tarvitset molempia</strong>. Ilman invokaatiota eksyy itseensä. Ilman evokaatiota jää passiiviseksi.</p>
+
+<h2>Korkeampi minä — Golden Dawn'n konsepti</h2>
+
+<p>Golden Dawn -perinteessä on <strong>kolme minää</strong>:</p>
+
+<ul>
+<li><strong>Personallisuus</strong> — arkinen minä, joka toimii maailmassa</li>
+<li><strong>Korkeampi minä</strong> — henkinen opastaja, joka ohjaa elämää</li>
+<li><strong>Ylin minä</strong> — jumalallinen ydin, joka on yhtä kaiken kanssa</li>
+</ul>
+
+<p>Invokaatio <strong>kutsuu</strong> korkeampaa minää — evokaatio <strong>herättää</strong> sisäistä jumalaa.</p>
+
+<h2>Enkelien invokaatio</h2>
+
+<p>Yksi yksinkertaisimmista invokaatioista on <strong>enkelin kutsuminen</strong>:</p>
+
+<ol>
+<li><strong>Valitse enkeli</strong> — esim. Raphael parantamiseen, Michael suojeluun</li>
+<li><strong>Tee LBRP</strong></li>
+<li><strong>Käänny enkelin suuntaan</strong> — Raphael itään, Michael etelään</li>
+<li><strong>Visualisoi enkeli</strong> — suuret siivet, kirkas valo</li>
+<li><strong>Lausu nimi</strong> — "Rafael, parantaja, tule"</li>
+<li><strong>Vastaanota</strong> — avaudu energialle</li>
+<li><strong>Kiitä</strong></li>
+</ol>
+
+<p>Enkelit eivät ole "olentoja avaruudessa" — ne ovat <strong>voimia</strong>, joita voi kutsua tietoisuuteen.</p>
+
+<h2>Evokaatio — sisäisen tulen sytyttäminen</h2>
+
+<p>Tässä yksinkertainen evokaatio — <strong>sisäisen tulen sytyttäminen</strong>:</p>
+
+<ol>
+<li><strong>Tee LBRP</strong></li>
+<li><strong>Istu mukavasti</strong>, sulje silmät</li>
+<li><strong>Hengitä syvään</strong> — tunne ilma vatsassa</li>
+<li><strong>Visualisoi</strong> pieni liekki sydämessä</li>
+<li><strong>Puhalla</strong> — jokaisella uloshengityksellä liekki kasvaa</li>
+<li><strong>Tunne</strong> lämpö, voima, elinvoima</li>
+<li><strong>Anna levitä</strong> — koko keho täyttyy tulesta</li>
+<li><strong>Sano</strong> hiljaa: "Minä olen tuli. Minä olen voima."</li>
+</ol>
+
+<p>Tämä on <strong>klassinen evokaatio</strong> — sisäisen voiman herättäminen.</p>
+
+<h2>Salamalause — voiman sana</h2>
+
+<p>Sekä invokaatiossa että evokaatiossa keskeistä on <strong>salamalause</strong> — voiman sana, joka tiivistää tarkoituksen.</p>
+
+<p>Joitain esimerkkejä:</p>
+
+<ul>
+<li><strong>"Minä olen valo"</strong> — kutsuu valoa</li>
+<li><strong>"Minä olen rakkaus"</strong> — herättää rakkautta</li>
+<li><strong>"Minä olen voima"</strong> — aktivoi voimaa</li>
+<li><strong>"Minä olen kaikki"</strong> — ykseys</li>
+</ul>
+
+<p>Salamalauseen voima on sen <strong>yksinkertaisuudessa</strong> — vähemmän sanoja, enemmän voimaa.</p>
+
+<h2>Suoja ja etiikka</h2>
+
+<p>Sekä invokaatio että evokaatio ovat <strong>voimakkaita tekniikoita</strong> — ja vaativat vastuuta:</p>
+
+<ul>
+<li><strong>Aloita aina LBRP:llä</strong> — suojaa ennen voiman kutsumista</li>
+<li><strong>Tunnista motiivisi</strong> — "miksi" on tärkeämpi kuin "miten"</li>
+<li><strong>Kunnioita kutsumaasi</strong> — älä leiki voimilla</li>
+<li><strong>Pidä päiväkirjaa</strong> — kirjaa kokemuksesi</li>
+<li><strong>Opettele sulkemaan</strong> — jokainen kanavointi päätetään</li>
+</ul>
+
+<blockquote>"Suurin vaara ei ole se, että voima on liian heikko, vaan se, että sitä käytetään väärin." — Aleister Crowley</blockquote>
+
+<h2>Kokonaisuus — yhdistä molemmat</h2>
+
+<p>Kokeneet harjoittajat <strong>yhdistävät</strong> invokaation ja evokaation:</p>
+
+<ol>
+<li><strong>LBRP</strong> — suoja</li>
+<li><strong>Invokaatio</strong> — kutsu korkeampi voima</li>
+<li><strong>Evokaatio</strong> — herätä sisäinen voima</li>
+<li><strong>Yhdistä</strong> — anna korkeamman ja sisäisen kohdata</li>
+<li><strong>Sulje</strong> — kiitä, päätä rituaali</li>
+</ol>
+
+<p>Tämä <strong>täydellinen kaari</strong> on syvän rituaalin ydin.</p>
+
+<h2>Arjen invokaatio ja evokaatio</h2>
+
+<p>Näitä tekniikoita voi käyttää <strong>arkipäiväisesti</strong>:</p>
+
+<ul>
+<li><strong>Aamulla</strong> — invokaatio: "Tänään ohjaa minut"</li>
+<li><strong>Työssä</strong> — evokaatio: "Herätä luovuuteni"</li>
+<li><strong>Illalla</strong> — invokaatio: "Kiitän päivästä"</li>
+<li><strong>Stressissä</strong> — evokaatio: "Tuo voima esiin"</li>
+</ul>
+
+<p>Nämä <strong>pienet rituaalit</strong> integroivat voiman arkeen.</p>
+
+<h2>Yksinkertainen päivärituaali</h2>
+
+<p>Tässä rituaali, joka yhdistää kaiken:</p>
+
+<ol>
+<li><strong>Herää</strong>, istu sängyn reunalle</li>
+<li><strong>Kolme syvää hengitystä</strong></li>
+<li><strong>Visualisoi</strong> kultainen valo pään yläpuolella (invokaatio)</li>
+<li><strong>Lataa</strong> tämä valo kehoon — tunne lämpö (evokaatio)</li>
+<li><strong>Sano</strong> hiljaa: "Tänään olen valo. Tänään olen voima."</li>
+<li><strong>Aseta</strong> yksi tarkoitus päivälle</li>
+<li><strong>Kiitä</strong> ja nouse</li>
+</ol>
+
+<p>Tämä <strong>5 minuutin rituaali</strong> muuttaa koko päivän.</p>
+
+<h2>Yhteenveto</h2>
+
+<p>Invokaatio ja evokaatio ovat rituaalin kaksi voiman suuntaa. Invokaatio kutsuu korkeampaa voimaa alas — se on "lataus ylhäältä". Evokaatio herättää sisäistä voimaa — se on "sytytys alhaalta". Molempia tarvitaan — ilman invokaatiota eksyy itseensä, ilman evokaatiota jää passiiviseksi. Enkelit, sefirot, elementit, arkkityypit ovat kaikki sekä invokaation että evokaation kohteita. Suoja (LBRP) on aina ennen voiman kutsumista. Kokeneet harjoittajat yhdistävät molemmat yhdeksi kokonaisuudeksi. Ja tätä voi soveltaa arjessa — pieninä päivärituaaleina.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Harjoitus: Päivärituaali (5 min)</h3>
+<ol>
+<li>Herää, istu sängyn reunalle.</li>
+<li>Kolme syvää hengitystä.</li>
+<li>Visualisoi kultainen valo pään yläpuolella.</li>
+<li>Lataa valo kehoon — tunne se.</li>
+<li>Sano hiljaa: "Tänään olen valo. Tänään olen voima."</li>
+<li>Aseta yksi tarkoitus päivälle.</li>
+<li>Kiitä ja nouse.</li>
+</ol>
+<p>Tee joka aamu viikon ajan. Huomaat, miten päiväsi alkavat eri tavalla — kirkkaammin, tietoisemmin, voimakkaammin.</p>
+</div>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Millainen on suhteesi korkeampaan voimaan? Uskotko "johonkin yläpuolella" vai oletko materialisti? Miten voisit kutsua voimaa — rukouksella, meditaatiolla, luonnolla? Entä sisäinen voimasi — mitä kykyjä et ole vielä tunnustanut itsessäsi? Mitä haluaisit herättää?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..." style="width:100%; min-height:100px; margin-top:0.8rem; padding:0.5rem; font-family:inherit; font-size:0.95rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:4px;"></textarea>
+</div>
+
+<nav class="pager"><a href="0005-lbrp.html">← LBRP — pentagrammin pienempi rituaali</a><a href="../index.html">Rituaalit-alipolku →</a></nav>
+</main>
+</body>
+</html>

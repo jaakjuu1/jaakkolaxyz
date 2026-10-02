@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#c9b8a8" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#1a1a2e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <rect width="800" height="450" rx="12" fill="#1a1a2e"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  <g transform="translate(280, 0)">
+    <ellipse cx="0" cy="240" rx="50" ry="68" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="180" rx="32" ry="38" fill="#3a3a55"/>
+  </g>
+  <g transform="translate(520, 0)">
+    <ellipse cx="0" cy="240" rx="50" ry="68" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="180" rx="32" ry="38" fill="#3a3a55"/>
+  </g>
+  <!-- puhelin sivuun (pieni neliö lattialla) -->
+  <rect x="385" y="300" width="30" height="20" rx="3" fill="#2d2d44" opacity="0.6"/>
+  <line x1="390" y1="308" x2="410" y2="308" stroke="#3a3a55" stroke-width="1" opacity="0.4"/>
+  <!-- vapautunut tila -->
+  <g filter="url(#softGlow)" opacity="0.15">
+    <path d="M340,190 Q400,165 460,190" fill="none" stroke="#c9b8a8" stroke-width="2"/>
+    <path d="M340,200 Q400,180 460,200" fill="none" stroke="#c9b8a8" stroke-width="1" stroke-dasharray="3 5"/>
+  </g>
+  <line x1="180" y1="320" x2="620" y2="320" stroke="#2d2d44" stroke-width="1" opacity="0.5"/>
+</svg>

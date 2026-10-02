@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — CBT:n ajatuskupla: erota tilanne, ajatus, tunne ja toiminta</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --green: #3b6b3b;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  table.cbt {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4rem 0;
+    font-size: .95rem;
+  }
+  table.cbt th, table.cbt td {
+    text-align: left;
+    padding: .65rem .75rem;
+    border: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  table.cbt th {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+    width: 22%;
+  }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .questions {
+    counter-reset: q;
+    list-style: none;
+    padding-left: 0;
+    margin: 1.4rem 0 1.6rem;
+  }
+  .questions li {
+    counter-increment: q;
+    border-left: 3px solid var(--green);
+    padding: .55rem .85rem .55rem 1.1rem;
+    margin-bottom: .6rem;
+    background: var(--accent-soft);
+    border-radius: 0 4px 4px 0;
+  }
+  .questions li::before {
+    content: counter(q) ". ";
+    font-weight: 700;
+    color: var(--green);
+  }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .warn {
+    background: #fff5e6;
+    border-left: 3px solid #b07000;
+    padding: .9rem 1.1rem;
+    margin: 1.6rem 0;
+    border-radius: 0 4px 4px 0;
+    font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .warn { background: #2a2418; border-left-color: #d49a3a; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>CBT:n ajatuskupla</h1>
+  <p class="meta">Oppitunti 0003 · ~8 min · työkalu</p>
+
+  <p>Oppitunnissa 0001 opittiin, että tilanne, tulkinta, tunne ja toiminta kytkeytyvät toisiinsa. Oppitunnissa 0002 opittiin laskemaan keho alas kun se on liian viritetty. <strong>Tämä oppitunti antaa työkalun sille hetkelle, kun keho on rauhallinen mutta pää kiertää yhtä ajatusta ympäri.</strong></p>
+
+  <p>Se ajatus voi olla mikä tahansa: "olen epäonnistunut", "kukaan ei välitä", "tämä tulee päättymään huonosti", "olen pettymys". Näissä ajatuksissa ei sinänsä ole mitään vikaa — ne ovat usein osittain totta tai olleet joskus totta. Ongelma syntyy kun niitä <em>uskotaan automaattisesti ilman tarkistusta</em>.</p>
+
+  <h2>Mikä on ajatuskupla?</h2>
+
+  <p>Ajatuskupla on CBT:n (kognitiivisen käyttäytymisterapian) perustyökalu. Sen tarkoitus on pakottaa sinut pysähtymään ja erottamaan neljä asiaa, jotka kokemuksessa usein menevät yhteen:</p>
+
+  <table class="cbt">
+    <thead>
+      <tr><th>Sarake</th><th>Mitä siihen kirjoitetaan</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th>Tilanne</th>
+        <td>Fakta, ei tulkintaa. Mitä konkreettisesti tapahtui, missä, milloin, kuka oli mukana.</td>
+      </tr>
+      <tr>
+        <th>Automaattinen ajatus</th>
+        <td>Mielessä käväissyt ajatus, usein yksi lause. Voi alkaa sanoilla "minä olen…", "hän varmaan…", "tämä tarkoittaa että…".</td>
+      </tr>
+      <tr>
+        <th>Tunne ja kehon reaktio</th>
+        <td>Nimeä tunne (häpeä, pelko, viha, suru, pettymys). Mihin se tuntuu kehossa (rinta, vatsa, hartiat, nielu).</td>
+      </tr>
+      <tr>
+        <th>Vaihtoehtoinen arvio</th>
+        <td>Kolme kysymystä: mitä todisteita on puolesta ja vastaan, mitä sanoisin ystävälle, mikä on realistisempi toimintaan johtava ajatus.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <blockquote>
+    <strong>Ydin:</strong> Terapeutin tehtävä ei ole pakottaa sinulle uutta positiivista ajatusta. Tehtävä on antaa sinun itse <em>tutkia</em> ajatteluasi ja löytää tarkempi, hyödyllisempi tapa vastata tilanteeseen.
+  </blockquote>
+
+  <h2>Konkreettinen esimerkki</h2>
+
+  <p>Tilanne: tiimin vetäjä ei vastannut Slack-viestiisi koko päivän aikana.</p>
+
+  <table class="cbt">
+    <tbody>
+      <tr><th>Tilanne</th><td>Vedin projekti-tiimin vetäjälle Slack-viestin klo 9.30 koskien budjettikysymystä. Klo 17 mennessä ei vastausta, ei edes nähnyt-merkintää.</td></tr>
+      <tr><th>Automaattinen ajatus</th><td>"Hän pitää minua tyhminä ja jättää tahallaan huomiotta."</td></tr>
+      <tr><th>Tunne ja keho</th><td>Häpeä, viha, nielu kurkussa, hartiat lukkiutuvat, syke nousee.</td></tr>
+      <tr><th>Vaihtoehtoinen arvio</th><td>Todisteet puolesta: ei vastausta. Todisteet vastaan: hänellä oli kokous aamupäivällä, ja aiemmin hän on aina vastannut alle 24 tunnissa. Mitä sanoisin ystävälle: "todennäköisesti kiireinen päivä, kokeile huomenna uudestaan". Realistisempi ajatus: "hän ei ole vastannut tähän yhteen viestiin; en tiedä syytä; se ei vielä tarkoita mitään minusta".</td></tr>
+    </tbody>
+  </table>
+
+  <p>Huomaa mitä viimeisessä sarakkeessa tapahtuu: alkuperäinen ajatus oli <em>tuomio</em> ("hän pitää minua tyhminä"). Vaihtoehtoinen arvio on <em>kuvaus</em> ("hän ei ole vastannut tähän yhteen viestiin; en tiedä syytä"). Kuvaus on lähempänä totuutta koska siinä on mukana "en tiedä" — ja se jättää tilaa seuraavalle teolle.</p>
+
+  <h2>Miksi tämä ei ole "positiivista ajattelua"</h2>
+
+  <p>Positiivinen ajattelu olisi tässä: "hän varmasti vain rakastaa työtäni ja on kiireinen sen takia!". Se ohittaa todellisuuden eikä kestä pientäkään tarkistusta.</p>
+
+  <p>Ajatuskupla ei keksi uutta positiivista totuutta. Se <em>tutkii</em> nykyistä ajatusta: onko tämä totta, osittain totta, vai hyödyllinen mutta epätarkka? Etenkin viimeinen vaihtoehto on tärkeä — monet automaattiset ajatukset eivät ole suoraan väärin, ne ovat <em>epätarkkoja ja ohittavat asiayhteyden</em>.</p>
+
+  <h2>Käytännön ohje</h2>
+
+  <p>Ajatuskupla ei tarvitse kynää ja paperia toimiakseen. Voit tehdä sen mielessä 90 sekunnissa, erityisesti kun tunnistat jonkin näistä merkeistä:</p>
+
+  <ul>
+    <li>Tunne on voimakas mutta tilanne on pieni.</li>
+    <li>Sama ajatus toistuu yhä uudestaan.</li>
+    <li>Ajatus alkaa sanalla "aina", "ei kukaan", "minä olen".</li>
+    <li>Toimintasi on pysähtynyt siksi että ajatus tuntuu totuudelta.</li>
+  </ul>
+
+  <p>Jos jokin näistä pitää paikkansa, neljä saraketta auki — mielellään paperille tai tekstinkäsittelyyn jos mahdollista. Konkreettinen kirjoittaminen on tehokkaampaa kuin mielessä pyörittely.</p>
+
+  <hr>
+
+  <h2>Tee nyt: yksi ajatuskupla</h2>
+
+  <p>Valitse jokin <em>viimeaikainen</em> tilanne jossa pääsi jäi kiertämään. Ei tarvitse olla suuri asia — sopii pienikin ärsytys. Vastaa kaikkiin neljään kenttään.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Tilanne — faktat, ei tulkintaa (missä, milloin, kuka, mitä tapahtui).</label>
+      <textarea id="q1" rows="3" placeholder="Esimerkki: Tiistaina kokouksessa esimieheni katsoi minua oudosti kun esitin idean."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Automaattinen ajatus — yksi lause joka tuli mieleen.</label>
+      <textarea id="q2" rows="2" placeholder="Esimerkki: 'Hän piti ideaani tyhmänä — koko tiimi kuuli sen.'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Tunne ja kehon reaktio — nimeä tunne ja paikanna missä kehossa se tuntuu.</label>
+      <textarea id="q3" rows="2" placeholder="Esimerkki: Häpeä, syke nopea, posket kuumina, halu paeta huoneesta."></textarea>
+    </div>
+    <div>
+      <label for="q4">4. Vaihtoehtoinen arvio — todisteet puolesta/vastaan, mitä sanoisit ystävälle, realistisempi ajatus.</label>
+      <textarea id="q4" rows="4" placeholder="Esimerkki: Todisteet puolesta: en tiedä mitä hän ajatteli. Vastaan: hän on aiemmin sanonut pitävänsä ideoistani. Ystävälle: 'todennäköisesti keskittyi kuuntelemaan'. Realistisempi: 'hänen ilmeensä ei välttämättä tarkoita mitään; yksi hetki ei ole koko totuus'."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <h3>Jos haluat mennä syvemmälle</h3>
+
+  <p>Nämä kysymykset auttavat kun yksinkertainen arvio ei tunnu riittävältä:</p>
+
+  <ol class="questions">
+    <li>Onko tämä ajatus totta?</li>
+    <li>Onko se osittain totta — jos on, mikä osuus?</li>
+    <li>Onko se hyödyllinen mutta epätarkka?</li>
+    <li>Mitä sanoisin ihmiselle, jota rakastan, jos hän olisi tässä tilanteessa?</li>
+    <li>Mikä on realistisempi, toimintaan johtava ajatus?</li>
+  </ol>
+
+  <div class="warn">
+    <strong>Rajaus:</strong> Ajatuskupla on tarkoitettu arkisiin ajatusvääristymiin. Se ei korvaa ammattiapua vakavissa tai toistuvissa tiloissa: krooninen masennus, ahdistuneisuushäiriö, trauma, itsetuhoiset ajatukset. Näissä tilanteissa lääkäri tai psykoterapeutti on oikea seuraava askel, ei yksin tehty työ.
+  </div>
+
+  <p class="footer-note">
+    Lähteet: Beck Institute — <a href="https://beckinstitute.org/blog/why-cbt-therapists-dont-challenge-clients-cognitions-and-why-it-matters/">"why CBT therapists don't challenge clients' cognitions"</a>; APA — <a href="https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral">kognitiivinen käyttäytymisterapia</a>; NICE — <a href="https://www.nice.org.uk/guidance/ng222/chapter/recommendations">NG222 depression</a>.
+  </p>
+
+  <div class="pager">
+    <a href="0002-dbt-stop-ja-tipp.html">← Edellinen: Keho alas ennen ajatuksia</a>
+    <a class="next" href="../reference/glossary.html">Termit: Glossary →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const ids = ['q1','q2','q3','q4'];
+  const labels = ['1. Tilanne', '2. Automaattinen ajatus', '3. Tunne ja keho', '4. Vaihtoehtoinen arvio'];
+  const fields = ids.map(id => document.getElementById(id));
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3','q4'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005 — Japa ja mala — 108 helmen rukousnauha</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Japa ja mala — 108 helmen rukousnauha</h1>
+  <p class="meta">Oppitunti 0005 · ~7 min · toisto, 108 helmeä, hiljainen ja äänekäs japa</p>
+
+  <p>Tämä oppitunti käsittelee <strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">japaa</a></strong> — mantran toistoa käytäntönä — ja <strong><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">mala-rukousnauhaa</a></strong>, joka on perinteinen työkalu toistojen laskemiseen. Tämä on se oppitunti, jossa yksittäinen mantra muuttuu säännölliseksi harjoitukseksi.</p>
+
+  <h2>Mikä on japa?</h2>
+
+  <p>Sanskritin sana <em>japa</em> tarkoittaa kirjaimellisesti "mutinaa" tai "äänen toistoa". <strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a></strong> on <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a></strong>-harjoittelun ydin: saman tavun, lauseen tai mantran tietoinen ja laskettu toisto. Se on menetelmä, ei uskonkappale.</p>
+
+  <p>Japa on eri asia kuin esimerkiksi rukous-anomus tai kohteliaisuusfraasi — se on <em>tekninen toiminto</em>, joka tekee kolme asiaa kerralla:</p>
+
+  <ol>
+    <li>Suuntaa tarkkaavaisuuden yhteen kohteeseen.</li>
+    <li>Rytmittää hengitystä.</li>
+    <li>Kertoo toistojen määrän, jotta mieli voi luottaa siihen, että harjoitus etenee ilman, että sitä tarvitsee "laskea".</li>
+  </ol>
+
+  <p>Näistä kolmas on usein aliarvostettu. Japa vapauttaa mielen siitä, että sen täytyy <em>muistaa laskea</em> — sen sijaan laskenta annetaan ulkoiselle tai ruumiilliselle välineelle (malalle tai sormille).</p>
+
+  <h2>Kolme japa-muotoa</h2>
+
+  <p>Perinteessä japa jaetaan kolmeen äänen ja ulkoisuuden mukaan. Tässä ne selitettyinä suoraan.</p>
+
+  <h3>Vachika japa — äänekäs japa</h3>
+  <p>Mantra lausutaan ääneen, kuuluvasti. Tämä on muoto, jota perinteessä pidetään kaikkein konkreettisimpana ja tehokkaimpana aloittelijalle, koska:</p>
+
+  <ul>
+    <li>Ääni ankkuroi — kuulet itse, missä olet menossa.</li>
+    <li>Korva ja kieli työskentelevät yhtä aikaa, jolloin mielen on vaikeampi karata.</li>
+    <li>Värähtely tuntuu kehossa, mikä lisää fyysistä läsnäoloa.</li>
+  </ul>
+
+  <p>Haittapuoli: ei sovi paikkoihin, joissa ääni olisi sopimaton, kuten julkiseen liikenteeseen tai työpaikalle. Lisäksi äänekäs japa voi olla sosiaalisesti poikkeavaa länsimaissa.</p>
+
+  <h3>Upanshu japa — kuiskaus</h3>
+  <p>Mantra lausutaan kuiskaten, niin että huulet liikkuvat mutta ääni on niin hiljainen, että vain toistoja lähellä oleva kuulee sen. Tämä on yleinen kompromissi: se säilyttää kielen ja huulten liikkeen tuoman ankkuroinnin, mutta on sosiaalisesti hyväksyttävämpi.</p>
+
+  <p>Perinteessä kuiskaus-japan arvellaan olevan sopivin jokapäiväiseen harjoitteluun. Se on myös hyvä välivaihe siirryttäessä kohti hiljaista japaa.</p>
+
+  <h3>Manasika japa — hiljainen / mielen japa</h3>
+  <p>Mantra toistetaan mielessä, ilman ääntä tai huulten liikettä. Tämä on vaativin muoto, koska:</p>
+
+  <ul>
+    <li>Kun ääntä ei ole, mieli lähtee helposti karkuun.</li>
+    <li>Toiston laatu on vaikeampi säilyttää.</li>
+    <li>Vaatii paljon harjoittelua ennen kuin se on yhtä ankkuroiva kuin äänekäs muoto.</li>
+  </ul>
+
+  <p>Mutta hiljaisella japalla on etunsa: sitä voi tehdä missä tahansa, se ei vaadi erityisiä olosuhteita, ja se integroituu <strong><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatioon</a></strong> luontevasti. Perinteessä manasika japaa pidetään korkeimpana japa-muotona, koska se vaatii puhtaimman tarkkaavaisuuden.</p>
+
+  <h3>Mikä on oikea järjestys?</h3>
+  <p>Aloittelijalle suositellaan tyypillisesti äänekästä, sitten kuiskaus, sitten hiljaista. Useimmat harjoittajat kuitenkin palaavat äänekkääseen aina silloin tällöin, kun huomaavat hiljaisen karkaavan.</p>
+
+  <h2>Mala — 108 helmen rukousnauha</h2>
+
+  <p><strong><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a></strong> on perinteinen rukousnauha, jossa on tyypillisesti <em>108 helmeä</em> ja yksi suurempi helmä — niin kutsuttu <em>guru-helma</em> tai <em>sumeru</em> — joka toimii aloitus- ja lopetusmerkkinä.</p>
+
+  <p>Helmet voivat olla eri materiaaleista:</p>
+
+  <ul>
+    <li>Rudraksha (kasvin siemen) — perinteisin, tummanruskea, kevyt</li>
+    <li>Santalipuu — tuoksuva, arvostettu</li>
+    <li>Tulsi (pyhä basilika) — erityisesti Vishnu-perinteissä</li>
+    <li>Kivi (vuorikide, ruusukvartsi, musta obsidiaani) — moderni valinta, kaunis ja kestävä</li>
+    <li>Pähkinä tai siemen — yksinkertainen, edullinen, hyvä aloittelijalle</li>
+  </ul>
+
+  <p>Materiaalilla ei ole mystistä merkitystä, vaikka perinne antaa niille omia ominaisuuksiaan. Käytännössä tärkeintä on, että malan tuntuu <em>hyvältä kädessä</em> ja että se on riittävän kestävä päivittäiseen käyttöön.</p>
+
+  <h2>Miksi 108 helmeä?</h2>
+
+  <p>108 toistuu Intian kulttuurissa niin monessa yhteydessä, että yksiselitteistä selitystä ei ole. Joitakin perinteitä:</p>
+
+  <ul>
+    <li><strong>Astronominen</strong> — 108 on noin etäisyys maapallon ja kuun välisen matkan mittayksiköissä (27 päivän kierto × 4 vaihetta).</li>
+    <li><strong>Matemaattinen</strong> — 108 = 27 × 4, ja 27:llä on rooli astrologiassa (naksatra-jako).</li>
+    <li><strong>Symbolinen</strong> — 1 edustaa ykseyttä (Brahman), 0 tyhjyyttä (Shunya), 8 äärettömyyttä. 108 on näiden yhdistelmä.</li>
+    <li><strong>Käytännöllinen</strong> — 108 kierrosta kestää sopivasti: noin 15–30 minuuttia rauhallisella temmolla.</li>
+  </ul>
+
+  <p>Valitse näistä mikä tahansa — tärkeintä on, että 108 toistoa on riittävän pitkä kesto antaakseen keskittymisen aikaa syventyä, mutta riittävän lyhyt ollakseen mahdollista päivittäin.</p>
+
+  <h2>Mala-harjoittelun tekniikka</h2>
+
+  <p>Tässä yksinkertainen, tehokas ja perinteen mukainen tapa käyttää malaa.</p>
+
+  <ol>
+    <li>Istu mukavasti, selkä suoraksi mutta rento. Sulje silmät.</li>
+    <li>Pidä malaa vasemmassa kämmenessä, oikean käden etusormi ja peukalo helmen päällä.</li>
+    <li>Aloita guru-helman <em>vierestä</em> (älä koske siihen vielä) — ensimmäinen helmi on lähinnä sitä.</li>
+    <li>Hengitä sisään, aloita mantra. Hengitä ulos, päätä mantra. Siirrä helmi peukalon ja etusormen välissä.</li>
+    <li>Toista jokaisella helmet. Malan edetessä kohti guru-helmaa olet kierroksen lopussa.</li>
+    <li>Kun pääset guru-helman kohdalle, <em>älä ylitä sitä</em> — käännä suunta tai lopeta. Tämänhetkinen kierros on päättynyt.</li>
+    <li>Jos haluat toisen kierroksen, aloita uudelleen, mutta eri suunnasta. Tai vaihda tähän toiseen intentioon.</li>
+  </ol>
+
+  <h2>Varo virheitä</h2>
+
+  <p>Tässä muutama tyypillinen ongelma, jotka malan käyttöön helposti syntyvät, ja miten ne vältetään.</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Liian nopeasti</h3>
+      <p>Mala kulkee kädestä niin, että mantra ja hengitys eivät pysy mukana. Toistoista tulee mekaanista laskemista.</p>
+    </div>
+    <div class="col right">
+      <h3>Hengityksen tahdissa</h3>
+      <p>Yksi helmi = yksi hengityskierros tai yksi uloshengitys. Anna malan edetä hengityksen mukana.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Kaikki samaan aikaan</h3>
+      <p>Haluat tehdä japaa, hengittää oikein, laskea helmiä ja ajatella intentiota yhtä aikaa. Tämä on mahdotonta.</p>
+    </div>
+    <div class="col right">
+      <h3>Yksi asia kerrallaan</h3>
+      <p>Anna malan hoitaa laskenta, hengityksen hengitys, mantran mantra. Mieli voi keskittyä tarkkaavuuteen.</p>
+    </div>
+  </div>
+
+  <h2>Kuinka usein, kuinka kauan</h2>
+
+  <p>Perinteessä suositellaan usein <em>kaksi kierrosta päivässä</em> — aamuin ja illoin. Tämä on hyvä tavoite, mutta ei ole pakollinen. Käytännön suositus:</p>
+
+  <ul>
+    <li><strong>Aloittelija</strong>: yksi kierros (108 helmeä) päivässä, noin 15–20 minuuttia.</li>
+    <li><strong>Edistynyt</strong>: kaksi kierrosta päivässä, yhteensä 30–45 minuuttia.</li>
+    <li><strong>Syventäjä</strong>: useampi kierros, tai pidempi yhtäjaksoinen istunto.</li>
+  </ul>
+
+  <p>Tärkeintä on <em>säännöllisyys</em>. Kymmenen minuuttia joka päivä on hyödyllisempi kuin tunti kerran viikossa.</p>
+
+  <h2>Japa ilman malaa</h2>
+
+  <p>Jos malaa ei ole tai se ei sovi tilanteeseen, <strong><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">japan</a></strong> voi tehdä myös ilman sitä:</p>
+
+  <ul>
+    <li><strong>Sormilla</strong> — peukalo kulkee etusormi–pikkurilli-järjestyksessä, kukin sormi yhtenä "helmena".</li>
+    <li><strong>Hengityslaskurina</strong> — 10 sisäänhengitystä ja uloshengitystä on yksi "kierros", toistetaan 10 kertaa.</li>
+    <li><strong>Elektronisesti</strong> — puhelimen sovellus tai yksinkertainen laskuri. Tämä on modernin ajan tapa, eikä se ole millään tavalla "huonompi" kuin fyysinen mala.</li>
+    <li><strong>Ilman laskentaa</strong> — vain toistoa tietyn ajan. Tämä on vapaampaa ja sopii hyvin hiljaisempaan <strong><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatioon</a></strong> siirtymiseen.</li>
+  </ul>
+
+  <h2>Japa ja <strong><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">läsnäolo</a></strong></h2>
+
+  <p>Japan yksi tärkeä tehtävä on tuoda mieli <em>tähän hetkeen</em>. Kun lasket helmiä, et voi olla menneessä etkä tulevassa — olet tässä, nyt, tämän yhden toiston äärellä. Tämä on sama periaate kuin <strong><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulnessissa</a></strong>: tietoinen läsnäolo juuri siinä, mitä on tapahtumassa.</p>
+
+  <p>Japan ja mindfulnessin ero on pieni mutta merkityksellinen. Mindfulness on <em>avoin tarkkaavuus</em> — katsotaan, mitä nousee. Japa on <em>suunnattu tarkkaavuus</em> — palaamme valittuun äänteeseen. Molemmat ovat tärkeitä työkaluja, ja niitä voi yhdistää: japan aikana voit avata mindfulness-tietoisuuden kaikkeen siihen, mitä kehossa ja mielessä tapahtuu, <em>pitäen samalla mantran jatkuvana taustavirran</em>.</p>
+
+  <hr>
+
+  <h2>Kokeile itse: yksi täysi kierros malalla (tai sormilla)</h2>
+
+  <p>Tässä konkreettinen japan kokeilu, joko malalla tai sormilla.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mitä mantraa aiot käyttää? Miksi juuri tätä?</label>
+      <textarea id="q1" rows="2" placeholder="Esim. Om — yksinkertaisin, tai So Ham — luonteva hengitykseen."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Suorita yksi kierros (108 helmeä, noin 15–20 minuuttia). Miten se sujui?</label>
+      <textarea id="q2" rows="2" placeholder="Esim. keskittyminen herpaantui 30 kertaa, hengitys rauhoittui, jouduin pakottamaan loppuun."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitä huomasit verrattuna aiempiin kokeiluihin ilman malaa?</label>
+      <textarea id="q3" rows="2" placeholder="Esim. malan kanssa aika kului kuin siivillä, ilman malaa tuli levottomuus helpommin."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/japa.html" class="wikilink" data-concept="japa">Japa</a> — itse oppitunnin aihe, mantran tietoinen ja laskettu toisto.</li>
+    <li><a href="../../concepts/mala.html" class="wikilink" data-concept="mala">Mala</a> — 108 helmen rukousnauha, perinteinen japa-laskuri.</li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">Mantra</a> — japa on tapa harjoittaa mitä tahansa mantraa (oppitunti 0001).</li>
+    <li><a href="../../concepts/bija.html" class="wikilink" data-concept="bija">Bija-mantra</a> — bijoja, kuten Om, Aim ja Hreem, toistetaan tyypillisesti japan muodossa (oppitunti 0004).</li>
+    <li><a href="../../concepts/om.html" class="wikilink" data-concept="om">Om-tavu</a> — yleisin japa-mantra, joka yhdistetään helposti malan 108 helmeen (oppitunti 0002).</li>
+    <li><a href="../../concepts/so-ham.html" class="wikilink" data-concept="so-ham">So Ham</a> — So Ham soveltuu japan muotoon, erityisesti hiljaisena versiona (oppitunti 0003).</li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Meditaatio</a> — japa on yksi meditaation muoto, erityisesti äänekäs japa.</li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Mindfulness</a> — japassa tarkkaavuus on suunnattu, mindfulness'ssa avoin — ne täydentävät toisiaan.</li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Hengitystietoisuus</a> — japan rytmitys hengityksen mukaan tekee siitä hengitystietoisuuden muunnelman.</li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Läsnäolo</a> — japan keskeinen tehtävä on palauttaa mieli tähän hetkeen ja säilyttää se siellä.</li>
+    <li><a href="../../concepts/metta.html" class="wikilink" data-concept="metta">Lähimmäisenrakkaus</a> — japan aikana voi kohdistaa myötätuntoa itseensä ja muihin, kuten metta-harjoituksessa.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Nyt sinulla on tekniikka: tiedät mikä <strong><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a></strong> on, osaat lausua Omia ja So Hamia, tiedät bija-perustasta ja osaat toistaa joko hiljaa tai malan kanssa. Seuraavaksi kokoamme tämän kaiken yhteen kysymykseen: <em>miten valitset itsellesi sopivan mantran</em>, ja miten mantra-meditaatio suhteutuu <strong><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulness-meditaatioon</a></strong>?</p>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Etsi "Japa Mala" -osio suoraan — 108 toistoa valitsemallasi äänimaisemalla.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "Japa Mala" — 108 toistoa äänimaisemalla.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#mala" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23mala" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a class="prev" href="0004-bija-mantrat.html">← Edellinen: Bija-mantrat</a>
+    <a class="next" href="0006-mantra-meditaatio.html">Seuraava oppitunti: Mantra meditaation muotona →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Mantra ja valinta', '2. Kierroksen kokemus', '3. Ero aiempaan'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

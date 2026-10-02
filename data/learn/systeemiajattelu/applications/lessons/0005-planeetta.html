@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005-planeetta — Planeetan järjestelmät</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Sovellukset</a> › Oppitunti 5</nav>
+
+<h1>Planeetan järjestelmät</h1>
+<p class="meta">Oppitunti 5 / 6 · ~22 min</p>
+
+<h2>Maapallo suurimpana järjestelmänä</h2>
+<p>Maapallo on <strong>suurin järjestelmä, jonka voimme kuvitella</strong> — ja samalla se on järjestelmä, jonka sisällä elämme. Se koostuu lukemattomista toisiinsa kytkeytyneistä osajärjestelmistä: ilmakehästä, valtameristä, maaperästä, biosfääristä, ihmisten yhteiskunnista.</p>
+
+<p>Systeemiajattelu tarjoaa työkaluja ymmärtää maapallon tilaa — ja ennen kaikkea <strong>missä kannattaa painaa</strong>, jos haluaa muuttaa suuntaa. Tässä oppitunnissa tarkastelemme Donella Meadowsin legendaarista <em>9 vipukohdan</em> (leverage points) -listaa ja planetaarisia rajoja (planetary boundaries).</p>
+
+<blockquote>"Maapallon tila ei ole tekninen ongelma, joka ratkaistaan teknisellä keksinnöllä. Se on systeeminen ongelma, joka vaatii systeemistä ymmärrystä." — Donella Meadows</blockquote>
+
+<h2>Planetary Boundaries — yhdeksän rajaa</h2>
+<p>Vuonna 2009 Johan Rockström ja 28 tutkijaa tunnistivat yhdeksän <strong>planeetan rajaa</strong> — biosfäärin turvallisen toiminnan rajoja. Jos jokin näistä rajoista ylittyy, järjestelmä voi ajautua epävakaaseen tilaan.</p>
+
+<ol>
+<li><strong>Ilmastonmuutos</strong> — CO2-pitoisuus, lämpötila</li>
+<li><strong>Biologinen monimuotoisuus</strong> — lajien sukupuutto</li>
+<li><strong>Typen ja fosforin kierto</strong> — lannoitteet, saastuminen</li>
+<li><strong>Maankäyttö</strong> — metsien hävittäminen, kaupungistuminen</li>
+<li><strong>Makea vesi</strong> — vesivarojen ylikulutus</li>
+<li><strong>Uudet kemikaalit</strong> — muovit, lääkeaineet, nanomateriaalit</li>
+<li><strong>Ilman saastuminen</strong> — pienhiukkaset, otsonikato</li>
+<li><strong>Otsonikato</strong> — palautumassa Montrealin pöytäkirjan ansiosta</li>
+<li><strong>Valtamerten happamoituminen</strong> — CO2:n imeytyminen</li>
+</ol>
+
+<p>Vuonna 2022 arvioitiin, että <strong>kuusi yhdeksästä rajasta on jo ylitetty</strong>. Tämä tarkoittaa, että ihmiskunta on vaarantanut biosfäärin vakauden.</p>
+
+<h2>Meadowsin 9 vipukohtaa</h2>
+<p>Donella Meadows, joka tunnetaan <em>Rajojen kasvun</em> (Limits to Growth, 1972) -raportin pääkirjoittajana, tunnisti <strong>yhdeksän vipukohtaa</strong> — paikkaa järjestelmässä, joissa pieni muutos voi tuottaa suuren vaikutuksen. Lista on järjestetty <em>tehottomasta tehokkaaseen</em>:</p>
+
+<h3>9. Vakiot, parametrit, numerot</h3>
+<p>Esimerkki: liikenteen nopeusrajoitus, verokannat, päästökiintiöt. Näitä säädetään usein, mutta niiden vaikutus on rajallinen. Pieni muutos vakiossa ei muuta järjestelmän rakennetta.</p>
+
+<h3>8. Varastot ja virrat</h3>
+<p>Esimerkki: teiden kapasiteetti, vedenkulutus, väestönkasvu. Muutokset varastoissa ja virroissa vaikuttavat hitaasti, mutta voivat kumuloitua.</p>
+
+<h3>7. Negatiivisen takaisinkytkennän voimakkuus</h3>
+<p>Esimerkki: säätelyjärjestelmät. Vahvempi negatiivinen takaisinkytkentä vakauttaa järjestelmää nopeammin.</p>
+
+<h3>6. Positiivisen takaisinkytkennän voimakkuus</h3>
+<p>Esimerkki: korko-kierteet, paniikki. Positiivisen takaisinkytkennän vahvistaminen voi olla tuhoisaa, mutta sen hillitseminen voi pysäyttää kierteen.</p>
+
+<h3>5. Informaatiovirrat</h3>
+<p>Esimerkki: mittaus, raportointi, läpinäkyvyys. Kun ihmiset saavat oikeaa tietoa, he tekevät parempia päätöksiä. Tämä on yksi tehokkaimmista ja aliarvioiduimmista vipukohdista.</p>
+
+<h3>4. Järjestelmän säännöt</h3>
+<p>Esimerkki: lait, säädökset, kansainväliset sopimukset. Säännöt määrittävät, mitä järjestelmässä on sallittua ja kiellettyä. Niiden muutos vaikuttaa laajasti.</p>
+
+<h3>3. Järjestelmän tavoitteet</h3>
+<p>Esimerkki: yrityksen tehtävä, valtion prioriteetit. Tavoitteet ohjaavat kaikkea muuta. Jos tavoite on "lyhyen aikavälin voitto", järjestelmä tuottaa voittoa lyhyellä aikavälillä. Jos tavoite on "elinikäinen hyvinvointi", tulos on erilainen.</p>
+
+<h3>2. Järjestelmän paradigma — sen syvät ajatusmallit</h3>
+<p>Esimerkki: uskomus, että talouskasvu on aina hyvää, tai että ihminen on erillään luonnosta. Paradigmat ovat <strong>syvimmällä</strong> olevia oletuksia, joita ei edes tiedosteta. Niiden muutos on vaikeaa mutta äärimmäisen tehokasta.</p>
+
+<h3>1. Paradigmat — kyky ylittää ne</h3>
+<p>Meadowsin mukaan kaikkein tehokkain vipukohta on <em>kyky havaita ja ylittää omat paradigmat</em>. Ihminen, joka ymmärtää maailmaa tietyn kehyksen läpi, ei voi nähdä sen ulkopuolelle. Mutta ihminen, joka <em>tietää</em>, että hänellä on kehys, voi joustaa.</p>
+
+<blockquote>"Maailmaa ei voi muuttaa, ellei muuta sitä tapaa, jolla näkee maailman." — Donella Meadows</blockquote>
+
+<h2>Miksi vipukohtien ymmärtäminen on kriittistä</h2>
+<p>Useimmat ympäristötoimet keskittyvät vipukohtaan 9 — vakioihin ja parametreihin. Esimerkiksi päästökiintiöt, nopeusrajoitukset, energiatehokkuusstandardit. Nämä ovat tärkeitä, mutta niiden vaikutus on rajallinen.</p>
+
+<p>Jos haluamme todellisen muutoksen, meidän täytyy painaa <strong>tehokkaampia vipukohtia</strong>: informaatiovirtoja (5), sääntöjä (4), tavoitteita (3) ja ennen kaikkea paradigmoja (2, 1).</p>
+
+<h2>Esimerkkejä vipukohtien soveltamisesta</h2>
+
+<h3>Tapaus 1: Tuulivoiman nousu</h3>
+<p>Tuulivoiman nopea kasvu 2000-luvulla ei selity yhdellä tekijällä, vaan <strong>useiden vipukohtien samanaikaisella vaikutuksella</strong>:</p>
+
+<ul>
+<li><strong>Vakiot (9):</strong> tuotantotuki ja syöttötariffit.</li>
+<li><strong>Säännöt (4):</strong> EU:n päästökauppa, uusiutuvan energian direktiivit.</li>
+<li><strong>Tavoitteet (3):</strong> hallitusten sitoutuminen hiilineutraaliuteen.</li>
+<li><strong>Paradigma (2):</strong> muutos "uusiutuva on kallista" -oletuksesta "uusiutuva on tulevaisuus" -asenteeseen.</li>
+</ul>
+
+<h3>Tapaus 2: Muovisaaste</h3>
+<p>Muovisaaste on monimutkainen ongelma, jossa tarvitaan:</p>
+
+<ul>
+<li>Vakioita (kiintiöt).</li>
+<li>Sääntöjä (kertakäyttömuovin kielto).</li>
+<li>Tavoitteita (kierrättävä pakkaus 2030).</li>
+<li>Informaatiovirtoja (pakkausmerkinnät).</li>
+<li>Ja ennen kaikkea: <strong>paradigman muutos</strong> — "muovi on halpaa ja kertakäyttöistä" → "muovi on arvokas resurssi, joka kierrätetään".</li>
+</ul>
+
+<h2>Suomen ja maailman välinen kytkös</h2>
+<p>Suomi on pieni maa, mutta sen toimet kytkeytyvät globaaleihin järjestelmiin. Esimerkiksi:</p>
+
+<ul>
+<li>Suomen sähköntuotanto (vesi, ydin, tuuli) vaikuttaa eurooppalaisiin päästömarkkinoihin.</li>
+<li>Suomen metsätalous vaikuttaa EU:n hiilinieluihin.</li>
+<li>Suomen kulutus (matkailu, ruoka, tavarat) vaikuttaa globaaleihin toimitusketjuihin.</li>
+</ul>
+
+<p>Systeeminen ymmärrys auttaa näkemään, että <em>yksittäisen maan teot eivät riitä</em> — tarvitaan kansainvälistä yhteistyötä. Mutta yksittäisen maan teot <em>voivat</em> toimia esimerkkinä ja katalyyttinä.</p>
+
+<h2>Konkreettisia vipukohtia Suomessa</h2>
+
+<ol>
+<li><strong>Informaatiovirrat (5):</strong> julkinen data päästöistä, energiankulutuksesta ja luonnon monimuotoisuudesta. Kun kansalaiset näkevät numerot, he vaativat muutosta.</li>
+<li><strong>Säännöt (4):</strong> rakennusmääräykset, jotka vaativat hiilineutraalia rakentamista. Julkiset hankinnat, jotka suosivat kestävää tuotantoa.</li>
+<li><strong>Tavoitteet (3):</strong> kuntien ja kaupunkien strategiset tavoitteet. Yritysten mission muotoilu — "tehdä rahaa" vs. "tehdä maailmasta parempi".</li>
+<li><strong>Paradigma (2):</strong> kulttuurinen muutos — kilpailuyhteiskunnasta yhteistyöyhteiskuntaan, kulutuskulttuurista kohtuullisuuteen.</li>
+</ol>
+
+<h2>Toivon ja realismin tasapaino</h2>
+<p>Systeemiajattelu ei ole pessimististä eikä optimistista — se on <strong>realistista</strong>. Se sanoo: tilanne on vakava, mutta ei toivoton. Oikeissa paikoissa painaminen voi tuottaa suuren muutoksen.</p>
+
+<p>Meadowsin mukaan tehokkainta ei ole tehdä paljon pieniä asioita, vaan <strong>yksi suuri asia oikeassa paikassa</strong>. Tämä vaatii ymmärrystä siitä, missä järjestelmän vipukohdat ovat — ja rohkeutta painaa niistä.</p>
+
+<h2>Yhteenveto</h2>
+<p>Maapallo on suurin järjestelmä, jonka sisällä elämme. Planetary Boundaries -kehys osoittaa, että kuusi yhdeksästä turvarajasta on jo ylitetty. Meadowsin 9 vipukohtaa osoittaa, missä muutos on tehokkainta: vakiot ovat vähiten tehokkaita, paradigmamuutokset tehokkaimpia. Käytännössä systeeminen muutos vaatii <em>useiden vipukohtien samanaikaista käyttöä</em> — ja ennen kaikkea rohkeutta haastaa vallitsevia ajatusmalleja.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Valitse yksi ympäristöön liittyvä haaste — se voi olla oma kulutuksesi, työpaikkasi toiminta tai yhteiskunnallinen kysymys. Mille Meadowsin vipukohdista (1–9) uskot voivasi itse vaikuttaa? Mikä on sinun "suuri vipukohtasi"?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+<h3 style="margin-top: 3rem;">Systeeminen silmä</h3>
+<p>Tämän oppitunnin jälkeen sinulla on yksi uusi "silmä": kyky nähdä maailman tila <em>vipukohtina</em> eikä vain yksittäisinä ongelmina. Kun seuraavan kerran kuulet uutisen ympäristöhaasteesta, kysy itseltäsi: <em>mihin vipukohtaan tämä interventio kohdistuu?</em> Jos vastaus on "vain vakioihin ja parametreihin", tiedät että muutos on rajallinen. Jos vastaus on "sääntöihin, tavoitteisiin tai paradigmoihin", tiedät että muutos voi olla syvällinen.</p>
+
+</main>
+</body>
+</html>

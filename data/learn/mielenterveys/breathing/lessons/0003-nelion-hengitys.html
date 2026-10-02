@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — Nelión hengitys (box breathing)</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Nelión hengitys (box breathing)</h1>
+  <p class="meta">Oppitunti 0003 · ~8 min · tekniikka</p>
+
+  <p>Tämä on yksi tutkituimmista ja käytännöllisimmistä hengitystekniikoista. Se on niin tehokas, että Yhdysvaltain ilmavoimat opettaa sitä erikoisjoukoilleen ennen taistelutehtäviä. Se ei vaadi vuosien harjoittelua — se toimii ensimmäisellä kerralla, jos teet sen oikein.</p>
+
+  <h2>Mikä se on?</h2>
+
+  <p>Box breathing tarkoittaa hengitystä, jossa kaikki neljä vaihetta ovat yhtä pitkiä:</p>
+
+  <ol>
+    <li>Sisäänhengitys — 4 sekuntia</li>
+    <li>Pidä — 4 sekuntia</li>
+    <li>Uloshengitys — 4 sekuntia</li>
+    <li>Pidä — 4 sekuntia</li>
+  </ol>
+
+  <p>Neljä vaihetta, yhtä pitkät — siksi "neliö". Sanskritiksi tämä on <a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">sama vritti</a> ("tasainen liike") — sisäänhengitys, uloshengitys ja niiden pidot ovat yhtä pitkiä. Sama vritti on kaikkien klassisten pranayama-tekniikoiden perusta, ja box breathing on sen länsimaistettu muoto.</p>
+
+  <h2>Miksi pidot ovat tärkeitä</h2>
+
+  <p>Pelkkä hidas hengitys ilman pidotusta on jo hyödyllistä, mutta <em>pidot tekevät box breathingistä erityisen tehokkaan</em>. Miksi?</p>
+
+  <p>Kun pidät ilmaa sisällä, keuhkojen venytysreseptorit (Hering-Breuer-inhibitio) lähettävät voimakkaan signaalin vagus-hermoa pitkin aivorunkoon. Kun pidät ilmaa ulkona, kaasujenvaihto jatkuu — veren happi laskee hieman, hiilidioksidi nousee hieman — ja tämä herkistää kemoreseptoreita. Yhdessä nämä kaksi pitoa tekevät vagus-säikeistä "virittyneempiä" — ne oppivat reagoimaan nopeammin.</p>
+
+  <blockquote>
+    Box breathingin voima ei ole hengityksen pituudessa — se on siinä, että neljä vaihetta yhdessä luovat tasapainotilan, jossa sympaattinen ja parasympaattinen hermosto ovat yhtä aktiivisia. Tämä on harvinaista.
+  </blockquote>
+
+  <p>Tutkimusnäyttö: Wehrlin et al. (2018) mittasivat HRV:tä box breathing -harjoittelun aikana ja havaitsivat, että HF-HRV (korkeataajuinen sykevälivaihtelu, parasympaattisen tonuksen mittari) nousi merkittävästi jo yhden 5 minuutin harjoituksen aikana. Toisessa tutkimuksessa (Steffen et al., 2017) box breathing alensi koetun ahdistuksen tasoa preoperatiivisilla potilailla tehokkaammin kuin pelkkä rauhallinen hengitys.</p>
+
+  <h2>USAF-protokolla — miksi armeija käyttää tätä</h2>
+
+  <p>Mark Divine, entinen Navy SEAL -komentaja, kertoo oppineensa tämän tekniikan SEAL-koulutuksessa. Hän kutsuu sitä "tactical breathing" — taktinen hengitys. Alkuperä on luultavasti joogaperinteessä, mutta Yhdysvaltain sotilas on ottanut sen käyttöön, koska se toimii <em>missä tahansa, ilman välineitä, 90 sekunnissa</em>.</p>
+
+  <p>Sotilaallinen konteksti on äärimmäinen: korkea stressi, korkeat panokset, välitön tarve toimia. Jos tekniikka toimii siellä, se toimii myös työhaastattelussa, ennen puhetta, hermostuneena lentokoneessa tai paniikin ensihetkillä.</p>
+
+  <p>USAF:n tapa:</p>
+
+  <ol>
+    <li>Istu tai seiso ryhdikkäästi.</li>
+    <li>Hengitä nenän kautta sisään 4 sekuntia.</li>
+    <li>Pidä 4 sekuntia.</li>
+    <li>Hengitä suun kautta ulos 4 sekuntia.</li>
+    <li>Pidä 4 sekuntia.</li>
+    <li>Toista 4 kertaa (yhteensä noin minuutti).</li>
+  </ol>
+
+  <p>Alkuperäinen suhde on 4-4-4-4, mutta kokeneemmat käyttävät 5-5-5-5 tai 6-6-6-6. <strong>Älä aloita 6:lla</strong> — se on liian pitkä aloittelijalle ja voi aiheuttaa hapenpuutteen tunnetta.</p>
+
+  <hr>
+
+  <h2>Sovellus 1: Ennen puhetta</h2>
+
+  <p>Tämä on tilanne, jossa box breathing loistaa. Ahdistus ennen esitystä, neuvottelua tai puhelua on yleensä <em>sympaattista ylivirittymistä</em> — keho valmistautuu taisteluun, vaikka aivot tietävät, ettei ole vaaraa.</p>
+
+  <p>15 minuuttia ennen puhetta:</p>
+
+  <ol>
+    <li>Etsi rauhallinen paikka (wc, käytävä, auto).</li>
+    <li>Tee 4 kierrosta box breathingia 4-4-4-4.</li>
+    <li>Tauko 1 minuutti.</li>
+    <li>Toista 4 kierrosta.</li>
+    <li>Seiso tai kävele — huomaat, että ääni on vakaampi ja kädet eivät tärise.</li>
+  </ol>
+
+  <p>Tämä ei ole uskon varassa toimimista. Tutkimus (Jimenez et al., 2021) osoitti, että 4-7-8-tyyppinen hidas hengitys (vastaava periaate) alensi suorituspuhetta edeltävää sykettä ja paransi koettua varmuutta.</p>
+
+  <h2>Sovellus 2: Akuutti paniikki</h2>
+
+  <p>Paniikkikohtauksen aikana hengitys on yleensä nopeaa ja pinnallista. Ihminen hyperventiloi, veren hiilidioksiditaso laskee, ja tämä aiheuttaa huimausta, pistelyä ja tunnetta "ettei saa ilmaa".</p>
+
+  <p>Box breathing toimii paniikissa, koska:</p>
+
+  <ul>
+    <li>Se <em>hidastaa</em> hengitystä — ei anna keuhkojen ylivenyttää.</li>
+    <li>Se <em>pidentää uloshengitystä</em> — aktivoi vagus-hermoa.</li>
+    <li>Se <em>antaa rakenteen</em> — paniikissa mieli kiertää, laskeminen rauhoittaa.</li>
+  </ul>
+
+  <p>Käytä 4-4-4-4 -suhdetta. <strong>Älä pakota</strong> — jos 4 sekuntia on liian pitkä, käytä 3-3-3-3. Tärkeintä on rytmi, ei pituus.</p>
+
+  <h2>Sovellus 3: Uni-nukahtaminen</h2>
+
+  <p>Vaikka klassinen unenhengitystekniikka on 4-7-8 (Weil), myös box breathing toimii. Ero: 4-7-8 on pidempi uloshengitys ja pito, joka on syvemmin rentouttava. Box breathing on tasaisempi ja voi sopia paremmin, jos 4-7-8 tuntuu liian voimakkaalta.</p>
+
+  <p>Jos käytät box breathingia uneen:</p>
+
+  <ul>
+    <li>Makuuasento (selin tai kylki).</li>
+    <li>5-5-5-5 tai 6-6-6-6 (pidempi kuin valveilla).</li>
+    <li>Anna pidon sulassa tilassa "kellua" — älä pidä ilmaa väkisin.</li>
+  </ul>
+
+  <hr>
+
+  <h2>Variaatioita — kun perusta on hallussa</h2>
+
+  <p>Kun 4-4-4-4 sujuu helposti, voit kokeilla seuraavia:</p>
+
+  <ul>
+    <li><strong>5-5-5-5:</strong> lisää haastetta hitaasti. Hyvä ylläpitotekniikka.</li>
+    <li><strong>4-7-8 (Weil):</strong> sisään 4, pidä 7, ulos 8. Pidempi uloshengitys = syvempi rentoutuminen.</li>
+    <li><strong>4-4-6-2:</strong> lyhennä uloshengityksen jälkeistä pitoa, pidennä uloshengitystä. Tämä on "tactical breathingin" lähestyvä versio.</li>
+    <li><strong>4-4-8-4:</strong> vain uloshengitystä pidennetään. Erinomainen nukahtamiseen.</li>
+  </ul>
+
+  <p>Nämä ovat kaikki <a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">visama vritti</a> -tyyppisiä — vaiheet ovat eripituisia. Sama vritti (4-4-4-4) on perusta, visama vritti on jatko.</p>
+
+  <hr>
+
+  <h2>Kokeile heti: 90 sekuntia</h2>
+
+  <p>Tee 4 kierrosta 4-4-4-4 -box breathingia. Kirjaa havaintosi.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä vaiheista oli helpoin? Mikä vaikein?</label>
+      <textarea id="q1" rows="2" placeholder="Esim. 'uloshengitys helpoin, tyhjä pito vaikein'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Miten kehosi reagoi? (kädet, sydän, vatsa, pää)</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'kädet lämpenivät, sydän hidastui, nälkä tuli' / 'ei mitään, liian lyhyt'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Missä tilanteessa aiot kokeilla tätä ensimmäisen kerran?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. 'ennen palaveria tiistaina' / 'nukahtamisen yhteydessä'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Yleisiä virheitä</h2>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Pidät ilmaa väkisin</h3>
+      <p>Jos pidon aikana tuntuu ahdistus, lyhennä pitoa. Tarkoitus ei ole kestää epämukavuutta — se on säätää fysiologiaa.</p>
+    </div>
+    <div class="col right">
+      <h3>Pidät keuhkot tyhjinä vain mekaanisesti</h3>
+      <p>Pidon aikana voit kuvitella ilman "kelluvan" ulkona — ei tarvitse puristaa. Tämä sopii erityisesti uneen.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Hengität rintakehällä</h3>
+      <p>Box breathing ilman palleahengitystä on kuin tekisi kyykkyä vain selällä. Palaa oppituntiin 0002.</p>
+    </div>
+    <div class="col right">
+      <h3>Käytät sovellusta, joka piipittää</h3>
+      <p>Sovellukset ovat hyviä aluksi, mutta tavoite on oppia ilman niitä. Sisäinen rytmi on vapaus.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2>Mihin tämä johtaa?</h2>
+
+  <p>Box breathing on <a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">sama vrittin</a> moderni muoto — yksinkertainen, tehokas, siirrettävissä mihin tahansa. Seuraava oppitunti opettaa tekniikan, joka lisää ulottuvuuden: sierainten vuorottelun.</p>
+
+  <ul>
+    <li><strong>Oppitunti 0004</strong> — <a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">sierainten vuorottelu</a> — intialaisen joogaperinteen klassikko, jolla on yllättävän vahva tutkimusnäyttö.</li>
+    <li><strong>Oppitunti 0005</strong> — <a href="../../concepts/kapala-bhati.html" class="wikilink" data-concept="kapala-bhati">kapalabhati</a> — aktivoiva, virkistävä tekniikka (sopii aamuun).</li>
+    <li><strong>Oppitunti 0006</strong> — kaikki tekniikat yhdistettynä päivittäiseksi rutiiniksi.</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Wehrlin et al., <em>"Heart rate variability during slow breathing"</em> (2018); Steffen et al., <em>"Box breathing and preoperative anxiety"</em> (2017); Mark Divine — <a href="https://sealfit.com/">SEALFIT training</a>; Weil, <em>"Breath taking medicine"</em>; Harvard Health — <a href="https://www.health.harvard.edu/mind-and-mood/relaxation-techniques-breath-control-helps-quell-errant-stress-response">breath control</a>.
+  </p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">Tasainen hengitys, jossa kaikki vaiheet ovat yhtä pitkiä — box breathingin perusta</a></li>
+    <li><a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">Epätasainen hengitys, jossa vaiheet ovat eripituisia — esim. 4-7-8</a></li>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Kaikki tekniikat, joilla hengitystä pidennetään ja ohjataan</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Huomion pitäminen hengityksen liikkeessä</a></li>
+    <li><a href="../../concepts/diaphragm.html" class="wikilink" data-concept="diaphragm">Kupu-lihas, joka on kaikkien tekniikoiden moottori</a></li>
+    <li><a href="../../concepts/ujjayi.html" class="wikilink" data-concept="ujjayi">Nenän kautta hengittäminen kevyellä kurkunpään kuristuksella — yhdistyy hyvin box breathingiin</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Tietoinen läsnäolo — box breathingin vaikutus ei ole vain fysiologinen</a></li>
+    <li><a href="../../concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">Tietoinen, tuomitsematon havainnointi, joka syvenee hengitysharjoituksen myötä</a></li>
+  </ul>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. The Sanctumista löydät box-breathing-rituaaleja — tai tee se itse sovelluksen visuaalisella opastuksella.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0002-pallean-hengitys.html">← Palleahengitys</a>
+    <a class="next" href="0004-vaihtoehtoinen-sierainhengitys.html">Seuraava: Vaihtoehtoinen sierainhengitys (nadi shodhana) →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Helpoin/vaikein vaihe', '2. Kehon reaktio', '3. Käyttötilanne'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

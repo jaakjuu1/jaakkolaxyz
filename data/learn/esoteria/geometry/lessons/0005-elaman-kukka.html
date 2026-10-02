@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005-elaman-kukka — Elämän kukka ja kultainen leikkaus</title>
+<style>
+  :root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+  .svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+  .svg-container svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Geometria</a> › Oppitunti 5</nav>
+
+<h1>Elämän kukka ja kultainen leikkaus</h1>
+<p class="meta">Oppitunti 5 / 6 · ~22 min</p>
+
+<h2>Luonnon geometria</h2>
+<p>Kaikkialla luonnossa — kukissa, simpukoissa, galakseissa — on sama geometrinen rakenne: <strong>elämän kukka</strong> ja <strong>kultainen leikkaus</strong>. Nämä eivät ole sattumaa — ne ovat <em>todellisuuden perusrakenteita</em>.</p>
+
+<p>Tämä oppitunti käsittelee kahta toisiinsa kytkeytyvää geometrista periaatetta, jotka hallitsevat kaikkea elävää.</p>
+
+<blockquote>"Luonto ei piirrä viivoja suoralla — se piirtää spiraaleja, kultaisia leikkauksia, fraktaaleja. Tämä on luonnon kieli." — Robert Lawlor</blockquote>
+
+<h2>Kultainen leikkaus — φ</h2>
+
+<p><strong>Kultainen leikkaus</strong> (kreikaksi <em>phi</em>, φ) on matemaattinen suhde, joka on sama kaikkialla:</p>
+
+<p><strong>φ = 1.6180339887...</strong></p>
+
+<p>Tämä luku syntyy yksinkertaisesta säännöstä:</p>
+
+<blockquote>Jos jaat viivan kahtia niin, että kokonaisuuden suhde pidempään osaan on sama kuin pidemmän osan suhde lyhyempään osaan, saat kultaisen leikkauksen.</blockquote>
+
+<p>Tämä suhde on <strong>matematiikan kaunein</strong> — se on ainoa suhde, joka säilyttää itsensä, kun sitä toistaa loputtomiin.</p>
+
+<h3>Kultaisen leikkauksen geometria</h3>
+
+<div class="svg-container">
+<svg viewBox="0 0 300 100" width="300" height="100" xmlns="http://www.w3.org/2000/svg">
+  <line x1="20" y1="50" x2="280" y2="50" stroke="#4a3a8a" stroke-width="2"/>
+  <line x1="20" y1="40" x2="188" y2="40" stroke="#4a3a8a" stroke-width="1"/>
+  <line x1="188" y1="40" x2="280" y2="40" stroke="#4a3a8a" stroke-width="1"/>
+  <text x="100" y="35" text-anchor="middle" fill="#666" font-size="12" font-family="Georgia">a (pidempi osa) = 1.618</text>
+  <text x="234" y="35" text-anchor="middle" fill="#666" font-size="12" font-family="Georgia">b</text>
+  <text x="100" y="70" text-anchor="middle" fill="#4a3a8a" font-size="14" font-family="Georgia">a/b = (a+b)/a = φ</text>
+</svg>
+</div>
+
+<p>Tämä on matemaattinen perusta. Mutta miksi tämä luku on niin tärkeä?</p>
+
+<h3>Kultainen leikkaus luonnossa</h3>
+
+<p>Kultainen leikkaus esiintyy <strong>kaikkialla</strong>:</p>
+
+<ul>
+<li><strong>Auringonkukka:</strong> siementen järjestys seuraa kultaista spiraalia</li>
+<li><strong>Nautilus-simpukka:</strong> sen kammioiden suhde on φ</li>
+<li><strong>Galaksit:</strong> spiraalirakenteet noudattavat kultaista leikkausta</li>
+<li><strong>Ihminen:</strong> kehon mittasuhteet — sormen päät, käden ja kyynärvarren suhde, kasvojen mittasuhteet</li>
+<li><strong>Leonardo da Vinci:</strong> Mona Lisa, Vitruviuksen mies — kaikki käyttävät φ:tä</li>
+</ul>
+
+<p>Tämä ei ole sattumaa. Kultainen leikkaus on <strong>tehokkain kasvun malli</strong> — tapa, jolla luonto <em>kasvaa</em> ilman että menettää tasapainoa.</p>
+
+<h2>Fibonacci-sarja</h2>
+
+<p>Kultaiseen leikkaukseen liittyy läheisesti <strong>Fibonacci-sarja</strong>:</p>
+
+<blockquote>1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144...</blockquote>
+
+<p>Jokainen luku on kahden edellisen summa. Kun jaat peräkkäisiä lukuja, saat <strong>lähestyvän kultaisen leikkauksen</strong>:</p>
+
+<ul>
+<li>5/3 = 1.666...</li>
+<li>8/5 = 1.6</li>
+<li>13/8 = 1.625</li>
+<li>21/13 = 1.615...</li>
+<li>...</li>
+<li>∞ = φ</li>
+</ul>
+
+<p>Fibonacci-sarja esiintyy <strong>kaikkialla luonnossa</strong>: kanin populaatioissa, kukkien terälehdissä, auringonkukan siemenissä, mustekalan lonkeroissa, DNA:n spiraalissa.</p>
+
+<h3>Fibonacci-kukka</h3>
+
+<p>Auringonkukan siemenet järjestyvät <strong>kahdeksi spiraaliksi</strong> — toinen myötäpäivään, toinen vastapäivään. Näiden spiraalien lukumäärä on aina kaksi peräkkäistä Fibonacci-lukua (esim. 21 ja 34, 34 ja 55).</p>
+
+<p>Tämä on hämmästyttävää — kasvi <em>laskee</em> matemaattisesti optimaalisen tavan järjestää siemenensä.</p>
+
+<h2>Elämän kukka</h2>
+
+<p><strong>Elämän kukka</strong> (Flower of Life) on yksi tunnetuimmista pyhistä geometrioista. Se koostuu <strong>seitsemästä päällekkäisestä ympyrästä</strong>, jotka muodostavat kukan terälehtimäisen kuvion.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 250 250" width="250" height="250" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(125,125)">
+    <circle cx="0" cy="-50" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="43" cy="-25" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="43" cy="25" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="0" cy="50" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="-43" cy="25" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="-43" cy="-25" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+    <circle cx="0" cy="0" r="50" stroke="#4a3a8a" stroke-width="1.5" fill="none"/>
+  </g>
+  <text x="125" y="245" text-anchor="middle" fill="#666" font-size="12" font-family="Georgia">Elämän kukka — 7 päällekkäistä ympyrää</text>
+</svg>
+</div>
+
+<p>Elämän kukka on löydetty kaikista maailman kulttuureista — Egyptistä, Kiinasta, Intiasta, Kreikasta, keskiajan Euroopasta, Amerikan alkuperäiskansoilta. Se on <strong>universaali symboli</strong>.</p>
+
+<h3>Elämän kukan rakenne</h3>
+
+<p>Elämän kukka rakentuu kerroksittain:</p>
+
+<ul>
+<li><strong>1 ympyrä</strong> — keskipiste</li>
+<li><strong>6 ympyrää</strong> — ensimmäinen kukka</li>
+<li><strong>13 ympyrää</strong> — toinen kerros (Fibonacci 13)</li>
+<li><strong>19 ympyrää</strong> — kolmas kerros (Fibonacci 19 — vrt. Vesica piscis)</li>
+</ul>
+
+<p>Tämä <strong>Fibonacci-rakenne</strong> yhdistää elämän kukan ja kultaisen leikkauksen — ne ovat <em>saman periaatteen</em> kaksi ilmiasua.</p>
+
+<h2>Elämän kukka Egyptissä</h2>
+
+<p>Elämän kukan vanhin tunnettu esitys on <strong>Osirin temppelissä Abydoksessa, Egyptissä</strong> — yli 6000 vuotta vanha. Se on kaiverrettu kiveen temppelin pylväisiin.</p>
+
+<p>Egyptiläiset kutsuivat sitä <em>"kaikkien luotujen asioiden paikaksi"</em>. He ymmärsivät, että tämä geometria sisältää <em>kaikki</em> muut geometriset muodot.</p>
+
+<h3>Metatronin kuutio</h3>
+
+<p>Elämän kukasta voidaan johtaa <strong>Metatronin kuutio</strong> — monimutkainen geometrinen kuvio, joka sisältää <em>kaikki viisi platonista kappaletta</em>. Tämä tehdään piirtämällä viivoja elämän kukan kaikkien ympyröiden keskusten välille.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 250 250" width="250" height="250" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(125,125)">
+    <circle cx="0" cy="-50" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="43" cy="-25" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="43" cy="25" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="0" cy="50" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="-43" cy="25" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="-43" cy="-25" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <circle cx="0" cy="0" r="50" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+    <line x1="0" y1="-50" x2="43" y2="-25" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+    <line x1="43" y1="-25" x2="43" y2="25" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+    <line x1="43" y1="25" x2="0" y2="50" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+    <line x1="0" y1="50" x2="-43" y2="25" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+    <line x1="-43" y1="25" x2="-43" y2="-25" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+    <line x1="-43" y1="-25" x2="0" y2="-50" stroke="#4a3a8a" stroke-width="1" opacity="0.6"/>
+  </g>
+  <text x="125" y="245" text-anchor="middle" fill="#666" font-size="12" font-family="Georgia">Metatronin kuutio</text>
+</svg>
+</div>
+
+<p>Metatron on <strong>enkeli</strong> — "enkelien ruhtinas" — joka qabbalistisessa perinteessä istuu Keterin vieressä. Metatronin kuutio on <em>luomisen geometria</em>.</p>
+
+<h2>Kultainen spiraali</h2>
+
+<p>Kultaisen leikkauksen <em>spatiaalinen</em> ilmentymä on <strong>kultainen spiraali</strong> — spiraali, joka laajenee kultaisen leikkauksen mukaan.</p>
+
+<p>Tätä spiraalia näkyy:</p>
+
+<ul>
+<li>Nautilus-simpukoissa</li>
+<li>Galaksien käsivarsissa</li>
+<li>Auringonkukan keskustassa</li>
+<li>Muinaisissa temppeleissä (kierreportaat)</li>
+<li>Ihmisen korvan simpukassa (cochlea)</li>
+</ul>
+
+<p>Kultainen spiraali on <strong>kasvun geometria</strong> — tapa, jolla luonto laajenee säilyttäen tasapainon.</p>
+
+<h2>Kultainen leikkaus ihmisessä</h2>
+
+<p>Ihmiskeho on <strong>kultaisen leikkauksen mittainen</strong>:</p>
+
+<ul>
+<li>Sormen päät suhteessa käsivarteen</li>
+<li>Kämmenen pituus suhteessa kyynärvarteen</li>
+<li>Kasvojen mittasuhteet — silmät, nenä, suu</li>
+<li>Koko kehon mittasuhteet — napakorkeus, pää</li>
+</ul>
+
+<p>Tämä on miksi <strong>ihmistä pidetään kauniina</strong> — koska hänen mittasuhteensa ovat φ:n mukaiset. Kauneus ei ole subjektiivista — se on <em>matemaattista</em>.</p>
+
+<h2>Spiralit ja kasvu</h2>
+
+<p>Kultainen spiraali esiintyy <strong>kaikessa kasvussa</strong>:</p>
+
+<ul>
+<li>Kasvien versot</li>
+<li>Eläinten sarvet</li>
+<li>Hyönteisten siivet</li>
+<li>Aivot</li>
+<li>Sydämen syke</li>
+</ul>
+
+<p>Syynä on yksinkertainen: <strong>kultainen spiraali on tehokkain kasvumalli</strong>. Se vie vähiten tilaa, käyttää vähiten energiaa, ja säilyttää tasapainon.</p>
+
+<blockquote>"Luonto ei valitse kultaista leikkausta siksi, että se on kaunis — se valitsee sen, koska se on tehokas." — Richard Feynman</blockquote>
+
+<h2>Fraktaalit ja itseensä toistuvuus</h2>
+
+<p>Elämän kukka ja kultainen leikkaus liittyvät <strong>fraktaaleihin</strong> — muotoihin, jotka toistavat itseään eri mittakaavoissa.</p>
+
+<p>Fraktaaleja näkyy:</p>
+
+<ul>
+<li>Pilvissä</li>
+<li>Vuoristoissa</li>
+<li>Suonissa</li>
+<li>Verisuonistossa</li>
+<li>Keuhkoputkissa</li>
+</ul>
+
+<p>Fraktaalit ovat <strong>luonnon tapa optimoida</strong> — pinta-ala mahdollisimman suureksi tilavuuteen nähden, jakautuminen mahdollisimman tehokkaasti.</p>
+
+<h2>Harjoitus: kultaisen spiraalin piirtäminen</h2>
+
+<div class="reflect">
+<h3>Harjoitus: Spiraalin hengitys (20 min)</h3>
+<ol>
+<li>Ota iso paperi. Piirrä siihen neliö, jonka sivu on 10 cm.</li>
+<li>Jaa neliö <strong>kultaisen leikkauksen mukaan</strong>: sivun pituus on 1, lyhyempi osa on 1/φ ≈ 0.618, pidempi osa on 1/φ² ≈ 0.382.</li>
+<li>Piirrä <strong>kultainen spiraali</strong> neliöiden sisään. Spiraali alkaa pienestä ja laajenee.</li>
+<li>Piirrä spiraali <strong>hitaasti</strong>. Tunne jokainen kaari.</li>
+<li>5 minuuttia piirtämiseen.</li>
+<li>Jälkeenpäin: sulje silmät ja <em>hengitä</em> spiraalin mukaan. Sisään spiraalin laajentuessa, ulos spiraalin supistuessa.</li>
+<li>5 minuuttia hengittämistä.</li>
+</ol>
+<p>Tämä yhdistää geometrian, hengityksen ja meditaation. Se on yksi syvimmistä esoteerisista harjoituksista.</p>
+</div>
+
+<h2>Merkitys elämälle</h2>
+
+<p>Kultainen leikkaus ja elämän kukka eivät ole vain abstrakteja kaavoja — ne ovat <strong>todisteita universumin järjestyksestä</strong>. Ne osoittavat, että todellisuus ei ole sattumanvaraista — se noudattaa <em>matemaattisia periaatteita</em>.</p>
+
+<p>Tämä ei ole mekanistinen maailmankuva — se on <em>elävä</em>. Nämä periaatteet ovat kauniita, ja ne ovat <em>elämän</em> periaatteita — eivät kuolleiden koneiden.</p>
+
+<h2>Yhteenveto</h2>
+<p>Kultainen leikkaus (φ ≈ 1.618) ja elämän kukka ovat todellisuuden perusgeometriaa. Ne esiintyvät kaikkialla luonnossa — auringonkukissa, simpukoissa, galakseissa, ihmiskehossa. Fibonacci-sarja yhdistää nämä matemaattisesti. Kultainen spiraali on kasvun geometria. Elämän kukka sisältää kaikki muut geometriset muodot — se on luomisen peruskaava.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Etsi ympäristöstäsi esimerkkejä kultaisesta leikkauksesta tai spiraaleista — kasveissa, rakennuksissa, taiteessa. Miksi ne ovat kauniita? Mitä tämä kertoo kauneuden luonteesta?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

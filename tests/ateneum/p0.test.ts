@@ -12,6 +12,7 @@ process.env.ATENEUM_DB_PATH = path.join(tempDir, "ateneum-test.db");
 process.env.ATENEUM_JUUSO_PASSWORD = "test-juuso-password";
 process.env.ATENEUM_HENNA_PASSWORD = "test-henna-password";
 process.env.ATENEUM_BOT_PASSWORD = "test-bot-password";
+process.env.ATENEUM_CALENDAR_BACKEND = "off";
 process.env.NODE_ENV = "test";
 
 let baseUrl = "";
@@ -657,6 +658,37 @@ test("activity proposal email describes a proposal instead of a shared agreement
   }
   assert.match(activityEmail, /\/ateneum\/activity\.html\?id=\$\{encodeURIComponent\(opts\.activity\.id\)\}/);
   assert.doesNotMatch(activityEmail, /view=activities|Suunnitelma on nyt tallennettu|Aktiviteetti suunniteltu/);
+});
+
+test("plan share email describes a proposal and is wired to the share endpoint", () => {
+  const emailSource = readFileSync(path.resolve("server/ateneum-email.ts"), "utf8");
+  const routesSource = readFileSync(path.resolve("server/ateneum-routes.ts"), "utf8");
+  const start = emailSource.indexOf("export async function sendPlanShared");
+  const end = emailSource.indexOf("export async function", start + 1);
+  assert.ok(start >= 0 && end > start, "plan share email function boundaries missing");
+  const planEmail = emailSource.slice(start, end);
+  for (const marker of [
+    "Suunnitelmaehdotus:",
+    "Uusi suunnitelmaehdotus",
+    "jakoi sinulle suunnitelmaehdotuksen",
+    "Avaa suunnitelma",
+    'kind: "plan_shared"',
+  ]) {
+    assert.ok(planEmail.includes(marker), `plan email missing: ${marker}`);
+  }
+  assert.match(
+    planEmail,
+    /\/ateneum\/plan\.html\?id=\$\{encodeURIComponent\(opts\.plan\.id\)\}/,
+  );
+  assert.doesNotMatch(
+    planEmail,
+    /yhteinen suunnitelma on valmis|molemmat hyväksyivät|acceptedVersion/,
+  );
+  assert.match(routesSource, /sendPlanShared\s*\(/);
+  assert.match(
+    routesSource,
+    /\/api\/ateneum\/plans\/:id\/share[\s\S]*sendPlanShared/,
+  );
 });
 
 test("mutual activity proposals require reciprocal acceptance and optimistic versions", async () => {

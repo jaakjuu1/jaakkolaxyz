@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: coupling</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Coupling</h1>
+  <p class="meta">Käsite · systeemiajattelu · kytkentä · rakennetekijä</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Coupling</strong> (suom. <em>kytkentä</em>) on systeemiajattelun peruskäsite, joka kuvaa kahden tai useamman järjestelmän osan välistä keskinäistä riippuvuutta. Kaksi osaa on <em>kytketty</em>, kun yhden osan tila, käyttäytyminen tai muutos vaikuttaa toisen osan tilaan tai käyttäytymiseen. Mitä voimakkaammin vaikutus etenee ja mitä useampaan muuttujaan se ulottuu, sitä vahvempi kytkentä on.</p>
+
+  <p>Kytkentä ei ole pelkkä yhteys — kaksi osaa voivat olla <em>yhteydessä</em> toisiinsa ilman, että ne ovat kytkettyjä. Kytkennässä on kyse siitä, miten vahvasti yhden osan muutokset <em>määräävät</em>, <em>rajoittavat</em> tai <em>muokkaavat</em> toisen osan toimintaa. Kytkentä on siis aste- eikä binaarinen ilmiö: samassa järjestelmässä voi olla sekä heikosti että vahvasti kytkettyjä osapareja.</p>
+
+  <p>Käytännössä kytkentä näkyy kolmella tavalla:</p>
+  <ul>
+    <li><strong>Tilakytkentä</strong> — yhden osan tila asettaa reunaehdot toisen osan tilalle (esimerkiksi vesisäiliön pinnankorkeus määrää pumpun käynnistymiskynnyksen).</li>
+    <li><strong>Virtauskytkentä</strong> — aine, energia tai informaatio virtaa osasta toiseen ja kuljettaa mukanaan riippuvuuden (esimerkiksi verenkierto tai sähköverkko).</li>
+    <li><strong>Informaatiokytkentä</strong> — osat säätelevät toisiaan signaalien avulla (esimerkiksi säätötekniikan takaisinkytkentäsilmukka).</li>
+  </ul>
+
+  <p>Sana <em>coupling</em> tulee latinasta (<em>copulare</em>, "yhteen sitoa") ja sitä käytetään sekä luonnontieteissä että yhteiskuntatieteissä. Systeemiajattelussa se on yksi rakennetekijöistä, joiden avulla monimutkaisuutta voidaan kuvata ja analysoida.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Kytkennän käsite on syntynyt rinnakkain useilla tieteenaloilla. <strong>Fysiikassa</strong> kytkettyjen oskillaattorien teoria (Huygens, 1665) on yksi vanhimmista muotoiluista: kaksi samalle seinälle ripustettua heilurikelloa synkronoivat liikkeensä ääniaaltojen välityksellä. Tämä oli varhainen esimerkki heikosta kytkennästä.</p>
+
+  <p><strong>Kybernetiikassa</strong> ja säätötekniikassa coupling nousi keskeiseksi käsitteeksi 1940-luvulla, kun <a href="/learn/systeemiajattelu/concepts/cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">kyberneettisten silmukoiden</a> rinnalle kehitettiin käsite <em>coupled systems</em> — toisistaan riippuvaiset järjestelmät, joissa yhden silmukan lähtö syöttää toista. Norbert Wienerin ja W. Ross Ashbyn työ toi käsitteen yleiseen systeemiajatteluun.</p>
+
+  <p><strong>Yhteiskuntatieteissä</strong> coupling-käsite vakiintui 1970-luvulla organisaatioteoriassa (Weick, Thompson) ja 1990-luvulla kompleksisuustutkimuksessa (Kauffman, Strogatz, Watts). Erityisesti <em>small-world</em>- ja <em>scale-free</em>-verkostojen tutkimus nosti kytkennän keskeiseksi monimutkaisten verkostojen ominaisuudeksi.</p>
+
+  <p>2000-luvulta lähtien coupling on ollut keskeinen käsite <a href="/learn/systeemiajattelu/concepts/systems-biology.html" class="wikilink" data-concept="systems-biology">systeemibiologiassa</a>, <a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksisissa adaptiivisissa systeemeissä</a> ja [[software architecture|ohjelmistoarkkitehtuurissa]], joissa se liittyy suoraan <a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modulaarisuuden</a> ja <a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilienssin</a> kysymyksiin.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a> — kytkennän heikko ääripää: joustava ja sietokykyinen.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a> — kytkennän vahva ääripää: tehokas mutta hauras.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a> — kytkennän vastavoima: osien erottaminen toisistaan.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">feedback</a> — kytkentä, jossa vaikutus kiertää takaisin lähteeseensä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — konkreettinen silmukka, jossa kytkentä realisoituu.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/interconnection.html" class="wikilink" data-concept="interconnection">interconnection</a> — yleiskäsite osien välisistä yhteyksistä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/network.html" class="wikilink" data-concept="network">network</a> — joukko kytkettyjä solmuja.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/edge.html" class="wikilink" data-concept="edge">edge</a> — yksittäinen kytkentä verkon solmujen välillä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/node.html" class="wikilink" data-concept="node">node</a> — kytkennän osapuoli.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — kytkentöjen määrä ja tiheys synnyttävät kompleksisuutta.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — kytkennän laatu vaikuttaa järjestelmän sietokykyyn.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/control-systems-engineering.html" class="wikilink" data-concept="control-systems-engineering">control-systems-engineering</a> — tieteenala, jossa kytkentä on suunnittelun ydin.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Coupling esitellään [[../lessons/modularity.html|Modulaarisuus ja kytkentä]] -oppitunnilla, jossa käsite linkitetään <a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modulaarisuuteen</a>, <a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a>iin ja <a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a>iin. Kytkentä toistuu [[../lessons/complex-adaptive-systems.html|kompleksisten adaptiivisten systeemien]], [[../lessons/network-thinking.html|verkostoajattelun]] ja [[../lessons/resilience.html|resilienssin]] oppitunneilla.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Wiener, N. (1948). <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em>. MIT Press.</li>
+    <li>Ashby, W. R. (1956). <em>An Introduction to Cybernetics</em>. Chapman &amp; Hall.</li>
+    <li>Weick, K. E. (1976). "Educational Organizations as Loosely Coupled Systems." <em>Administrative Science Quarterly</em> 21(1).</li>
+    <li>Simon, H. A. (1962). "The Architecture of Complexity." <em>Proceedings of the American Philosophical Society</em> 106(6).</li>
+    <li>Strogatz, S. (2003). <em>Sync: The Emerging Science of Spontaneous Order</em>. Hyperion.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">feedback</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/interconnection.html" class="wikilink" data-concept="interconnection">interconnection</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/network.html" class="wikilink" data-concept="network">network</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Wiener 1948; Ashby 1956; Weick 1976; Simon 1962; Strogatz 2003. Ks. myös Wikipedia-artikkelit <em>Coupling</em>, <em>Loose coupling</em> ja <em>Tight coupling</em>.
+  </p>
+</main>
+</body>
+</html>

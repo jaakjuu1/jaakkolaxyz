@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003 — Induktio vs absorptio</title>
+<link rel="stylesheet" href="../reference/lesson.css">
+<style>
+:root{--bg:#fbfaf6;--ink:#1a1a1a;--muted:#666;--rule:#d8d4c7;--accent:#8a3a2a;--accent-soft:#f3e9e1;--max:38rem;--ok:#3b6b3b;--warn:#8a5a12}
+@media(prefers-color-scheme:dark){:root{--bg:#181715;--ink:#ece8de;--muted:#9a958a;--rule:#3a3530;--accent:#d28a72;--accent-soft:#2a2520;--ok:#7fb878;--warn:#e0b56a}}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,sans-serif}
+.wrap{max-width:var(--max);margin:4rem auto;padding:0 1.4rem 4rem}
+h1{font-size:1.9rem;font-weight:700;line-height:1.15;margin:0 0 .3rem}
+h2{font-size:1.25rem;font-weight:700;margin:2.6rem 0 .8rem}
+h3{font-size:1.05rem;font-weight:600;margin:1.6rem 0 .5rem}
+.crumb{color:var(--muted);font-size:.9rem;margin:0 0 .6rem}.crumb a{color:var(--accent);text-decoration:none}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2rem}
+p{margin:0 0 1rem}
+blockquote{margin:1.6rem 0;padding:.9rem 1.1rem;border-left:3px solid var(--accent);background:var(--accent-soft);font-style:italic;border-radius:0 4px 4px 0}
+blockquote p{margin:0}
+hr{border:0;border-top:1px solid var(--rule);margin:2.4rem 0}
+a{color:var(--accent);text-underline-offset:2px}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.4rem 0}
+@media(max-width:540px){.twocol{grid-template-columns:1fr}}
+.col{border:1px solid var(--rule);border-radius:4px;padding:1rem 1.1rem;min-width:0}
+.col h3{margin-top:0}
+.col.wrong h3::before{content:"✗ ";color:var(--accent)}
+.col.right h3::before{content:"✓ ";color:var(--ok)}
+.callout{border:1px solid var(--rule);border-radius:4px;padding:1rem 1.1rem;margin:1.4rem 0}
+.callout.warn{border-left:3px solid var(--warn)}
+ol.steps li{margin-bottom:.7rem}
+ol,ul{padding-left:1.4rem;margin:0 0 1rem}
+li{margin-bottom:.4rem}
+label{display:block;font-weight:600;margin:1rem 0 .35rem}
+textarea{width:100%;font:inherit;padding:.55rem .65rem;border:1px solid var(--rule);border-radius:3px;background:var(--bg);color:var(--ink)}
+.choices{display:flex;flex-direction:column;gap:.45rem;margin:.4rem 0 1rem}
+.choices label{font-weight:400;margin:0;display:flex;gap:.5rem;align-items:flex-start}
+button{margin-top:1rem;margin-right:.6rem;font:inherit;padding:.55rem 1rem;border:1px solid var(--rule);border-radius:3px;background:var(--bg);color:var(--ink);cursor:pointer}
+#status{font-size:.88rem;color:var(--accent)}
+.pager{display:flex;justify-content:space-between;gap:1rem;margin:3rem 0 0;padding-top:1.5rem;border-top:1px solid var(--rule);font-size:.92rem}
+.pager a{color:var(--accent);text-decoration:none}
+.pager .next{text-align:right}
+.footer-note{color:var(--muted);font-size:.85rem;margin-top:2.4rem;padding-top:1rem;border-top:1px dashed var(--rule)}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="crumb"><a href="../../">Oppimispolut</a> · <a href="../index.html">Hypnoterapia</a></p>
+  <h1>Induktio vs absorptio</h1>
+  <p class="meta">Oppitunti 0003 · ~8 min + 5 min harjoitus · oma käyttö</p>
+
+  <p>Jos silmät painuvat kiinni ja olo on pehmeä, se voi olla rentoutta. Se ei vielä ole hypnoosia. Yapko: rentous <em>ei ole</em> hypnoosin määrittelevä piirre — absorptio ja dissosiaatio ovat. Siksi tämä tunti tehdään silmät auki.</p>
+
+  <h2>Toimenpide ei ole tulos</h2>
+  <p>APA Div. 30 erottaa kaksi asiaa:</p>
+  <ul>
+    <li><strong>Induktio</strong> — toimenpide, jolla hypnoosia <em>haetaan</em>.</li>
+    <li><strong>Hypnoosi</strong> — se, mitä mahdollisesti syntyy: keskittynyt tarkkaavuus, kaventunut reuna, vahvempi vastaus ehdotukseen.</li>
+  </ul>
+  <p>Elkins ym. (2015) tekivät eron siksi, ettei kukaan voisi väittää “olin hypnotisoitu, koska luin rentoutustekstin”. Induktio voi epäonnistua. Silloin jäljelle jää seremonian muoto, ei transsia.</p>
+  <p>APA Monitor (2024): sekä “tila”- että “tarkkaavuus”-koulukunta ovat yhtä mieltä yhdestä: hypnoosi on erityistä keskittynyttä tarkkaavuutta, joka avaa ehdotukselle. Siitä eteenpäin mekanismi on kiistelty. Sinun ei tarvitse ratkaista kiistaa osataksesi harjoitella.</p>
+
+  <h2>Absorptio on se, mitä haetaan</h2>
+  <p>Yapko kutsuu hypnoterapian ytimeksi <em>experiential absorption</em>: voimakasta uppoutumista yhteen ärsykkeeseen — ajatukseen, tunteeseen, aistimukseen, sanaan. Se on valikoivaa tarkkaavuutta. Dissosiaatio on sen pari: osa kokemuksesta jää taustalle (esim. “highway hypnosis”: ajatus kulkee, auto pysyy tiellä).</p>
+  <blockquote>
+    <p>Many people think that hypnosis necessarily involves relaxation, but the ability to produce hypnotic phenomena even when active and alert makes it clear that relaxation is not a defining characteristic of hypnosis.</p>
+  </blockquote>
+  <p>Rentous on klinikan <em>ajoneuvo</em> — se vähentää ahdistusta ja helpottaa uuden taidon ottoa. Se ei ole moottori. Moottori on tarkkaavuuden kaventuminen + ehdotus (0002).</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Vain rentous</h3>
+      <p>Makaat. Olo on pehmeä. Mieli harhailee uutisiin. Ei kohdetta, ei lausetta. Unen raja lähestyy.</p>
+    </div>
+    <div class="col right">
+      <h3>Absorptio</h3>
+      <p>Yksi piste, ääni tai tuntemus etualalla. Reuna jää sivuun. Sitten yksi ehdotus. Hereillä, vaikka keho on rento.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <h3>Stop</h3>
+    <p>Älä tee silmät auki -harjoitusta liikenteessä tai koneen ääressä. Jos olo menee uniseksi, avaa näkökenttä, nimeä kolme esinettä, nouse. Sama hätäohje kuin 0001: 112 / Mielenterveystalo. Ei muistojen kaivua.</p>
+  </div>
+
+  <h2>Taito: 5 min silmät auki</h2>
+  <p>Tuoli, jalat lattialla, selkä suorana. Valitse yksi näkyvä piste (kahva, kasvi, täplä seinässä) ja yksi kelvollinen ehdotus 0002:n säännöillä. Esimerkki-muoto: “Hartiat laskeutuvat joka uloshengityksellä.”</p>
+  <ol class="steps">
+    <li><strong>0:00–0:30</strong> — “Teen tämän hereillä. Voin katsoa pois milloin tahansa.”</li>
+    <li><strong>0:30–3:00</strong> — Pidä piste etualalla. Kun huomio karkaa, palauta se pisteeseen, ei uneen. Tämä on induktio ilman rentousrituaalia.</li>
+    <li><strong>3:00–4:30</strong> — Toista ehdotus hitaasti, silmät yhä auki. Jos luomet painuvat, se on sivuvaikutus — älä jahtaa sitä.</li>
+    <li><strong>4:30–5:00</strong> — Nimeä ääneen kolme esinettä huoneessa. Paluu.</li>
+  </ol>
+  <p>Onnistumisen merkki ei ole “olin poissa”. Merkki on: piste pysyi etualalla pidempään kuin tavallisesti, ja lause oli kuvattavissa kehossa.</p>
+
+  <hr>
+  <h2>Koe</h2>
+  <form id="quiz" onsubmit="return false;">
+    <fieldset style="border:0;padding:0;margin:0">
+      <legend style="font-weight:600;margin:1rem 0 .35rem">1. APA Div. 30:n mukaan induktio on:</legend>
+      <div class="choices">
+        <label><input type="radio" name="q1" value="a"> Pelkkä rentous ilman kohdetta</label>
+        <label><input type="radio" name="q1" value="b"> Toimenpide jolla haetaan hypnoosia</label>
+        <label><input type="radio" name="q1" value="c"> Tulos kun ehdotus tarttuu</label>
+      </div>
+    </fieldset>
+    <label for="q2">2. Viiden minuutin jälkeen: oliko etualalla piste vai uneliaisuus? Yksi havainto, ei tulkintaa.</label>
+    <textarea id="q2" rows="2" placeholder="Havainto: …"></textarea>
+    <label for="q3">3. Nimeä yksi arjen absorptio (lukeminen, musiikki, työ), jossa rentous ei ollut ehtona.</label>
+    <textarea id="q3" rows="2" placeholder="Esimerkki-muoto: Kirjan sivu, äänet katosivat."></textarea>
+    <button type="button" onclick="copyAnswers()">Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+  <p>Jos jokin kohta ei aukea, kysy opettajalta. Tämä sivu on oppitunti, ei live-chat.</p>
+
+  <h2>Ensisijainen lähde tälle tunnille</h2>
+  <p>Yapkon kappale absorptionista ja siitä, ettei rentous määritä hypnoosia. Sitten APA:n induktion määritelmä.</p>
+  <ul>
+    <li><a href="https://yapko.com/hypnosis/">Yapko — What is Hypnosis (absorptio, dissosiaatio, rentous)</a></li>
+    <li><a href="https://www.apadivisions.org/division-30/about">APA Div. 30 — hypnosis vs hypnotic induction</a></li>
+    <li><a href="https://www.apa.org/monitor/2024/04/science-of-hypnosis">Weir, APA Monitor 2024</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Elkins, Barabasz, Council &amp; Spiegel (2015), APA Div. 30 määritelmät;
+    Yapko, yapko.com/hypnosis;
+    Weir (2024), <em>Monitor on Psychology</em> 55(3).
+    <a href="../reference/sanasto.html">Sanasto</a>.
+  </p>
+  <div class="pager">
+    <a href="0002-ehdotuksen-rakenne.html">← 0002 Ehdotuksen rakenne</a>
+    <a class="next" href="0004-paluu-ja-stop.html">Seuraava: Paluu ja stop →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const map = {
+    a: 'Pelkkä rentous ilman kohdetta',
+    b: 'Toimenpide jolla haetaan hypnoosia',
+    c: 'Tulos kun ehdotus tarttuu'
+  };
+  const nl = String.fromCharCode(10)+String.fromCharCode(10);
+  const out = [
+    'Q1: ' + (q1 ? map[q1.value] : '(tyhjä)'),
+    'Q2: ' + (document.getElementById('q2').value.trim() || '(tyhjä)'),
+    'Q3: ' + (document.getElementById('q3').value.trim() || '(tyhjä)')
+  ].join(nl);
+  navigator.clipboard.writeText(out).then(() => {
+    document.getElementById('status').textContent = 'Kopioitu leikepöydälle';
+    setTimeout(() => { document.getElementById('status').textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('input[name="q1"]').forEach(r => { r.checked = false; });
+  document.getElementById('q2').value = '';
+  document.getElementById('q3').value = '';
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

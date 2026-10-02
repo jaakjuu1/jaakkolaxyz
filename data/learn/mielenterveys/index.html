@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mielenterveystaidot, hengitys, mantrat ja meditaatio — ristireferoitu oppimisympäristö arjen työkaluihin.">
+<title>Mielenterveys ja meditaatio — oppimispolut</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 38rem;
+    --purple: #5d4a8a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4; --purple: #b09fd1;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  /* Pathways grid */
+  .paths {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.6rem 0 2rem;
+  }
+  @media (max-width: 640px) { .paths { grid-template-columns: 1fr; } }
+  .path {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.1rem 1.2rem;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+  }
+  .path .label {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .4rem;
+  }
+  .path h3 {
+    margin: 0 0 .5rem;
+    color: var(--accent);
+  }
+  .path.breathing h3 { color: #355874; }
+  .path.mantras h3 { color: #5d4a8a; }
+  .path.meditation h3 { color: #3b6b3b; }
+  .path.concepts h3 { color: #8a3a2a; }
+  .path p { margin: 0 0 .9rem; font-size: .95rem; }
+  .path .count {
+    margin-top: auto;
+    font-size: .85rem;
+    color: var(--green);
+    font-weight: 600;
+  }
+  .path a { text-decoration: none; color: inherit; display: block; }
+  .path a:hover h3 { text-decoration: underline; }
+
+  /* Concept cloud */
+  .cloud {
+    background: var(--code-bg);
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.4rem 0;
+    line-height: 2;
+  }
+  .cloud a {
+    text-decoration: none;
+    color: var(--ink);
+    margin-right: .4rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .cloud a:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  ul.lessons { list-style: none; padding-left: 0; margin: 1.4rem 0; }
+  ul.lessons li {
+    border-left: 3px solid var(--rule);
+    padding: .9rem 0 .9rem 1.2rem;
+    margin-bottom: 0;
+  }
+  ul.lessons li:hover { border-left-color: var(--accent); }
+  ul.lessons a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  ul.lessons a:hover { color: var(--accent); }
+  ul.lessons .desc {
+    display: block;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: .92rem;
+    margin-top: .25rem;
+  }
+  .tag {
+    display: inline-block;
+    font-size: .7rem;
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: .35rem;
+    vertical-align: middle;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+
+  .boundary {
+    background: #fff5e6;
+    border-left: 3px solid #b07000;
+    padding: 1rem 1.2rem;
+    border-radius: 0 4px 4px 0;
+    margin: 1.6rem 0;
+    font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    .boundary { background: #2a2418; border-left-color: #d49a3a; }
+  }
+  .boundary strong { color: #b07000; }
+  @media (prefers-color-scheme: dark) {
+    .boundary strong { color: #d49a3a; }
+  }
+
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+
+  .footer-note {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: 2.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--rule);
+  }
+
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: .88em;
+    color: var(--blue);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Mielenterveys, hengitys, mantrat, meditaatio</h1>
+  <p class="meta">Neljä toisensa leikkaavaa polkua · käytä wikilinkkejä käsitteiden välillä</p>
+
+  <div class="hero">
+    <p>Tämä on <strong>ristireferoitu oppimisympäristö</strong>. Jokainen polku on itsenäinen, mutta käsitteet (<a href="concepts/meditation.html" class="wikilink" data-concept="meditation">hengitys</a>, <a href="concepts/mantra.html" class="wikilink" data-concept="mantra">mantrat</a>, <a href="concepts/pranayama.html" class="wikilink" data-concept="pranayama">pranayama</a>) kulkevat polkujen välillä. Klikkaa käsitettä niin pääset sen omalle sivulle, josta löytyvät kaikki oppitunnit joissa sitä käsitellään.</p>
+  </div>
+
+  <h2>Neljä polkua</h2>
+
+  <div class="paths">
+    <div class="path concepts">
+      <div class="label">Tietosanakirja</div>
+      <h3><a href="concepts/">Käsitteet</a></h3>
+      <p>Wikipedia-tyylinen hakemisto kaikista termeistä. Jokainen käsite on oma sivunsa, josta löytyvät siihen liittyvät oppitunnit ja muut käsitteet.</p>
+      <span class="count">→ 26 käsitettä</span>
+    </div>
+    <div class="path">
+      <div class="label">Työkalut</div>
+      <h3><a href="lessons/0001-hyvaksyminen-ei-ole-luovuttamista.html">Mielenterveystaidot</a></h3>
+      <p>Seitsemän tutkitusti toimivaa terapiatyökalua arkeen — CBT, ACT, DBT, mindfulness, itsemyötätunto, käyttäytymisen aktivointi. Alkuperäinen polku.</p>
+      <span class="count">→ 7 oppituntia</span>
+    </div>
+    <div class="path breathing">
+      <div class="label">Kehollinen polku</div>
+      <h3><a href="breathing/">Hengitys</a></h3>
+      <p>Palleahengitys, nelion-hengitys, vaihtoehtoinen sierainhengitys, kapalabhati — portti hermoston säätelyyn.</p>
+      <span class="count">→ 6 oppituntia</span>
+    </div>
+    <div class="path mantras">
+      <div class="label">Äänellinen polku</div>
+      <h3><a href="mantras/">Mantrat</a></h3>
+      <p>Om, So Ham, bija-mantrat, japa, mala — äänen, värähtelyn ja toiston työkalut. Ei New Age -pulpettia, vain tutkittua tietoa.</p>
+      <span class="count">→ 6 oppituntia</span>
+    </div>
+    <div class="path meditation">
+      <div class="label">Hiljaisuuden polku</div>
+      <h3><a href="meditation/">Meditaatio</a></h3>
+      <p>Hengitysmeditaatio, kehoskannaus, kävelymeditaatio, metta, zazen. Tutkimusperustainen, rehellinen hyödyistä JA rajoitteista.</p>
+      <span class="count">→ 6 oppituntia</span>
+    </div>
+  </div>
+
+  <h2>Käsitteet joita poluilla käytetään</h2>
+  <p>Tämä on nopea tapa navigoida. Jokainen sana vie käsitteen omalle sivulle.</p>
+
+  <div class="cloud">
+    <a href="concepts/prana.html">prana</a>
+    <a href="concepts/pranayama.html">pranayama</a>
+    <a href="concepts/breath-awareness.html">hengitystietoisuus</a>
+    <a href="concepts/diaphragm.html">pallea</a>
+    <a href="concepts/nadi-shodhana.html">nadi shodhana</a>
+    <a href="concepts/kapala-bhati.html">kapalabhati</a>
+    <a href="concepts/bhastrika.html">bhastrika</a>
+    <a href="concepts/ujjayi.html">ujjayi</a>
+    <a href="concepts/sama-vritti.html">sama vritti</a>
+    <a href="concepts/visama-vritti.html">visama vritti</a>
+    <a href="concepts/bandha.html">bandha</a>
+    <a href="concepts/mantra.html">mantra</a>
+    <a href="concepts/bija.html">bija</a>
+    <a href="concepts/om.html">om</a>
+    <a href="concepts/so-ham.html">so ham</a>
+    <a href="concepts/japa.html">japa</a>
+    <a href="concepts/mala.html">mala</a>
+    <a href="concepts/meditation.html">meditaatio</a>
+    <a href="concepts/mindfulness.html">mindfulness</a>
+    <a href="concepts/samatha.html">samatha</a>
+    <a href="concepts/vipassana.html">vipassana</a>
+    <a href="concepts/metta.html">metta</a>
+    <a href="concepts/drishti.html">drishti</a>
+    <a href="concepts/presence.html">läsnäolo</a>
+    <a href="concepts/stillness.html">hiljaisuus</a>
+    <a href="concepts/witness.html">tarkkailija</a>
+  </div>
+
+  <h2>Mistä aloittaa?</h2>
+  <p>Kolme eri reittiä, riippuen siitä mikä sinua kiinnostaa juuri nyt.</p>
+
+  <ul class="lessons">
+    <li>
+      <a href="lessons/0001-hyvaksyminen-ei-ole-luovuttamista.html"><strong>Reitti 1 — "Haluan työkaluja arkeen"</strong> <span class="tag">aloittelijalle</span></a>
+      <span class="desc">Aloita mielenterveystaidot-polusta. Se on konkreettisin ja nopeiten sovellettavissa.</span>
+    </li>
+    <li>
+      <a href="breathing/"><strong>Reitti 2 — "Haluan rauhoittaa kehon"</strong> <span class="tag">keho ensin</span></a>
+      <span class="desc">Aloita hengitys-polusta. Ensin keho alas, sitten vasta mieli.</span>
+    </li>
+    <li>
+      <a href="meditation/"><strong>Reitti 3 — "Haluan oppia meditoimaan"</strong> <span class="tag">kokonaisvaltainen</span></a>
+      <span class="desc">Aloita meditaatio-polusta. Se on pisin ja perusteellisin.</span>
+    </li>
+  </ul>
+
+  <div class="boundary">
+    <strong>Tärkeä rajaus.</strong> Nämä työkalut eivät korvaa ammattiapua. Jos sinulla on itsetuhoisia ajatuksia, vaikea masennus, ahdistuneisuushäiriö, trauma tai pitkäaikainen toimintakyvyn lasku — ota yhteys lääkäriin tai psykoterapeuttiin. Suomessa apua saa esimerkiksi <a href="https://mieli.fi">MIELI ry</a>:stä (kriisipuhelin <code>09 2525 0111</code>) tai terveysasemalta.
+  </div>
+
+  <hr>
+
+  <p class="footer-note">
+    Tämä on henkilökohtainen oppimisprojekti, ei ammatillinen julkaisu. Mikään tässä ei ole hoitosuositus. Jos kiinnostuit, lähde liikkeelle — älä odota täydellistä hetkeä.
+  </p>
+</main>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005-verkostot-ja-kytkennat — Verkostot ja kytkennät</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0005/6</p>
+  <h1>Verkostot ja kytkennät</h1>
+  <p class="lede">Järjestelmän rakenne määrää sen käyttäytymisen. Verkosto-oppi antaa kielen ja työkalut tämän rakenteen analysointiin.</p>
+
+  <p>Järjestelmä syntyy kun osat kytkeytyvät. Mutta <em>miten</em> ne kytkeytyvät tekee valtavan eron. Tässä oppitunnissa tarkastellaan <strong>verkostoja</strong> — järjestelmän sisäistä rakennetta ja sen vaikutusta käyttäytymiseen.</p>
+
+  <p>Tämä oppitunti yhdistää kaikki aiemmat: CAS:n toimijat ovat <em>verkon solmuja</em>, kytkennät ovat <em>kaaria</em>, ja näiden rakenne määrää, mitä järjestelmä voi tehdä.</p>
+
+  <h2>Verkoston peruselementit</h2>
+
+  <p>Verkosto (network, graph) koostuu kahdesta asiasta:</p>
+
+  <ul>
+    <li><strong>Solmut (nodes)</strong> — toimijat, oliot, pisteet.</li>
+    <li><strong>Kaaret (edges)</strong> — kytkennät solmujen välillä.</li>
+  </ul>
+
+  <p>Tämä riittää kuvaamaan äärettömän monenlaisia järjestelmiä:</p>
+
+  <ul>
+    <li><strong>Sosiaalinen verkosto</strong> — solmut ovat ihmisiä, kaaret ovat ystävyyksiä.</li>
+    <li><strong>Aivot</strong> — solmut ovat neuroneja, kaaret ovat synapseja.</li>
+    <li><strong>Internet</strong> — solmut ovat sivuja, kaaret ovat linkkejä.</li>
+    <li><strong>Sähköverkko</strong> — solmut ovat asemia, kaaret ovat siirtoyhteyksiä.</li>
+    <li><strong>Ruoan tuotanto</strong> — solmut ovat toimijoita, kaaret ovat tuotantoketjuja.</li>
+  </ul>
+
+  <p>Verkosto on <em>universaali</em> kuvaus — minkä tahansa järjestelmän rakenteen voi kuvata verkkona.</p>
+
+  <h2>Verkoston topologia</h2>
+
+  <p>Verkoston <em>topologia</em> on se, miten solmut kytkeytyvät — paljon tärkeämpi kuin solmujen yksityiskohdat.</p>
+
+  <p>Topologioita on useita, joista tärkeimmät:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Täydellinen verkko</h3>
+      <p>Jokainen solmu on yhteydessä jokaiseen muuhun. Tehokas mutta kallis — n solmua vaatii n(n-1)/2 kaarta. Käytännössä vain pienissä ryhmissä.</p>
+    </div>
+    <div class="col">
+      <h3>Säännöllinen verkko</h3>
+      <p>Jokaisella solmulla on sama määrä naapureita. Esim. hilarakenteinen verkko. Helppo analysoida, mutta ei joustava.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Satunnainen verkko (Erdős–Rényi)</h3>
+      <p>Kaaret satunnaisesti todennäköisyydellä p. Helppo muodostaa, mutta yllättävän hauras.</p>
+    </div>
+    <div class="col">
+      <h3>Pieni maailma (Watts–Strogatz)</h3>
+      <p>Säännöllinen verkko, jossa pieni osa kaarista korvataan satunnaisilla. Kuuluisa "kuusi askelta" -ilmiö.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Vapaa-asteinen (Barabási–Albert)</h3>
+      <p>Pieni joukko solmuja on <em>hub-solmuja</em> (paljon kytkentöjä), useimmilla vain muutama. Kuvaa internetiä, sosiaalisia verkostoja.</p>
+    </div>
+    <div class="col">
+      <h3>Pienoisverkko (modularity)</h3>
+      <p>Solmut ryhmittyvät tiheästi kytkeytyneiksi klustereiksi, jotka kytkeytyvät toisiinsa harvemmilla silloilla. Kuvaa aivoja, organisaatioita.</p>
+    </div>
+  </div>
+
+  <p>Kukin topologia tuottaa <em>erilaisen käyttäytymisen</em>: haurautta, kestävyyttä, tiedon leviämistä, resistenssiä.</p>
+
+  <h2>Pienen maailman ilmiö</h2>
+
+  <p>Ehkä tunnetuin verkostotutkimuksen löytö: <strong>pienen maailman ilmiö</strong>. Milgramin kokeessa (1967) kirjeet pääsivät kohteeseensa keskimäärin <em>kuuden välikäden</em> kautta.</p>
+
+  <p>Tämä johtuu siitä, että sosiaaliset verkostot ovat "pieniä maailmoja" — paikallisia klustereita, joita harvat satunnaiset yhteydet yhdistävät. Tämä topologia mahdollistaa <em>nopean</em> tiedon leviämisen <em>pienellä</em> määrällä kytkentöjä.</p>
+
+  <p>Käytännön sovellus: tämä on sosiaalisten verkostojen voima. Kuusi astetta erottaa ketkä tahansa kaksi ihmistä maailmassa — jopa ilman keskitettyä koordinaatiota.</p>
+
+  <h2>Solmujen roolit</h2>
+
+  <p>Kaikki solmut eivät ole samanarvoisia. Verkoston tutkimus on tunnistanut rooleja:</p>
+
+  <ul>
+    <li><strong>Hub-solmut</strong> — paljon kytkentöjä. Google, Twitter presidentti, sähköasema.</li>
+    <li><strong>Välittäjäsolmut (bridges)</strong> — yhdistävät klustereita. Harvinaisia, mutta kriittisiä.</li>
+    <li><strong>Reunasolmut</strong> — vähän kytkentöjä. Pieni rooli verkossa, mutta usein tärkeä (esim. erikoistunut osaaminen).</li>
+    <li><strong>Vaikuttajasolmut (influencers)</strong> — eivät välttämättä hub-solmuja, mutta niiden tieto leviää tehokkaasti.</li>
+  </ul>
+
+  <p><strong>Network science</strong> on tuonut ymmärrystä siitä, miten poistaminen tai lisääminen vaikuttaa. Esimerkki: kun hub-solmu poistetaan vapaa-asteisesta verkosta, verkko hajoaa helposti. Kun pienen maailman verkossa poistetaan välittäjä, klusterit erkanevat.</p>
+
+  <h2>Kytkentätyypit: tiukka ja löysä</h2>
+
+  <p><strong>Perrow</strong> (Normal Accidents, 1984) kehitti käsitteet <em>tight coupling</em> (tiukka kytkentä) ja <em>loose coupling</em> (löysä kytkentä). Nämä ovat tapa nähdä järjestelmiä verkostoina:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Tiukka kytkentä (tight)</h3>
+      <p>Osat riippuvat välittömästi toisistaan. Häiriö yhdessä leviää heti muihin. Esimerkki: ydinvoimala, kirurginen leikkaus.</p>
+      <p><strong>Riskit:</strong> häiriö leviää nopeasti.</p>
+    </div>
+    <div class="col">
+      <h3>Löysä kytkentä (loose)</h3>
+      <p>Osat voivat joustaa, puskuroida. Häiriö imeytyy yhteen osaan. Esimerkki: postijärjestelmä, monimarkkinatalous.</p>
+      <p><strong>Riskit:</strong> tehottomuus, viiveet.</p>
+    </div>
+  </div>
+
+  <p><strong>Sääntö:</strong> tiukkaa kytkentää tarvitaan missä tahansa missä nopeus ja tarkkuus ovat tärkeitä (kirurgia, reaktorit). Löysä kytkentä sopii missä tarvitaan resilienssiä ja joustavuutta (talous, ekosysteemit).</p>
+
+  <p>Virhe: käyttää tiukkaa kytkentää tilanteessa joka vaatii joustavuutta — tai päinvastoin.</p>
+
+  <h2>Verkostoteoria evoluutiossa</h2>
+
+  <p><strong>Herbert Spencer</strong> (1820–1903) esitti jo 1800-luvulla, että yhteiskunta on "superorganismi" — sosiaalinen verkosto. Tätä ovat kehittäneet:</p>
+
+  <ul>
+    <li><strong>Manuel Castells</strong> — informaatioaikakauden verkostoyhteiskunta.</li>
+    <li><strong>Albert-László Barabási</strong> — vapaa-asteisten verkostojen tutkimus.</li>
+    <li><strong>Duncan Watts</strong> — pienen maailman verkostot.</li>
+    <li><strong>Yochai Benkler</strong> — peer production ja yhteisöllinen verkosto.</li>
+  </ul>
+
+  <p>Nämä tutkijat ovat osoittaneet, että verkoston topologia ennustaa käyttäytymistä — ei solmujen yksityiskohdat.</p>
+
+  <h2>Robustness vs. resilience</h2>
+
+  <p>Kaksi tärkeää verkosto-ominaisuutta:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Robustness</h3>
+      <p>Järjestelmä säilyttää toimintansa satunnaisissa häiriöissä. Hajautettu topologia parantaa robustisuutta.</p>
+    </div>
+    <div class="col">
+      <h3>Resilience</h3>
+      <p>Järjestelmä <em>palautuu</em> kohdistetuista häiriöistä. Modulaarinen rakenne parantaa resilienssiä.</p>
+    </div>
+  </div>
+
+  <p>Nämä ovat <em>eri asioita</em>. Verkosto voi olla robustinen sattumanvaraisille häiriöille mutta hauras kohdistetuille — ja päinvastoin. Vapaa-asteinen verkosto (esim. internet) on robustinen, koska hub-solmuja on monta — mutta haavoittuva, jos täsmähyökätään hub-solmuihin.</p>
+
+  <h2>Verkostot ja emergentit ilmiöt</h2>
+
+  <p>Suurin osa emergenssistä syntyy verkoston rakenteesta:</p>
+
+  <ul>
+    <li><strong>Tippumispisteet (tipping points)</strong> — syntyvät kun verkoston tiheys ylittää kriittisen kynnyksen.</li>
+    <li><strong>Kaskadit</strong> — kun yksi solmu vaikuttaa useampaan, joka vaikuttaa useampaan → ketjureaktio.</li>
+    <li><strong>Tiedon leviäminen</strong> — riippuu topologiasta ja kynnysarvoista.</li>
+    <li><strong>Yllätysvaikutukset</strong> — kun verkon "piilotetut polut" aktivoituvat odottamattomasti.</li>
+  </ul>
+
+  <h2>Käytännön sovelluksia</h2>
+
+  <p>Verkosto-ajattelun sovelluksia:</p>
+
+  <ul>
+    <li><strong>Pandemia:</strong> tartuntareittien topologia ennustaa leviämistä.</li>
+    <li><strong>Organisaatio:</strong> tiedon virtauksen pullonkaulat löytyvät verkon solmuista.</li>
+    <li><strong>Resilience:</strong> kriittiset palvelut vaativat <em>redundanssia</em> — sama tehtävä usealla tavalla.</li>
+    <li><strong>Ekologia:</strong> lajien välinen ruokaverkko määrittää ekosysteemin vakauden.</li>
+  </ul>
+
+  <p>Network science ei korvaa muita systeemiajattelun työkaluja — se <em>tarjoaa formaalin kielen</em> niille.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Ajattele omaa sosiaalista verkostoasi tai työyhteisöäsi verkkona.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Jos piirtäisit verkostosi — ketkä ovat solmuja, ja mitkä kytkennät niiden välillä?</label>
+      <textarea id="q1" rows="3" placeholder="Yritä nimetä 5–10 solmua ja niiden välisiä kytkentöjä..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitkä ovat <em>hub-solmuja</em> — henkilöitä joiden kautta tieto virtaa?</label>
+      <textarea id="q2" rows="3" placeholder="Usein nämä ovat 'liimaavia' ihmisiä, jotka tuntevat useita ryhmiä..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mitkä ovat <em>välittäjäsolmuja</em> — henkilöitä jotka yhdistävät muuten erillisiä ryhmiä?</label>
+      <textarea id="q3" rows="3" placeholder="Nämä ovat usein kriittisiä — heidän poistumisensa voi hajottaa ryhmiä..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa tarkastelemme <em>epälineaarisuutta ja viiveitä</em> — miksi pienet syyt voivat aiheuttaa suuria seurauksia, ja miksi järjestelmät reagoivat viiveellä.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/network.html" class="wikilink" data-concept="network">network</a> — tämän oppitunnin ydinkäsite — solmut ja kaaret</li>
+    <li><a href="../../concepts/node.html" class="wikilink" data-concept="node">node</a> — verkon solmu — toimija</li>
+    <li><a href="../../concepts/edge.html" class="wikilink" data-concept="edge">edge</a> — verkon kaari — kytkentä</li>
+    <li><a href="../../concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a> — kytkennän voimakkuus</li>
+    <li><a href="../../concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a> — tiukka kytkentä — nopea reagointi, korkea riski</li>
+    <li><a href="../../concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a> — löysä kytkentä — joustavuus, hitaus</li>
+    <li><a href="../../concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a> — toiminnan säilyvyys satunnaisissa häiriöissä</li>
+    <li><a href="../../concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — palautuminen kohdistetuista häiriöistä</li>
+    <li><a href="../../concepts/redundancy.html" class="wikilink" data-concept="redundancy">redundancy</a> — saman toiminnon useampi toteutus</li>
+    <li><a href="../../concepts/buffering.html" class="wikilink" data-concept="buffering">buffering</a> — iskunvaimennin</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — verkon rakenne määrää CAS-käyttäytymistä</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — silmukka on verkostoelementti</li>
+    <li><a href="../../concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — verkon rakenne voi syntyä itse</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0004-attraktorit-ja-faasimuutokset.html">← Attraktorit ja faasimuutokset</a>
+    <a class="next" href="0006-kriittiset-ilmiot.html">Seuraava oppitunti: Epälineaarisuus ja viiveet →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Duncan Watts — <em>Six Degrees</em> (Norton, 2003); Albert-László Barabási — <em>Linked</em> (Perseus, 2002), <em>Network Science</em> (Cambridge, 2016); Charles Perrow — <em>Normal Accidents</em> (Princeton, 1984); Mark Granovetter — <em>Getting a Job</em> (Chicago, 1974, weak ties -teoria); Yochai Benkler — <em>The Wealth of Networks</em> (Yale, 2006).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

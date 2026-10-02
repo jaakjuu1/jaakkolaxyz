@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-mita-on-kybernetiikka — Mitä kybernetiikka on?</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Kybernetiikka</a> › Oppitunti 1</nav>
+
+<h1>Mitä kybernetiikka on?</h1>
+<p class="meta">Oppitunti 1 / 6 · ~18 min</p>
+
+<h2>Kreikan juuresta nykyaikaan</h2>
+<p>Sana <strong>kybernetiikka</strong> tulee kreikan sanasta <em>kubernetes</em>, joka tarkoittaa <strong>ohjuria</strong> — laivassa peräsintä ohjaavaa miestä. Jo antiikin Kreikassa Plato vertasi hallitsijaa laivan kapteeniin, jonka täytyy osata ohjata alusta oikeaan suuntaan.</p>
+
+<p>Nykyään kybernetiikka tarkoittaa jotain paljon laajempaa. Se on <strong>oppimisen ja ohjaamisen tiede</strong>, joka tutkii, miten järjestelmät — niin koneet, organismit kuin yhteiskunnat — säätelevät itseään pysyäkseen toimintakunnossa.</p>
+
+<h2>Wienerin perustama ala</h2>
+<p>Moderni kybernetiikka syntyi toisen maailmansodan jälkeen, kun matemaatikko <strong>Norbert Wiener</strong> työskenki lentokoneiden ammuntajärjestelmien parissa. Hän huomasi, että sekä lentokoneen ohjausjärjestelmässä että ihmisen hermostossa on sama perusrakenne: <strong>havainto → vertailu → korjaus</strong>.</p>
+
+<p>Wiener julkaisi vuonna 1948 kirjan <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em>. Kirjan keskeinen väite oli rohkea: samat periaatteet, jotka selittävät termostaatin toiminnan, selittävät myös ihmisen hermoston, talouden säätelyn ja yhteiskunnallisen vuorovaikutuksen.</p>
+
+<blockquote>"Kybernetiikka on tieteenala, joka tutkii kokonaisuuksia ja järjestelmiä — niiden rakennetta, rajoituksia ja mahdollisuuksia — ja joka mahdollistaa samanlaisen tehokkaan mekanismin olemassaolon keinotekoisissa ja luonnollisissa järjestelmissä." — Norbert Wiener</blockquote>
+
+<h2>Kolme ydintä</h2>
+<p>Kybernetiikan voi tiivistää kolmeen ydinkäsitteeseen, joista jokaista käsittelemme tällä polulla tarkemmin:</p>
+
+<h3>1. Takaisinkytkentä</h3>
+<p>Järjestelmä havainnoi oman toimintansa tuloksen ja muuttaa toimintaansa sen perusteella. Tämä on kybernetiikan yksinkertaisin ja tärkein idea.</p>
+
+<h3>2. Sisäinen malli</h3>
+<p>Järjestelmällä on jonkinlainen käsitys siitä, <strong>miten sen tulisi toimia</strong> — tavoite, referenssi, ideaalitila. Ilman tätä vertailukohtaa takaisinkytkentä on mahdotonta.</p>
+
+<h3>3. Säätö monimutkaisuudessa</h3>
+<p>Kybernetiikka kysyy: miten järjestelmä pysyy vakaana, kun ympäristö muuttuu, osia hajoaa ja häiriöitä tulee? Tähän kysymykseen vastaavat Ashbyn monimuotoisuuden laki ja Beerin Viable System Model.</p>
+
+<h2>Ero säätötekniikkaan ja systeemiteoriaan</h2>
+<p>Sanaa <em>kybernetiikka</em> käytetään joskus virheellisesti synonyymina <strong>säätötekniikalle</strong> tai <strong>systeemiteorialle</strong>. Ne ovat kuitenkin eri asioita:</p>
+
+<ul>
+<li><strong>Säätötekniikka</strong> on insinööritieteen ala, joka suunnittelee konkreettisia säätöjärjestelmiä (venttiilejä, algoritmeja, piirejä).</li>
+<li><strong>Yleinen systeemiteoria</strong> (Bertalanffy) kuvaa järjestelmiä yleisesti — niiden rakennetta, käyttäytymistä, suhteita ympäristöön.</li>
+<li><strong>Kybernetiikka</strong> keskittyy nimenomaan <em>säätelyyn ja kommunikaatioon</em> — siihen, miten järjestelmä ohjaa itseään.</li>
+</ul>
+
+<p>Voisi sanoa, että kybernetiikka on säätötekniikan laajennus yleisen systeemiteorian viitekehykseen. Tai toisin päin: kybernetiikka on se osa systeemiajattelua, joka kysyy <em>miten järjestelmä pysyy kasassa</em>.</p>
+
+<h2>Miksi tämä on tärkeää</h2>
+<p>Kybernetiikka ei ole vain akateeminen kuriositeetti. Sen käsitteet — takaisinkytkentä, sisäinen malli, monimuotoisuus, rekursio — auttavat ymmärtämään käytännön tilanteita:</p>
+
+<ul>
+<li><strong>Lääketieteessä:</strong> miten keho ylläpitää ruumiinlämpöä, verensokeria, hengitystä.</li>
+<li><strong>Johtamisessa:</strong> miten organisaatio reagoi muutoksiin ja pysyy elinkelpoisena.</li>
+<li><strong>Teknologiassa:</strong> miten tekoäly, itseohjautuvat autot ja älykodit toimivat.</li>
+<li><strong>Ihmissuhteissa:</strong> miten vuorovaikutus muuttuu, kun ihmiset reagoivat toistensa reaktioihin.</li>
+</ul>
+
+<p>Tällä polulla opimme käyttämään kyberneettistä ajattelua näissä kaikissa konteksteissa.</p>
+
+<h2>Yhteenveto</h2>
+<p>Kybernetiikka on tiede <strong>ohjaamisesta ja kommunikaatiosta</strong> järjestelmissä — olivatpa ne sitten koneita, organismeja tai yhteiskuntia. Sen ydin on kolmessa käsitteessä: <strong>takaisinkytkentä</strong>, <strong>sisäinen malli</strong> ja <strong>säätely monimutkaisuudessa</strong>. Seuraavissa oppitunneissa käsittelemme kutakin näistä tarkemmin.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Mieti yhtä järjestelmää, jonka kanssa olet tekemisissä päivittäin — se voi olla kehosi, työtiimisi tai kotonasi oleva laite. Miten se "tietää", milloin sen pitää muuttaa toimintaansa?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

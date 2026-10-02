@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003-pehmeat-systeemit — Pehmeät systeemit (SSM)</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Menetelmät</a> · Oppitunti 0003/6</p>
+  <h1>Pehmeät systeemit (SSM)</h1>
+  <p class="lede">Kaikki järjestelmät eivät ole mallinnettavissa. Peter Checklandin Soft Systems Methodology on työkalu tilanteisiin, joissa kysymys ei ole 'miten toimii' vaan 'mitä edes on'.</p>
+
+  <p>Systeemidynamiikka on tehokas, mutta siinä on rajoituksensa. Se olettaa, että järjestelmän rakenne on <em>tunnistettavissa</em> — että voidaan piirtää selkeästi varastot ja virrat. Mutta monissa todellisen elämän tilanteissa ei ole selvää, mitä järjestelmä edes on.</p>
+
+  <p><strong>Pehmeät systeemit</strong> (Soft Systems) ovat lähestymistapa juuri näihin tilanteisiin: pehmeisiin, monitulkintaisiin, ihmisiin liittyviin kysymyksiin. Niissä ei ole yhtä "oikeaa" mallia, vaan useita näkökulmia.</p>
+
+  <h2>Kova vs. pehmeä ongelma</h2>
+
+  <p><strong>Peter Checkland</strong>, englantilainen systeemitutkija, teki 1970-luvulla terävän jaon:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Kova ongelma (hard)</h3>
+      <p>Järjestelmä on tunnistettavissa, tavoite on selvä. Esimerkki: "miten optimoidaan sairaalan potilasvirrat?"</p>
+      <p><strong>Ratkaisu:</strong> mallintaminen, optimointi, kvantifiointi.</p>
+    </div>
+    <div class="col">
+      <h3>Pehmeä ongelma (soft)</h3>
+      <p>Järjestelmä tai tavoite ei ole selvä, näkemykset eroavat. Esimerkki: "miten parantaa potilaiden kokemusta sairaalassa?"</p>
+      <p><strong>Ratkaisu:</strong> keskustelu, kuvailu, merkitysten neuvottelu.</p>
+    </div>
+  </div>
+
+  <p>Kova ongelma voidaan ratkaista. Pehmeä ongelma voidaan vain <em>tulla toimeen</em> sen kanssa — koska ei ole yhtä vastausta.</p>
+
+  <blockquote>
+    <p>"Soft systems methodology is not about solving problems. It is about making sense of situations where different people see different problems." — Peter Checkland</p>
+  </blockquote>
+
+  <h2>Wicked problem — paha ongelma</h2>
+
+  <p><strong>Horst Rittel</strong> ja <strong>Melvin Webber</strong> esittelivät 1973 käsitteen <em>wicked problem</em> — "paha ongelma". He tarkoittivat pehmeitä ongelmia, joilla on lisäominaisuus: ne ovat <strong>perustavanlaatuisesti ratkaisemattomia</strong>.</p>
+
+  <p>Wicked problemin piirteitä:</p>
+
+  <ul>
+    <li><strong>Ei ole yhtä oikeaa muotoilua</strong> — jo kysymyksen asettelu on kiistelty.</li>
+    <li><strong>Ei ole "ratkaisua" lopullisesti</strong> — tilanne vain muuttuu.</li>
+    <li><strong>Jokainen ratkaisu on ainutkertainen</strong> — ei voi kopioida.</li>
+    <li><strong>Jokainen yritys merkitsee</strong> — ei voi kokeilla turvallisesti.</li>
+    <li><strong>Syyt ovat monimutkaisia</strong> — usein palautuvat toisiin wicked problemeihin.</li>
+  </ul>
+
+  <p>Esimerkkejä wicked problemeista: köyhyys, ilmastonmuutos, terrorismi, kaupunkisuunnittelu, koulutusjärjestelmän uudistus, oma elämä.</p>
+
+  <p>Tärkeä oivallus: <strong>wicked problemeissa ei ole ulkopuolinen asiantuntija joka "tietää vastauksen"</strong>. Tieto on hajautettu niiden kesken jotka kokevat ongelman.</p>
+
+  <h2>Rich picture — pehmeän kuvaus</h2>
+
+  <p>Checklandin SSM-menetelmän (Soft Systems Methodology) keskeinen työkalu on <strong>rich picture</strong> — rikas kuva.</p>
+
+  <p>Rich picture on piirros, joka kuvaa tilanteen sellaisenaan — ilman yrittämistä ratkaista sitä. Siihen merkitään:</p>
+
+  <ul>
+    <li><strong>Toimijat</strong> — kuka on mukana?</li>
+    <li><strong>Suhteet</strong> — miten heidän välillään menee?</li>
+    <li><strong>Ristiriidat</strong> — missä on jännitettä?</li>
+    <li><strong>Kysymykset</strong> — mitä ei ole selvää?</li>
+    <li><strong>Tunteet</strong> — usein hymiöillä tai nuolilla kuvattuna.</li>
+  </ul>
+
+  <p>Rich picture ei ole <em>tieteellinen malli</em>. Se on kommunikaatioväline. Sen tarkoitus on auttaa ihmisiä näkemään miten eri näkökulmat kohtaavat.</p>
+
+  <p>Käytännössä: piirretään taululle, käydään läpi yhdessä, kuunnellaan mitä muut näkevät. Usein tämä paljastaa, että osallisten näkemys "ongelmasta" on hyvin erilainen — mikä on tärkeä tieto jo itsessään.</p>
+
+  <h2>CATWOE — tärkeiden kysymysten lista</h2>
+
+  <p>Checkland kehitti muistisäännön <strong>CATWOE</strong>, jonka avulla voidaan tunnistaa järjestelmän merkitykselliset osat pehmeässä tilanteessa:</p>
+
+  <ul>
+    <li><strong>C — Customers</strong> — kuka hyötyy tai kärsii tästä järjestelmästä?</li>
+    <li><strong>A — Actors</strong> — kuka tekee järjestelmän työn?</li>
+    <li><strong>T — Transformation</strong> — mitä muutetaan mihinkä?</li>
+    <li><strong>W — Weltanschauung</strong> — mikä maailmankuva tekee tästä merkityksellistä?</li>
+    <li><strong>O — Owner</strong> — kuka omistaa tai voi lopettaa tämän?</li>
+    <li><strong>E — Environmental constraints</strong> — mitä rajoituksia on olemassa?</li>
+  </ul>
+
+  <p>CATWOE on työkalu kysymysten esittämiseen, ei vastauksiin. Erityisesti <strong>W — Weltanschauung</strong> (saks. "maailmankatsomus") on tärkeä: se kysyy, <em>minkä näkökulman kautta tämä on ylipäätään järjestelmä</em>.</p>
+
+  <p>Sama tilanne voi olla järjestelmä usealla eri tavalla. Esimerkiksi sairaala:</p>
+
+  <ul>
+    <li><strong>Tuotantolinjana</strong> (potilaat → hoidetut potilaat) — tehokkuusnäkökulma.</li>
+    <li><strong>Kohtaamispaikkana</strong> (ihmiset → hoitavat toisiaan) — inhimillinen näkökulma.</li>
+    <li><strong>Tietopankkina</strong> (oireet → diagnoosit) — lääketieteellinen näkökulma.</li>
+    <li><strong>Bisneksenä</strong> (kustannukset → tuotot) — taloudellinen näkökulma.</li>
+  </ul>
+
+  <p>Näistä jokainen on "oikea" — ne vain paljastavat eri järjestelmän.</p>
+
+  <h2>SSM:n seitsemän vaihetta</h2>
+
+  <p>Checklandin alkuperäinen SSM-prosessi on seitsemänvaiheinen (mutta käytännössä iteratiivinen, ei lineaarinen):</p>
+
+  <ol>
+    <li><strong>Tunnistamaton tilanne</strong> — tunne, että jokin on pielessä.</li>
+    <li><strong>Tilanteen kuvaaminen</strong> — rich picture.</li>
+    <li><strong>Root definition</strong> — järjestelmän määrittely CATWOE:n kautta.</li>
+    <li><strong>Konseptuaalinen malli</strong> — miten tämä järjestelmä toimisi ihanteellisesti.</li>
+    <li><strong>Vertailu</strong> — malli vs. todellisuus. Erot paljastavat ongelmia.</li>
+    <li><strong>Muutokset</strong> — mitä voisi tehdä toisin? (Ei pakotettuja — vaihtoehdot.)</li>
+    <li><strong>Toimenpiteet</strong> — mitä oikeasti tehdään?</li>
+  </ol>
+
+  <p>Vaiheet 1–2 ovat kuvauksia. Vaiheet 3–4 ovat järjestelmän rakentamista ajattelussa. Vaiheet 5–7 ovat toimintaa.</p>
+
+  <h2>Miksi pehmeät systeemit merkitsevät</h2>
+
+  <p>SSM ei ole "kvantitatiivisen systeemidynamiikan pehmeä versio". Se on täysin erilainen lähestymistapa, joka tunnustaa:</p>
+
+  <ul>
+    <li><strong>Ihmiset ovat järjestelmän osa</strong> — heidän näkemyksensä muuttavat järjestelmää.</li>
+    <li><strong>Ei ole yhtä objektiivista totuutta</strong> — näkökulmat ovat kaikki olemassa olevia.</li>
+    <li><strong>Toiminta on aina kompromissi</strong> — täydellistä ratkaisua ei ole, vain parempia ja huonompia.</li>
+  </ul>
+
+  <p>Tämä on tärkeää, koska yritykset ratkaista pehmeitä ongelmia kovilla menetelmillä usein epäonnistuvat. Kvantitatiivinen mallintaminen ei auta "miten saada työntekijät sitoutumaan" — koska kysymys ei ole numeerinen.</p>
+
+  <blockquote>
+    <p>"The most important questions in human affairs are not answerable by measurement." — Peter Checkland</p>
+  </blockquote>
+
+  <h2>Yhdistäminen käytäntöön</h2>
+
+  <p>Todellisessa työelämässä useimmat tilanteet ovat <em>sekä</em> kovia että pehmeitä. Sairaalan tehtävä:</p>
+
+  <ul>
+    <li><strong>Kova puoli:</strong> vuodepaikkojen käyttöaste, leikkausaikataulut, resurssien kohdentaminen.</li>
+    <li><strong>Pehmeä puoli:</strong> hoitohenkilökunnan jaksaminen, potilaiden kokemus, johtamisen luottamus.</li>
+  </ul>
+
+  <p>Taitava systeemiajattelija käyttää molempia: varasto-virta-malleja kovassa puolessa, rich picture -työkaluja pehmeässä puolessa. Eivät ole kilpailijoita — ne täydentävät toisiaan.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Valitse pehmeä tilanne omasta elämästäsi — jokin, jossa ei ole yhtä "oikeaa" vastausta.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on tilanne, joka tuntuu ratkaisemattomalta — ei siksi, ettet ymmärtäisi sitä, vaan siksi, että näkökulmat ovat erilaisia?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. parisuhteen erimielisyys, perheen päätökset, työpaikan ristiriidat..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Ketkä ovat toimijoita? Mitä he näkevät eri tavalla? (Tämä on rich picturen alku.)</label>
+      <textarea id="q2" rows="3" placeholder="Esim. minä näen tehtävän prioriteettina, puolisoi aikatauluhuolena, lapset leikkinä..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mikä on sinun "Weltanschauung" — maailmankuva, jonka kautta näet tämän tilanteen järjestelmänä? Ja mikä voisi olla toisen maailmankuva?</label>
+      <textarea id="q3" rows="3" placeholder="Tämä auttaa näkemään, että "ongelma" riippuu näkökulmasta..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Seuraavassa oppitunnissa palaamme kovaan puoleen: opimme piirtämään kausaalisilmukka-diagrammeja, jotka ovat systemidynamiikan laadullinen työkalu.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/soft-systems-methodology.html" class="wikilink" data-concept="soft-systems-methodology">soft-systems-methodology</a> — tämän oppitunnin ydinmenetelmä</li>
+    <li><a href="../../concepts/rich-picture.html" class="wikilink" data-concept="rich-picture">rich-picture</a> — pehmeän tilanteen kuvaamisen työkalu</li>
+    <li><a href="../../concepts/wicked-problem.html" class="wikilink" data-concept="wicked-problem">wicked-problem</a> — ratkaisematon, monitulkintainen ongelma</li>
+    <li><a href="../../concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a> — mallintaminen — kontrasti SSM:lle</li>
+    <li><a href="../../concepts/system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a> — kovien ongelmien menetelmä</li>
+    <li><a href="../../concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a> — näkökulman valinta</li>
+    <li><a href="../../concepts/observer.html" class="wikilink" data-concept="observer">observer</a> — tarkastelija osana järjestelmää</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0002-varastot-ja-virrat.html">← Varastot ja virrat</a>
+    <a class="next" href="0004-kausalisilmukka-diagrammit.html">Seuraava oppitunti: Kausaalisilmukka-diagrammit →</a>
+  </div>
+
+  <p class="footer-note">Lähteet: Peter Checkland — <em>Systems Thinking, Systems Practice</em> (Wiley, 1981); Peter Checkland & Sue Holwell — <em>Information, Systems and Information Systems</em> (Wiley, 1998); Horst W. J. Rittel & Melvin M. Webber — <em>Dilemmas in a General Theory of Planning</em> (Policy Sciences, 1973); Russell L. Ackoff — <em>Redesigning the Future</em> (Wiley, 1974).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

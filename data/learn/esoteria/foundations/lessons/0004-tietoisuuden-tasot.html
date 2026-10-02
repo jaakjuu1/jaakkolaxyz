@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004-tietoisuuden-tasot — Tietoisuuden kolme tasoa</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+  .practice { background: var(--accent-soft); border-radius: 4px; padding: 1.2rem; margin: 2rem 0; }
+  .practice h3 { margin-top: 0; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Perusta</a> › Oppitunti 4</nav>
+
+<h1>Tietoisuuden kolme tasoa</h1>
+<p class="meta">Oppitunti 4 / 6 · ~20 min</p>
+
+<h2>Mitä tietoisuus on?</h2>
+<p>Ennen kuin puhumme tietoisuuden tasoista, on kysyttävä: <strong>mitä tietoisuus on?</strong></p>
+
+<p>Nykyaikainen neurotiede kuvaa tietoisuutta aivojen tilana — sähkökemiallista toimintaa, joka synnyttää kokemuksen. Tämä on hyödyllinen kuvaus, mutta se ei selitä <em>kaikkea</em>.</p>
+
+<p>Esoteerinen perinne lähestyy asiaa toisin: tietoisuus ei ole <em>seuraus</em> aivoista, vaan <strong>perusta</strong>, josta aivot ja keho ja koko todellisuus ilmenevät. Tämä on vanha ajatus — se esiintyy hindulaisuuden <em>Atmanissa</em>, buddhalaisuuden <em>Sunyata</em>:ssa, hermetismin <em>Logoksessa</em> ja kristinuskon <em>Sana</em>:ssa.</p>
+
+<blockquote>"Alussa oli Sana, ja Sana oli Jumalan luona, ja Sana oli Jumala." — Johanneksen evankeliumi</blockquote>
+
+<h2>Kolme perustasoa</h2>
+<p>Kaikissa perinteissä toistuu <strong>kolmen tason</strong> jako. Eri nimillä, sama rakenne:</p>
+
+<table style="width:100%; border-collapse: collapse; margin: 1.5rem 0;">
+<tr style="border-bottom: 1px solid var(--rule);">
+<th style="text-align:left; padding: 0.5rem;">Itäinen perinne</th>
+<th style="text-align:left; padding: 0.5rem;">Länsimainen mystiikka</th>
+<th style="text-align:left; padding: 0.5rem;">Kuvaus</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td style="padding: 0.5rem;">Maya (illusio)</td>
+<td style="padding: 0.5rem;">Ain (ei-mitään)</td>
+<td style="padding: 0.5rem;">Erottelematon, kaiken takana</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td style="padding: 0.5rem;">Manas (mieli)</td>
+<td style="padding: 0.5rem;">Ruach (henki)</td>
+<td style="padding: 0.5rem;">Erotteleva, ajatteleva</td>
+</tr>
+<tr>
+<td style="padding: 0.5rem;">Atman (itse)</td>
+<td style="padding: 0.5rem;">Neshamah (sielu)</td>
+<td style="padding: 0.5rem;">Todistava, läsnä oleva</td>
+</tr>
+</table>
+
+<p>Tämä jako ei ole vain käsitteellinen — se on <em>kokemuksellinen</em>. Jokainen taso <em>tuntuu</em> erilaiselta.</p>
+
+<h2>Taso 1: Uni</h2>
+<p>Ensimmäinen taso on <strong>nukkuminen</strong> — tietoisuus ilman erottelua. Tässä tilassa mieli ei jäsennä kokemusta. Univaje, pimeys, ajan ja paikan puute.</p>
+
+<p>Unen aikana tietoisuus on <em>aktiivinen</em> — unet ovat todellisia kokemuksia. Mutta ne ovat <em>jäsentymättömiä</em>: symbolit sekoittuvat, logiikka puuttuu, aika on joustavaa.</p>
+
+<p>Unen taso vastaa <strong>Ain Sof</strong>ia qabalassa — ääretöntä, määrittelemätöntä, kaiken mahdollisuuden pohjaa.</p>
+
+<h2>Taso 2: Valve</h2>
+<p>Toinen taso on <strong>tavallinen tietoisuus</strong> — se, jossa elämme suurimman osan ajasta. Tässä tilassa mieli <em>erottelee</em>: tämä on minä, tuo on sinä, tämä on nyt, tuo on tuolloin.</p>
+
+<p>Valvetila on välttämätön arjessa. Se on kuitenkin <em>rajoittunut</em>: näemme vain sen, mitä odotamme näkevämme. Havaintomme suodattuvat uskomustemme, tottumustemme ja pelkojemme läpi.</p>
+
+<p>Valvetila vastaa <strong>Ruach</strong>ia — erottelevaa, analyyttista mieltä.</p>
+
+<h3>Valvetilan rajat</h3>
+<p>Valvetila on arvokas, mutta sillä on rajansa:</p>
+<ul>
+<li>Emme näe asioita, joita emme osaa <em>nimetä</em>.</li>
+<li>Reagoimme toistuviin kaavoihin — emme ole vapaita.</li>
+<li>Emme näe yhteyksiä asioiden välillä, jotka eivät ole ilmeisiä.</li>
+<li>Olemme erillisiä — "minä täällä, sinä tuolla".</li>
+</ul>
+
+<p>Nämä rajat <em>ovat</em> arjen toimivuus, mutta ne ovat myös sen vankila.</p>
+
+<h2>Taso 3: Syvempi tietoisuus</h2>
+<p>Kolmas taso on <strong>syvempi tietoisuus</strong> — eri perinteissä eri nimillä: <em>turïya</em> hindulaisuudessa, <em>satori</em> zen-buddhalaisuudessa, <em>unio mystica</em> kristinuskossa, <em>samadhi</em> joogaperinteissä.</p>
+
+<p>Tässä tilassa <em>erottelut sulavat</em>, mutta <em>ei samalla tavalla kuin unessa</em>. Uni on erittelemätöntä mutta tietämätöntä. Syvempi tietoisuus on <strong>erittelemätöntä ja samalla täysin tietävää</strong>. Tämä on paradoksi, jonka kieli ei tavoita.</p>
+
+<p>Kuvailuja eri perinteistä:</p>
+
+<ul>
+<li><strong>Plotinos (3. vuosisata):</strong> "Hetki, jolloin sielu koskettaa Jumalaa — emme tiedä miten, mutta tiedämme, että se tapahtuu."</li>
+<li><strong>Meister Eckhart (1260-1328):</strong> "Silmä, jolla näen Jumalan, on sama silmä, jolla Jumala näkee minut."</li>
+<li><strong>Ramana Maharshi (1879-1950):</strong> "Kysy kuka minä olen — ja löydät kaiken."</li>
+<li><strong>William James (1902):</strong> "Yhteys näkymättömään jättää jäljen, joka ei katoa."</li>
+</ul>
+
+<p>Nämä eivät ole sama kokemus, mutta ne ovat <em>saman ilmiön eri muotoja</em>.</p>
+
+<h2>Neljä mystistä porttia</h2>
+<p>Syvemmän tietoisuuden saavuttamiseen on perinteisesti neljä tietä:</p>
+
+<h3>1. Äly (käsitteellinen mystiikka)</h3>
+<p>Käyttää filosofista ajattelua, hienovaraisia käsitteitä, dialektiikkaa. Edustajia: Plotinos, Spinoza, Hegel. Vaarana: jää vain älylliseksi, ei kokemukselliseksi.</p>
+
+<h3>2. Rakkaus (devotionaalinen mystiikka)</h3>
+<p>Käyttää rakkautta, antaumusta, kaipuuta. Edustajia: Teresa Avilalainen, Rumi, bhakti-liikkeet. Vaarana: jää tunnetasolle, ei syvempään.</p>
+
+<h3>3. Toiminta (aktiivinen mystiikka)</h3>
+<p>Käyttää palvelua, työtä, oikeudenmukaisuutta. Edustajia: Gandhi, Martin Luther King, äiti Teresa. Vaarana: uupumus ilman sisäistä lähdettä.</p>
+
+<h3>4. Hiljaisuus (kontemplatiivinen mystiikka)</h3>
+<p>Käyttää hiljaisuutta, läsnäoloa, ei-mitään. Edustajia: Zen-mestarit, karmeliittaiset, hermeettiset. Vaarana: pakeneminen maailmasta.</p>
+
+<p>Kypsä polku <strong>yhdistää</strong> kaikki neljä.</p>
+
+<h2>Aivot, mieli, tietoisuus</h2>
+<p>Modernin neurotieteen mukaan tietoisuus syntyy aivoissa. Esoteerinen perinne sanoo: aivot <em>suodattavat</em> tietoisuutta, eivät <em>tuota</em> sitä.</p>
+
+<p>Kaksi tapaa ajatella:</p>
+
+<ul>
+<li><strong>Aivot tuottavat tietoisuuden:</strong> kun aivot kuolevat, tietoisuus päättyy. Tämä on vallitseva tieteellinen näkemys.</li>
+<li><strong>Aivot virittävät tietoisuuden:</strong> tietoisuus on kaiken perusta, aivot ovat sen instrumentti. Kun aivot kuolevat, tietoisuus ei pääty, vaan se palaa perustaan. Tämä on useimpien perinteiden näkemys.</li>
+</ul>
+
+<p>Kumpi on oikeassa? Emme tiedä. Mutta voimme <em>kokeilla</em>: syventää tietoisuutta, nähdä mitä tapahtuu, ja päättää itse.</p>
+
+<h2>Harjoitus: kolmen tason kartoitus</h2>
+
+<div class="practice">
+<h3>Harjoitus: Kolmen tason kartoitus (10 min)</h3>
+<p>Tämä harjoitus auttaa sinua tuntemaan kolme tasoa omakohtaisesti.</p>
+<ol>
+<li><strong>Uni:</strong> Muistele viime yön unta. Älä analysoi — <em>anna sen palata</em>. Mitä värejä, tunteita, muotoja? Kirjoita muistiin.</li>
+<li><strong>Valve:</strong> Pysähdy hetkeksi. Missä olet? Mitä kuulet, näet, tunnet? <em>Listaa nykyhetki</em>: 5 asiaa, jotka näet, 4 joita kuulet, 3 joita tunnet, 2 joita haistat, 1 jonka maistan.</li>
+<li><strong>Syvempi:</strong> Kysy itseltäsi: <em>kuka katsoo näitä kaikkia?</em> Unet, valve, keho — kuka on se, joka tietää niistä? Älä vastaa sanoin. Anna kysymyksen <em> olla</em>.</li>
+</ol>
+<p>Kirjoita lopuksi lyhyesti: mitä huomasit?</p>
+</div>
+
+<h2>Yhteenveto</h2>
+<p>Tietoisuudella on kolme perustasoa: uni (erittelemätön), valve (erotteleva), syvempi tietoisuus (erittelemätön ja tietävä). Kaikki perinteet tunnistavat nämä tasot, vaikka nimitykset vaihtelevat. Neljä tietä syvempään tietoisuuteen ovat äly, rakkaus, toiminta ja hiljaisuus. Tällä polulla yhdistämme kaikki neljä.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Milloin olet kokenut olevasi "enemmän läsnä" kuin tavallisesti? Mitä tilanteita, hetkiä, paikkoja? Mitä niissä oli yhteistä? Voitko tunnistaa, mikä niissä mahdollisti tuon tilan?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

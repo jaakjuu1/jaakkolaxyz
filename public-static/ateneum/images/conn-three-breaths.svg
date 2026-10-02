@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="70%" r="55%">
+      <stop offset="0%" stop-color="#b8c9d4" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#1a1a2e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="bigGlow"><feGaussianBlur stdDeviation="12"/></filter>
+  </defs>
+  <rect width="800" height="450" rx="12" fill="#1a1a2e"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  <g transform="translate(290, 0)">
+    <ellipse cx="0" cy="250" rx="55" ry="70" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="185" rx="35" ry="40" fill="#3a3a55"/>
+  </g>
+  <g transform="translate(510, 0)">
+    <ellipse cx="0" cy="250" rx="55" ry="70" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="185" rx="35" ry="40" fill="#3a3a55"/>
+  </g>
+  <!-- kolme hengitysviivaa -->
+  <g filter="url(#softGlow)" opacity="0.2">
+    <path d="M340,210 Q400,180 460,210" fill="none" stroke="#b8c9d4" stroke-width="1.2" stroke-dasharray="4 6"/>
+    <path d="M340,215 Q400,190 460,215" fill="none" stroke="#b8c9d4" stroke-width="1.2" stroke-dasharray="4 6" transform="translate(0,12)"/>
+    <path d="M340,215 Q400,190 460,215" fill="none" stroke="#b8c9d4" stroke-width="1.2" stroke-dasharray="4 6" transform="translate(0,24)"/>
+  </g>
+  <line x1="180" y1="325" x2="620" y2="325" stroke="#2d2d44" stroke-width="1" opacity="0.5"/>
+</svg>

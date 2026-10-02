@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Pranayama rutiiniksi — miten rakentaa 10-minuuttinen aamuhengitysharjoitus ja edetä kohti 30 minuuttia. Integraatio meditaatioon.">
+<title>Pranayama rutiiniksi</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #355874; --accent-soft: #e1ebf3; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #7fa3c4; --accent-soft: #1f2933; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  ol, ul { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: .92rem;
+  }
+  th, td {
+    text-align: left;
+    padding: .55rem .7rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  label { display: block; font-weight: 600; margin: 1rem 0 .35rem; }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+  code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: .88em;
+    color: var(--blue);
+  }
+
+  /* Kokeile käytännössä -laatikko */
+  .tryit-box {
+    background: linear-gradient(135deg, #2a1f3d 0%, #1a1428 100%);
+    color: #e8e4dc;
+    border-radius: 8px;
+    padding: 1.4rem 1.6rem;
+    margin: 2.4rem 0;
+    border: 1px solid #3d2f5a;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-box {
+      background: linear-gradient(135deg, #f5f0e8 0%, #ebe3d4 100%);
+      color: #1a1428;
+      border-color: #c8b894;
+    }
+  }
+  .tryit-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-icon {
+    font-size: 1.4rem;
+    color: #d28a72;
+  }
+  .tryit-title {
+    margin: 0;
+    font-size: 1.15rem;
+    color: inherit;
+    border: none;
+    padding: 0;
+  }
+  .tryit-intro { margin: 0 0 1rem; font-size: .95rem; }
+  .tryit-steps {
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: .7rem .9rem;
+    margin-bottom: 1rem;
+    font-size: .92rem;
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-steps { background: rgba(0,0,0,.04); }
+  }
+  .tryit-steps p { margin: 0; }
+  .tryit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: .8rem;
+  }
+  .tryit-btn {
+    display: inline-block;
+    background: #d28a72;
+    color: #1a1428;
+    padding: .55rem 1.1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: .95rem;
+    border: none;
+  }
+  .tryit-btn:hover { background: #e09a82; }
+  .tryit-qr-hint {
+    font-size: .85rem;
+    opacity: .8;
+  }
+  .tryit-qr {
+    background: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+  .tryit-note {
+    font-size: .82rem;
+    opacity: .75;
+    margin: 0;
+    padding-top: .6rem;
+    border-top: 1px dashed rgba(255,255,255,.15);
+  }
+  @media (prefers-color-scheme: light) {
+    .tryit-note { border-top-color: rgba(0,0,0,.15); }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Pranayama rutiiniksi</h1>
+  <p class="meta">Oppitunti 0006 · ~10 min · integraatio</p>
+
+  <div class="hero">
+    <p>Tämä on <strong>polun viimeinen oppitunti</strong>. Tähän asti olet oppinut yksittäisiä tekniikoita — nyt kysymys on: miten niistä tehdään <em>käytäntö, joka pysyy</em>? Tässä oppitunnissa rakennamme 10-minuuttisen aamurutiinin, keskustelemme etenemisestä kohti 30 minuuttia ja integraatiosta meditaatioon.</p>
+  </div>
+
+  <h2>Miksi rutiini on vaikea</h2>
+
+  <p>Useimmat ihmiset eivät epäonnistu tekniikoiden oppimisessa — he epäonnistuvat <em>säännöllisyydessä</em>. Tämä johtuu kolmesta tyypillisestä sudenkuopasta:</p>
+
+  <ol>
+    <li><strong>Liian kunnianhimoisia tavoitteita.</strong> "Meditoin tunnin päivässä" — viikon jälkeen loppuu.</li>
+    <li><strong>Liian monta tekniikkaa kerralla.</strong> Yrität hallita 6 asiaa samaan aikaan.</li>
+    <li><strong>Ei konkreettista ankkuria.</strong> "Jossain vaiheessa päivää" ei ole aika.</li>
+  </ol>
+
+  <p>Ratkaisu on pieni, kiinteä ja toistettavissa oleva kokonaisuus. 10 minuuttia, sama aika, sama paikka, sama järjestys.</p>
+
+  <h2>10-minuuttinen aamurutiini</h2>
+
+  <p>Tämä on ehdotus — ei ainoa oikea tapa. Järjestys on valittu fysiologisesti: rauhoittava ensin, sitten tasapainottava, lopuksi aktivoiva.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Vaihe</th>
+        <th>Tekniikka</th>
+        <th>Kesto</th>
+        <th>Miksi tässä kohtaa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1. Asento</td>
+        <td>Istuudu mukavasti, selkä suorana</td>
+        <td>1 min</td>
+        <td>Asennon löytäminen ilman kiirettä</td>
+      </tr>
+      <tr>
+        <td>2. Palleahengitys</td>
+        <td><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Tietoinen palleahengitys</a></td>
+        <td>2 min</td>
+        <td>Siirtää hermoston lepotilaan</td>
+      </tr>
+      <tr>
+        <td>3. Box breathing</td>
+        <td><a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">Nelión hengitys</a> 4-4-4-4</td>
+        <td>2 min</td>
+        <td>Parantaa tarkkaavuutta, virittää</td>
+      </tr>
+      <tr>
+        <td>4. Nadi shodhana</td>
+        <td><a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">Vaihtoehtoinen sierainhengitys</a></td>
+        <td>3 min</td>
+        <td>Tasapainottaa, syventää tilaa</td>
+      </tr>
+      <tr>
+        <td>5. Hiljaisuus</td>
+        <td>Istu, hengitä normaalisti</td>
+        <td>2 min</td>
+        <td>Antaa hermoston asettua</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Tämä on suositus — voit vapaasti muuttaa järjestystä ja tekniikoita kunhan perusrakenne säilyy: rauhoittava → keskittävä → hiljaisuus.</p>
+
+  <h2>Ankkurointi: sama aika, sama paikka</h2>
+
+  <p>Rutiinin onnistumisen ydin on <em>ympäristövihje</em>. Kun sama aika ja paikka toistuvat, keho alkaa automaattisesti virittäytyä harjoitukseen.</p>
+
+  <ul>
+    <li><strong>Aika:</strong> Aamu heti heräämisen jälkeen, ennen puhelinta tai kahvia. Vaihtoehto: ilta ennen nukkumaanmenoa.</li>
+    <li><strong>Paikka:</strong> Sama tuoli, matto tai tyyny. Ei tarvitse olla "kaunis" — vain sama.</li>
+    <li><strong>Kesto:</strong> Aloita 7 minuutilla, nosta 10:een kahden viikon jälkeen.</li>
+    <li><strong>Liipaisin:</strong> Aseta kahvin keittäminen tai suihkuun meneminen "aloituksen liipaisimeksi".</li>
+  </ul>
+
+  <h2>Eteneminen: 10 → 30 minuuttia</h2>
+
+  <p>Kun 10 minuuttia tuntuu luontevalta (yleensä 4-6 viikon jälkeen), voit edetä:</p>
+
+  <p><strong>Vaihe 2 — 15 minuuttia (4 viikon jälkeen):</strong> Lisää kapalabhati ennen nadi shodhanaa, jos terveys sallii. Tai pidennä hiljaisuusjakso 5 minuuttiin.</p>
+
+  <p><strong>Vaihe 3 — 20 minuuttia (8 viikon jälkeen):</strong> Lisää hengitystietoisuuteen perustuva lyhyt meditaatio (<a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatio</a>) loppuun, 5 minuuttia.</p>
+
+  <p><strong>Vaihe 4 — 30 minuuttia (12 viikon jälkeen):</strong> Rutiini laajenee: 5 min pallea + 5 min box + 5 min nadi shodhana + 5 min kapalabhati + 10 min hiljaisuus tai lyhyt meditaatio. Tämä on jo vakava harjoitus.</p>
+
+  <blockquote>
+    <strong>Sääntö:</strong> Parempi tehdä 10 minuuttia joka päivä kuin 60 minuuttia kerran viikossa. Jatkuvuus voittaa intensiteetin.
+  </blockquote>
+
+  <h2>Integraatio meditaatioon</h2>
+
+  <p>Pranayama on portti meditaatioon, ei sen korvike. Kun hengitys on tasapainossa, mieli seuraa. Tämän polun jälkeen suosittelen siirtymistä <em>meditaatio-polulle</em> — erityisesti oppitunti 0002 (<a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">anapanasati-hengitysmeditaatio</a>) luontevana jatkumona.</p>
+
+  <p>Toisaalta tämän polun tekniikat toimivat myös yksinään — voit harjoittaa pelkkää pranayamaa vuosia ilman, että siirryt meditaatioon.</p>
+
+  <h2>Yleisiä sudenkuoppia</h2>
+
+  <ul>
+    <li><strong>"En ehtinyt tänään."</strong> 5 minuuttia riittää. Täydellisyyden vaatiminen on ansoittamista.</li>
+    <li><strong>"Tämä ei tunnu miltään."</strong> Vaikutus näkyy usein viikkojen, ei minuuttien, jälkeen. Kirjaa ylös.</li>
+    <li><strong>"Nukahdin kesken."</strong> Istu tuolilla, ei lattialla. Selkänoja ei ole häpeä.</li>
+    <li><strong>"Tämä on liian vaikeaa."</strong> Palaa vaiheeseen 1, pienennä kestoa. Rutiini on tärkeämpi kuin tekniikka.</li>
+  </ul>
+
+  <h2>Mittari: kirjaa vähän</h2>
+
+  <p>Suosittelen yksinkertaista kirjaa — ei tarvitse olla kaunis:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Päivämäärä</th>
+        <th>Kesto</th>
+        <th>Tekniikat</th>
+        <th>Mieliala (1-5)</th>
+        <th>Huomio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2026-07-05</td>
+        <td>10 min</td>
+        <td>pallea, box, nadi</td>
+        <td>3</td>
+        <td>levoton alku, rauhoittui lopussa</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Vain 30 sekuntia päivässä. Kuukauden jälkeen näet selvästi, mitkä tekniikat toimivat sinulle.</p>
+
+  <hr>
+
+  <h2>Koe itse: ensimmäinen viikko</h2>
+
+  <p>Tee 10-minuuttinen rutiini joka aamu viikon ajan. Kirjaa kokemuksesi.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä oli helpoin tekniikka ja mikä vaikein?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. 'palleahengitys helppoa, nadi shodhana vaati keskittymistä' / 'kaikki sujui, paitsi lopun hiljaisuus'"></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä muuttui arjessa viikon aikana? (unet, keskittyminen, mieliala, keho)</label>
+      <textarea id="q2" rows="3" placeholder="Esim. 'nukkuminen parani' / 'keskittyminen työssä selkeämpää' / 'en huomannut eroa'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Mikä esti tai uhkasi rutiinia? Mikä auttoi?</label>
+      <textarea id="q3" rows="3" placeholder="Esim. 'aamulla kiire' / 'puoliso heräsi samaan aikaan' / 'asetin hälytyksen 10 min aiemmin'"></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <hr>
+
+  <h2>Mihin tämä johtaa?</h2>
+
+  <p>Olet nyt suorittanut koko hengitys-polun. Sinulla on kuusi tekniikkaa ja konsepti rutiinista. Seuraavat mahdolliset askeleet:</p>
+
+  <ul>
+    <li><strong>Meditaatio-polku:</strong> anapanasati ja muut hiljaisuuden tekniikat — luonteva jatkumo.</li>
+    <li><strong>Mantra-polku:</strong> äänen yhdistäminen hengitykseen — So Ham on erityisen sopiva tähän.</li>
+    <li><strong>Mielenterveystaidot-polku:</strong> hengitys yhdistettynä tunnesäätelyyn (erityisesti STOP ja TIPP).</li>
+  </ul>
+
+  <p>Valitse se mikä resonoi. Kaikki kolme risteävät toistensa kanssa.</p>
+
+  <p class="footer-note">
+    Lähteet: IAYT — Yoga Therapy Today; Brown & Gerbarg, <em>"Sudarshan Kriya yogic breathing in the treatment of stress, anxiety, and depression"</em>; Harvard Health Publishing — <a href="https://www.health.harvard.edu/mind-and-mood/relaxation-techniques-breath-control-helps-quell-errant-stress-response">Breath control</a>; NIH NCCIH — Mind and Body Practices.
+  </p>
+
+  <hr>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/pranayama.html" class="wikilink" data-concept="pranayama">Kaikki hengityksen säätelyn tekniikat — tämä oppitunti yhdistää ne</a></li>
+    <li><a href="../../concepts/prana.html" class="wikilink" data-concept="prana">Elämänenergia — rutiinin tarkoitus on vilkastuttaa ja tasapainottaa sitä</a></li>
+    <li><a href="../../concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">Perusta — jokainen tekniikka alkaa tästä</a></li>
+    <li><a href="../../concepts/diaphragm.html" class="wikilink" data-concept="diaphragm">Pallean harjoittaminen vahvistuu rutiinin myötä</a></li>
+    <li><a href="../../concepts/sama-vritti.html" class="wikilink" data-concept="sama-vritti">Yksi rutiinin tekniikoista — nelión hengitys</a></li>
+    <li><a href="../../concepts/visama-vritti.html" class="wikilink" data-concept="visama-vritti">Voit edetä tähän kun perusta on vakaa</a></li>
+    <li><a href="../../concepts/nadi-shodhana.html" class="wikilink" data-concept="nadi-shodhana">Rutiinin keskeinen tekniikka — tasapainotus</a></li>
+    <li><a href="../../concepts/kapala-bhati.html" class="wikilink" data-concept="kapala-bhati">Valinnainen aktivoija — lisätään myöhemmin</a></li>
+    <li><a href="../../concepts/bhastrika.html" class="wikilink" data-concept="bhastrika">Vahvin versio — vain kokeneille</a></li>
+    <li><a href="../../concepts/meditation.html" class="wikilink" data-concept="meditation">Integraatio — rutiini valmistaa meditaatioon</a></li>
+    <li><a href="../../concepts/presence.html" class="wikilink" data-concept="presence">Läsnäolo — rutiinin syvin vaikutus</a></li>
+    <li><a href="../../concepts/mantra.html" class="wikilink" data-concept="mantra">So Ham sopii erityisesti tähän rutiiniin</a></li>
+    <li><a href="../../concepts/witness.html" class="wikilink" data-concept="witness">Tarkkailija — harjaantuu hiljaisuusvaiheessa</a></li>
+  </ul>
+<div class="tryit-box">
+    <div class="tryit-header">
+      <span class="tryit-icon" aria-hidden="true">◇</span>
+      <h2 class="tryit-title">Kokeile käytännössä</h2>
+    </div>
+    <p class="tryit-intro">Serene Soundscapes on sovellus jossa voit tehdä tämän tekniikan interaktiivisesti, äänimaisemalla varustettuna. Yhdistä kaikki tekniikat — Sanctumista löydät eri kestoisia rutiineja.</p>
+
+    <div class="tryit-steps">
+      <p><strong>Sovelluksessa:</strong> Etsi sovelluksesta "The Sanctum" — osio ohjatuille hengitysrituaaleille.</p>
+    </div>
+
+    <div class="tryit-actions">
+      <a class="tryit-btn" href="https://o.valuebit.net/#sanctum" target="_blank" rel="noopener">Avaa Serene Soundscapes →</a>
+      <span class="tryit-qr-hint">Tai skannaa QR-koodi mobiililla:</span>
+      <img class="tryit-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https%3A%2F%2Fo.valuebit.net%2F%23sanctum" alt="QR-koodi Serene Soundscapes -sovellukseen" width="120" height="120" loading="lazy">
+    </div>
+
+    <p class="tryit-note"><em>Sovellus on pääosin ilmainen. Cloud Sync -tilaus (4.99 $/kk) synkronoi harjoituksesi laitteiden välillä, mutta peruskäyttö ei vaadi tiliä.</em></p>
+  </div>
+
+
+
+  <div class="pager">
+    <a href="0005-kapala-bhati.html">← Kapalabhati</a>
+    <a href="../">Palaa hengitys-polun alkuun</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Helppoin/vaikein', '2. Muutos arjessa', '3. Rutiinin esteet'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

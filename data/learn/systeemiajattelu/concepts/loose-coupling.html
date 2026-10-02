@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: loose-coupling</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Loose coupling</h1>
+  <p class="meta">Käsite · systeemiajattelu · kytkentä · joustavuus · resilienssi</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Loose coupling</strong> (suom. <em>heikko kytkentä</em>) tarkoittaa järjestelmän rakennetta, jossa osat ovat yhteydessä toisiinsa mutta eivät ole vahvasti riippuvaisia toistensa tiloista, aikatauluista tai toimintalogiikasta. Yhden osan muutos ei välittömästi ja voimakkaasti määrää toisen osan käyttäytymistä — osien välissä on <em>vaimennusta</em>, <em>puskureita</em> ja <em>viiveitä</em>, jotka pehmentävät vuorovaikutusta.</p>
+
+  <p>Heikosti kytketyssä järjestelmässä yksittäisen osan häiriö ei romahduta koko systeemiä, vaan vaikutus etenee hitaasti, paikallisesti ja osittain. Tämä tekee järjestelmästä joustavan, sopeutuvan ja resilientin: se kestää häiriöitä, vaihtelua ja yllättäviä muutoksia.</p>
+
+  <p>Karl Weick määritteli 1976 klassisen organisaatioteoreettisen muotoilun: heikosti kytketyt järjestelmät ovat sellaisia, joissa</p>
+  <ul>
+    <li>kukin osa voi sopeutua omaan ympäristöönsä itsenäisesti,</li>
+    <li>osien välillä on harvoja, hitaita ja paikallisia vuorovaikutuksia,</li>
+    <li>yhden osan romahtaminen ei välittömästi kaada koko järjestelmää.</li>
+  </ul>
+
+  <blockquote>
+    <p>"In a loosely coupled system, each part can change independently without forcing change in other parts." — Karl E. Weick</p>
+  </blockquote>
+
+  <p>Heikko kytkentä on läheistä sukua <a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modulaarisuudelle</a>: kun järjestelmä jaetaan selkeisiin, toisistaan erillisiin osiin, niiden välinen kytkentä on väistämättä löysempi. Käsitteet eivät kuitenkaan ole sama asia — modulaarisuus on <em>rakenteellinen</em> jako, loose coupling on <em>vuorovaikutuksellinen</em> ominaisuus.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Käsitteen juuret ovat 1960-luvun systeemiteoriassa. <strong>Herbert A. Simon</strong> kuvasi teoksessaan <em>The Architecture of Complexity</em> (1962) lähes hajoitettavissa olevia järjestelmiä (<em>nearly decomposable systems</em>), joissa osien vuorovaikutus on heikkoa ja nopeaa käyttäytymistä hitaampaa. Tämä oli matemaattinen perusta loose coupling -ajattelulle.</p>
+
+  <p>Karl Weick popularisoi termin 1976 artikkelissaan <em>Educational Organizations as Loosely Coupled Systems</em>, jossa hän kuvasi kouluja ja yliopistoja heikosti kytkettyinä kokonaisuuksina: opettajat, hallinto, oppilaat ja opetussuunnitelma elävät osin itsenäisesti, ja hallinnollinen ohjaus etenee hitaasti ja epätäydellisesti. Artikkeli muutti organisaatiotutkimuksen käsitteistöä pysyvästi.</p>
+
+  <p>Myöhemmin loose coupling levisi <a href="/learn/systeemiajattelu/concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systeemiajatteluun</a>, <a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">kompleksisten adaptiivisten systeemien</a> tutkimukseen, ekologiaan ja <a href="/learn/systeemiajattelu/concepts/systems-biology.html" class="wikilink" data-concept="systems-biology">systeemibiologiaan</a>. 2000-luvulla siitä on tullut <a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilienssi</a>-tutkimuksen ydinkäsite: joustavat ekosysteemit, toipuvat yhteiskunnat ja vikasietoiset tekniset järjestelmät ovat kaikki heikosti kytkettyjä.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a> — yläkäsite, jonka ääripää loose coupling on.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a> — vastakkainen ääripää.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a> — rakenteellinen vastine: osien erottaminen toisistaan.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/decomposition.html" class="wikilink" data-concept="decomposition">decomposition</a> — menetelmä, jolla modulaarisuus saavutetaan.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — heikko kytkentä lisää järjestelmän sietokykyä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a> — kyky säilyttää toiminta häiriöissä, jota heikko kytkentä tukee.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — adaptiivisuus perustuu usein heikkoon kytkentään.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">feedback</a> — heikosti kytketyissä järjestelmissä takaisinkytkentä on pehmeämpää ja hitaampaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/delay.html" class="wikilink" data-concept="delay">delay</a> — viiveet ovat tyypillinen merkki heikosta kytkennästä.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — Ashbyn laki: monimuotoisuus vaatii monimuotoisuutta, ja heikko kytkentä mahdollistaa paikallisen vaihtelun.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — biologinen esimerkki heikosti kytketystä säätelystä.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Loose coupling esitellään [[../lessons/modularity.html|Modulaarisuus ja kytkentä]] -oppitunnilla, jossa sitä verrataan <a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a>iin. Käsite toistuu [[../lessons/resilience.html|resilienssin]], [[../lessons/complex-adaptive-systems.html|kompleksisten adaptiivisten systeemien]] ja [[../lessons/organizational-design.html|organisaatiosuunnittelun]] oppitunneilla.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Simon, H. A. (1962). "The Architecture of Complexity." <em>Proceedings of the American Philosophical Society</em> 106(6).</li>
+    <li>Weick, K. E. (1976). "Educational Organizations as Loosely Coupled Systems." <em>Administrative Science Quarterly</em> 21(1).</li>
+    <li>Orton, J. D. &amp; Weick, K. E. (1990). "Loosely Coupled Systems: A Reconceptualization." <em>Academy of Management Review</em> 15(2).</li>
+    <li>Holling, C. S. (1973). "Resilience and Stability of Ecological Systems." <em>Annual Review of Ecology and Systematics</em> 4.</li>
+    <li>Walker, B. &amp; Salt, D. (2006). <em>Resilience Thinking: Sustaining Ecosystems and People in a Changing World</em>. Island Press.</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/loose-coupling.html" class="wikilink" data-concept="loose-coupling">loose-coupling</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/tight-coupling.html" class="wikilink" data-concept="tight-coupling">tight-coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/robustness.html" class="wikilink" data-concept="robustness">robustness</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/decomposition.html" class="wikilink" data-concept="decomposition">decomposition</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Simon 1962; Weick 1976; Orton &amp; Weick 1990; Holling 1973; Walker &amp; Salt 2006. Ks. myös Wikipedia-artikkeli <em>Loose coupling</em>.
+  </p>
+</main>
+</body>
+</html>

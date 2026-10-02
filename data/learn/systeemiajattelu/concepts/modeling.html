@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: modeling</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>modeling</h1>
+  <p class="meta">Käsite · systeemiajattelu · esittäminen · tieteellinen menetelmä</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Mallintaminen</strong> (engl. <em>modeling</em>) on menetelmä, jossa monimutkainen todellisuuden osa esitetään yksinkertaisemmassa muodossa — kuvana, kaaviona, matemaattisena yhtälönä, tietokonesimulaationa tai sanallisena kuvauksena — niin, että sen keskeiset piirteet tulevat ymmärrettäviksi ja analysoitaviksi. Sana <em>malli</em> tulee italian kielen sanasta <em>modello</em>, joka juontuu latinan <em>modulus</em>:sta ("pieni mitta").</p>
+
+  <p>Malli ei ole kopio todellisuudesta eikä sen tarvitse olla. Mallin arvo mitataan sillä, mitä se paljastaa — mitä kysymyksiä sen avulla voi kysyä ja mihin kysymyksiin se vastaa. Hyvä malli on <em>riittävän yksinkertainen</em> ollakseen ymmärrettävä ja <em>riittävän tarkka</em> vastatakseen kysymykseen, jota varten se on tehty. George Boxin klassinen toteamus tiivistää: "Kaikki mallit ovat vääriä, mutta jotkut ovat hyödyllisiä."</p>
+
+  <p>Mallintamisen tyyppejä:</p>
+  <ul>
+    <li><strong>Käsitteellinen malli</strong> — sanallinen kuvaus, käsitekartta, <a href="rich-picture.html">rich-picture</a>.</li>
+    <li><strong>Rakenteellinen malli</strong> — kaavio, kuten <a href="causal-loop-diagram.html">causal-loop-diagram</a> tai <a href="stocks-and-flows.html">stocks-and-flows</a>-diagrammi.</li>
+    <li><strong>Matemaattinen malli</strong> — differentiaaliyhtälö, todennäköisyysjakauma, agenttipohjainen malli.</li>
+    <li><strong>Tietokonepohjainen simulaatio</strong> — ohjelmallinen toteutus, joka mahdollistaa dynaamisen tutkimisen.</li>
+    <li><strong>Fyysinen malli</strong> — pienoismalli, analogia, koekappale.</li>
+  </ul>
+
+  <p>Mallintaminen on tieteen ja tekniikan perusta. Systeemiajattelussa se on tärkein yksittäinen taito: kyky rakentaa <em>käyttökelpoinen</em> kuva systeemistä, ei sen täydellinen toisinto.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Mallintamisen juuret ovat luonnonfilosofiassa. Antiikin Kreikassa Ptolemaios rakensi <em>geosentrisen mallin</em> tähtitaivaasta — matemaattisesti kelvollinen, vaikka fysikaalisesti virheellinen. Galileo ja Newton kehittivät liikkeen matemaattiset mallit, jotka korvasivat aikaisemmat kuvaukset.</p>
+
+  <p>1900-luvulla mallintaminen muuttui erityistieteeksi. <a href="general-systems-theory.html">General-systems-theory</a> (Bertalanffy, 1940-luku) korosti, että eri tieteenalojen malleilla on yhteisiä rakenteita. Norbert Wienerin kybernetiikka (1948) ja John von Neumannin soluautomaatit (1950-luku) toivat dynaamisen mallintamisen keskeiseksi.</p>
+
+  <p>Jay Forrester perusti 1950-luvulla <a href="system-dynamics.html">system-dynamics</a>:n, jossa systeemit esitetään <a href="stocks.html">stocks</a>- ja <a href="flows.html">flows</a>-malleina. Donella Meadows jatkoi tätä työtä teoksessaan <em>Thinking in Systems</em> (2008). Peter Checkland kehitti <a href="soft-systems-methodology.html">soft-systems-methodology</a>:n (1970-luku), joka painottaa <a href="rich-picture.html">rich-picture</a>-tyyppisiä kvalitatiivisia malleja "kovien" matemaattisten rinnalle.</p>
+
+  <p>1990-luvulta lähtien tietokonesimulaatio on tuonut mallintamisen saataville laajasti: yhä useampi systeemi voidaan mallintaa, simuloida ja visualisoida ilman syvää matemaattista osaamista. Samalla mallintamisen etiikka — mallin rajoitusten ymmärtäminen — on noussut tärkeäksi.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="abstraction.html">abstraction</a> — mallintaminen on sovellettua abstraktiota.</li>
+    <li><a href="decomposition.html">decomposition</a> — usein mallintamisen ensimmäinen vaihe.</li>
+    <li><a href="system.html">system</a> — mallinnettava kohde.</li>
+    <li><a href="causal-loop-diagram.html">causal-loop-diagram</a> — yksi systeemidynamiikan mallityyppi.</li>
+    <li><a href="stocks-and-flows.html">stocks-and-flows</a> — toinen keskeinen mallityyppi.</li>
+    <li><a href="rich-picture.html">rich-picture</a> — kvalitatiivinen mallinnusmenetelmä.</li>
+    <li><a href="system-dynamics.html">system-dynamics</a> — Forresterin perustama mallinnuskoulu.</li>
+    <li><a href="soft-systems-methodology.html">soft-systems-methodology</a> — pehmeiden systeemien mallinnus.</li>
+    <li><a href="wicked-problem.html">wicked-problem</a> — ongelmatyyppi, jossa mallintaminen on erityisen haastavaa.</li>
+    <li><a href="paradigm.html">paradigm</a> — taustalla vaikuttava kehys, joka ohjaa mallin valintaa.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Käsite esitellään <a href="../lessons/mallintamisen-perusteet.html">Mallintamisen perusteet</a> -oppitunnilla, jossa käydään läpi mallityypit ja niiden soveltuvuus. Syventävä käsittely <a href="../lessons/systeemidynamiikan-alkeet.html">Systeemidynamiikan alkeet</a> -oppitunnilla, jossa keskitytään <a href="stocks-and-flows.html">stocks-and-flows</a>- ja <a href="causal-loop-diagram.html">causal-loop-diagram</a>-malleihin.</p>
+
+  <h2>Lähteet</h2>
+  <p>Ludwig von Bertalanffy — <em>General System Theory</em> (1968). Jay Forrester — <em>Industrial Dynamics</em> (1961). Donella Meadows — <em>Thinking in Systems: A Primer</em> (2008). Peter Checkland — <em>Systems Thinking, Systems Practice</em> (1981). George Box — "Science and Statistics" (1976). John Sterman — <em>Business Dynamics</em> (2000).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/decomposition.html" class="wikilink" data-concept="decomposition">decomposition</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/system.html" class="wikilink" data-concept="system">system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/causal-loop-diagram.html" class="wikilink" data-concept="causal-loop-diagram">causal-loop-diagram</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/stocks-and-flows.html" class="wikilink" data-concept="stocks-and-flows">stocks-and-flows</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/rich-picture.html" class="wikilink" data-concept="rich-picture">rich-picture</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/soft-systems-methodology.html" class="wikilink" data-concept="soft-systems-methodology">soft-systems-methodology</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Malli ei ole todellisuus. Se on keskustelukumppani — työkalu, jonka avulla voimme esittää kysymyksiä, joihin todellisuus yksin ei suoraan vastaa.
+  </p>
+</main>
+</body>
+</html>

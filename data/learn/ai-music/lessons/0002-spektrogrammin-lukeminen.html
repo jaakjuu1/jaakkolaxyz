@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppitunti 0002 — Spektrogrammin lukeminen</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --accent:#0a6e3a; --rule:#e5e5e5; --bg:#fcfcfb; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         color: var(--ink); max-width: 820px; margin: 2rem auto; padding: 0 1.2rem; background: #fbfaf6; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; margin-top: 2.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .key { background: #f6f6f4; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.5rem; margin: 1rem 0; }
+  .legend-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; background: white; border: 1px solid var(--rule); border-radius: 3px; font-size: 0.92rem; }
+  .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 2px; border: 1px solid rgba(0,0,0,0.2); }
+  img.demo { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; margin: 1rem 0; }
+  img.demo-clean { width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; margin: 1rem 0; filter: contrast(1.05); }
+  audio { width: 100%; margin: 1rem 0; }
+  .exercise { background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.2rem; margin: 1.5rem 0; }
+  .exercise h3 { margin-top: 0; color: var(--accent); }
+  details { margin: 1rem 0; padding: 0.8rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+  details[open] summary { margin-bottom: 0.6rem; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.3rem 0; }
+  code { background: #f6f6f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+  form { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); }
+  form input, form textarea { width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px; }
+  form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit; font-weight: 600; }
+  .compare-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+  @media (max-width: 600px) { .compare-2 { grid-template-columns: 1fr; } }
+  .compare-2 > div { padding: 0.8rem; background: white; border: 1px solid var(--rule); border-radius: 4px; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Spektrogrammin lukeminen</h1>
+<p class="meta">Oppitunti 0002 · AI-musiikin tuotanto · ~12 min lukuaikaa + harjoitus</p>
+
+<div class="key">
+  <strong>Ydinajatus:</strong> spektrogrammi on <em>silmällä luettava kartta äänestä</em>. Kun opit muuntamaan kuulemasi näkemäksesi, pystyt diagnosoimaan AI-musiikin ongelmia — ja ennen kaikkea ymmärtämään, mitä mallin pitäisi tuottaa ja mitä se oikeasti tuottaa.
+</div>
+
+<h2>1. Miksi spektrogrammi, ei aaltomuoto?</h2>
+
+<p>Aaltomuoto (yllä) kertoo vain <em>kuinka kovaa</em> ääni on milläkin hetkellä. Ihminen kuulee kuitenkin taajuuden — sen, onko kyse matalasta bassosta vai kirkkaasta symbaalista. Aaltomuoto ei erota näitä toisistaan.</p>
+
+<p>Spektrogrammi on Fourier-muunnoksen tulos: jokainen aikapiste (vaaka-akseli) puretaan taajuuskomponentteihin (pysty-akseli). Mitä tummempi/vaaleampi kohta, sitä enemmän energiaa sillä taajuudella on sillä hetkellä.</p>
+
+<div class="compare-2">
+  <div>
+    <strong>Aaltomuoto</strong><br>
+    Näkee: voimakkuuden ajassa<br>
+    Sokea: taajuudelle, sävelkorkeudelle, soittimelle
+  </div>
+  <div>
+    <strong>Spektrogrammi</strong><br>
+    Näkee: taajuuden, ajan JA voimakkuuden<br>
+    Sokea: vaiheelle (mutta ihminen ei sitä kuulekaan)
+  </div>
+</div>
+
+<h2>2. Viisi elementtiä, viisi aluetta</h2>
+
+<p>Alla on <strong>synteettinen 12 sekunnin demokappale</strong>, jossa jokainen elementti on sijoitettu tarkasti tunnistettavaan paikkaan sekä ajassa että taajuudessa:</p>
+
+<audio controls preload="metadata">
+  <source src="../reference/demo-audio.wav" type="audio/wav">
+  Selaimesi ei tue äänentoistoa.
+</audio>
+
+<details>
+  <summary>Elementtien aikajärjestys ja taajuusalueet (avaa halutessasi)</summary>
+  <div class="legend">
+    <div class="legend-item"><span class="swatch" style="background:#e74c3c"></span><strong>① Basso</strong> · 0–3 s · 40–200 Hz</div>
+    <div class="legend-item"><span class="swatch" style="background:#7f8c8d"></span><strong>② Komppi</strong> · 0–3 s · transientit</div>
+    <div class="legend-item"><span class="swatch" style="background:#3498db"></span><strong>③ Kitara</strong> · 3–9 s · 440–660 Hz</div>
+    <div class="legend-item"><span class="swatch" style="background:#2ecc71"></span><strong>④ Laulu</strong> · 6–9 s · 200–800 Hz</div>
+    <div class="legend-item"><span class="swatch" style="background:#f39c12"></span><strong>⑤ Symbaalit</strong> · 9–12 s · 4–8 kHz</div>
+  </div>
+</details>
+
+<h3>Annotoitu versio — katso ja kuuntele samaan aikaan</h3>
+<img class="demo" src="../reference/demo-spectrogram.png" alt="Spektrogrammi värikoodeilla">
+
+<h2>3. Mitä kukin elementti "näyttää"</h2>
+
+<p>Tässä on tiivistys — lue nämä ensin, palaa sitten kuvaan:</p>
+
+<ul>
+  <li><strong>Basso</strong> näkyy <em>kapeana vaakajuovana alhaalla</em>. Matalat taajuudet eivät vaihtele paljon, joten viiva pysyy tasaisena — kuin punainen viiva kartalla.</li>
+  <li><strong>Komppi / rummut</strong> näkyvät <em>pystyviivoina</em> koko korkeudella. Jokainen isku on lyhyt transientti — koko taajuuskaista aktivoituu hetkellisesti ja vaimenee.</li>
+  <li><strong>Kitara / melodia</strong> näkyy <em>vaakasuorana viivana keskikorkeudella</em>. Sävelen taajuus pysyy vakiona niin kauan kuin nuotti soi — tämä on melodian "sormenjälki".</li>
+  <li><strong>Laulu</strong> näkyy <em>kapeampana ja epäsäännöllisempänä juovana</em> kitaran päällä. Vibrato näkyy viivan pienenä aaltoiluna ylös-alas.</li>
+  <li><strong>Symbaalit / korkeat äänet</strong> näkyvät <em>vaaleana "utuna" ylhäällä</em>. Korkeataajuinen kohina ei ole järjestäytynyttä — se muistuttaa rakeisuutta tai sumua.</li>
+</ul>
+
+<h2>4. Harjoitus: lue itse</h2>
+
+<div class="exercise">
+  <h3>Harjoitus A — Spektrogrammi ilman selityksiä</h3>
+  <p>Tässä on <strong>sama kappale ilman värejä ja laatikoita</strong>. Yritä tunnistaa samat viisi elementtiä:</p>
+  <img class="demo-clean" src="../reference/demo-spectrogram-clean.png" alt="Spektrogrammi ilman selityksiä">
+
+  <p><strong>Kysymykset:</strong></p>
+  <ol>
+    <li>Missä ajankohdassa basso loppuu ja kitara alkaa?</li>
+    <li>Mistä tiedät, että laulu soi kitaran päällä eikä sen sijaan?</li>
+    <li>Mitä eroa on symbaalien ja kompin transienttien välillä visuaalisesti?</li>
+  </ol>
+
+  <p><strong>Vastaukset löytyvät alempaa</strong> (avaa spoileri vasta kun olet yrittänyt).</p>
+
+  <details>
+    <summary>📋 Vastaukset (älä avaa vielä!)</summary>
+    <ol>
+      <li>Noin 3.0 sekunnin kohdalla — tummien pystyviivojen sarja loppuu ja tilalle tulee yhtenäisempi vaakajuova keskelle.</li>
+      <li>Laulun "värähtely" näkyy viivan paksuuden ja korkeuden aaltoiluna, kitaran viiva on tasaisempi. Lisäksi laulu näkyy alempana (200-800 Hz) kuin korkein kitaran nuotti.</li>
+      <li>Komppi on terävä, kapea pystyviiva. Symbaalit ovat leveä "vaalea sumu" korkeilla taajuuksilla — ei viivoja, vaan jatkuvaa energiaa.</li>
+    </ol>
+  </details>
+</div>
+
+<h2>5. Miksi tämä taito on kullanarvoinen AI-musiikissa</h2>
+
+<p>Kun kuuntelet AI-musiikkia, voit nyt avata minkä tahansa ilmaisen työcalun (Audacity, Sonic Visualiser, jopa Python + librosa) ja <strong>nähdä</strong>, mitä malli teki. Esimerkkejä:</p>
+
+<ul>
+  <li>Jos spektrogrammissa näkyy <em>tasainen ruskea palkki tietyllä taajuudella</em> → kyseessä on todennäköisesti virheellinen toisto (overfit/loop)</li>
+  <li>Jos laulun kaista on <em>liian kapea eikä liiku</em> → malli ei ole oppinut melodista liikettä laululle</li>
+  <li>Jos transientit puuttuvat kokonaan → malli tuottaa liian pehmeää ambient-jälkeä, vaikka pyysit rumpuja</li>
+  <li>Jos korkeat taajuudet ovat <em>liian voimakkaita</em> → säröä tai ei masteroitu</li>
+</ul>
+
+<p>Tämä on diagnostinen työkalu, joka erottaa harrastajan ammattilaisesta.</p>
+
+<h2>6. Mitä seuraavaksi?</h2>
+
+<p>Seuraavassa oppitunnissa (<strong>0003</strong>) siirrytään konkreettiin tekemiseen: <strong>Suno-promptitiede</strong>. Opit muotoilemaan tyyliprompteja niin, että lopputulos osuu haluttuun tunnelmaan — käyttäen spektrogrammin ymmärrystä apuna.</p>
+
+<p>Sitä ennen: <strong>yksi tehtävä</strong>.</p>
+
+<form id="quiz" onsubmit="return false;">
+  <div style="margin-bottom: 1rem;">
+    <label for="q1" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">1. Latasitko demon ja avasit sen Sonic Visualiser'issa tai vastaavassa? Jos ei, miksi?</label>
+    <textarea id="q1" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q2" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">2. Pystyitkö tunnistamaan kaikki viisi elementtiä harjoituskuvasta ilman selityksiä?</label>
+    <textarea id="q2" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q3" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">3. Mikä yllätti sinut eniten — mitä et olisi arvannut ilman spektrogrammia?</label>
+    <textarea id="q3" rows="2"></textarea>
+  </div>
+  <div style="display:flex; gap: 0.5rem; align-items:center;">
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()" style="background: transparent; color: var(--muted); border: 1px solid var(--rule);">Tyhjennä</button>
+    <span id="status" style="color: var(--accent); font-size: 0.9rem;"></span>
+  </div>
+</form>
+
+<script>
+function copyAnswers() {
+  const a = [1,2,3].map(i => 'Q' + i + ': ' + (document.getElementById('q'+i).value.trim() || '(tyhjä)')).join('\n');
+  navigator.clipboard.writeText(a).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => s.textContent = '', 4000);
+  });
+}
+function clearAnswers() {
+  [1,2,3].forEach(i => document.getElementById('q'+i).value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+
+<hr>
+
+<h2>Lähteet</h2>
+<ul>
+  <li><a href="https://www.j-labs.pl/blog-technologiczny/how-does-ai-create-music/">How does AI create music</a> — spektrogrammin perusteet</li>
+  <li><a href="https://en.wikipedia.org/wiki/Spectrogram">Wikipedia: Spectrogram</a> — Fourier-muunnos, ikkunafunktiot, mel-asteikko</li>
+  <li><a href="https://librosa.org/doc/latest/generated/librosa.stft.html">librosa.stft</a> — Python-kirjasto spektrogrammin laskemiseen</li>
+</ul>
+
+<footer>
+  <p><strong>Muistutus:</strong> kysy minulta mitä tahansa epäselvää. Jos sinulla ei ole Audacityä tai Sonic Visualiser'ia asennettuna, voin ehdottaa selainpohjaisia työkaluja tai asentaa ne.</p>
+  <p><a href="../index.html">← Takaisin oppimateriaali-hakemistoon</a></p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006 — Käyttäytymisen aktivointi: pieni teko lamaantumiseen</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0; padding: .9rem 1.1rem; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); font-style: italic; border-radius: 0 4px 4px 0;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .cycle {
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 1.1rem 1.3rem;
+    margin: 1.4rem 0;
+    background: var(--bg);
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .cycle .arrow { color: var(--accent); margin: 0 .5rem; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  .examples {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.4rem 0;
+  }
+  @media (max-width: 540px) { .examples { grid-template-columns: 1fr; } }
+  .examples .item {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: .8rem 1rem;
+    background: var(--accent-soft);
+    font-size: .95rem;
+  }
+  .examples .item strong { display: block; color: var(--accent); margin-bottom: .2rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea { width: 100%; font: inherit; padding: .55rem .65rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); resize: vertical; }
+  button { margin-top: 1rem; margin-right: .6rem; font: inherit; padding: .55rem 1rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: .92rem; }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note { color: var(--muted); font-size: .85rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 1px dashed var(--rule); }
+  .warn {
+    background: #fff5e6; border-left: 3px solid #b07000;
+    padding: .9rem 1.1rem; margin: 1.6rem 0; border-radius: 0 4px 4px 0; font-size: .95rem;
+  }
+  @media (prefers-color-scheme: dark) { .warn { background: #2a2418; border-left-color: #d49a3a; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Käyttäytymisen aktivointi</h1>
+  <p class="meta">Oppitunti 0006 · ~6 min · työkalu lamaantumiseen</p>
+
+  <p>0001 opetti että hyväksyminen ei ole luovuttamista. 0004 opetti että voit toimia arvojesi mukaan vaikka olo on huono. Tämä oppitunti on <em>käytännön vastaus</em> lamaantumiseen — tilaan jossa et pääse ylös sängystä, et vastaa viesteihin, et tee asioita joista tiedät että olisivat tärkeitä.</p>
+
+  <h2>Yksi tuhoisa kehä</h2>
+
+  <p>Lamaantuminen ei jää paikoilleen. Se ruokkii itseään. WHO ja NICE mainitsevat käyttäytymisen aktivoinnin yhtenä tutkitusti tehokkaana menetelmänä masennuksen hoidossa juuri tämän vuoksi — se katkaisee kehän.</p>
+
+  <div class="cycle">
+    Huono olo <span class="arrow">→</span> vähemmän toimintaa <span class="arrow">→</span> vähemmän palkitsevia kokemuksia <span class="arrow">→</span> pahempi olo <span class="arrow">→</span> vähemmän toimintaa
+  </div>
+
+  <p>Tämä on kehä joka <em>ei katkea odottamalla</em>, koska se toimii juuri niin: kun odotat että olo paranee jotta voisit toimia, olo ei parane koska et toimi.</p>
+
+  <h2>Logiikka on tämä</h2>
+
+  <blockquote>
+    Älä odota, että olo paranee jotta voit toimia. Toimi pienesti, jotta ololla on mahdollisuus muuttua.
+  </blockquote>
+
+  <p>Tämä ei ole pelkkää filosofiaa. Se on tutkitusti tehokas protokolla, jota käytetään masennuksen hoidossa silloin kun henkilö ei kykene toimimaan "tahdonvoimalla" — koska tahdonvoima ei riitä silloin kun vireystila on romahtanut.</p>
+
+  <h2>Konkreettinen menetelmä</h2>
+
+  <p>Yksinkertainen, ei-inspiroiva ja juuri siksi toimiva:</p>
+
+  <ol>
+    <li><strong>Tunnista</strong> yksi asia joka sinun <em>täytyisi</em> tehdä tai joka olisi <em>hyväksi</em> tehdä, mutta jota olet lykännyt.</li>
+    <li><strong>Pienennä</strong> se niin pieneksi että se on melkein mahdotonta olla tekemättä — ei ylipainotettu versio.</li>
+    <li><strong>Ajoita</strong> tekohetki — ei "joskus", vaan tietty kellonaika.</li>
+    <li><strong>Suorita</strong> — älä odota motivaatiota, se tulee tekemisen jälkeen.</li>
+    <li><strong>Kirjaa</strong> — pieni merkintä tekemisen jälkeen (tähän riittää yksi ruksi kalenterissa).</li>
+  </ol>
+
+  <h2>Esimerkkejä pienennyksestä</h2>
+
+  <p>Suurin virhe on jättää teko suureksi. Tässä yleisiä versioita ja niiden pienennettyjä muotoja:</p>
+
+  <div class="examples">
+    <div class="item"><strong>Liikunta</strong>"Kävele 30 minuuttia." → "Pue kengät ja astu ovelle."</div>
+    <div class="item"><strong>Siivous</strong>"Siivoa keittiö." → "Laita yksi astia tiskikoneeseen."</div>
+    <div class="item"><strong>Viestit</strong>"Vastaa kaikkiin viesteihin." → "Vastaa yhteen ihmiselle joka odottaa."</div>
+    <div class="item"><strong>Hakemus</strong>"Täytä hakemus." → "Avaa hakulomake ja lue kysymykset."</div>
+    <div class="item"><strong>Terveys</strong>"Aloita kuntoilu." → "Varasin yhden ajan terveysasemalle."</div>
+    <div class="item"><strong>Ihmissuhde</strong>"Puhu kumppanille." → "Lähetä yksi teksti: 'ajatellaan sinua'."</div>
+    <div class="item"><strong>Hygienia</strong>"Käy suihkussa ja pue siistit vaatteet." → "Suihku."</div>
+    <div class="item"><strong>Uni</strong>"Nuku kahdeksan tuntia." → "Sulje näyttö kello 23."</div>
+  </div>
+
+  <p>Yhtä näistä ei tarvitse tehdä täydellisesti. Yhtä niistä ei tarvitse tehdä joka päivä. Tärkeintä on <em>katkaista kehä yhden pienen teon verran</em>.</p>
+
+  <h2>Miten tämä liittyy aiempiin oppitunteihin</h2>
+
+  <ul>
+    <li><strong>0001</strong> — käyttäytymisen aktivointi on konkreettinen tapa osoittaa "en luovuta" kun oma tilanne on vaikea.</li>
+    <li><strong>0002</strong> — STOP/TIPP <em>edeltävät</em> aktivointia. Jos keho on viritetty, ensin säädellään keho, sitten aktivoidaan.</li>
+    <li><strong>0003</strong> — CBT-ajatuskupla voi auttaa kun ajatus "en jaksa" estää aktivoinnin.</li>
+    <li><strong>0004</strong> — ACT:n "sitoutunut toiminta" <em>on</em> käyttäytymisen aktivointia — arvosta käsin, pieni teko kerrallaan.</li>
+    <li><strong>0005</strong> — mindfulness antaa tilan huomata lamaannus ilman että samaistuu siihen, jolloin pieni teko on helpompi.</li>
+  </ul>
+
+  <blockquote>
+    Yhdessä nämä muodostavat järjestelmän: keho alas (0002) → pää kuntoon (0003) → arvo näkyviin (0004) → huomaa tila (0005) → pieni teko (0006).
+  </blockquote>
+
+  <hr>
+
+  <h2>Tee nyt: yksi pieni teko tänään</h2>
+
+  <p>Älä yritä tehdä isoa muutosta. Valitse <em>yksi</em> asia, pienennä se, ja aseta sille aika.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi asia jonka tiedät olevan tärkeä mutta jonka olet lykännyt?</label>
+      <textarea id="q1" rows="2" placeholder="Esimerkki: Soitto hammaslääkäriin. Laskun maksu. Yhden työkaverin tapaaminen. Roskat ulos."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mikä on sen <em>pienennetty</em> versio — pienin mahdollinen askel joka silti on sama teko?</label>
+      <textarea id="q2" rows="2" placeholder="Esimerkki: Avaa ajanvaraus ja katso vapaita aikoja — älä vielä varaa. Tai: nosta lasku pöydältä ja aseta se lompakon viereen."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Milloin teet sen — tarkka kellonaika?</label>
+      <textarea id="q3" rows="1" placeholder="Esimerkki: Tänään kello 19.00."></textarea>
+    </div>
+    <div>
+      <label for="q4">4. Mikä voisi estää sinua — ja miten voisit varautua siihen?</label>
+      <textarea id="q4" rows="2" placeholder="Esimerkki: Unohtaminen — laitan hälytyksen. Tai: 'en jaksa' — silloin vain kolmen hengityksen pysäkki ensin."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <div class="warn">
+    <strong>Rajaus:</strong> Käyttäytymisen aktivointi on tehokas työkalu, mutta se ei korvaa ammattiapua silloin kun lamaannus on pitkäaikaista tai siihen liittyy itsetuhoisuutta. NICE suosittelee vaikeammassa masennuksessa lääkityksen ja terapian yhdistelmää.
+  </div>
+
+  <p class="footer-note">
+    Lähteet: WHO — <a href="https://www.who.int/teams/mental-health-and-substance-use/treatment-care/mental-health-gap-action-programme/evidence-centre/depression/behavioural-activation">behavioural activation</a>; NICE — <a href="https://www.nice.org.uk/guidance/ng222/chapter/recommendations">NG222 depression in adults</a>.
+  </p>
+
+  <div class="pager">
+    <a href="0005-mindfulness-ajatus-vs-mina.html">← Edellinen: Mindfulness</a>
+    <a class="next" href="0007-itsemyotatunto.html">Seuraava: Itsemyötätunto →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const ids = ['q1','q2','q3','q4'];
+  const labels = ['1. Asia jonka lykkäät', '2. Pienennetty versio', '3. Ajoitus', '4. Estäjä ja varautuminen'];
+  const fields = ids.map(id => document.getElementById(id));
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3','q4'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

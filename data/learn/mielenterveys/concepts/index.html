@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Tietosanakirja — kaikki käsitteet joita tämän oppimisympäristön polut käyttävät. Wikipedia-tyylinen hakemisto, linkit oppitunteihin.">
+<title>Käsitteet — tietosanakirja</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --blue: #355874; --purple: #5d4a8a; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878; --blue: #7fa3c4; --purple: #b09fd1;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 2.1rem; font-weight: 700; line-height: 1.12; margin: 0 0 .4rem; letter-spacing: -.018em; }
+  h2 { font-size: 1.3rem; font-weight: 700; margin: 2.8rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2.4rem; }
+
+  .hero {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 1.2rem 1.3rem;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 2rem;
+  }
+  .hero p { margin: 0; font-size: 1.02rem; }
+  .hero strong { color: var(--accent); }
+
+  /* Group sections */
+  .group {
+    margin: 2rem 0;
+  }
+  .group-title {
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .6rem;
+    padding-bottom: .3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .group.breathing .group-title { color: var(--blue); }
+  .group.mantras .group-title { color: var(--purple); }
+  .group.meditation .group-title { color: var(--green); }
+
+  ul.concepts { list-style: none; padding-left: 0; margin: 0; }
+  ul.concepts li {
+    border-left: 3px solid var(--rule);
+    padding: .7rem 0 .7rem 1.2rem;
+    margin-bottom: 0;
+  }
+  ul.concepts li:hover { border-left-color: var(--accent); }
+  ul.concepts a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 1.02rem;
+  }
+  ul.concepts a:hover { color: var(--accent); }
+  ul.concepts .desc {
+    display: block;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: .9rem;
+    margin-top: .2rem;
+  }
+
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  p { margin: 0 0 1rem; }
+
+  .footer-note {
+    color: var(--muted);
+    font-size: .88rem;
+    margin-top: 2.4rem;
+    padding-top: 1.2rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Käsitteet</h1>
+  <p class="meta">Tietosanakirja · 26 käsitettä · wikipedia-tyylinen hakemisto</p>
+
+  <div class="hero">
+    <p>Tämä on <strong>käsitteiden tietosanakirja</strong>. Jokainen polku ([[../|mielenterveystaidot]], <a href="../breathing/">hengitys</a>, <a href="../mantras/">mantrat</a>, <a href="../meditation/">meditaatio</a>) viittaa näihin käsitteisiin wikilinkeillä. Klikkaa käsitettä niin pääset sen omalle sivulle, josta löytyvät siihen liittyvät oppitunnit ja muut käsitteet.</p>
+  </div>
+
+  <h2>Hengitykseen liittyvät käsitteet</h2>
+  <div class="group breathing">
+    <ul class="concepts">
+      <li>
+        <a href="prana.html"><strong>Prana</strong></a>
+        <span class="desc">Elämänenergia jooga-filosofiassa; länsimaisessa kontekstissa: hapen ja verenkierron tehokkuus.</span>
+      </li>
+      <li>
+        <a href="pranayama.html"><strong>Pranayama</strong></a>
+        <span class="desc">Hengityksen säätely — kokoelma tekniikoita joilla ohjataan hermostoa ja mieltä.</span>
+      </li>
+      <li>
+        <a href="breath-awareness.html"><strong>Hengitystietoisuus</strong></a>
+        <span class="desc">Tarkka huomio hengitykseen ilman sen muuttamista — perusta meditaatiolle.</span>
+      </li>
+      <li>
+        <a href="diaphragm.html"><strong>Pallea</strong></a>
+        <span class="desc">Anatominen lihas joka erottaa rintaontelon vatsaontelosta; avain palleahengitykseen.</span>
+      </li>
+      <li>
+        <a href="nadi-shodhana.html"><strong>Nadi shodhana</strong></a>
+        <span class="desc">Vaihtoehtoinen sierainhengitys — tasapainottaa autonomisen hermoston.</span>
+      </li>
+      <li>
+        <a href="kapala-bhati.html"><strong>Kapalabhati</strong></a>
+        <span class="desc">Nopea palleapommitus — aktivoi sympaattista hermostoa lyhyesti.</span>
+      </li>
+      <li>
+        <a href="bhastrika.html"><strong>Bhastrika</strong></a>
+        <span class="desc">Palkeenhengitys — voimakas sisään- ja uloshengitys; kapalabhataa intensiivisempi.</span>
+      </li>
+      <li>
+        <a href="ujjayi.html"><strong>Ujjayi</strong></a>
+        <span class="desc">"Merenkuulu"-hengitys — kurkunpää kuristaa ilman virtausta.</span>
+      </li>
+      <li>
+        <a href="sama-vritti.html"><strong>Sama vritti</strong></a>
+        <span class="desc">Yhtäläinen hengitys — sama kesto sisään, pidä, ulos, pidä.</span>
+      </li>
+      <li>
+        <a href="visama-vritti.html"><strong>Visama vritti</strong></a>
+        <span class="desc">Epäyhtäläinen hengitys — eri pituudet vaiheille.</span>
+      </li>
+      <li>
+        <a href="bandha.html"><strong>Bandha</strong></a>
+        <span class="desc">Energialukot — lihasjännitykset jotka ohjaavat pranan virtausta.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>Mantroihin liittyvät käsitteet</h2>
+  <div class="group mantras">
+    <ul class="concepts">
+      <li>
+        <a href="mantra.html"><strong>Mantra</strong></a>
+        <span class="desc">Ääni jota toistetaan tarkoituksella — työkalu mielen keskittämiseen.</span>
+      </li>
+      <li>
+        <a href="bija.html"><strong>Bija</strong></a>
+        <span class="desc">"Siemen"-mantra — yksitavuinen, symbolinen, tiettyyn tarkoitukseen.</span>
+      </li>
+      <li>
+        <a href="om.html"><strong>Om</strong></a>
+        <span class="desc">Universaali äänivärähtely; joogan ja hindulaisuuden pyhin äänne.</span>
+      </li>
+      <li>
+        <a href="so-ham.html"><strong>So ham</strong></a>
+        <span class="desc">"Minä olen" — luonnollinen hengitysmantra, yhdistyy sisäänhengitykseen ja uloshengitykseen.</span>
+      </li>
+      <li>
+        <a href="japa.html"><strong>Japa</strong></a>
+        <span class="desc">Mantran toisto, yleensä rukousnauhan (mala) kanssa.</span>
+      </li>
+      <li>
+        <a href="mala.html"><strong>Mala</strong></a>
+        <span class="desc">108 helmen rukousnauha — työkalu japa-toiston laskemiseen.</span>
+      </li>
+    </ul>
+  </div>
+
+  <h2>Meditaatioon liittyvät käsitteet</h2>
+  <div class="group meditation">
+    <ul class="concepts">
+      <li>
+        <a href="meditation.html"><strong>Meditaatio</strong></a>
+        <span class="desc">Laaja käsite — kaikki menetelmät mielen harjoittamiseen tarkoituksellisesti.</span>
+      </li>
+      <li>
+        <a href="mindfulness.html"><strong>Mindfulness</strong></a>
+        <span class="desc">Tietoinen, hyväksyvä läsnäolo nykyhetkessä ilman arviointia.</span>
+      </li>
+      <li>
+        <a href="samatha.html"><strong>Samatha</strong></a>
+        <span class="desc">Rauhoittava meditaatio — mielen keskittäminen yhteen kohteeseen.</span>
+      </li>
+      <li>
+        <a href="vipassana.html"><strong>Vipassana</strong></a>
+        <span class="desc">Näkevä meditaatio — asioiden todellisen luonteen tarkastelu.</span>
+      </li>
+      <li>
+        <a href="metta.html"><strong>Metta</strong></a>
+        <span class="desc">Rakastava ystävällisyys — meditaatio hyväksynnän ja myötätunnon kehittämiseen.</span>
+      </li>
+      <li>
+        <a href="drishti.html"><strong>Drishti</strong></a>
+        <span class="desc">Katseen keskittäminen — fyysinen harjoitus joka tukee mielen keskittymistä.</span>
+      </li>
+      <li>
+        <a href="presence.html"><strong>Läsnäolo</strong></a>
+        <span class="desc">Täysi tietoinen läsnäolo tässä hetkessä — meditaation ja arjen yhteinen tavoite.</span>
+      </li>
+      <li>
+        <a href="stillness.html"><strong>Hiljaisuus</strong></a>
+        <span class="desc">Sisäinen hiljaisuus — mielen rauhoittuminen, ajatusten taukoaminen.</span>
+      </li>
+      <li>
+        <a href="witness.html"><strong>Tarkkailija</strong></a>
+        <span class="desc">Meditaation "minä joka katsoo" — kyky havainnoida ajatuksia niihin samaistumatta.</span>
+      </li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <h2>Käsitteiden välinen kartta</h2>
+
+  <p>Käsitteet eivät ole erillisiä saarekkeita — ne muodostavat verkon. Esimerkiksi:</p>
+
+  <ul>
+    <li><strong><a href="/learn/mielenterveys/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> ↔ <a href="/learn/mielenterveys/concepts/pranayama.html" class="wikilink" data-concept="pranayama">pranayama</a> ↔ <a href="/learn/mielenterveys/concepts/breath-awareness.html" class="wikilink" data-concept="breath-awareness">hengitystietoisuus</a></strong> — fysiologinen ketju.</li>
+    <li><strong><a href="/learn/mielenterveys/concepts/mantra.html" class="wikilink" data-concept="mantra">mantra</a> ↔ <a href="/learn/mielenterveys/concepts/japa.html" class="wikilink" data-concept="japa">japa</a> ↔ <a href="/learn/mielenterveys/concepts/mala.html" class="wikilink" data-concept="mala">mala</a></strong> — toiston ketju.</li>
+    <li><strong><a href="/learn/mielenterveys/concepts/meditation.html" class="wikilink" data-concept="meditation">meditaatio</a> ↔ <a href="/learn/mielenterveys/concepts/samatha.html" class="wikilink" data-concept="samatha">samatha</a> ↔ <a href="/learn/mielenterveys/concepts/vipassana.html" class="wikilink" data-concept="vipassana">vipassana</a></strong> — keskittämisen ja näkemisen perinteet.</li>
+    <li><strong><a href="/learn/mielenterveys/concepts/mindfulness.html" class="wikilink" data-concept="mindfulness">mindfulness</a> ↔ <a href="/learn/mielenterveys/concepts/presence.html" class="wikilink" data-concept="presence">läsnäolo</a> ↔ <a href="/learn/mielenterveys/concepts/witness.html" class="wikilink" data-concept="witness">tarkkailija</a></strong> — tietoisuuden kerrokset.</li>
+  </ul>
+
+  <p>Jokaisen käsitteen omalla sivulla on "Aiheeseen liittyy" -osio, josta pääset naapurikäsitteisiin.</p>
+
+  <p class="footer-note">
+    Tämä hakemisto syntyy automaattisesti concept-manifest.json-tiedostosta, ja kaikki wikilinkit oppitunneissa ja konsepti-sivuilla viittaavat tänne. Kun uusi käsite lisätään manifestiin, se ilmestyy tänne julkaisun yhteydessä.
+  </p>
+</main>
+</body>
+</html>

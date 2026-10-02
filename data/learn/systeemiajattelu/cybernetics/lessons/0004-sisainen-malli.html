@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004-sisainen-malli — Sisäinen malli ja havainnointi</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Kybernetiikka</a> › Oppitunti 4</nav>
+
+<h1>Sisäinen malli ja havainnointi</h1>
+<p class="meta">Oppitunti 4 / 6 · ~18 min</p>
+
+<h2>Miten järjestelmä tietää tilansa?</h2>
+<p>Jotta takaisinkytkentä toimisi, järjestelmän täytyy <strong>tietää nykytilansa</strong> ja <strong>verrata sitä tavoitteeseen</strong>. Tämä vaatii kaksi asiaa:</p>
+
+<ol>
+<li><strong>Havainnointi</strong> — kyky mitata tai aistia järjestelmän tila.</li>
+<li><strong>Sisäinen malli</strong> — käsitys siitä, miten järjestelmän <em>pitäisi</em> toimia.</li>
+</ol>
+
+<p>Jos jompikumpi puuttuu, säätö ei onnistu. Tämä oppitunti käsittelee molempia.</p>
+
+<h2>Sisäinen malli</h2>
+<p><strong>Sisäinen malli</strong> on järjestelmän representaatio siitä, miten maailma toimii — tai miten sen tulisi toimia. Malli voi olla:</p>
+
+<ul>
+<li><strong>Eksplisiittinen</strong> — kirjoitettu ohjelmakoodi, kaava, säännöstö.</li>
+<li><strong>Implisiittinen</strong> — ihmisen intuitio, tottumus, opittu reaktio.</li>
+<li><strong>Fyysinen</strong> — laitteen rakenne joka pakottaa tietyn toiminnan (esim. venttiili, joka avautuu paineen noustessa).</li>
+</ul>
+
+<h3>Esimerkki: termostaatti</h3>
+<p>Yksinkertainen termostaatti sisältää sisäisenä mallinään vain <strong>yhden luvun</strong>: tavoitelämpötilan (esim. 21°C). Kun nykylämpö ylittää tämän, lämmitin sammuu. Kun se alittaa, lämmitin käynnistyy. Malli on äärimmäisen yksinkertainen — ja juuri siksi termostaatti toimii luotettavasti.</p>
+
+<h3>Esimerkki: autopilot</h3>
+<p>Lentokoneen autopilot sisältää paljon monimutkaisemman mallin: se tietää lentokoneen dynamiikan, sääolosuhteet, reittipisteet, polttoaineenkulutuksen ja satoja muita muuttujia. Tämä monimutkaisempi malli mahdollistaa monimutkaisemman toiminnan — mutta tuo mukanaan myös enemmän kohtia, joissa malli voi olla väärässä.</p>
+
+<h3>Esimerkki: ihminen</h3>
+<p>Ihmisen sisäinen malli on <strong>valtava ja enimmäkseen tiedostamaton</strong>. Siihen kuuluvat:</p>
+<ul>
+<li><strong>Keholliset mallit:</strong> miten kävellä, kirjoittaa, puhua — opittu miljoonien toistojen kautta.</li>
+<li><strong>Sosiaaliset mallit:</strong> miten ihmiset käyttäytyvät, mitä tietyssä tilanteessa "kuuluu" tehdä.</li>
+<li><strong>Kausaaliset mallit:</strong> mitä seuraa mistäkin — "jos painan kytkintä, valo syttyy".</li>
+<li><strong>Tavoitteet ja arvot:</strong> mitä pidämme tärkeänä, mitä haluamme elämältä.</li>
+</ul>
+
+<blockquote>"Jokainen ihminen kantaa sisällään kuvaa maailmasta — ei vain kokoelma tosiasioita, vaan aktiivinen malli, joka ennustaa, vertaa ja ohjaa." — Kenneth Craik, 1943</blockquote>
+
+<h2>Havainnoinnin rajat</h2>
+<p>Yhtä tärkeää kuin sisäinen malli on <strong>havainnointi</strong>: järjestelmän kyky saada tietoa ympäristöstään ja omasta tilastaan. Tässä tulee esiin keskeinen kyberneettinen periaate:</p>
+
+<h3>Ashbyn laki: vain havainnoitava voidaan ohjata</h3>
+<p>W. Ross Ashby muotoili 1956 kuuluisan periaatteen: <strong>järjestelmä ei voi toimia kuin se ei havaitse</strong>. Toisin sanoen, jos jokin ulottuvuus on järjestelmän havaintoalueen ulkopuolella, järjestelmä ei voi reagoida siihen.</p>
+
+<p>Tämä kuulostaa itsestäänselvyydeltä, mutta käytännössä se on yllättävän syvällinen oivallus. Useimmat järjestelmien viat eivät johdu siitä, että ohjausmekanismi olisi huono — vaan siitä, että <strong>järjestelmä ei havaitse sitä, mitä pitäisi ohjata</strong>.</p>
+
+<h3>Käytännön esimerkkejä "kuolleista alueista"</h3>
+
+<ul>
+<li><strong>Organisaatio, joka mittaa vain taloudellisia lukuja:</strong> ei huomaa työntekijöiden uupumista, asiakastyytymättömyyttä tai innovaation puutetta ennen kuin ne näkyvät taloudessa — yleensä liian myöhään.</li>
+<li><strong>Lääketiede, joka mittaa vain oireita:</strong> ei huomaa juurisyitä (stressi, ravinto, uni), koska niitä ei kysytä.</li>
+<li><strong>Ihmissuhde, jossa toinen ei kuuntele:</strong> kumppanin tyytymättömyys kasvaa, mutta sitä ei havaita, joten siihen ei reagoida.</li>
+<li><strong>Ilmastonmuutos:</strong> hiilidioksidipäästöjä mitataan, mutta niiden pitkäaikaisvaikutuksia merivirtoihin ja ekosysteemeihin ei vielä täysin ymmärretä.</li>
+</ul>
+
+<h2>Havainnoinnin laajentaminen</h2>
+<p>Joskus järjestelmän "kuollut alue" voidaan poistaa lisäämällä mittareita tai uusia aisteja. Esimerkkejä:</p>
+
+<ul>
+<li><strong>NPS-mittari</strong> (Net Promoter Score) yrityksille — paljastaa asiakastyytymättömyyden ennen kuin se näkyy myyntiluvuissa.</li>
+<li><strong>360-palaute</strong> työpaikoilla — paljastaa käyttäytymismalleja, joita esimies ei itse näe.</li>
+<li><strong>Terveysmittarit</strong> (unen laatu, syke, stressitaso) — paljastavat terveydellisiä riskejä ennen oireita.</li>
+</ul>
+
+<p>Mutta havainnoinnin lisääminen ei ole ilmaista: jokainen uusi mittari lisää järjestelmän monimutkaisuutta. On löydettävä tasapaino — mittarit, jotka todella valaisevat kriittisiä ulottuvuuksia, eivätkä vain lisää melua.</p>
+
+<h2>Toisen asteen kybernetiikka: tarkkailija tarkkailijan tarkkailijana</h2>
+<p>Perinteinen kybernetiikka katsoo järjestelmää ulkoa: tämä on säätöpiiri, tämä on takaisinkytkentä. <strong>Toisen asteen kybernetiikka</strong> (Heinz von Foerster, 1970-luku) katsoo tarkkailijaa: <em>miten sinä itse vaikutat siihen, mitä näet?</em></p>
+
+<p>Tämä on syvällinen kysymys. Kun lääkäri diagnosoi potilasta, hänen oma tilansa (väsynyt, kiireinen, ahdistunut) vaikuttaa siihen, mitä hän huomaa ja miten tulkitsee. Kun johtaja arvioi työntekijää, hänen omat ennakkoluulonsa ja mielialansa värittävät havaintoa. Kun sinä arvioit parisuhdettasi, sinun mielialasi vaikuttaa siihen, miten tulkitset kumppanin sanoja.</p>
+
+<p>Toisen asteen kybernetiikka muistuttaa: <strong>et koskaan katso järjestelmää "puolueettomasti"</strong>. Sinä itse olet osa havaintokokonaisuutta. Tämä ei tarkoita, ettei kannata yrittää katsoa tarkasti — se tarkoittaa, että kannattaa tiedostaa omat vinoutumat.</p>
+
+<h2>Havainnoinnin neljä sudenkuoppaa</h2>
+
+<ol>
+<li><strong>Aggregointi:</strong> keskiarvo piilottaa yksityiskohdat. "Keskimääräinen asiakas on tyytyväinen" ei kerro, että 20% asiakkaista vihaa sinua.</li>
+<li><strong>Viive:</strong> mittari näyttää menneisyyttä, ei nykyhetkeä. Talouskasvuluvut kertovat missä olit viime vuonna, etkä siellä missä olet nyt.</li>
+<li><strong>Suodatus:</strong> mittari näyttää vain sen, mitä osaat kysyä. Jos et kysy työntekijöiden hyvinvoinnista, et tiedä siitä.</li>
+<li><strong>Itsepetos:</strong> mittari, joka mittaa väärää asiaa, on pahempi kuin ei mittaria ollenkaan. KPI joka mittaa lyhyen aikavälin myyntiä, tuhoaa pitkän aikavälin asiakassuhteita.</li>
+</ol>
+
+<h2>Yhteenveto</h2>
+<p>Sisäinen malli ja havainnointi ovat takaisinkytkennän kaksi välttämätöntä osaa. Sisäinen malli kertoo, <em>miten järjestelmän pitäisi toimia</em>. Havainnointi kertoo, <em>miten se toimii nyt</em>. Jos malli on väärä tai havainnointi on rajallinen, järjestelmä ei voi säätää itseään tehokkaasti. Tämä pätee yhtä lailla termostaattiin, ihmiskehoon kuin kokonaiseen yhteiskuntaan.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Mieti jotain järjestelmää, jota ohjaat tai johdat — se voi olla oma taloutesi, tiimisi tai projektisi. Mikä on sen sisäinen malli (mitä tavoittelet)? Mitä se havainnoi? Onko jotain tärkeää, mitä se <em>ei</em> havaitse?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

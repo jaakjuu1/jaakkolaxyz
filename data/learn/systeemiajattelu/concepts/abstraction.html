@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: abstraction</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>abstraction</h1>
+  <p class="meta">Käsite · systeemiajattelu · käsitteellistäminen · yksinkertaistaminen</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Abstraktio</strong> on ajattelun liike, jossa tarkasteltavasta ilmiöstä erotetaan sen kannalta olennaiset piirteet ja jätetään huomiotta epäolennaiset yksityiskohdat. Sana <em>abstractio</em> tulee latinasta (<em>abstrahere</em>, "vetää pois, irrottaa"). Abstraktio ei ole hämärryttä vaan päinvastoin valikoivaa tarkkuutta: huomio kiinnitetään siihen, millä on merkitystä kulloisenkin kysymyksen kannalta.</p>
+
+  <p>Systeemiajattelussa abstraktio on perustyökalu. Se mahdollistaa monimutkaisten kokonaisuuksien käsittelyn nostamalla esiin rakenteellisia yhtäläisyyksiä: auto, organismi ja organisaatio voidaan kaikki nähdä järjestelminä, joilla on <a href="input.html">input</a>, <a href="process.html">process</a> ja <a href="output.html">output</a>. Tämä ei ole sattumaa — se on abstraktion tulos.</p>
+
+  <p>Abstraktiotasoja on useita:</p>
+  <ul>
+    <li><strong>Korkea abstraktio</strong> — "tämä on takaisinkytkentäsilmukka" (pätee säätötekniikkaan, biologiaan, sosiologiaan).</li>
+    <li><strong>Keskitason abstraktio</strong> — "termostaatti säätelee huoneen lämpötilaa" (ilmiö tunnistettu, yksityiskohdat jätetty).</li>
+    <li><strong>Matala abstraktio</strong> — "Honeywell T6 -termostaatti kääntyy 23,4°:een kello 18:00" (yksityiskohtainen, ei yleistettävissä).</li>
+  </ul>
+
+  <p>Abstraktion vastakohtana voidaan pitää <a href="reductionism.html">reductionism</a>:ia, joka selittää kokonaisuuden osiensa kautta, sekä konkreettista yksityiskohtaisuutta. Hyvä systeemianalyysi liikkuu abstraktiotasojen välillä tarkoituksenmukaisesti.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Abstraktion käsite on filosofian klassikko: Aristoteles kuvasi <em>abstrahointia</em> muotona erottaa olioista niiden yleinen olemus. Keskiajalla skolastikot kävivät debattia <em>universaalien</em> luonteesta — ovatko yleiskäsitteet todellisia vai pelkkiä nimiä. Moderni tieteenfilosofia (Galileo, Descartes, Locke) käsitteli abstraktiota empiirisenä yksinkertaistamisena.</p>
+
+  <p>1900-luvulla Norbert Wiener, Ludwig von Bertalanffy ja <a href="general-systems-theory.html">general-systems-theory</a> nostivat abstraktion systeemiteorian ytimeksi: samat rakenteet toistuvat eri aloilla. Tietojenkäsittelytiede formalisoi abstraktion käsitteen <em>data abstraction</em> -termin kautta 1960-luvulla (Dijkstra, Parnas), ja <em>object-oriented</em> -ajattelu teki siitä käytännön ohjelmistotyön perustan.</p>
+
+  <p>Systeemiajattelun opetuksessa abstraktio on yksi Donella Meadowsin keskeisistä työkaluista: kyky tunnistaa saman rakenteen eri ilmenemismuotoja on oppijan tärkein taito.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="modeling.html">modeling</a> — abstraktio on mallintamisen ydin: malli on aina abstrahoitu kuva todellisuudesta.</li>
+    <li><a href="decomposition.html">decomposition</a> — abstraktion vastapari: pilkkominen osiin.</li>
+    <li><a href="reductionism.html">reductionism</a> — äärimmäinen abstraktio yksityiskohtiin.</li>
+    <li><a href="holism.html">holism</a> — abstraktion vastapaino: kokonaisuuden ensisijaisuus.</li>
+    <li><a href="emergence.html">emergence</a> — ilmiöitä, jotka näkyvät vain korkeamman abstraktiotason kautta.</li>
+    <li><a href="system.html">system</a> itse on abstraktio: tapa nähdä joukko elementtejä kokonaisuutena.</li>
+    <li><a href="paradigm.html">paradigm</a> — laaja abstraktiokehys, joka ohjaa havainnointia.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Käsite esitellään <a href="../lessons/abstraktio-ja-mallintaminen.html">Abstraktio ja mallintaminen</a> -oppitunnilla, jossa käydään läpi abstraktiotasot ja niiden vaihtelu. Syventävä käsittely <a href="../lessons/jarjestelmallisen-ajattelun-alkeet.html">Systeemiajattelun alkeet</a> -oppitunnilla, jossa abstraktiota verrataan <a href="holism.html">holism</a>:iin ja <a href="reductionism.html">reductionism</a>:iin.</p>
+
+  <h2>Lähteet</h2>
+  <p>Donella Meadows — <em>Thinking in Systems: A Primer</em> (2008). Ludwig von Bertalanffy — <em>General System Theory</em> (1968). Edsger Dijkstra — "The Humble Programmer" (1972, Turing-palkintopuhe). Barbara Liskov — <em>Program Development in Java</em> (2001), abstraktio ohjelmistotyössä. George Lakoff & Mark Johnson — <em>Metaphors We Live By</em> (1980), käsitteellinen abstraktio kielessä.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/decomposition.html" class="wikilink" data-concept="decomposition">decomposition</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/holism.html" class="wikilink" data-concept="holism">holism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/system.html" class="wikilink" data-concept="system">system</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/paradigm.html" class="wikilink" data-concept="paradigm">paradigm</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Abstraktio on ymmärtämisen edellytys — ei ymmärryksen vastakohta. Ilman abstraktiota näemme vain yksityiskohtia; ilman yksityiskohtia näemme vain yleistyksiä. Taito on liikkua tasojen välillä.
+  </p>
+</main>
+</body>
+</html>

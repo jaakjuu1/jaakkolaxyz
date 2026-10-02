@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0004-heksagrammi — Heksagrammi</title>
+<style>
+  :root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+  .svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+  .svg-container svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Geometria</a> › Oppitunti 4</nav>
+
+<h1>Heksagrammi</h1>
+<p class="meta">Oppitunti 4 / 6 · ~22 min</p>
+
+<h2>Salomon sinetti</h2>
+<p><strong>Heksagrammi</strong> — kuusisakarainen tähti — on yksi maailman tunnetuimmista symboleista. Se tunnetaan myös nimellä <strong>Salomon sinetti</strong> tai <strong>Tähden kilpi</strong> (Magen David juutalaisuudessa).</p>
+
+<p>Heksagrammi syntyy <strong>kahdesta kolmiosta</strong>, jotka ovat päällekkäin — toinen ylöspäin (tuli), toinen alaspäin (vesi). Tämä tekee heksagrammin <em>vastakohtien liitoksi</em>.</p>
+
+<blockquote>"Heksagrammi on kahden voiman täydellinen tasapaino — maskuliininen ja feminiininen, henki ja aine, tuli ja vesi." — hermeettinen perinne</blockquote>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ympyrä taustalle -->
+  <circle cx="200" cy="200" r="150" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.3"/>
+  <!-- Ylöspäin osoittava kolmio (tuli, henki) -->
+  <polygon points="200.00,50.00 329.90,275.00 70.10,275.00" stroke="#d28a72" stroke-width="3" fill="rgba(210,138,114,0.06)" stroke-linejoin="miter"/>
+  <!-- Alaspäin osoittava kolmio (vesi, aine) -->
+  <polygon points="329.90,125.00 200.00,350.00 70.10,125.00" stroke="#5a8aaa" stroke-width="3" fill="rgba(90,138,170,0.06)" stroke-linejoin="miter"/>
+  <!-- Kuusi kärkipistettä -->
+  <circle cx="200.00" cy="50.00" r="5" fill="#d28a72"/>
+  <circle cx="329.90" cy="125.00" r="5" fill="#5a8aaa"/>
+  <circle cx="329.90" cy="275.00" r="5" fill="#d28a72"/>
+  <circle cx="200.00" cy="350.00" r="5" fill="#5a8aaa"/>
+  <circle cx="70.10" cy="275.00" r="5" fill="#d28a72"/>
+  <circle cx="70.10" cy="125.00" r="5" fill="#5a8aaa"/>
+  <text x="200" y="20" text-anchor="middle" fill="#d28a72" font-size="13" font-family="Georgia">Tuli</text>
+  <text x="375" y="125" text-anchor="middle" fill="#5a8aaa" font-size="13" font-family="Georgia">Vesi</text>
+  <text x="375" y="290" text-anchor="middle" fill="#d28a72" font-size="13" font-family="Georgia">Tuli</text>
+  <text x="200" y="385" text-anchor="middle" fill="#5a8aaa" font-size="13" font-family="Georgia">Vesi</text>
+  <text x="25" y="290" text-anchor="middle" fill="#d28a72" font-size="13" font-family="Georgia">Tuli</text>
+  <text x="25" y="125" text-anchor="middle" fill="#5a8aaa" font-size="13" font-family="Georgia">Vesi</text>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">Heksagrammi — kahden kolmion liitto</text>
+</svg>
+</div>
+
+<h2>Kahden kolmion liitto</h2>
+
+<p>Heksagrammi on yksinkertainen mutta syvällinen:</p>
+
+<ul>
+<li><strong>Kolmio ylöspäin (△)</strong> — tuli, henki, maskuliininen, aktiivinen</li>
+<li><strong>Kolmio alaspäin (▽)</strong> — vesi, aine, feminiininen, vastaanottava</li>
+</ul>
+
+<p>Yhdessä nämä kaksi muodostavat <strong>kuusi sakaraa</strong> ja <strong>kuusi pistettä</strong>. Kuusi on ensimmäinen <em>täydellinen luku</em> — 1+2+3 = 6, ensimmäisten kolmen luvun summa.</p>
+
+<p>Tämä heijastaa <strong>mikrokosmoksen ja makrokosmoksen</strong> vastaavuutta: ihminen (mikrokosmos) heijastaa universumia (makrokosmos). Heksagrammi on tämän vastaavuuden <em>tiivistelmä</em>.</p>
+
+<h2>Heksagrammi historiassa</h2>
+
+<h3>Egypti ja Mesopotamia</h3>
+<p>Heksagrammi esiintyy jo <strong>3000 eaa. Mesopotamiassa</strong> taikuuden symbolina. Egyptiläiset käyttivät sitä <em>suojelusymbolina</em> — kahden kolmion liitto symboloi <em>ylä- ja alamaailman</em> tasapainoa.</p>
+
+<h3>Salomon sinetti</h3>
+<p>Juutalaisessa perinteessä heksagrammi on <strong>Tähden kilpi</strong> (Magen David). Kuningas Salomo sen kerrotaan käyttäneen taikuuden ja suojelun symbolina. Myöhemmin siitä tuli juutalaisuuden tunnusmerkki 1800-luvulla.</p>
+
+<h3>Islam</h3>
+<p>Islamin perinteessä heksagrammi on <strong>Seal of Solomon</strong> — symboli, joka yhdistää taivaan ja maan. Se esiintyy monissa moskeijakoristeissa.</p>
+
+<h3>Hindulaisuus</h3>
+<p>Hindulaisuudessa heksagrammi edustaa <strong>Anahata-chakraa</strong> — sydänchakraa. Se on rakkauden ja tasapainon keskus.</p>
+
+<h3>Kristinusko</h3>
+<p>Kristinuskossa heksagrammi esiintyy <strong>katedraalien ikkunoissa ja koristeissa</strong>. Se symboloi Kristuksen kahden luonnon — jumalallisen ja inhimillisen — yhdistymistä.</p>
+
+<h2>Heksagrammi ja astrologia</h2>
+
+<p>Heksagrammi on <strong>astrologian perusta</strong>:</p>
+
+<ul>
+<li>Se muodostaa <strong>12 sektoria</strong> — 12 horoskooppimerkkiä</li>
+<li>Se jakaa ympyrän <strong>vastakkaisiin merkeihin</strong> — Oinas/Vaa'at, Härkä/Skorpioni jne.</li>
+<li>Se edustaa <strong>taivaan holvia</strong> maan päällä</li>
+</ul>
+
+<p>Tämä on miksi astrologia <em>toimii geometriana</em> — planeettojen liikkeet projisoituvat maan pinnalle juuri heksagrammin kautta.</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Ulompi ympyrä -->
+  <circle cx="200" cy="200" r="170" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+  <!-- Sisempi ympyrä -->
+  <circle cx="200" cy="200" r="60" stroke="#4a3a8a" stroke-width="1" fill="none" opacity="0.4"/>
+  <!-- Ylöspäin kolmio (tuli) -->
+  <polygon points="200.00,50.00 329.90,275.00 70.10,275.00" stroke="#d28a72" stroke-width="2" fill="none" opacity="0.7"/>
+  <!-- Alaspäin kolmio (vesi) -->
+  <polygon points="329.90,125.00 200.00,350.00 70.10,125.00" stroke="#5a8aaa" stroke-width="2" fill="none" opacity="0.7"/>
+  <!-- 12 sektoriviivaa (30° välein) -->
+  <line x1="200" y1="200" x2="370.00" y2="200.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="345.00" y2="100.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="285.00" y2="30.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="200.00" y2="0.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="115.00" y2="30.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="55.00" y2="100.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="30.00" y2="200.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="55.00" y2="300.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="115.00" y2="370.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="200.00" y2="400.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="285.00" y2="370.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <line x1="200" y1="200" x2="345.00" y2="300.00" stroke="#4a3a8a" stroke-width="0.5" opacity="0.4"/>
+  <!-- 12 merkin nimet ulkokehällä -->
+  <text x="200" y="15" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Oinas</text>
+  <text x="290" y="40" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Härkä</text>
+  <text x="355" y="110" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Kaksoset</text>
+  <text x="380" y="205" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Rapu</text>
+  <text x="355" y="305" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Leijona</text>
+  <text x="290" y="375" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Neitsyt</text>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Vaaka</text>
+  <text x="110" y="375" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Skorpioni</text>
+  <text x="45" y="305" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Jousimies</text>
+  <text x="20" y="205" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Kauris</text>
+  <text x="45" y="110" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Vesimies</text>
+  <text x="110" y="40" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">Kalat</text>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">Astrologinen heksagrammi — 12 sektoria</text>
+</svg>
+</div>
+
+<h2>Heksagrammi ja Tarot</h2>
+
+<p>Tarot-korttien <strong>suuret arkanat</strong> (Major Arcana) vastaavat heksagrammin polkuja. 22 polkua heksagrammissa = 22 arkanakorttia:</p>
+
+<ul>
+<li><strong>0 — Narri</strong>: yläpuoli (Keter)</li>
+<li><strong>I — Magus</strong>: polku Keteristä Chokmaan</li>
+<li><strong>II — Ylipapitar</strong>: polku Keteristä Binahiin</li>
+<li>... ja niin edelleen 22 polkua pitkin</li>
+</ul>
+
+<p>Tämä yhteys tekee heksagrammista <strong>tietoisuuden kartan</strong>. Jokainen polku on matka, jokainen kortti on kokemus.</p>
+
+<h2>Heksagrammi ja elämän puu</h2>
+
+<p>Heksagrammi sisältää kaikki <strong>10 sefiraa</strong>:</p>
+
+<ul>
+<li>Yläkolmio: <strong>Keter, Chokmah, Binah</strong> (henkinen kolminaisuus)</li>
+<li>Keskikohta: <strong>Tiphareth</strong> (kauneus, tasapaino)</li>
+<li>Alakolmio: <strong>Malkuth, Yesod, Hod, Netzach</strong> (fyysinen taso)</li>
+<li>Sivut: <strong>Chesed, Gevurah</strong> (laajeneminen ja supistuminen)</li>
+</ul>
+
+<p>Kun katsot heksagrammia, näet koko elämän puun <em>tiivistettynä yhteen kuvaan</em>.</p>
+
+<h2>Suuri ja pieni heksagrammi</h2>
+
+<p>Hermetismissä perinteessä on kaksi heksagrammia:</p>
+
+<h3>Suuri heksagrammi</h3>
+<p>Suuri heksagrammi syntyy <strong>kun heksagrammin pisteet ulotetaan</strong> — se synnyttää 12-pisteisen tähden, joka edustaa <em>taivaan sfääriä</em>.</p>
+
+<h3>Pieni heksagrammi</h3>
+<p>Pieni heksagrammi on <em>tavallinen</em> kuusisakarainen tähti — se edustaa <em>maan tasoa</em>.</p>
+
+<p>Greater Hexagram Ritual käyttää suurta heksagrammia planeettojen kutsumiseen. Se on yksi voimakkaimmista hermetismissä rituaaleista.</p>
+
+<h2>Heksagrammi-rituaalit</h2>
+
+<p>Heksagrammi-rituaalit ovat <strong>väkevämpiä</strong> kuin pentagrammi-rituaalit, koska heksagrammi sisältää <em>enemmän voimaa</em>:</p>
+
+<ul>
+<li><strong>Lesser Banishing Ritual of the Hexagram (LBRH)</strong> — puhdistusrituaali</li>
+<li><strong>Greater Ritual of the Hexagram</strong> — kutsumisrituaali, planeettojen ja elementtien herättäminen</li>
+<li><strong>Greater Invoking Ritual of the Hexagram</strong> — voimakkaampi versio kutsumiseen</li>
+</ul>
+
+<p>Heksagrammi-rituaaleissa piirretään <strong>kuusi suurta heksagrammia</strong> — yksi kullekin planeetalle (Saturnus, Jupiter, Mars, Aurinko, Venus, Merkurius, Kuu).</p>
+
+<p><em>(Käsittelemme heksagrammi-rituaaleja tarkemmin Rituaalit-alipolussa.)</em></p>
+
+<h2>Heksagrammin suojaava voima</h2>
+
+<p>Heksagrammi suojaa <strong>eri tavalla</strong> kuin pentagrammi:</p>
+
+<ul>
+<li>Pentagrammi suojaa <em>henkeä</em> — yksilön minuutta</li>
+<li>Heksagrammi suojaa <em>tasapainoa</em> — vastakohtien harmoniaa</li>
+</ul>
+
+<p>Heksagrammi on erityisen tehokas, kun tilanne on <em>epätasapainossa</em> — kun vastakohdat uhkaavat erota. Se palauttaa tasapainon.</p>
+
+<h2>Heksagrammin meditaatio</h2>
+
+<div class="reflect">
+<h3>Harjoitus: Heksagrammin kaksi ääntä (15 min)</h3>
+<ol>
+<li>Sulje silmät. Hengitä kolme kertaa syvään.</li>
+<li>Kuvittele <strong>kaksi kolmiota</strong>: yksi ylöspäin punaisena, toinen alaspäin sinisenä.</li>
+<li>Anna niiden <em>lähestyä toisiaan</em>. Ne sulautuvat yhdeksi — heksagrammi.</li>
+<li>Tunne <em>tasapaino</em>: tuli ja vesi, henki ja aine, maskuliininen ja feminiininen — kaikki yhtä.</li>
+<li>5 minuuttia: ole tässä tasapainossa.</li>
+<li>Anna heksagrammin <em>laajentua</em>. Se täyttää kehon, huoneen, kaupungin, maailman.</li>
+<li>5 minuuttia: tunne tämä laajeneminen.</li>
+<li>Avaa silmät hitaasti.</li>
+</ol>
+<p>Tämä meditaatio <em>tasapainottaa</em> sisäiset vastakohdat. Se on erityisen hyödyllinen kun tunnet itsesi jakautuneeksi tai ristiriitaiseksi.</p>
+</div>
+
+<h2>Heksagrammi ja alkuaineet</h2>
+
+<p>Heksagrammin kuusi sakaraa jakautuvat <strong>neljän alkuaineen</strong> kesken:</p>
+
+<ul>
+<li><strong>Ylä sakara</strong> — Henki</li>
+<li><strong>Kaksi yläsakaraa</strong> — Tuli</li>
+<li><strong>Kaksi alasakaraa</strong> — Vesi</li>
+<li><strong>Alempi sakara</strong> — Maa (Ilma)</li>
+</ul>
+
+<p>Tämä jako on tärkeä <strong>heksagrammi-rituaaleissa</strong> — jokainen sakara liittyy eri elementtiin.</p>
+
+<h2>Kriittinen ajatus: heksagrammin politisoituminen</h2>
+
+<p>Heksagrammi on valitettavasti tullut <strong>poliittisesti kuormitetuksi</strong>. Sen alkuperäinen merkitys on kuitenkin paljon syvempi ja puhtaampi: <em>vastakohtien tasapaino</em>.</p>
+
+<p>Esoteerisesti heksagrammi ei edusta mitään etnistä, kansallista tai uskonnollista ryhmää — se edustaa <em>kaikkea</em>. Se on universaali symboli, joka kuuluu kaikille.</p>
+
+<h2>Yhteenveto</h2>
+<p>Heksagrammi on kuusisakarainen tähti, kahden kolmion liitto — tuli ja vesi, henki ja aine, maskuliininen ja feminiininen. Se on Salomon sinetti, astrologian perusta, ja tarot-polut. Se on yksi voimakkaimmista geometrisista symboleista, ja se on keskeinen heksagrammi-rituaaleissa. Sen voima on <em>tasapainossa</em> — vastakohdat yhdessä, harmonisesti.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Missä tilanteessa elämässäsi on tällä hetkellä epätasapainoa — kahden voiman välinen jännite? Jos piirtäisit heksagrammin tähän tilanteeseen, mitkä olisivat kaksi kolmiota? Miten ne voisivat tulla tasapainoon?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

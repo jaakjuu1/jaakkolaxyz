@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0005 — Mindfulness: ajatus vs. minä</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8;
+    --green: #3b6b3b; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530;
+      --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a;
+      --green: #7fb878;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0; padding: .9rem 1.1rem; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); font-style: italic; border-radius: 0 4px 4px 0;
+  }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col { border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.1rem; }
+  .col.merged { background: var(--accent-soft); border-left: 3px solid var(--accent); }
+  .col.separated { background: #f0f5ee; border-left: 3px solid var(--green); }
+  @media (prefers-color-scheme: dark) { .col.separated { background: #1d2520; } }
+  .col h3 { margin-top: 0; font-size: .95rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea { width: 100%; font: inherit; padding: .55rem .65rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); resize: vertical; }
+  button { margin-top: 1rem; margin-right: .6rem; font: inherit; padding: .55rem 1rem; border: 1px solid var(--rule); border-radius: 3px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager { display: flex; justify-content: space-between; gap: 1rem; margin: 3rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--rule); font-size: .92rem; }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .footer-note { color: var(--muted); font-size: .85rem; margin-top: 2.4rem; padding-top: 1rem; border-top: 1px dashed var(--rule); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Mindfulness: ajatus vs. minä</h1>
+  <p class="meta">Oppitunti 0005 · ~6 min · taito ja ajattelutapa</p>
+
+  <p>0004-oppitunti mainitsi ACT:n "minä havainnoijana" — kyvyn huomata ajatus ilman että samaistuu siihen. Tämä oppitunti avaa sen käytännön työkaluksi.</p>
+
+  <h2>Ei tyhjää mieltä</h2>
+
+  <p>Mindfulness ei tarkoita tyhjää mieltä eikä rentoutumista. Se tarkoittaa kykyä <em>huomata</em> kokemus ennen kuin siihen samaistuu automaattisesti. NHS kuvaa sitä nykyhetken ajatusten, tunteiden, kehon ja ympäristön tietoisena havaitsemisena — ja APA:n mukaan mindfulness-meditaatiolla on tutkimusnäyttöä mielen ja kehon hyvinvoinnin tukena.</p>
+
+  <p>Konkreettisesti kyse on neljästä pienestä huomaamisesta:</p>
+
+  <ul>
+    <li>Huomaat <strong>ajatuksen</strong> ilman että <em>olet</em> ajatus.</li>
+    <li>Huomaat <strong>tunteen</strong> ilman että <em>olet</em> tunne.</li>
+    <li>Huomaat <strong>kehon reaktion</strong> ilman että <em>olet</em> reaktio.</li>
+    <li>Huomaat <strong>ympäristön</strong> — missä oikeasti olet juuri nyt.</li>
+  </ul>
+
+  <p>Näitä ei tarvitse tehdä täydellisesti. Kyse on <em>huomaamisen tilasta</em>, ei suorituksesta.</p>
+
+  <h2>Yksi ero joka muuttaa kaiken</h2>
+
+  <div class="twocol">
+    <div class="col merged">
+      <h3>Samaistuminen</h3>
+      <p>"Olen epäonnistunut."</p>
+      <p>"Hän vihaa minua."</p>
+      <p>"Olen ahdistunut."</p>
+      <p>Tässä mielessä ajatus <em>on</em> sinä — se sulkee sinut tarinan sisään.</p>
+    </div>
+    <div class="col separated">
+      <h3>Havainnointi</h3>
+      <p>"Huomaan ajatuksen että olen epäonnistunut."</p>
+      <p>"Huomaan tunteen että joku vihaa minua."</p>
+      <p>"Huomaan, että kehossa on ahdistusta."</p>
+      <p>Tässä sinä <em>huomaat</em> ajatuksen — se ei ole sinä, se on mielen tapahtuma.</p>
+    </div>
+  </div>
+
+  <p>Ero on pieni sanoissa mutta valtava kokemuksessa. Ensimmäinen versio vie sinut mukanaan. Toinen antaa sinulle tilan, josta voit valita seuraavan liikkeen.</p>
+
+  <blockquote>
+    Tämä on sama tila johon 0004-oppitunti (ACT) viittasi: sinä <em>olet</em> ajatuksesi, et <em>ole</em> ajatuksesi.
+  </blockquote>
+
+  <h2>Kolme helppoa harjoitusta</h2>
+
+  <p>Mindfulness ei tarvitse 30 minuutin meditaatiota. Nämä kolme kestävät alle minuutin ja voi tehdä milloin tahansa.</p>
+
+  <h3>1. Kolmen hengityksen pysäkki</h3>
+  <p>Missä tahansa — kokouksessa, jonossa, ennen kuin avaat viestin. Kolme hidasta hengitystä sisään ja ulos. Jokaisella uloshengityksellä <em>vain hengität</em>, et yritä tehdä mitään. Kun kolmas on ohi, palaa siihen mitä olit tekemässä. Ero on tässä: ilman pysäkkiä reagoit, sen kanssa vastaat.</p>
+
+  <h3>2. Kehon skannaus 30 sekunnissa</h3>
+  <p>Käy mielessäsi läpi: jalat, vatsa, rinta, hartiat, leuka. Missä on jännitystä? Et tarvitse tehdä sille mitään — vain <em>huomaat</em>. Usein pelkkä huomaaminen saa lihaksen jo hieman rentoutumaan.</p>
+
+  <h3>3. Nimeä mielen sisältö</h3>
+  <p>Huomaat ajatuksen. Sanoit sen mielessäsi — "minä olen tyhmä". Sen sijaan että uskot sitä tai taistelet sitä vastaan, voit sanoa mielessäsi: <em>"Tässä on ajatus että minä olen tyhmä."</em> Tai lyhyemmin: <em>"Kiitos, mieli."</em> Tämä ei ole sarkasmia. Se on tunnustaminen että mieli teki työtään, mutta sinun ei tarvitse seurata sitä.</p>
+
+  <h2>Mitä mindfulness ei korvaa</h2>
+
+  <p>Mindfulness ei korvaa CBT-ajatuskuplaa (0003) kun pitää tutkia ajatusta loogisesti. Se ei korvaa ACT:n arvotekoja (0004) kun on päätettävä mitä tehdä. Se ei korvaa STOP-harjoitusta (0002) kun keho on viritetty. Se on <em>taustataito</em> — kyky huomata kokemus, jotta muut työkalut toimivat paremmin.</p>
+
+  <p>Huomaa myös: mindfulness on taito joka <em>vahvistuu harjoituksella</em>. Kolmen hengityksen pysäkki ei tunnu miltään ensimmäisellä kerralla ja toisella. Viidennellä se alkaa tuntua luontevalta. Kahdennellakymmenennellä se on käytettävissä kun sitä eniten tarvitset.</p>
+
+  <hr>
+
+  <h2>Tee nyt: yksi pysäkki, kolme nimeämistä</h2>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Kolmen hengityksen pysäkin jälkeen — mikä oli ensimmäinen mielen sisältö joka huomasit (ajatus, tunne tai kehon tunne)?</label>
+      <textarea id="q1" rows="2" placeholder="Esimerkki: Ajatus 'tämä on turhaa'. Tai: hartioiden jännitys. Tai: kiire."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Muotoile se mindfulness-kielelle: "Tässä on _____ joka _____".</label>
+      <textarea id="q2" rows="2" placeholder="Esimerkki: 'Tässä on ajatus joka sanoo että tämä on turhaa.' Tai: 'Tässä on jännitys hartioissa.'"></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Muuttuiko kokemus <em>yhtään</em> kun nimesit sen? Ei tarvitse muuttua paljon. Pienikin muutos on tärkeä.</label>
+      <textarea id="q3" rows="2" placeholder="Esimerkki: Jännitys hellitti hieman. Ajatus ei kadonnut mutta oli vähän etäisempi."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p class="footer-note">
+    Lähteet: NHS — <a href="https://www.nhs.uk/mental-health/self-help/tips-and-support/mindfulness/">mindfulness self-help</a>; APA — mindfulness-meditaation tutkimusnäyttö mielen ja kehon hyvinvoinnissa.
+  </p>
+
+  <div class="pager">
+    <a href="0004-act-psykologinen-joustavuus.html">← Edellinen: ACT</a>
+    <a class="next" href="0006-kayttaytymisen-aktivointi.html">Seuraava: Käyttäytymisen aktivointi →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const ids = ['q1','q2','q3'];
+  const labels = ['1. Mielen sisältö', '2. Mindfulness-muotoilu', '3. Muuttuiko kokemus'];
+  const fields = ids.map(id => document.getElementById(id));
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

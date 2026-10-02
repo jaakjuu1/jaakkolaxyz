@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001 — Hyväksyminen ei ole luovuttamista</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Hyväksyminen ei ole luovuttamista</h1>
+  <p class="meta">Oppitunti 0001 · ~5 min · ydin</p>
+
+  <p>Tämä on ensimmäinen oppitunti ja samalla koko tämän oppimispolun ydin. Jos et muista myöhemmin mitään muuta, muista tämä.</p>
+
+  <h2>Mikä on se yksi asia, joka muuttaa kaiken?</h2>
+
+  <p>Se, miten ihminen suhtautuu <em>nykyhetkeen</em>, vaikuttaa ainakin neljään asiaan yhtä aikaa. Tämä on CBT:n (kognitiivisen käyttäytymisterapian) perusmalli:</p>
+
+  <blockquote>
+    Tilanne → tulkinta → tunne/keho → toiminta → seuraava tilanne
+  </blockquote>
+
+  <p>Jos ihminen ajattelee <em>"Tämän ei pitäisi olla näin, en kestä tätä"</em>, hänen hermostonsa menee helposti uhkatilaan. Silloin ajattelu kapenee, toiminta lamaantuu tai muuttuu impulsiiviseksi, ja tilanne usein pahenee.</p>
+
+  <p>Jos hän taas oppii ajattelemaan <em>"Tämä on nyt näin, en pidä tästä, mutta voin kohdata tämän — mikä on seuraava pieni oikea teko?"</em>, sama tilanne muuttuu psykologisesti erilaiseksi. Ei ehkä helpoksi, mutta käsiteltäväksi.</p>
+
+  <p>Tämä ei ole pelkkää filosofiaa. APA:n mukaan CBT:stä on laaja tutkimusnäyttö toimintakyvyn ja elämänlaadun parantamisessa, ja Beck Institute kuvaa CBT:tä nimenomaan taitona, jossa ihminen oppii tunnistamaan ja arvioimaan automaattisia ajatuksiaan — ei uskomaan niitä automaattisesti.</p>
+
+  <h2>Hyväksymisen väärinymmärrys</h2>
+
+  <p>Moni vastustaa hyväksymistä, koska luulee sen tarkoittavan jotain näistä:</p>
+
+  <div class="twocol">
+    <div class="col wrong">
+      <h3>Luovuttaminen</h3>
+      <p>"Hyväksyn tämän vääryyden."</p>
+      <p>"Annan periksi."</p>
+      <p>"En yritä enää muuttaa mitään."</p>
+      <p>"Teeskentelen ettei satu."</p>
+    </div>
+    <div class="col right">
+      <h3>Kohtaaminen</h3>
+      <p>"Lakkaan taistelemasta sitä tosiasiaa vastaan, että tämä hetki on jo näin."</p>
+      <p>"Vasta sitten voin nähdä, mitä voin tehdä."</p>
+    </div>
+  </div>
+
+  <p>DBT (dialektinen käyttäytymisterapia) kutsuu tätä <strong>radikaaliksi hyväksymiseksi</strong>. Sen ydinajatus on yksinkertainen: todellisuuden torjuminen ei muuta todellisuutta, se vain lisää kärsimystä kivun päälle.</p>
+
+  <hr>
+
+  <h2>Koe itse: reflektio</h2>
+
+  <p>Vastaa näihin kolmeen kysymykseen, niin pääset todella kiinni siihen miten tämä ero tuntuu sinun elämässäsi. Ei tarvitse olla oikeita vastauksia — kirjoita mikä tulee ensimmäisenä.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Mikä on yksi asia elämässäsi, jota olet tällä hetkellä vastustanut — joka kuitenkin <em>on</em>?</label>
+      <textarea id="q1" rows="3" placeholder="Esimerkki: Tilanne työssä. Terveystilanne. Jonkun toisen käytös. Oma reaktiosi tilanteeseen X."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Mitä tuo vastustaminen sinulle maksaa tällä hetkellä — energiaa, unta, suhteita, toimintakykyä?</label>
+      <textarea id="q2" rows="3" placeholder="Esimerkki: Vie nukkumista. Estää tekemästä muita asioita. Syö keskittymistä."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos et enää vastustaisi sitä, mihin vapautuva energia menisi?</label>
+      <textarea id="q3" rows="3" placeholder="Esimerkki: Voisin tehdä Y työssä. Voisin nukkua. Voisin puhua Z ihmisen kanssa."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Vastaukset kannattaa lähettää minulle Telegramiin — kerron mitä niistä nousee esiin.</p>
+
+  <hr>
+
+  <h2>Mihin tämä ero johtaa?</h2>
+
+  <p>Jos tämä ero on selvä, sen päälle voi rakentaa kolme ryhmää työkaluja:</p>
+
+  <ol>
+    <li><strong>Säätely</strong> — kun keho on liian viritetty (oppitunti 0002).</li>
+    <li><strong>Uudelleenarviointi</strong> — kun pää kiertää samaa automaattista ajatusta (CBT-työkalut, myöhemmin).</li>
+    <li><strong>Toiminta</strong> — kun arvojen mukainen pieni teko on mahdollista (behavioral activation, myöhemmin).</li>
+  </ol>
+
+  <p>Nämä eivät ole kilpailevia kouluja. Ne ovat saman paletin työkaluja eri hetkiin.</p>
+
+  <p class="footer-note">
+    Lähteet: APA — <a href="https://www.apa.org/ptsd-guideline/patients-and-families/cognitive-behavioral">kognitiivinen käyttäytymisterapia</a>; Beck Institute — <a href="https://beckinstitute.org/blog/why-cbt-therapists-dont-challenge-clients-cognitions-and-why-it-matters/">"why CBT therapists don't challenge clients' cognitions"</a>; Kaiser Permanente — <a href="https://mydoctor.kaiserpermanente.org/ncal/Images/Distress%20Tolerance%20DBT%20Skills_ADA_04232020_tcm75-1598996.pdf">DBT distress tolerance materiaali</a>.
+  </p>
+
+  <div class="pager">
+    <span class="empty"></span>
+    <a class="next" href="0002-dbt-stop-ja-tipp.html">Seuraava: Keho alas ennen ajatuksia →</a>
+  </div>
+</main>
+<script>
+function copyAnswers() {
+  const fields = [document.getElementById('q1'), document.getElementById('q2'), document.getElementById('q3')];
+  const labels = ['1. Asia jota vastustan', '2. Mitä vastustaminen maksaa', '3. Mihin energia menisi'];
+  const out = labels.map((l, i) => l + ': ' + (fields[i].value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(out).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle — voit liittää Telegramiin';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  ['q1','q2','q3'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

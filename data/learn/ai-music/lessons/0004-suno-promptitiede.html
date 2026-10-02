@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppitunti 0004 — Suno-promptitiede</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --accent:#0a6e3a; --rule:#e5e5e5; --bg:#fcfcfb; --warn:#c0392b; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         color: var(--ink); max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; background: #fbfaf6; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; margin-top: 2.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .key { background: #f6f6f4; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  .warn { background: #fdf6f3; border-left: 3px solid var(--warn); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  pre { background: #1e1e1e; color: #e6e6e6; padding: 0.9rem 1.1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre .comment { color: #6a9955; }
+  pre .tag { color: #d7ba7d; }
+  pre .lyric { color: #9cdcfe; }
+  code { background: #f6f6f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+  th, td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  th { background: #f6f6f4; font-weight: 600; }
+  .tag-table { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.88rem; }
+  .prompt-block { background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.2rem; margin: 1.5rem 0; }
+  .prompt-block h3 { margin-top: 0; color: var(--accent); }
+  .prompt-block .meta-line { color: var(--muted); font-size: 0.9rem; margin-bottom: 0.7rem; }
+  details { margin: 1rem 0; padding: 0.8rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+  details[open] summary { margin-bottom: 0.6rem; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.3rem 0; }
+  form { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); }
+  form input, form textarea { width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px; }
+  form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit; font-weight: 600; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Suno-promptitiede</h1>
+<p class="meta">Oppitunti 0004 · AI-musiikin tuotanto · ~18 min + kirjoitusharjoitus</p>
+
+<div class="key">
+  <strong>Ydinajatus:</strong> Sunon prompti ei ole yksi kenttä — se on <em>kaksi kenttää</em>, jotka vaikuttavat eri tavoin. "Style of Music" ohjaa genren, tunnelman ja tuotannon. Lyriikkakentän metatagit ohjaavat rakennetta. Molempia tarvitaan — ja virheet molemmissa ovat eri syitä huonoon lopputulokseen.
+</div>
+
+<h2>1. Kaksikenttä-arkkitehtuuri</h2>
+
+<p>Suno-näkymässä (versio 5.5+, 2026) on käytännössä kolme kenttää, joista jokainen tekee eri työn:</p>
+
+<table>
+  <thead>
+    <tr><th>Kenttä</th><th>Tyyli</th><th>Vaikutus</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Style of Music</strong></td>
+      <td>Vapaa teksti, muutama lause</td>
+      <td>Genre, tunnelma, tuotantotyyli, soittimet, tunnelma</td>
+    </tr>
+    <tr>
+      <td><strong>Lyrics</strong> (Custom Mode)</td>
+      <td>Metatagit <code>[Verse]</code> + laulettavat sanat</td>
+      <td>Rakenne, laulun sisältö, dynamiikka, osastojen pituus</td>
+    </tr>
+    <tr>
+      <td><strong>Title</strong></td>
+      <td>Vapaa teksti</td>
+      <td>Vain nimi — ei vaikuta sävellykseen</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>Yleisin virhe:</strong> kirjoittaa kaikki tyyli-informaatio lyriikkakenttään tai toisin päin. Ne ovat <em>eri signaaleja</em>. "Indie folk, akustinen, haikea" menee Style-kenttään. "[Verse] Olin kerran..." menee Lyrics-kenttään. Sekoittaminen tuottaa epäjohdonmukaisia tuloksia.
+</div>
+
+<h2>2. Style of Music — mitkä sanat toimivat</h2>
+
+<p>Tämä kenttä on ilmaisuvoimaisin ja riskialtein. Suno ymmärtää genre-sanoja, tunnelmasanoja ja tuotantosanoja — mutta <em>ei</em> kappaleen rakennetta eikä yksityiskohtaisia melodioita.</p>
+
+<h3>Toimivat sanat (testattu)</h3>
+<table class="tag-table">
+  <thead>
+    <tr><th>Kategoria</th><th>Esimerkkejä</th><th>Vaikutus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Genre</td><td>indie folk, synthwave, lo-fi hip hop, post-rock, bossa nova</td><td>Soitinvalikoima, rytmi, harmonia</td></tr>
+    <tr><td>Tunnelma</td><td>melankolinen, energinen, unenomainen, aggressiivinen, lempeä</td><td>Dynamiikka, äänimaailma</td></tr>
+    <tr><td>Tuotanto</td><td>lo-fi, akustinen, puhdas studio, raaka live-tunnelma, 8-bit</td><td>Miksaus, "tila" ja tekstuuri</td></tr>
+    <tr><td>Soittimet</td><td>akustinen kitara, Rhodes-piano, jouset, sähköbasso, rummut</td><td>Instrumentaation painotus</td></tr>
+    <tr><td>Laulu</td><td>female vocal, falsetti, kuiskaus, voimakas laulu, moniääninen kuoro</td><td>Laulutyyli</td></tr>
+    <tr><td>Aikakausi</td><td>80s, 70s soul, moderni pop, vintage</td><td>Tuotannon estetiikka</td></tr>
+  </tbody>
+</table>
+
+<h3>Sanat jotka EIVÄT toimi hyvin</h3>
+<ul>
+  <li><strong>Liian abstraktit:</strong> "kaunis", "hyvä", "musiikkimainen" — Suno ei osaa tulkita</li>
+  <li><strong>Kappaleen rakenne:</strong> "aloita hiljaa, kasvata" — tämä kuuluu metatageihin</li>
+  <li><strong>Liian pitkä:</strong> yli ~50 sanaa tuottaa ristiriitaisia signaaleja</li>
+  <li><strong>Konfliktit:</strong> "lo-fi ambient" + "kirkas pop-tuotanto" = epämääräinen tulos</li>
+</ul>
+
+<div class="key">
+  <strong>Nyrkkisääntö:</strong> Style-kenttä on kuin hyvän kirjakaupan genre-tarra. "Suomipop, akustinen, naisten laulu, syksyinen tunnelma, 120 bpm" on hyvä. "Kappale jossa on kitaraa ja laulua ja vähän rumpuja ja toivottavasti ei liian kova" on huono.
+</div>
+
+<h2>3. Metatagit — rakenteen kieli</h2>
+
+<p>Metatagit kirjoitetaan <strong>hakasulkeissa</strong> lyriikkikentän sisään. Ne eivät näy laulettavassa tekstissä, vaan ohjaavat rakennetta.</p>
+
+<h3>Perusrakennetagit</h3>
+<table class="tag-table">
+  <thead>
+    <tr><th>Tagi</th><th>Toiminto</th><th>Tyypillinen pituus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>[Intro]</code></td><td>Instrumentaalinen alku, asettaa tunnelman</td><td>4-16 iskua</td></tr>
+    <tr><td><code>[Verse 1]</code></td><td>Ensimmäinen säkeistö, kertoo tarinaa</td><td>8-16 riviä</td></tr>
+    <tr><td><code>[Pre-Chorus]</code></td><td>Jännitteen rakennus ennen kertosäettä</td><td>2-4 riviä</td></tr>
+    <tr><td><code>[Chorus]</code></td><td>Kertosäe, hook, tarttuva</td><td>4-8 riviä</td></tr>
+    <tr><td><code>[Verse 2]</code></td><td>Toinen säkeistö, kehittää</td><td>8-16 riviä</td></tr>
+    <tr><td><code>[Bridge]</code></td><td>Kontrastikohta ennen loppua</td><td>4-8 riviä</td></tr>
+    <tr><td><code>[Outro]</code></td><td>Loppu, usein instrumentaalinen</td><td>4-16 iskua</td></tr>
+  </tbody>
+</table>
+
+<h3>Laulutyylitagit</h3>
+<table class="tag-table">
+  <thead>
+    <tr><th>Tagi</th><th>Vaikutus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>[Whispered]</code></td><td>Kuiskauslaulu</td></tr>
+    <tr><td><code>[Falsetto]</code></td><td>Falsettiääni</td></tr>
+    <tr><td><code>[Belting]</code></td><td>Voimakas, korkea laulu</td></tr>
+    <tr><td><code>[Spoken Word]</code></td><td>Puhuttu, ei laulettu</td></tr>
+    <tr><td><code>[Ad-lib]</code></td><td>Spontaani lisälaulu</td></tr>
+    <tr><td><code>[Backing vocals]</code></td><td>Taustalaulut</td></tr>
+  </tbody>
+</table>
+
+<h3>Instrumenttitagit</h3>
+<table class="tag-table">
+  <thead>
+    <tr><th>Tagi</th><th>Vaikutus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>[Instrumental Break]</code></td><td>Soittojakso ilman laulua</td></tr>
+    <tr><td><code>[Guitar Solo]</code></td><td>Kitarasoolo</td></tr>
+    <tr><td><code>[Piano Interlude]</code></td><td>Pianovälike</td></tr>
+    <tr><td><code>[Drop]</code></td><td>Elektroninen drop (EDM)</td></tr>
+    <tr><td><code>[Build]</code></td><td>Jännitteen rakennus</td></tr>
+  </tbody>
+</table>
+
+<h3>Parametriset tagit — tehokkain työkalu</h3>
+
+<p>Sallivat lisäsäätöjä osastokohtaisesti:</p>
+
+<pre>[Verse 1: <span class="tag">whispered vocals, fingerpicked acoustic guitar</span>]
+<span class="lyric">Hiljainen aamu, kaste ruohossa
+   Näen unta jossa sinä odotat</span>
+
+[Chorus: <span class="tag">full band, belting female vocal, wide reverb</span>]
+<span class="lyric">Juokse kanssani, juokse läpi yön</span></pre>
+
+<p>Tämä kertoo Sunolle <em>tarkalleen</em> miltä tämän osaston tulisi kuulostaa. Ilman parametreja se tekee päätöksen itse — usein huonosti.</p>
+
+<h2>4. Negatiivipromput — uusi ominaisuus (v5+)</h2>
+
+<p>Uusimmissa Suno-versioissa voit kertoa mitä <em>et halua</em>:</p>
+
+<table class="tag-table">
+  <thead>
+    <tr><th>Muoto</th><th>Esimerkki</th><th>Toimii?</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>[No drums]</code></td><td>Estää rumpujen tulon</td><td>✅ Hyvin</td></tr>
+    <tr><td><code>[No vocals]</code></td><td>Instrumentaali</td><td>✅ Erittäin hyvin</td></tr>
+    <tr><td><code>[Acoustic only]</code></td><td>Rajoittaa akustisiin</td><td>✅ Hyvin</td></tr>
+    <tr><td>"Don't use synths"</td><td>Style-kentässä</td><td>⚠️ Vaihtelevasti</td></tr>
+    <tr><td>"Avoid sad mood"</td><td>Style-kentässä</td><td>❌ Ei toimi</td></tr>
+  </tbody>
+</table>
+
+<div class="warn">
+  <strong>Neuvoni:</strong> negatiivipromput toimivat parhaiten <em>osastokohtaisina</em> eikä koko kappaleen tasolla. Esim. <code>[Bridge: no vocals, strings only]</code> on tehokas. "Koko kappale ilman rumpuja" on epäluotettava.
+</div>
+
+<h2>5. Viisi esimerkkipromptia vertailuun</h2>
+
+<div class="prompt-block">
+  <h3>① Suomipop-balladi</h3>
+  <p class="meta-line">Style: 6-8 säettä, kaksi kertosäettä, kasvava dynamiikka</p>
+  <pre><span class="tag">Style:</span> Finnish pop ballad, female vocal, piano-led, emotional, building dynamics, 75 bpm
+
+<span class="tag">[Intro]</span>
+<span class="tag">[Verse 1]</span>
+<span class="lyric">Aamu ilman sinua on tyhjä huone
+   Kahvi jäähtyy kupissa, en juo sitä</span>
+
+<span class="tag">[Pre-Chorus]</span>
+<span class="lyric">Muistan vielä sen yön, sen hiljaisuuden</span>
+
+<span class="tag">[Chorus]</span>
+<span class="lyric">Tahdon takaisin sen tunteen
+   Kun maailma oli vielä uusi</span>
+
+<span class="tag">[Verse 2]</span>
+<span class="lyric">...</span>
+
+<span class="tag">[Bridge: strings swell, vocal a cappella]</span>
+<span class="lyric">Yksin enää, vain minä ja muistot</span>
+
+<span class="tag">[Final Chorus: full band, belting]</span>
+<span class="tag">[Outro]</span></pre>
+</div>
+
+<div class="prompt-block">
+  <h3>② Synthwave-instrumentaali</h3>
+  <p class="meta-line">Style: 80s estetiikka, retrowave, ei laulua</p>
+  <pre><span class="tag">Style:</span> Synthwave, 80s electronic, retrowave, driving beat, analog synths, 120 bpm
+
+<span class="tag">[Intro: arpeggiated synth, drum machine build]</span>
+<span class="tag">[Verse: pulsing bass, lead synth melody]</span>
+<span class="tag">[Pre-Chorus: synth pads rising]</span>
+<span class="tag">[Chorus: full beat drop, layered synths]</span>
+<span class="tag">[Instrumental Break: synth solo]</span>
+<span class="tag">[Verse 2]</span>
+<span class="tag">[Bridge: breakdown, minimal drums]</span>
+<span class="tag">[Final Chorus]</span>
+<span class="tag">[Outro: fade out]</span></pre>
+</div>
+
+<div class="prompt-block">
+  <h3>③ Lo-fi hip hop -taustamusiikki</h3>
+  <p class="meta-line">Style: rauhallinen, ei laulua, ambient tunnelma</p>
+  <pre><span class="tag">Style:</span> Lo-fi hip hop, chill, vinyl crackle, warm, jazzy chords, 80 bpm, instrumental
+
+<span class="tag">[Intro: vinyl crackle, soft piano]</span>
+<span class="tag">[Verse: muted drums, Rhodes piano, soft bass]</span>
+<span class="tag">[Instrumental Break: saxophone melody]</span>
+<span class="tag">[Verse 2: add strings pad]</span>
+<span class="tag">[Outro: fade with rain sounds]</span></pre>
+</div>
+
+<div class="prompt-block">
+  <h3>④ Suomalainen kansanmusiikki-modernilla otteella</h3>
+  <p class="meta-line">Style: akustinen, tunnelmallinen, naislaulu</p>
+  <pre><span class="tag">Style:</span> Modern Finnish folk, acoustic, kantele, fiddle, ethereal female vocal, melancholic, 90 bpm
+
+<span class="tag">[Intro: kantele arpeggio, distant fiddle]</span>
+<span class="tag">[Verse 1: vocal enters softly]</span>
+<span class="lyric">Tuuli käy metsässä, kutsuu minut mukaan
+   Polut katoavat, mutta kuljen silti</span>
+
+<span class="tag">[Chorus: full folk instrumentation]</span>
+<span class="lyric">Kotini on siellä missä sydän on</span>
+
+<span class="tag">[Instrumental Break: fiddle solo]</span>
+<span class="tag">[Verse 2]</span>
+<span class="tag">[Bridge: a cappella vocal]</span>
+<span class="tag">[Final Chorus]</span>
+<span class="tag">[Outro: kantele fade]</span></pre>
+</div>
+
+<div class="prompt-block">
+  <h3>⑤ SFX-maisema — sade yöllä kaupungissa</h3>
+  <p class="meta-line">Style: äänimaisema, ei rytmiä, ei melodiaa, immersiivinen</p>
+  <pre><span class="tag">Style:</span> Ambient soundscape, city rain at night, distant traffic, no music, immersive, ASMR
+
+<span class="tag">[Intro: rain starts, distant thunder]</span>
+<span class="tag">[Verse: footsteps on wet pavement, rain intensifies]</span>
+<span class="tag">[Bridge: a car passes, horn honks in distance]</span>
+<span class="tag">[Verse 2: rain softens, wind through alley]</span>
+<span class="tag">[Outro: rain fades, distant church bell]</span></pre>
+</div>
+
+<h2>6. Iterointi — tärkein taito</h2>
+
+<p>Yksikään ensimmäinen generointi ei yleensä ole lopullinen. Käytä tätä silmukkaa:</p>
+
+<ol>
+  <li><strong>Generoi 2-4 versiota</strong> samasta promptista — Suno tuottaa aina eri tuloksen</li>
+  <li><strong>Kuuntele kaikki</strong> — valitse paras, merkitse mikä siinä toimii</li>
+  <li><strong>Tunnista ongelma</strong>: väärä tunnelma? väärä rakenne? puuttuuko instrumentti?</li>
+  <li><strong>Muokkaa promptia</strong> tarkasti — vaihda yhtä asiaa kerrallaan</li>
+  <li><strong>Generoi uudestaan</strong> — toista kunnes olet tyytyväinen</li>
+</ol>
+
+<div class="key">
+  <strong>Pro-vinkki:</strong> käytä Sunon <strong>Cover</strong>-toimintoa: ota hyvä versio ja pyydä "coveroi tämä mutta lisää jouset" tai "muuta tunnelma synkemmäksi". Tämä säilyttää hyvät elementit ja muuttaa vain haluttuja.
+</div>
+
+<h2>7. Harjoitus</h2>
+
+<ol>
+  <li><strong>Valitse yksi</strong> yllä olevista viidestä esimerkistä</li>
+  <li><strong>Generoi se Sunolla</strong> — käytä annettua promptia sellaisenaan</li>
+  <li><strong>Kuuntele ja arvioi</strong> kolmella kysymyksellä (alla)</li>
+</ol>
+
+<form id="quiz" onsubmit="return false;">
+  <div style="margin-bottom: 1rem;">
+    <label for="q1" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">1. Minkä promptin valitsit ja miksi juuri sen?</label>
+    <textarea id="q1" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q2" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">2. Mikä generoidussa kappaleessa oli parempaa kuin odotit — mikä huonompaa?</label>
+    <textarea id="q2" rows="3"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q3" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">3. Jos muokkaisit promptia, mikä olisi ensimmäinen muutos?</label>
+    <textarea id="q3" rows="2"></textarea>
+  </div>
+  <div style="display:flex; gap: 0.5rem; align-items:center;">
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()" style="background: transparent; color: var(--muted); border: 1px solid var(--rule);">Tyhjennä</button>
+    <span id="status" style="color: var(--accent); font-size: 0.9rem;"></span>
+  </div>
+</form>
+
+<script>
+function copyAnswers() {
+  const a = [1,2,3].map(i => 'Q' + i + ': ' + (document.getElementById('q'+i).value.trim() || '(tyhjä)')).join('\n');
+  navigator.clipboard.writeText(a).then(() => {
+    document.getElementById('status').textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => document.getElementById('status').textContent = '', 4000);
+  });
+}
+function clearAnswers() {
+  [1,2,3].forEach(i => document.getElementById('q'+i).value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+
+<hr>
+
+<h2>Lähteet</h2>
+<ul>
+  <li><a href="https://blakecrosley.com/guides/suno">Suno V5.5 Reference (Blake Crosley)</a> — kattavin yksittäinen opas, MILO-1080</li>
+  <li><a href="https://hookgenius.app/learn/suno-prompt-guide-2026/">Suno AI Prompt Guide 2026</a> — 100+ esimerkkiä</li>
+  <li><a href="https://www.reddit.com/r/SunoAI/comments/1mym1dm/the_guide_to_meta_tags_in_suno_ai_take_control_of/">Guide to Meta Tags in Suno AI</a> — yhteisön testatut tagit</li>
+  <li><a href="https://suno.com/release-notes">Suno Release Notes</a> — uusimmat ominaisuudet (Cover, Stems, Extended)</li>
+</ul>
+
+<footer>
+  <p><strong>Muistutus:</strong> promptitiede on iteratiivinen taito — ensimmäinen yritys on aina kokeilu. Kysy jos jokin jäi epäselväksi tai haluat lisäesimerkkejä tietystä genrestä.</p>
+  <p><a href="../index.html">← Takaisin oppimateriaali-hakemistoon</a></p>
+</footer>
+
+</body>
+</html>

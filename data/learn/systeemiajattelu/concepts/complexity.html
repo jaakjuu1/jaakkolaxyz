@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: complexity</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>complexity</h1>
+  <p class="meta">Käsite · systeemiajattelu · kompleksisuus · oppimispolun perusta</p>
+
+  <p class="lede">Kompleksisuus on tila, jossa useat osat ovat keskenään dynaamisessa vuorovaikutuksessa siten, että kokonaisuus synnyttää <a href="emergence.html">emergenttejä</a> ominaisuuksia, joita ei voi palauttaa osiinsa eikä ennustaa pelkistä osista käsin.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Kompleksisuus</strong> (engl. <em>complexity</em>) tarkoittaa järjestelmän tilaa, jossa monet toisistaan riippuvaiset osat ovat jatkuvassa, ei-triviaalissa vuorovaikutuksessa. Kompleksinen systeemi ei ole pelkkä <em>monimutkainen</em> (complicated) — monimutkainen kone, kuten kello, voidaan purkaa osiin ja koota uudelleen ennustettavasti. Kompleksinen systeemi, kuten ekosysteemi tai talous, synnyttää jatkuvasti uusia käyttäytymismuotoja.</p>
+
+  <p>Kompleksisuudelle on tyypillistä:</p>
+  <ul>
+    <li><strong>Useat vuorovaikuttavat osat</strong> — satoja, tuhansia tai miljoonia toisiinsa kytkeytyneitä komponentteja.</li>
+    <li><strong>Epälineaariset vuorovaikutukset</strong> — pieni syöte voi synnyttää suuren vaikutuksen (ja päinvastoin).</li>
+    <li><strong>Takaisinkytkennät</strong> — systeemin tuotos vaikuttaa sen omaan syötteeseensä.</li>
+    <li><strong>Emergentit ominaisuudet</strong> — kokonaisuus on enemmän kuin osiensa summa.</li>
+    <li><strong>Sopeutuvuus</strong> — systeemi oppii, kehittyy ja muuttaa rakennettaan ympäristön mukana.</li>
+    <li><strong>Itseorganisoituminen</strong> — järjestys syntyy ilman keskitettyä ohjausta.</li>
+  </ul>
+
+  <blockquote>
+    <p>"Complexity is the study of the behavior of macroscopic collections of such units that are endowed with the potential to evolve in time." — Stuart Kauffman</p>
+  </blockquote>
+
+  <p>Kompleksisuutta on tärkeä erottaa <em>satunnaisuudesta</em>. Täysin satunnainen kohina (valkoinen kohina) on rakenteetonta ja korkean entropian omaavaa — se ei ole kompleksista. Kompleksinen systeemi sijaitseekin kahden ääripään välissä: <em>järjestyksen</em> (kristalli, kone) ja <em>kaaoksen</em> (täysi satunnaisuus) välimaastossa, niin sanotulla <em>kaaoksen reunalla</em> (<em>edge of chaos</em>).</p>
+
+  <h2>Alkuperä</h2>
+  <p>Kompleksisuustieteen juuret ovat 1900-luvun puolivälin tieteessä. Warren McCulloch ja Walter Pitts kehittivät 1943 neuroneja jäljitteleviä verkkoja, Norbert Wiener muotoili <a href="cybernetics.html">kybernetiikan</a> 1948, ja John von Neumann työskenteli itseään kopioivien automaattien parissa. Nämä loivat pohjan ajatukselle, että laskenta, biologia ja järjestelmien dynamiikka voidaan yhdistää.</p>
+
+  <p>Modernin kompleksisuustieteen syntypaikka on Santa Fe -instituutti, joka perustettiin New Mexicossa vuonna 1984. Sen perustajia olivat muun muassa fyysikot Murray Gell-Mann ja Philip Anderson, taloustieteilijä Kenneth Arrow sekä biologi Stuart Kauffman. Instituutti yhdisti ensimmäisenä fysiikan, biologian, tietojenkäsittelytieteen ja taloustieteen tutkijoita etsimään yhteisiä lakeja monimutkaisille sopeutuville systeemeille.</p>
+
+  <p>Santa Fe -instituutin piirissä muotoutuivat keskeiset käsitteet: <a href="complex-adaptive-system.html">sopeutuvat kompleksiset järjestelmät</a> (CAS), itseorganisoituvuus, kaaoksen reuna ja verkostojen dynamiikka. Myöhemmin 1990- ja 2000-luvuilla kompleksisuus laajeni ekologiaan (Dunne, Martinez), neurotieteeseen (Sporns, Bassett), taloustieteeseen (Arthur, Beinhocker) ja yhteiskuntatieteisiin (Axelrod, Epstein).</p>
+
+  <p>Nykyisin kompleksisuus on monitieteinen tutkimuskenttä, joka yhdistää luonnontieteitä, yhteiskuntatieteitä ja laskennallisia menetelmiä. Sen ydinkysymys on edelleen sama kuin Kauffmanilla 1990-luvulla: <em>mikä tekee järjestelmästä kykenevän kehittymään, oppimaan ja synnyttämään uutta?</em></p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="complex-adaptive-system.html">complex-adaptive-system</a> — kompleksisuuden tärkein ilmenemismuoto: sopeutuvat järjestelmät.</li>
+    <li><a href="emergence.html">emergence</a> — emergenssi on kompleksisuuden keskeisin seuraus.</li>
+    <li><a href="emergent-properties.html">emergent-properties</a> — kompleksisten systeemien ilmenevät ominaisuudet.</li>
+    <li><a href="self-organization.html">self-organization</a> — itseorganisoituminen synnyttää kompleksisuutta ilman ulkoista ohjausta.</li>
+    <li><a href="non-linearity.html">non-linearity</a> — epälineaarisuus on kompleksisuuden edellytys.</li>
+    <li><a href="feedback-loop.html">feedback-loop</a> — takaisinkytkennät ylläpitävät ja synnyttävät kompleksisuutta.</li>
+    <li><a href="attractor.html">attractor</a> — outo attraktori on kompleksisten systeemien dynamiikan tunnusmerkki.</li>
+    <li><a href="phase-space.html">phase-space</a> — korkeaulotteinen faasiavaruus on kompleksisen systeemin kartta.</li>
+    <li><a href="bifurcation.html">bifurcation</a> — bifurkaatiot synnyttävät kompleksisuutta.</li>
+    <li><a href="network.html">network</a> — verkostot ovat kompleksisten systeemien perusrakenne.</li>
+    <li><a href="phase-transition.html">phase-transition</a> — faasisiirtymät ovat kompleksisuuden synnyn hetkiä.</li>
+    <li><a href="reductionism.html">reductionism</a> — vastaparina: reduktionismi ei riitä kompleksisuuden ymmärtämiseen.</li>
+    <li><a href="holism.html">holism</a> — holismi on kompleksisuustieteen filosofinen perusta.</li>
+    <li><a href="resilience.html">resilience</a> — resilienssi on kompleksisten systeemien keskeinen ominaisuus.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Kompleksisuus on <strong>Tier 1</strong> -käsite ja oppimispolun neljä peruspilaria yksi yhdessä <a href="emergence.html">emergenssin</a>, <a href="feedback-loop.html">takaisinkytkennän</a> ja <a href="holism.html">holismin</a> kanssa. Käsite esitellään johdantokurssilla ja syvenee moduuleissa, joissa käsitellään ekosysteemejä, taloutta, ilmastoa, hermoverkkoja ja sopeutuvia yhteiskuntia.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/complexity.html" class="wikilink" data-concept="complexity">complexity</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — sopeutuvat järjestelmät</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — emergenssi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergent-properties.html" class="wikilink" data-concept="emergent-properties">emergent-properties</a> — emergentit ominaisuudet</li>
+    <li><a href="/learn/systeemiajattelu/concepts/self-organization.html" class="wikilink" data-concept="self-organization">self-organization</a> — itseorganisoituminen</li>
+    <li><a href="/learn/systeemiajattelu/concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — epälineaarisuus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — takaisinkytkentäsilmukka</li>
+    <li><a href="/learn/systeemiajattelu/concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — attraktori</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-space.html" class="wikilink" data-concept="phase-space">phase-space</a> — faasiavaruus</li>
+    <li><a href="/learn/systeemiajattelu/concepts/bifurcation.html" class="wikilink" data-concept="bifurcation">bifurcation</a> — bifurkaatio</li>
+    <li><a href="/learn/systeemiajattelu/concepts/network.html" class="wikilink" data-concept="network">network</a> — verkosto</li>
+    <li><a href="/learn/systeemiajattelu/concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — faasisiirtymä</li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a> — reduktionismi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/holism.html" class="wikilink" data-concept="holism">holism</a> — holismi</li>
+    <li><a href="/learn/systeemiajattelu/concepts/resilience.html" class="wikilink" data-concept="resilience">resilience</a> — resilienssi</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Wiener 1948 — <em>Cybernetics</em>; Gell-Mann 1994 — <em>The Quark and the Jaguar</em>; Kauffman 1995 — <em>At Home in the Universe</em>; Waldrop 1992 — <em>Complexity: The Emerging Science at the Edge of Order and Chaos</em>; Holland 1995 — <em>Hidden Order</em>; Mitchell 2009 — <em>Complexity: A Guided Tour</em>; Wikipedia-artikkelit: <em>Complexity</em>; <em>Complex system</em>; <em>Complex adaptive system</em>.
+  </p>
+</main>
+</body>
+</html>

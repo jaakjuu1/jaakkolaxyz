@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="800" height="450">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="60%" r="55%">
+      <stop offset="0%" stop-color="#a8c9b5" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#1a1a2e" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="5"/></filter>
+  </defs>
+  <rect width="800" height="450" rx="12" fill="#1a1a2e"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  <!-- kaksi seisovaa hahmoa -->
+  <g transform="translate(320, 0)">
+    <ellipse cx="0" cy="220" rx="40" ry="65" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="165" rx="28" ry="34" fill="#3a3a55"/>
+  </g>
+  <g transform="translate(480, 0)">
+    <ellipse cx="0" cy="220" rx="40" ry="65" fill="#2d2d44" opacity="0.8"/>
+    <ellipse cx="0" cy="165" rx="28" ry="34" fill="#3a3a55"/>
+  </g>
+  <!-- käsivarsi peililiikkeessä -->
+  <g filter="url(#softGlow)" opacity="0.25">
+    <path d="M340,210 Q380,170 400,180 Q420,170 460,210" fill="none" stroke="#a8c9b5" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M340,230 Q380,200 400,205 Q420,200 460,230" fill="none" stroke="#a8c9b5" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="4 4"/>
+  </g>
+  <circle cx="400" cy="185" r="2" fill="#a8c9b5" opacity="0.3">
+    <animate attributeName="cx" values="390;410;390" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <line x1="200" y1="290" x2="600" y2="290" stroke="#2d2d44" stroke-width="1" opacity="0.5"/>
+</svg>

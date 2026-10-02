@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0006-kriittiset-ilmiot — Kriittiset ilmiöt: epälineaarisuus ja viiveet</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  .meta a { color: var(--accent); }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "\2717 "; color: var(--accent); }
+  .col.right h3::before { content: "\2713 "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+  .lede { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="meta"><a href="../">Kompleksisuus</a> · Oppitunti 0006/6</p>
+  <h1>Kriittiset ilmiöt: epälineaarisuus ja viiveet</h1>
+  <p class="lede">Pieni syy voi aiheuttaa suuren seurauksen — ja syy näkyy vasta kun viive on kulunut. Nämä kaksi ilmiötä tekevät kompleksisista järjestelmistä sekä mahdollisia että arvaamattomia.</p>
+
+  <p>Viimeinen oppitunti kokoaa yhteen kaksi ilmiötä, jotka tekevät kompleksisista järjestelmistä sekä arvaamattomia että mahdollisia: <strong>epälineaarisuus</strong> ja <strong>viiveet</strong>.</p>
+
+  <p>Nämä ovat syitä, miksi pienet muutokset voivat tuottaa suuria vaikutuksia — ja miksi järjestelmät reagoivat usein myöhässä.</p>
+
+  <h2>Mikä on epälineaarisuus?</h2>
+
+  <p><strong>Epälineaarisuus</strong> tarkoittaa: syy ja seuraus eivät ole suoraan verrannollisia. Pieni muutos voi aiheuttaa suuren vasteen, tai päinvastoin — suuri muutos voi aiheuttaa mitättömän vasteen.</p>
+
+  <p>Matemaattisesti: lineaarinen järjestelmä on yhtälö <code>y = kx</code> (suora viiva). Epälineaarinen on esimerkiksi <code>y = x²</code> tai <code>y = sin(x)</code>. Pieni muutos <code>x</code>:ssä voi tuottaa dramaattisen muutoksen <code>y</code>:ssä.</p>
+
+  <blockquote>
+    <p>"Nonlinearity means the whole is not the sum of its parts — it is the product of their interactions." — Yleinen tapaus</p>
+  </blockquote>
+
+  <h2>Kolme tyyppiä</h2>
+
+  <p>Epälineaarisuudet eivät ole samanlaisia. Niitä on kolme päätyyppiä:</p>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Tyydytys (saturation)</h3>
+      <p>Alussa vaste kasvaa nopeasti, sitten hidastuu. Esim. oppiminen: alussa nopeaa, sitten lakipiste saavutettu.</p>
+    </div>
+    <div class="col">
+      <h3>Kynnys (threshold)</h3>
+      <p>Ei vastetta lainkaan — kunnes raja ylittyy. Esim. hermoston aktivointi.</p>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div class="col">
+      <h3>Kyllästys (overshoot)</h3>
+      <p>Ylittää tavoitteen, sitten alkaa värähdellä. Esim. ylisäädetty termostaatti, kupla.</p>
+    </div>
+    <div class="col">
+      <h3>Bifurkaatio</h3>
+      <p>Kahden tai useamman tilan syntyminen yhtä aikaa. Esim. aineen olomuodon vaihdos.</p>
+    </div>
+  </div>
+
+  <p>Jokainen tuottaa erilaisen dynaamisen — ja erilaisen vaikeuden hallita.</p>
+
+  <h2>Miksi epälineaarisuus tekee hallinnasta vaikeaa</h2>
+
+  <p>Lineaarisessa maailmassa voidaan luottaa mittakaavaan: 2x syöttö → 2x tuotos. Epälineaarisessa maailmassa:</p>
+
+  <ul>
+    <li>2x syöttö voi tuottaa 10x tai 0x vasteen.</li>
+    <li>Historiallinen keskiarvo ei ennusta tulevaa.</li>
+    <li>Pieni muutos voi olla välttämätön — tai katastrofaalinen.</li>
+    <li>"Ekstrapolointi on vaarallista" — tämä on epälineaarisuuden määritelmä.</li>
+  </ul>
+
+  <blockquote>
+    <p>"In linear systems, the whole is the sum of its parts. In nonlinear systems, the whole is much more or much less than the sum." — Yleinen</p>
+  </blockquote>
+
+  <h2>Viiveet — järjestelmän muisti</h2>
+
+  <p><strong>Viive</strong> (delay, lag) on aika, joka kuluu syyn ja seurauksen välillä. Viiveet ovat järjestelmien "muisti" — ne tekevät nykyhetken toiminnan vaikutuksista vaikeasti ennustettavia.</p>
+
+  <p>Yleisiä viiveitä:</p>
+
+  <ul>
+    <li><strong>Biologinen</strong> — lääkkeen vaikutus näkyy viikkojen kuluttua.</li>
+    <li><strong>Taloudellinen</strong> — inflaatiopäätökset vaikuttavat kuukausien viiveellä.</li>
+    <li><strong>Ekologinen</strong> — metsän palautuminen kestää vuosikymmeniä.</li>
+    <li><strong>Sosiaalinen</strong> — koulutuksen vaikutus ihmisten elämään näkyy vuosikymmenissä.</li>
+    <li><strong>Ilmasto</strong> — kasvihuonekaasupäästöjen vaikutus näkyy vuosisatoina.</li>
+  </ul>
+
+  <p>Viiveet ovat usein vaikeampia kuin epälineaarisuus, koska ne <em>piiloutuvat</em>: toiminta vaikuttaa tuloksettomalta kunnes vaikutus äkkiä näkyy.</p>
+
+  <h2>Kolme viiveiden seurausta</h2>
+
+  <p>Viiveet aiheuttavat kolme tyypillistä dynamiikkaa:</p>
+
+  <ol>
+    <li><strong>Oskillointi</strong> — järjestelmä yli- tai alikorjaa toistuvasti. Esimerkki: kylpyammeen lämpötilan säätö.</li>
+    <li><strong>Lyhyen tähtäimen voitto, pitkän tähtäimen häviö</strong> — välitön helpotus, mutta ongelma syvenee. Esimerkki: antibioottien liikakäyttö.</li>
+    <li><strong>Kumulatiivinen romahdus</strong> — pitkäaikainen kertyminen, sitten äkkinäinen romahdus. Esimerkki: ekosysteemin ylikalastus.</li>
+  </ol>
+
+  <h2>Oskillointiesimerkki: kylpyamme uudestaan</h2>
+
+  <p>Otimme tämän esimerkin jo methods-polussa. Käydään läpi tarkemmin:</p>
+
+  <ol>
+    <li>Amme on 38° — haluat 40°.</li>
+    <li>Käännät lämmintä lisää. Vesi ei vielä lämpene (putkessa kylmää vettä).</li>
+    <li>Et näe muutosta, käännät lisää.</li>
+    <li>Viiveen jälkeen vesi on 48° — liian kuumaa.</li>
+    <li>Käännät takaisin — viiveen jälkeen vesi on 32°.</li>
+    <li>Jatkat värähtelyä, kunnes tasapainotat.</li>
+  </ol>
+
+  <p>Tämä on <em>kriittinen värähtely</em> — järjestelmä, jossa on viive ja korjausmekanismi, värähtelee aina. Sama ilmiö näkyy:</p>
+
+  <ul>
+    <li>Säästäminen ja kulutus (talous).</li>
+    <li>Varastojen täyttö ja tyhjennys (logistiikka).</li>
+    <li>Tunnekierrokset (psyyke).</li>
+    <li>Poliittiset reaktiot (vasemmalta oikealle).</li>
+  </ul>
+
+  <h2>Viiveiden välttäminen</h2>
+
+  <p>Voit vähentää viiveiden haitallisuutta:</p>
+
+  <ol>
+    <li><strong>Ennusta tulevaa.</strong> Mitä tapahtuu, kun viiveen jälkeinen vaikutus näkyy? Suunnittele tämänhetkinen toiminta sen mukaan.</li>
+    <li><strong>Aseta varovaisuusmarginaali.</strong> Jos et tiedä viiveen pituutta, toimi varovaisemmin kuin tarvitsisi.</li>
+    <li><strong>Tee pieniä liikkeitä.</strong> Nopeat suuret liikkeet yhdistettynä viiveeseen synnyttävät oskillointia. Pienet ja hitaat muutokset vakauttavat.</li>
+    <li><strong>Lyhennä viivettä.</strong> Nopeampi palaute auttaa — siksi lääkärit tekevät laboratoriokokeita "nähdäkseen heti".</li>
+  </ol>
+
+  <h2>Viiveet ja vahvistus</h2>
+
+  <p>Kun viive yhdistyy positiiviseen takaisinkytkentään, syntyy kaaos — tai äkkinäinen muutos. Tätä näkee:</p>
+
+  <ul>
+    <li><strong>Talouden kuplat:</strong> nopea kasvu (lyhyt aika) → romahdus.</li>
+    <li><strong>Ilmastonmuutos:</strong> hidas kerääntyminen (hiilidioksidi) → äkkinäinen lämpeneminen (rajanylitys).</li>
+    <li><strong>Suhdeongelmat:</strong> pieni kinaaminen kasvaa suureksi riidaksi kun viive kerryttää.</li>
+  </ul>
+
+  <h2>Epälineaarisuus + viiveet = mahdoton ennustaminen?</h2>
+
+  <p>Ei suinkaan. Se mikä tekee ennustamisen <em>vaikeammaksi</em>, ei mahdottomaksi:</p>
+
+  <ul>
+    <li>Epälineaarisuudet ovat usein <em>lokaaleja</em> — vain tietyssä parametrin arvossa on epälineaarista käyttäytymistä.</li>
+    <li>Viiveet ovat usein <em>mitattavissa</em> — ainakin suuruusluokaltaan.</li>
+    <li>Järjestelmät ovat usein <em>joustavia useimmissa tilanteissa</em> — vain kriittisissä pisteissä äkkinäisiä.</li>
+  </ul>
+
+  <p>Siksi <strong>kriittisten pisteiden tunnistaminen</strong> on niin arvokasta — suurimman osan ajasta järjestelmä on ennustettavissa, mutta kriittisissä pisteissä virheet näkyvät nopeasti.</p>
+
+  <h2>Scalable Feedback: Liivin Scottyn vaikutusvalta</h2>
+
+  <p>Yksi tapa ymmärtää epälineaarisuutta: <em>scalable feedback</em> (skaalautuva palaute). Palaute, joka kasvaa tai kutistuu tilanteen mukaan.</p>
+
+  <p>Esimerkki: YouTube-suositukset. Algoritmi oppii, että pidät videoista X → ehdottaa lisää X → katsot niitä → algoritmi oppii lisää. Tämä on vahvistava silmukka, joka skaalautuu.</p>
+
+  <p>Sama ilmiö: sosiaalinen media, infosfääri, mielipiteet. Positiivinen takaisinkytkentä, lyhyet viiveet, nopea verkosto → inflaatio kiihtyy.</p>
+
+  <h2>Mikä on emergenssi tässä yhteydessä?</h2>
+
+  <p>Epälineaarisuus ja viiveet yhdessä tuottavat <em>emergenttejä ilmiöitä</em> joita ei voi palauttaa osiin:</p>
+
+  <ul>
+    <li>Ilmaston monimutkaisuus ei palaudu yksittäisiin päästöihin.</li>
+    <li>Aivot eivät palaudu yksittäisiin neuroneihin.</li>
+    <li>Talous ei palaudu yksittäisiin ostoihin.</li>
+  </ul>
+
+  <p>Nämä ovat <em>emergenttejä emergenttejä</em> — ilmiöitä, joissa epälineaarisuus tuottaa jotain, joka <em>synnyttää lisää epälineaarisuutta</em>. Tämä on syy, miksi kompleksisuus on niin kiehtovaa.</p>
+
+  <h2>Yhteenveto</h2>
+
+  <p>Kompleksisuus-polun kuusi oppituntia ovat:</p>
+
+  <ol>
+    <li><strong>Kompleksisuus vs. monimutkaisuus</strong> — sama sana, eri merkitys.</li>
+    <li><strong>CAS</strong> — sopeutuvat järjestelmät, joissa monta toimijaa.</li>
+    <li><strong>Itseorganisoituminen</strong> — järjestys ilman suunnitelmaa.</li>
+    <li><strong>Attraktorit ja faasimuutokset</strong> — vetovoima ja äkkinäiset vaihdokset.</li>
+    <li><strong>Verkostot</strong> — rakenne määrää käyttäytymisen.</li>
+    <li><strong>Epälineaarisuus ja viiveet</strong> — miksi pienet syyt voivat olla suuria.</li>
+  </ol>
+
+  <p>Nämä kuusi yhdessä muodostavat <em>kompleksisuustieteen ytimen</em>. Tämä on modernin systeemiajattelun syvin taso.</p>
+
+  <hr>
+
+  <h2>Pysähdy ja tarkastele</h2>
+
+  <p>Mieti yhtä elämäsi aluetta, jossa epälineaarisuus ja viiveet tuntuvat merkittäviltä.</p>
+
+  <form id="quiz" onsubmit="return false;">
+    <div>
+      <label for="q1">1. Missä tilanteessa olet nähnyt epälineaarisuuden toimivan — pieni syy, suuri seuraus?</label>
+      <textarea id="q1" rows="3" placeholder="Esim. pieni muutos tavassa, suuri vaikutus terveyteen / opiskeluun / ihmissuhteeseen..."></textarea>
+    </div>
+    <div>
+      <label for="q2">2. Missä olet nähnyt viiveen toimivan — toiminta vaikuttaa tuloksettomalta, sitten äkisti tulee muutos?</label>
+      <textarea id="q2" rows="3" placeholder="Usein liikunnassa, oppimisessa tai ihmissuhteissa..."></textarea>
+    </div>
+    <div>
+      <label for="q3">3. Jos hyväksyt epälineaarisuuden ja viiveet, miten se muuttaa päätöksentekoasi?</label>
+      <textarea id="q3" rows="3" placeholder="Tämä on integration-kohta — teoria kohtaa arjen..."></textarea>
+    </div>
+    <button type="button" onclick="copyAnswers()">📋 Kopioi vastaukset</button>
+    <button type="button" onclick="clearAnswers()">Tyhjennä</button>
+    <span id="status"></span>
+  </form>
+
+  <p>Kompleksisuus ei ole vaikeaa vain ymmärtää — se on vaikeaa <em>elää</em>. Mutta kun ymmärrät sen mekanismit, alat nähdä ympäristösi eri tavalla.</p>
+
+  <p>Seuraavaksi voit syventyä <a href="../../cybernetics/">kybernetiikkaan</a> — säätöpiirien syvempi ymmärrys — tai hypätä suoraan <a href="../../applications/">sovelluksiin</a>, joissa näet nämä periaatteet käytännössä.</p>
+
+  <h2>Liittyvät käsitteet</h2>
+  <ul>
+    <li><a href="../../concepts/non-linearity.html" class="wikilink" data-concept="non-linearity">non-linearity</a> — tämän oppitunnin ydinkäsite — syy ja seuraus eivät ole verrannollisia</li>
+    <li><a href="../../concepts/delay.html" class="wikilink" data-concept="delay">delay</a> — toinen ydinkäsite — aika syyn ja seurauksen välillä</li>
+    <li><a href="../../concepts/phase-transition.html" class="wikilink" data-concept="phase-transition">phase-transition</a> — äkkinäinen tilan vaihdos</li>
+    <li><a href="../../concepts/critical-mass.html" class="wikilink" data-concept="critical-mass">critical-mass</a> — kriittinen kynnys</li>
+    <li><a href="../../concepts/attractor.html" class="wikilink" data-concept="attractor">attractor</a> — vetovoimatila — järjestelmän palautuminen</li>
+    <li><a href="../../concepts/feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — silmukka viiveineen</li>
+    <li><a href="../../concepts/positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — vahvistava, kiihtyvä</li>
+    <li><a href="../../concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — tasapainottava</li>
+    <li><a href="../../concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a> — epälineaarisuuden tuottama</li>
+    <li><a href="../../concepts/complex-adaptive-system.html" class="wikilink" data-concept="complex-adaptive-system">complex-adaptive-system</a> — CAS synnyttää emergenttejä emergenttejä</li>
+    <li><a href="../../concepts/system.html" class="wikilink" data-concept="system">system</a> — palautuminen</li>
+    <li><a href="../../concepts/systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a> — ajattelutapa, joka tunnistaa viiveet ja epälineaarisuuden</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="0005-verkostot-ja-kytkennat.html">← Verkostot ja kytkennät</a>
+    <span class="empty"></span>
+  </div>
+
+  <p class="footer-note">Lähteet: Robert May — <em>Simple Mathematical Models with Very Complicated Dynamics</em> (Nature, 1976); Donella H. Meadows — <em>Thinking in Systems</em> (2008); John D. Sterman — <em>Business Dynamics</em> (McGraw-Hill, 2000); George Cowan — <em>Chaos and Complexity</em> (1994); Stefan Thurner, Rudolf Hanel & Peter Klimek — <em>Introduction to the Theory of Complex Systems</em> (Oxford, 2018).</p>
+</main>
+<script>
+function copyAnswers() {
+  const fields = document.querySelectorAll('#quiz textarea');
+  const labels = document.querySelectorAll('#quiz label');
+  const out = [];
+  labels.forEach((l, i) => {
+    out.push(l.textContent.replace(/^\d+\.\s*/, '') + ': ' + (fields[i] ? fields[i].value.trim() || '(tyhjä)' : '(tyhjä)'));
+  });
+  navigator.clipboard.writeText(out.join('\n\n')).then(() => {
+    const s = document.getElementById('status');
+    s.textContent = '✓ Kopioitu leikepöydälle';
+    setTimeout(() => { s.textContent = ''; }, 4000);
+  });
+}
+function clearAnswers() {
+  document.querySelectorAll('#quiz textarea').forEach(t => t.value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+</body>
+</html>

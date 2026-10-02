@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: kudit</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>kudit</h1>
+  <p class="meta">Käsite · systeemiajattelu · itäinen perinne · Ayyadurai-Tier 2 · siddha</p>
+
+  <p class="lede">Kudit on <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> mukaan täydellisen sisäisen tasapainon tila — ihanteellinen <a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostaasi</a>, jossa kaikki kolme <a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vataa</a>, <a href="/learn/systeemiajattelu/concepts/pitta.html" class="wikilink" data-concept="pitta">pittaa</a> ja <a href="/learn/systeemiajattelu/concepts/kapha.html" class="wikilink" data-concept="kapha">kappaa</a> ovat harmonisesti yhtä vahvoja. Se on <a href="/learn/systeemiajattelu/concepts/system.html" class="wikilink" data-concept="system">systeemi</a> äärimmillään: keho, mieli ja tietoisuus yhtenä suljettuna säätöpiirinä.</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Kudit</strong> (tamiliksi <em>kudineer</em>-perinteeseen liittyvä termi, "sisäinen koostumus") on <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> terveysopin ydinkäsite. Se tarkoittaa tilaa, jossa kehon kolme <a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">doshaa</a> — <a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vata</a>, <a href="/learn/systeemiajattelu/concepts/pitta.html" class="wikilink" data-concept="pitta">pitta</a> ja <a href="/learn/systeemiajattelu/concepts/kapha.html" class="wikilink" data-concept="kapha">kapha</a> — ovat täydellisessä tasapainossa: kukin yhtä vahva, kukaan ei dominoi, kukaan ei vajaa. Tässä tilassa ihminen on sairauksille immuuni, mieli kirkas ja <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> virtaa esteettä.</p>
+
+  <p>Kudit ei ole pelkkä "tasapaino" sanan arkimerkityksessä. Se on <em>tasapainon optimaalinen piste</em>, jossa järjestelmän kaikki komponentit ovat yhtä vahvoja. Vertaus: tasapaino on kuin kolmijalkainen jakkara — jos yksi jalka on liian lyhyt, jakkara kaatuu. Kuditissa kaikki kolme jalkaa ovat täsmälleen saman mittaisia.</p>
+
+  <p>Ayyadurai tulkitsee kuditin systeemiteorian kautta. Hänelle se on <a href="/learn/systeemiajattelu/concepts/dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynaamisen tasapainon</a> optimaalinen tila — kohta, jossa <a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">negatiiviset palautesilmukat</a> toimivat häiriöttä ja <a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostaattinen</a> säätö on niin tarkkaa, että ulkoiset <a href="/learn/systeemiajattelu/concepts/disturbance.html" class="wikilink" data-concept="disturbance">häiriöt</a> eivät siirrä systeemiä pois tasapainosta. Kudit on siis <a href="/learn/systeemiajattelu/concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">luonnollisen systeemitilan</a> (natural systems state) ylin ilmenemismuoto.</p>
+
+  <p>Kuditin kolme keskeistä piirrettä ovat:</p>
+  <ul>
+    <li><strong>Dosha-tasapaino</strong>: <a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vata</a>, <a href="/learn/systeemiajattelu/concepts/pitta.html" class="wikilink" data-concept="pitta">pitta</a> ja <a href="/learn/systeemiajattelu/concepts/kapha.html" class="wikilink" data-concept="kapha">kapha</a> yhtä vahvoja.</li>
+    <li><strong>Prana-virtaus</strong>: <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> ja <a href="/learn/systeemiajattelu/concepts/vayu.html" class="wikilink" data-concept="vayu">vayu</a> liikkuvat esteettä kaikissa kanavissa.</li>
+    <li><strong>Tietoisuuden selkeys</strong>: <a href="/learn/systeemiajattelu/concepts/chakra.html" class="wikilink" data-concept="chakra">chakrat</a>, erityisesti <a href="/learn/systeemiajattelu/concepts/sahasrara.html" class="wikilink" data-concept="sahasrara">kruunuchakra</a>, ovat avoinna ja toimivat yhteisessä säätöpiirissä.</li>
+  </ul>
+
+  <h2>Alkuperä</h2>
+  <p>Kudit-käsite on peräisin <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> perinteestä, joka on yksi vanhimmista intialaisista terveysjärjestelmistä — joidenkin tulkintojen mukaan jopa ayurvedaa vanhempi. Siddhan klassikkotekstit, kuten <em>Theran käsikirjoitukset</em> ja <em>Agathiyar kirjoitukset</em>, kuvaavat kuditia ihmisen terveyden "perustilaksi", josta poikkeaminen synnyttää sairauden.</p>
+
+  <p>Kudit liittyy läheisesti myös <a href="/learn/systeemiajattelu/concepts/muppu.html" class="wikilink" data-concept="muppu">muppu</a>-käsitteeseen: muppu on tila, jossa kehon "kolme suolaa" (siddhan erityisoppi) ovat täydellisesti suhteutettu, ja kudit on tämän tilan seuraus — koko kehon holistinen tasapaino. Ilman muppua ei voi saavuttaa pysyvää kuditia.</p>
+
+  <p>Länsimaisessa lääketieteessä ei ole suoraa vastinetta kuditille. Lähimpänä sitä ovat käsitteet kuten <a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> tai allostaasi, mutta nämä kuvaavat vain osan kuditin merkityksestä: kudit sisältää myös <a href="/learn/systeemiajattelu/concepts/chakra.html" class="wikilink" data-concept="chakra">energeettisen</a>, <a href="/learn/systeemiajattelu/concepts/kosha.html" class="wikilink" data-concept="kosha">hengellisen</a> ja <a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">pranaattisen</a> ulottuvuuden, jotka länsilääketieteessä usein ohitetaan.</p>
+
+  <p>Ayyadurai'n tulkinnassa kudit on <a href="/learn/systeemiajattelu/concepts/systems-health.html" class="wikilink" data-concept="systems-health">systeemiterveyden</a> ihanne — tila, jossa ihminen on yhtä aikaa fyysisesti terve, emotionaalisesti tasapainoinen ja tietoisuudeltaan selkeä. Se on tavoite, jota kohti kaikki <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> hoitomenetelmät — ruokavalio, yrtit, hengitys, meditaatio — tähtäävät.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddha</a> — perinne, josta käsite on peräisin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/ayurveda.html" class="wikilink" data-concept="ayurveda">ayurveda</a> — sukulaisjärjestelmä, joka jakaa kolmen doshan opin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vata</a>, <a href="/learn/systeemiajattelu/concepts/pitta.html" class="wikilink" data-concept="pitta">pitta</a>, <a href="/learn/systeemiajattelu/concepts/kapha.html" class="wikilink" data-concept="kapha">kapha</a> — kolme doshaa, joiden tasapaino kudit on.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/prana.html" class="wikilink" data-concept="prana">prana</a> — elämänenergia, joka virtaa vapaasti kudit-tilassa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/vayu.html" class="wikilink" data-concept="vayu">vayu</a> — viisi pranan tyyppiä, jotka aktivoivat doshat.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — länsimainen vastine kuditin fyysiselle ulottuvuudelle.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a> — dynaaminen tasapaino, joka kuditissa saavuttaa optimin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a> — yleinen tasapainokäsite.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/feedback.html" class="wikilink" data-concept="feedback">feedback</a> / <a href="/learn/systeemiajattelu/concepts/negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — palautemekanismit, jotka ylläpitävät kuditia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a> — järjestelmän luonnollinen tila, jota kudit edustaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/systems-health.html" class="wikilink" data-concept="systems-health">systems-health</a> — Ayyadurai'n viitekehys, jossa kudit on ihanne.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/chakra.html" class="wikilink" data-concept="chakra">chakra</a> — energiakeskukset, joiden tasapaino on osa kuditia.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/sahasrara.html" class="wikilink" data-concept="sahasrara">sahasrara</a> — kruunuchakra, joka kudit-tilassa on täysin avoin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/kosha.html" class="wikilink" data-concept="kosha">kosha</a> — monikerroksinen olemus, jonka kaikki kerrokset kudit yhdistää.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/muppu.html" class="wikilink" data-concept="muppu">muppu</a> — kolmen suolan tila, joka mahdollistaa kuditin.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a> — ulkoiset häiriöt, joista kudit-tila joustaa.</li>
+    <li><a href="/learn/systeemiajattelu/concepts/adjustment.html" class="wikilink" data-concept="adjustment">adjustment</a> — säätöliike, jolla järjestelmä palautuu kohti kuditia.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Kudit tulee vastaan <em>Itä ja systeemit</em> -moduulissa, erityisesti oppitunneissa jotka käsittelevät <a href="/learn/systeemiajattelu/concepts/siddha.html" class="wikilink" data-concept="siddha">siddhan</a> terveysoppia, <a href="/learn/systeemiajattelu/concepts/systems-health.html" class="wikilink" data-concept="systems-health">systeemiterveyttä</a> ja <a href="/learn/systeemiajattelu/concepts/homeostasis.html" class="wikilink" data-concept="homeostasis">homeostaasia</a>. Se on keskeinen käsite myös <a href="/learn/systeemiajattelu/concepts/ayurveda.html" class="wikilink" data-concept="ayurveda">ayurvedaa</a> ja kolmea doshaa (<a href="/learn/systeemiajattelu/concepts/vata.html" class="wikilink" data-concept="vata">vata</a>, <a href="/learn/systeemiajattelu/concepts/pitta.html" class="wikilink" data-concept="pitta">pitta</a>, <a href="/learn/systeemiajattelu/concepts/kapha.html" class="wikilink" data-concept="kapha">kapha</a>) käsittelevissä oppitunneissa, joissa se esiintyy tavoitetilana. Lisäksi kudit mainitaan <a href="/learn/systeemiajattelu/concepts/muppu.html" class="wikilink" data-concept="muppu">muppu-käsitteen</a> yhteydessä ja <a href="/learn/systeemiajattelu/concepts/architecture-of-existence.html" class="wikilink" data-concept="architecture-of-existence">olemassaolon arkkitehtuuria</a> käsittelevissä oppitunneissa.</p>
+
+  <h2>Lähteet</h2>
+  <ul>
+    <li>Ayyadurai, V.A. — <em>Systems Health</em> (2014)</li>
+    <li>Ayyadurai, V.A. — <em>The Intelligence of the Universe</em> (2016)</li>
+    <li>Ayyadurai, V.A. — <em>Architecture of Existence</em> (2018)</li>
+    <li>Siddhan klassiset tekstit: <em>Theran käsikirjoitukset</em>, <em>Agathiyar kirjoitukset</em></li>
+    <li>Sharma, P.V. — <em>Siddha Medicine</em> (käännös ja kommentaari)</li>
+  </ul>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="kudit.html" class="wikilink" data-concept="kudit">kudit</a> — tämä käsite</li>
+    <li><a href="siddha.html" class="wikilink" data-concept="siddha">siddha</a></li>
+    <li><a href="ayurveda.html" class="wikilink" data-concept="ayurveda">ayurveda</a></li>
+    <li><a href="vata.html" class="wikilink" data-concept="vata">vata</a></li>
+    <li><a href="pitta.html" class="wikilink" data-concept="pitta">pitta</a></li>
+    <li><a href="kapha.html" class="wikilink" data-concept="kapha">kapha</a></li>
+    <li><a href="prana.html" class="wikilink" data-concept="prana">prana</a></li>
+    <li><a href="vayu.html" class="wikilink" data-concept="vayu">vayu</a></li>
+    <li><a href="muppu.html" class="wikilink" data-concept="muppu">muppu</a></li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a></li>
+    <li><a href="dynamical-equilibrium.html" class="wikilink" data-concept="dynamical-equilibrium">dynamical-equilibrium</a></li>
+    <li><a href="equilibrium.html" class="wikilink" data-concept="equilibrium">equilibrium</a></li>
+    <li><a href="natural-systems-state.html" class="wikilink" data-concept="natural-systems-state">natural-systems-state</a></li>
+    <li><a href="systems-health.html" class="wikilink" data-concept="systems-health">systems-health</a></li>
+    <li><a href="feedback.html" class="wikilink" data-concept="feedback">feedback</a></li>
+    <li><a href="negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a></li>
+    <li><a href="disturbance.html" class="wikilink" data-concept="disturbance">disturbance</a></li>
+    <li><a href="adjustment.html" class="wikilink" data-concept="adjustment">adjustment</a></li>
+    <li><a href="chakra.html" class="wikilink" data-concept="chakra">chakra</a></li>
+    <li><a href="sahasrara.html" class="wikilink" data-concept="sahasrara">sahasrara</a></li>
+    <li><a href="kosha.html" class="wikilink" data-concept="kosha">kosha</a></li>
+    <li><a href="architecture-of-existence.html" class="wikilink" data-concept="architecture-of-existence">architecture-of-existence</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Kudit on yksi Ayyadurai-Tier 2 -käsitteistä, jotka yhdistävät itäisen perinteen ja länsimaisen systeemiajattelun. Kudit ei ole mystinen saavutus, vaan konkreettinen ja harjoitettavissa oleva tasapainotila.
+  </p>
+</main>
+</body>
+</html>

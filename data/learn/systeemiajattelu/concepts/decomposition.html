@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: decomposition</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>decomposition</h1>
+  <p class="meta">Käsite · systeemiajattelu · ongelmanratkaisu · osiin jako</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Hajauttaminen</strong> (engl. <em>decomposition</em>) on ajattelun ja suunnittelun perusliike, jossa monimutkainen kokonaisuus — ongelma, järjestelmä tai prosessi — jaetaan osiin, joita voidaan tarkastella, ymmärtää tai ratkaista erikseen. Sana tulee latinan verbistä <em>decomponere</em> ("erottaa osiin").</p>
+
+  <p>Hajauttaminen on yksi tietojenkäsittelyn, tekniikan ja systeemiajattelun perustyökaluista. Sen ydinajatus on, että kokonaisuus voidaan ymmärtää osiensa kautta, kunhan osien väliset vuorovaikutukset tunnistetaan. Se on <a href="abstraction.html">abstraction</a>:in vastapari: siinä missä abstraktio nostaa yleistyksiä, hajauttaminen erittelee yksityiskohtia.</p>
+
+  <p>Hajauttamisen tyypillisiä muotoja:</p>
+  <ul>
+    <li><strong>Funktionaalinen hajauttaminen</strong> — järjestelmä jaetaan toimintoihin (syöte, käsittely, tuloste).</li>
+    <li><strong>Rakenteellinen hajauttaminen</strong> — järjestelmä jaetaan komponentteihin (käyttöliittymä, tietokanta, logiikka).</li>
+    <li><strong>Ongelma-analyyttinen hajauttaminen</strong> — pääongelma jaetaan alaongelmiin, kunnes kukin on ratkaistavissa.</li>
+    <li><strong>Aikajänteeseen perustuva hajauttaminen</strong> — prosessi jaetaan vaiheisiin (suunnittelu, toteutus, testaus, käyttöönotto).</li>
+  </ul>
+
+  <p>Hajauttamiseen liittyy keskeinen riski: osat eivät välttämättä summaudu takaisin kokonaisuudeksi. Tätä ilmiötä systeemiajattelu kutsuu <a href="emergence.html">emergence</a>:ksi — kokonaisuuden ominaisuudet eivät palaudu yksinomaan osiensa ominaisuuksista. Hyvä hajauttaminen säilyttää näkyvissä myös osien väliset <a href="interconnection.html">interconnection</a>:it ja <a href="coupling.html">coupling</a>:in.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Hajauttaminen on vanha ajattelun periaate. Renée Descartesin <em>Discourse on the Method</em> (1637) esitti sen säännön muodossa: "jakaa kutakin vaikeutta niin moneen osaan kuin mahdollista ja kuin tarvitaan sen ratkaisemiseksi." Tämä <em>cartesiolainen hajauttaminen</em> on länsimaisen tieteen ja tekniikan perusta.</p>
+
+  <p>1900-luvulla hajauttaminen sai tieteellisen muotonsa. <a href="reductionism.html">Reductionism</a> tieteenfilosofisena ohjelmana nojasi hajauttamiseen: selittää ilmiöitä palauttamalla ne peruskomponentteihinsa. Vastareaktiona syntynyt <a href="holism.html">holism</a> ja systeemiajattelu korostivat, ettei hajauttaminen yksin riitä — tarvitaan myös synteesiä.</p>
+
+  <p>Ohjelmistotekniikassa hajauttaminen formalisoitui <em>structured analysis</em> -menetelmässä (Yourdon, DeMarco 1970-luvulla) ja <em>top-down design</em> -periaatteessa. Niklaus Wirth esitti kuuluisan kaavan <code>Algorithms + Data Structures = Programs</code> (1976), joka on hajauttamisen tiivistys. <a href="modularity.html">Modularity</a> ja <a href="modularity.html">modularity</a> ovat hajauttamisen suoraa soveltamista.</p>
+
+  <p>Systeemiajattelussa Donella Meadows ja Dennis Meadows korostivat, että hajauttaminen on välttämätöntä, mutta sen on aina oltava tietoinen valinta: mitä jaetaan, miten, ja mitkä vuorovaikutukset säilytetään näkyvissä.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <ul>
+    <li><a href="abstraction.html">abstraction</a> — hajauttamisen vastapari.</li>
+    <li><a href="modularity.html">modularity</a> — hajauttamisen periaatteen sovellus: järjestelmä jaetaan itsenäisiin moduuleihin.</li>
+    <li><a href="hierarchy.html">hierarchy</a> — hajauttaminen tuottaa usein hierarkkisia rakenteita.</li>
+    <li><a href="reductionism.html">reductionism</a> — äärimmäinen hajauttaminen perusosiin.</li>
+    <li><a href="holism.html">holism</a> — vastapaino: kokonaisuus ei palaudu osiin.</li>
+    <li><a href="emergence.html">emergence</a> — ominaisuuksia, jotka katoavat liiallisessa hajauttamisessa.</li>
+    <li><a href="coupling.html">coupling</a> — osien välinen kytkentä, joka on hajauttamisen suurin haaste.</li>
+    <li><a href="subsystem.html">subsystem</a> — hajauttamisen tuottama osakokonaisuus.</li>
+    <li><a href="modeling.html">modeling</a> — hajauttaminen on usein mallintamisen ensimmäinen vaihe.</li>
+  </ul>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Käsite esitellään <a href="../lessons/ongelman-hajauttaminen.html">Ongelman hajauttaminen</a> -oppitunnilla, jossa käydään läpi Descartesin menetelmä ja sen sovellukset. Syventävä käsittely <a href="../lessons/modulaarinen-suunnittelu.html">Modulaarinen suunnittelu</a> -oppitunnilla, jossa hajauttaminen yhdistetään <a href="modularity.html">modularity</a>:iin ja <a href="coupling.html">coupling</a>:iin.</p>
+
+  <h2>Lähteet</h2>
+  <p>Renée Descartes — <em>Discourse on the Method</em> (1637). Edward Yourdon & Larry Constantine — <em>Structured Design</em> (1979). Niklaus Wirth — <em>Algorithms + Data Structures = Programs</em> (1976). Donella Meadows — <em>Thinking in Systems: A Primer</em> (2008). Herbert Simon — <em>The Sciences of the Artificial</em> (1969), hajauttamisen rajat.</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="/learn/systeemiajattelu/concepts/decomposition.html" class="wikilink" data-concept="decomposition">decomposition</a> — tämä käsite</li>
+    <li><a href="/learn/systeemiajattelu/concepts/abstraction.html" class="wikilink" data-concept="abstraction">abstraction</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modularity.html" class="wikilink" data-concept="modularity">modularity</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/hierarchy.html" class="wikilink" data-concept="hierarchy">hierarchy</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/holism.html" class="wikilink" data-concept="holism">holism</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/emergence.html" class="wikilink" data-concept="emergence">emergence</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/coupling.html" class="wikilink" data-concept="coupling">coupling</a></li>
+    <li><a href="/learn/systeemiajattelu/concepts/modeling.html" class="wikilink" data-concept="modeling">modeling</a></li>
+  </ul>
+
+  <p class="footer-note">
+    Hajauttaminen on tehokas työkalu, mutta ei ongelmaton. Hyvä analyysi osaa jakaa — ja yhtä tärkeänä osata koota uudelleen.
+  </p>
+</main>
+</body>
+</html>

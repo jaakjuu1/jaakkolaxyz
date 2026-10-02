@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0002-takaisinkytkenta — Takaisinkytkentä</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Kybernetiikka</a> › Oppitunti 2</nav>
+
+<h1>Takaisinkytkentä</h1>
+<p class="meta">Oppitunti 2 / 6 · ~18 min</p>
+
+<h2>Suljetun silmukan anatomia</h2>
+<p>Takaisinkytkentä on kybernetiikan keskeisin käsite. Se tarkoittaa, että järjestelmän <strong>tuotos vaikuttaa sen omaan toimintaan</strong> tulevaisuudessa. Tämä yksinkertainen idea synnyttää monimutkaisia käyttäytymismuotoja — vakautta, värähtelyä, jopa kaoottisuutta.</p>
+
+<p>Takaisinkytkentäpiiri koostuu neljästä osasta:</p>
+
+<ol>
+<li><strong>Sensori (reseptori)</strong> — mittaa järjestelmän nykytilan tai tuloksen.</li>
+<li><strong>Vertailija (komparaattori)</strong> — vertaa nykytilaa tavoitteeseen.</li>
+<li><strong>Ohjain (kontrolleri)</strong> — päättää, mitä muutosta tarvitaan.</li>
+<li><strong>Toimilaite (efektori)</strong> — toteuttaa muutoksen ympäristössä tai järjestelmässä.</li>
+</ol>
+
+<p>Nämä neljä osaa muodostavat <strong>suljetun silmukan</strong>: toimilaite vaikuttaa ympäristöön, sensori mittaa muutoksen, vertailija laskee eron tavoitteeseen, ohjain säätää toimilaitetta — ja silmukka alkaa alusta.</p>
+
+<h2>Käytännön esimerkki: auton vakionopeussäädin</h2>
+<p>Auton vakionopeussäädin on yksi arkisimmista takaisinkytkentäjärjestelmistä:</p>
+
+<ol>
+<li>Asetat tavoitenopeuden 100 km/h.</li>
+<li>Sensori mittaa todellisen nopeuden.</li>
+<li>Vertailija laskee eron: 100 - 87 = 13 km/h hitaampi kuin tavoite.</li>
+<li>Ohjain päättää lisätä kaasua.</li>
+<li>Toimilaite (kaasuläppä) avautuu.</li>
+<li>Auto kiihtyy, sensori mittaa uuden nopeuden, silmukka alkaa alusta.</li>
+</ol>
+
+<p>Kun nouset mäkeen, sensori huomaa nopeuden putoavan, ohjain lisää kaasua, ja nopeus pysyy lähellä tavoitetta. Kun tulet tasaiselle, kaasua vähennetään. Järjestelmä tekee tämän kymmeniä kertoja sekunnissa.</p>
+
+<h2>Käytännön esimerkki: kehon lämmönsäätely</h2>
+<p>Ihmiskeho on täynnä takaisinkytkentäjärjestelmiä. Yksi selkeimmistä on ruumiinlämmön säätely:</p>
+
+<ul>
+<li><strong>Tavoite:</strong> noin 37°C.</li>
+<li><strong>Sensorit:</strong> ihon lämpötila-anturit ja aivojen hypotalamuksen sisäiset anturit.</li>
+<li><strong>Vertailija:</strong> hypotalamus vertaa nykylämpöä tavoitteeseen.</li>
+<li><strong>Ohjain:</strong> hypotalamus päättää vasteen.</li>
+<li><strong>Toimilaitteet:</strong> hikoilu (jäähdytys), lihasvärinä (lämmitys), verisuonten supistuminen tai laajentuminen.</li>
+</ul>
+
+<p>Kun juokset kylmään ilmaan, kehosi reagoi muutamassa minuutissa: verisuonet supistuvat, saat kananlihalle, alat täristä. Kaikki tämä on automaattista — sinun ei tarvitse ajatella sitä.</p>
+
+<blockquote>"Kehon älykkyys on ennen kaikkea takaisinkytkentää." — fysiologi W. B. Cannon, joka 1932 loi käsitteen <em>homeostaasi</em></blockquote>
+
+<h2>Miksi silmukka on suljettava</h2>
+<p>Takaisinkytkentäjärjestelmän <strong>on oltava suljettu</strong> — toisin sanoen tuloksen on päätyttävä takaisin syötteeksi. Jos silmukka on auki (eli toimilaitteen vaikutusta ei mitata), järjestelmä ei voi korjata itseään. Se on kuin auto, jossa ei ole nopeusmittaria: kaasua painetaan summamutikassa.</p>
+
+<p>Tämä on keskeinen ero <strong>avoimen ja suljetun järjestelmän</strong> välillä:</p>
+
+<ul>
+<li><strong>Avoin järjestelmä:</strong> syöte menee sisään, tulos tulee ulos, mutta tulos ei vaikuta syötteeseen. Esimerkki: yksisuuntainen tiedonvälitys, kuten TV-lähetys ilman vuorovaikutusta.</li>
+<li><strong>Suljettu järjestelmä:</strong> tulos palaa syötteeksi ja vaikuttaa seuraavaan toimintaan. Esimerkki: keskustelu, jossa kuuntelet toista ja muutat omaa puhettasi sen mukaan.</li>
+</ul>
+
+<h2>Takaisinkytkennän kaksi lajia</h2>
+<p>Takaisinkytkentä voi olla joko <strong>negatiivista</strong> tai <strong>positiivista</strong>. Näillä on täysin eri vaikutukset järjestelmän käyttäytymiseen:</p>
+
+<h3>Negatiivinen takaisinkytkentä</h3>
+<p>Negatiivinen takaisinkytkentä <strong>vastustaa muutosta</strong>. Kun tulos poikkeaa tavoitteesta, järjestelmä tekee korjauksen, joka palauttaa kohti tavoitetta. Tämä synnyttää <strong>vakautta</strong>.</p>
+<p>Esimerkkejä: termostaatti, vakionopeussäädin, ruumiinlämmön säätely, verensokerin säätely.</p>
+
+<h3>Positiivinen takaisinkytkentä</h3>
+<p>Positiivinen takaisinkytkentä <strong>vahvistaa muutosta</strong>. Kun tulos poikkeaa, järjestelmä tekee korjauksen, joka vie <em>kauemmas</em> tavoitteesta. Tämä synnyttää <strong>kiihtymistä</strong>, joka voi olla hyödyllistä tai tuhoisaa.</p>
+<p>Esimerkkejä: mikrofonin kierto (kirkuminen), lumivyöry, paniikki joukossa, inflaatio, korko-kierre.</p>
+
+<p>Seuraavassa oppitunnissa käsittelemme näitä kahta tarkemmin.</p>
+
+<h2>Black box -ajattelu</h2>
+<p>Kybernetiikassa on usein hyödyllistä kohdella järjestelmää <strong>mustana laatikkona</strong> (black box): tiedämme mitä tulee sisään ja mitä tulee ulos, mutta emme välitä sisäisistä mekanismeista. Tämä on erityisen hyödyllistä kun:</p>
+
+<ul>
+<li>Järjestelmä on liian monimutkainen ymmärrettäväksi (kuten ihminen tai ekosysteemi).</li>
+<li>Haluamme vertailla järjestelmiä, jotka toimivat eri tavoin sisäisesti (kuten mekaaninen ja biologinen termostaatti).</li>
+<li>Keskitymme käyttäytymiseen, emme rakenteeseen.</li>
+</ul>
+
+<p>Black box -lähestymistapa on kybernetiikan perusta. Se ei väitä, ettei sisäistä rakennetta kannata ymmärtää — se vain sanoo, että <em>käyttäytymistä voi analysoida ilman rakenteen tuntemista</em>.</p>
+
+<h2>Yhteenveto</h2>
+<p>Takaisinkytkentä on järjestelmän kyky <strong>havainnoida omaa toimintaansa ja muuttaa sitä</strong>. Se vaatii suljetun silmukan: sensorin, vertailijan, ohjaimen ja toimilaitteen. Takaisinkytkentä voi olla negatiivista (vakauttavaa) tai positiivista (kiihdyttävää) — näitä käsittelemme seuraavaksi.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Valitse yksi tilanne elämästäsi — se voi olla työ, ihmissuhde tai mikä tahansa toistuva prosessi. Tunnista siinä neljä takaisinkytkentäpiirin osaa: sensori, vertailija, ohjain ja toimilaite. Mikä on järjestelmän "tavoite"?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0001-kerrokset — Tietoisuuden kerrokset</title>
+<style>
+:root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+@media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+p { margin: 0.9rem 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+a:hover { border-bottom-color: var(--accent); }
+code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+nav.path a { color: var(--muted); border-bottom: none; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+.reflect h3 { margin-top: 0; }
+.svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+.svg-container svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Tietoisuus</a> › Oppitunti 1</nav>
+
+<h1>Tietoisuuden kerrokset</h1>
+<p class="meta">Oppitunti 1 / 6 · ~28 min</p>
+
+<h2>Mitä tietoisuus on?</h2>
+
+<p><strong>Tietoisuus</strong> on ihmisen suurin arvoitus — koska se on se, joka <em>kysyy</em>. Kun sanot "olen tietoinen", se on tietoisuus joka tuntee itsensä.</p>
+
+<p>Tämä on kuin silmä, joka näkisi itsensä — paradoksi, jonka päälle koko mystiikka rakentuu.</p>
+
+<blockquote>"Tietoisuus on se, mihin kaikki muu viittaa — mutta joka ei itse voi tulla osoitetuksi." — Douglas Harding, filosofi</blockquote>
+
+<p>Hermetrisessä perinteessä tietoisuudella on <strong>kerroksia</strong> — ei yksi taso, vaan syvyyksiä, joista osa on valveilla, osa unessa, osa niin syvällä, ettei kieli tavoita.</p>
+
+<h2>Neljä tietoisuuden tilaa</h2>
+
+<p>Mandala-kirjallisuus jakaa tietoisuuden <strong>neljään päätilaan</strong>:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Aaltoileva meri -->
+  <path d="M 50 200 Q 100 180, 150 200 T 250 200 T 350 200" stroke="#5a8aaa" stroke-width="2" fill="none"/>
+  <text x="200" y="230" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">aaltoja pinnalla</text>
+  <!-- 4 kerrosta -->
+  <!-- 1. Valve -->
+  <circle cx="200" cy="100" r="35" fill="rgba(74,58,138,0.2)" stroke="#4a3a8a" stroke-width="2"/>
+  <text x="200" y="95" text-anchor="middle" fill="#4a3a8a" font-size="13" font-family="Georgia" font-weight="bold">Valve</text>
+  <text x="200" y="110" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">järki, aistit</text>
+  <!-- 2. Uni -->
+  <circle cx="200" cy="180" r="35" fill="rgba(168,184,138,0.3)" stroke="#5a7a8a" stroke-width="2"/>
+  <text x="200" y="175" text-anchor="middle" fill="#3a5a4a" font-size="13" font-family="Georgia" font-weight="bold">Uni</text>
+  <text x="200" y="190" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">symbolit, tarinat</text>
+  <!-- 3. Syvä uni -->
+  <circle cx="200" cy="260" r="35" fill="rgba(210,138,114,0.3)" stroke="#a05a4a" stroke-width="2"/>
+  <text x="200" y="255" text-anchor="middle" fill="#7a3a2a" font-size="13" font-family="Georgia" font-weight="bold">Syvä uni</text>
+  <text x="200" y="270" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">hiljaisuus</text>
+  <!-- 4. Turbiini -->
+  <circle cx="200" cy="340" r="35" fill="rgba(74,58,138,0.5)" stroke="#4a3a8a" stroke-width="2"/>
+  <text x="200" y="335" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Turīya</text>
+  <text x="200" y="350" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">todellinen minä</text>
+  <!-- Nuoli alaspäin -->
+  <line x1="200" y1="135" x2="200" y2="305" stroke="#4a3a8a" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+  <polygon points="195,300 205,300 200,310" fill="#4a3a8a" opacity="0.5"/>
+  <text x="200" y="395" text-anchor="middle" fill="#666" font-size="11" font-family="Georgia" font-style="italic">neljä tietoisuuden tilaa</text>
+</svg>
+</div>
+
+<h3>1. Valveillaolo (jāgrat)</h3>
+
+<p>Valveillaolo on <strong>päivittäinen tietoisuutemme</strong> — aistit, ajatukset, tunteet, toiminta. Se on tietoisuuden <em>ulkoinen</em> kerros.</p>
+
+<p>Valveillaolossa ihminen:</p>
+<ul>
+<li><strong>Havaitsee</strong> aistien kautta</li>
+<li><strong>Ajattelee</strong> kielen avulla</li>
+<li><strong>Tuntee</strong> tunteita</li>
+<li><strong>Toimii</strong> maailmassa</li>
+</ul>
+
+<p>Valveillaolo on kuitenkin vain <strong>osa</strong> tietoisuutta — jäävuoren huippu.</p>
+
+<h3>2. Uni (svapna)</h3>
+
+<p>Unessa tietoisuus <strong>jatkaa toimintaansa</strong>, mutta ilman ulkoisia aisteja. Se on tietoisuuden <em>sisäinen</em> kerros — symbolien, tarinoiden ja metaforien maailma.</p>
+
+<p>Unen erityispiirteet:</p>
+<ul>
+<li><strong>Ei aisteja</strong> — näet "sisäisesti"</li>
+<li><strong>Symbolinen logiikka</strong> — asiat voivat merkitä toisia asioita</li>
+<li><strong>Vapaa assosiaatio</strong> — yhdistelmiä, joita valveilla ei syntyisi</li>
+<li><strong>Tunnepitoisuus</strong> — tunteet voimakkaita</li>
+</ul>
+
+<h3>3. Syvä uni (suṣupti)</h3>
+
+<p>Syvässä unessa <strong>ei ole unia</strong> — vain hiljaisuus. Tämä on tietoisuuden <em>paljas</em> kerros.</p>
+
+<p>Syvä uni on paradoksaalinen:</p>
+<ul>
+<li>Emme <strong>muista</strong> sitä — mutta se on tärkein osa unta</li>
+<li>Emme <strong>koe</strong> mitään — mutta kehomme lepää</li>
+<li>Emme <strong>tunne</strong> aikaa — mutta aika kuluu</li>
+</ul>
+
+<p>Tämä on tila, jossa <strong>tietoisuus ilman sisältöä</strong> vallitsee.</p>
+
+<h3>4. Turīya — "neljäs"</h3>
+
+<p><strong>Turīya</strong> on hindulaisen filosofian käsite tietoisuuden <em>puhtaalle</em> tasolle — se joka <em>katsoo</em> kolmea muuta.</p>
+
+<p>Turīya on:</p>
+<ul>
+<li><strong>Ei valve</strong> — ei aisteja</li>
+<li><strong>Ei uni</strong> — ei symboleja</li>
+<li><strong>Ei syvä uni</strong> — ei pelkkää hiljaisuuttakaan</li>
+<li><strong>Todistaja</strong> — se joka näkee kaikki kolme tilaa</li>
+</ul>
+
+<p>Tämä on mystiikan ydin: <em>kuka minä olen, kun en ole kukaan?</em></p>
+
+<blockquote>"Turīya on kuin näyttämön valo — se ei ole näytelmässä, mutta ilman sitä mikään ei näy." — Ramana Maharshi</blockquote>
+
+<h2>Syvemmät kerrokset länsimaisessa perinteessä</h2>
+
+<p>Länsimainen mystiikka kuvaa kerroksia hieman eri tavalla:</p>
+
+<h3>Psykedeeliset tasot (Stanislav Grof)</h3>
+<p>Tšekkiläinen psykiatri Stanislav Grof tunnisti <strong>neljä tietoisuuden kenttää</strong>:</p>
+
+<ul>
+<li><strong>Sensorinen taso</strong> — aistikokemukset, värit, äänet</li>
+<li><strong>Tunnetaso</strong> — tunteet, muistot, irtiotto ajasta</li>
+<li><strong>Symbolinen taso</strong> — arkkityypit, myyttiset olennot</li>
+<li><strong>Integraalinen taso</strong> — ykseys, kaikki yhtenä</li>
+</ul>
+
+<h3>Jungin arkkityypit</h3>
+<p>Carl Jung kuvasi tietoisuuden kerroksia <strong>arkkityyppien</strong> kautta:</p>
+
+<ul>
+<li><strong>Pego</strong> — tietoinen minä, valveillaolon keskus</li>
+<li><strong>Henkilökohtainen alitajunta</strong> — unohtuneet muistot, torjutut halut</li>
+<li><strong>Kollektiivinen alitajunta</strong> — arkkityypit: Varjo, Anima/Animus, Itse</li>
+</ul>
+
+<h2>Transpersoonallinen psykologia</h2>
+
+<p><strong>Abraham Maslow</strong> lisäsi myöhemmin <strong>transpersoonallisen</strong> tason — kokemukset, jotka ylittävät yksilöllisen minän:</p>
+
+<ul>
+<li><strong>Huippukokemukset</strong> — hetkellinen ykseys, kauneus, totuus</li>
+<li><strong>Itsensä ylittäminen</strong> — identiteetin liukeneminen</li>
+<li><strong>Kosminen tietoisuus</strong> — kaikki yhtenä, rajaton</li>
+</ul>
+
+<p>Maslow'n mukaan nämä ovat <strong>terveen</strong> ihmisen kokemuksia — eivät sairautta.</p>
+
+<h2>Tietoisuus hermetismissä perinteessä</h2>
+
+<p>Hermetismi kuvaa tietoisuutta <strong>seitsemänä sfäärinä</strong>:</p>
+
+<table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
+<tr style="border-bottom: 1px solid var(--rule);">
+<th>Sfääri</th><th>Nimi</th><th>Teema</th>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>1</td><td>Maa</td><td>Keho, materia</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>2</td><td>Kuu</td><td>Alitajunta, tunteet</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>3</td><td>Merkurius</td><td>Äly, kommunikaatio</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>4</td><td>Venus</td><td>Rakkaus, kauneus</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>5</td><td>Aurinko</td><td>Tahdonvoima, tietoisuus</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>6</td><td>Mars</td><td>Toiminta, energia</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>7</td><td>Jupiter</td><td>Laajeneminen, viisaus</td>
+</tr>
+<tr style="border-bottom: 1px solid var(--rule);">
+<td>8</td><td>Saturnus</td><td>Rakenne, aika</td>
+</tr>
+<tr>
+<td>9+</td><td>Kiintotähti</td><td>Korkeampi tietoisuus</td>
+</tr>
+</table>
+
+<p>Nämä sfäärit eivät ole <strong>paikkoja avaruudessa</strong>, vaan tietoisuuden tiloja — syvempiä ulottuvuuksia.</p>
+
+<h2>Tietoisuuden spektri</h2>
+
+<p>Tietoisuus ei ole mustavalkoista — se on <strong>spektri</strong>:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 100" width="400" height="100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Spektri liukuvärinä -->
+  <defs>
+    <linearGradient id="spec" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4a3a8a"/>
+      <stop offset="33%" stop-color="#5a8aaa"/>
+      <stop offset="66%" stop-color="#a8b88a"/>
+      <stop offset="100%" stop-color="#d28a72"/>
+    </linearGradient>
+  </defs>
+  <rect x="20" y="35" width="360" height="30" fill="url(#spec)" rx="15"/>
+  <text x="50" y="80" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">matala</text>
+  <text x="200" y="80" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">keski</text>
+  <text x="350" y="80" text-anchor="middle" fill="#666" font-size="10" font-family="Georgia">korkea</text>
+  <text x="20" y="25" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">materia</text>
+  <text x="130" y="25" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">arki</text>
+  <text x="200" y="25" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">tietoisuus</text>
+  <text x="280" y="25" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">laajentunut</text>
+  <text x="380" y="25" text-anchor="middle" fill="#666" font-size="9" font-family="Georgia">korkein</text>
+</svg>
+</div>
+
+<p>Eri ihmiset toimivat <strong>eri taajuuksilla</strong>:</p>
+<ul>
+<li>Toiset ovat <strong>arjessa</strong> — pragmaattisia, käytännöllisiä</li>
+<li>Toiset <strong>tunteissa</strong> — empaattisia, intuitiivisia</li>
+<li>Toiset <strong>ajatuksissa</strong> — analyyttisia, filosofisia</li>
+<li>Toiset <strong>korkeammissa tiloissa</strong> — mystikoita, näkijöitä</li>
+</ul>
+
+<p>Harjoittelu laajentaa <strong>koko spektriä</strong> — ei vain yhtä osaa.</p>
+
+<h2>Tietoisuuden tila ja aivot</h2>
+
+<p>Moderni neurotiede on alkanut <strong>vahvistaa</strong> perinteisiä käsityksiä:</p>
+
+<ul>
+<li><strong>Aivokuori</strong> — tietoinen prosessointi</li>
+<li><strong>Limbinen järjestelmä</strong> — tunteet, muistot</li>
+<li><strong>Aivorunko</strong> — perustoiminnot, "tajunta"</li>
+<li><strong>Oletustilaverkosto (DMN)</strong> — "mietiskelevä mieli", aktiivinen levossa</li>
+</ul>
+
+<p>Meditaatio <strong>hiljentää DMN:ää</strong> — siksi meditoijat kokevat mielen hiljaisuutta.</p>
+
+<h2>Miten tietoisuus laajenee?</h2>
+
+<p>Tietoisuus laajenee <strong>kolmella tavalla</strong>:</p>
+
+<ol>
+<li><strong>Pysähtyminen</strong> — hiljaisuus, paasto, yksinäisyys</li>
+<li><strong>Harjoittelu</strong> — meditaatio, rituaalit, toisto</li>
+<li><strong>Kokemus</strong> — kriisit, rakkaus, kuoleman läheisyys</li>
+</ol>
+
+<p>Jokainen näistä <strong>avaa</strong> uusia kerroksia. Siksi mystikot puhuvat "heräämisestä" — se ei ole yksittäinen hetki, vaan <strong>prosessi</strong>.</p>
+
+<h2>Yhteenveto</h2>
+
+<p>Tietoisuus on ihmisen suurin arvoitus. Sillä on kerroksia: valve, uni, syvä uni ja Turīya — puhdas todistaja. Eri perinteet kuvaavat kerroksia eri tavoin, mutta ydin on sama: tietoisuus ei ole yksitasoinen. Se on spektri, jota voi laajentaa. Nykyaikainen neurotiede vahvistaa perinteisiä käsityksiä. Ja harjoittelu — pysähtyminen, toisto, kokemus — avaa uusia tasoja. Tämä on koko esoteria-polun huippu: ymmärtää, <em>kuka katsoo</em>.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Harjoitus: Päiväkirja-meditaatio (15 min)</h3>
+<ol>
+<li>Valitse yksi päivä tällä viikolla.</li>
+<li><strong>Aamulla herätessäsi</strong> — kirjoita ylös:
+<ul>
+<li>Mitä unta näit?</li>
+<li>Mikä oli ensimmäinen ajatus?</li>
+<li>Miltä keho tuntui?</li>
+</ul>
+</li>
+<li><strong>Päivän aikana</strong> — kirjaa 3 hetkeä, jolloin olit <em>täysin läsnä</em>. Mitä silloin tapahui?</li>
+<li><strong>Illalla</strong> — kirjaa:
+<ul>
+<li>Miten tietoisuutesi vaihteli päivän aikana?</li>
+<li>Oliko hetkiä, jolloin "minä" katosi?</li>
+<li>Mikä oli syvin tietoisuuden tila, jonka koit?</li>
+</ul>
+</li>
+<li>Lue päiväkirja seuraavana aamuna. Mitä huomaat?</li>
+</ol>
+<p>Tämä harjoitus <strong>tekee tietoisuudesta näkyvää</strong> — ja näkyväksi tehty voidaan tutkia.</p>
+</div>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Miten kuvailisit tietoisuuttasi? Onko se yhtenäinen vai kerroksinen? Milloin olet kokenut "puhtaan tietoisuuden" hetkiä? Unissa? Meditaatiossa? Rakkaudessa? Mikä tekee tietoisuudesta tietoisuutta?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..." style="width:100%; min-height:100px; margin-top:0.8rem; padding:0.5rem; font-family:inherit; font-size:0.95rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:4px;"></textarea>
+</div>
+
+</main>
+</body>
+</html>

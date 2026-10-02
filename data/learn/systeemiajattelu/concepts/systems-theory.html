@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: systems-theory</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>systems-theory</h1>
+  <p class="meta">Käsite · systeemiajattelu · teoria · akateeminen</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Systeemiteoria</strong> on akateeminen tieteenala, joka tutkii järjestelmien yleisiä ominaisuuksia, rakennetta ja käyttäytymistä riippumatta niiden sovellusalasta. Se etsii yhteisiä lakeja ja periaatteita, jotka pätevät yhtä lailla fysikaalisiin, biologisiin, sosiaalisiin ja mentaalisiin järjestelmiin. Englannin termi <em>systems theory</em> viittaa yleensä nimenomaan tähän muodolliseen tutkimusperinteeseen, joka sai alkunsa 1900-luvun puolivälissä.</p>
+
+  <p>Systeemiteorian keskeinen ajatus on, että samat perusrakenteet — takaisinkytkentä, itseorganisoituminen, hierarkia, emergenssi — toistuvat eri tieteenaloilla. Kun fyysikko tutkii laserin syntyä, biologi soluviestintää ja sosiologi kaupungin kasvua, systeemiteoria väittää, että nämä ilmiöt noudattavat yhteisenlaista logiikkaa: kontrolliparametrit, kriittiset kynnykset, vaihesiirtymät ja uudet vakaat tilat. Käytännön tasolla systeemiteoria tarjoaa käsitteistön (järjestelmä, ympäristö, raja, syöte, tuotos, palaute), jonka avulla nämä ilmiöt voi kuvata yhtenäisellä kielellä.</p>
+
+  <p>On tärkeä erottaa <em>systeemiteoria</em> (akateeminen, muodollinen tutkimusala) ja <em>systeemiajattelu</em> (käytännöllinen ajattelutapa). Systeemiteoria tuottaa käsitteitä ja muodollisia malleja; systeemiajattelu on niiden soveltamista arjen päätöksentekoon, ongelmanratkaisuun ja organisaatioiden kehittämiseen. Systeemiajattelu ammentaa systeemiteoriasta mutta ei välttämättä käytä sen matemaattista formaalia kieltä.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Systeemiteorian tunnetuin perustaja on itävaltalainen biologi <strong>Ludwig von Bertalanffy</strong>, joka 1930-luvulta lähtien kehitti <em>yleistä systeemiteoriaa</em> (General System Theory, GST). Bertalanffy vastusti elävien organismien selittämistä pelkästään fysiikan ja kemian lakeihin ja ehdotti, että biologisilla järjestelmillä on omia järjestelmäominaisuuksia (avoimuus, tasapainottomuus, hierarkia). Hänen pääteoksensa <em>General System Theory</em> (1968) kokosi nämä ajatukset.</p>
+
+  <p>Toinen keskeinen suunta on <strong>kybernetiikka</strong>, jonka Norbert Wiener, Warren McCulloch, John von Neumann ja Heinz von Foerster loivat 1940-luvulla. Kybernetiikka keskittyi säätötekniikkaan, viestintään ja itseohjautuviin järjestelmiin, ja toi mukanaan käsitteet palaute, säätöpiiri ja tarkkailija. Myöhemmin <strong>toisen asteen kybernetiikka</strong> (von Foerster, 1970-luvulta lähtien) korosti tarkkailijan osuutta järjestelmässä.</p>
+
+  <p>V.A. Shiva Ayyadurai on tarkastellut systeemiteoriaa osana laajempaa "kaiken tiedettä" (Science of Everything). Hänen teoksensa korostavat, että systeemiteoria ei ole vain yksi akateeminen koulu vaan kuvaus siitä, miten kaikki todellisuuden tasot — fyysinen, biologinen, mentaalinen, sosiaalinen — voidaan ymmärtää yhtenäisen järjestelmätieteen viitekehyksen kautta. Tässä näkemyksessä systeemiteoria on tieteenalojen välisen integraation perusta, ei pelkkä metodi.</p>
+
+  <p>Akateemisesti systeemiteoria vakiintui Society for General Systems Research -seuran (nykyään International Society for the Systems Sciences, ISSS) ympärille 1950-luvulta lähtien. Merkittäviä myöhempiä kehittäjiä ovat muun muassa Ilya Prigogine (dissipatiiviset rakenteet), Hermann Haken (synergia), Francisco Varela ja Humberto Maturana (autopoieesi).</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Systeemiteoria on systeemiajattelun muodollinen vastine. Se kytkeytyy suoraan <em>yleiseen systeemiteoriaan</em> (Bertalanffy), <em>kybernetiikkaan</em> ja <em>systeemidynamiikkaan</em> (Forrester). Teorian ytimessä ovat <em>järjestelmä</em>, <em>ympäristö</em>, <em>raja</em> ja <em>subsystem</em>-<em>suprasystem</em>-jako. Systeemiteoria tarjoaa käsitteellisen pohjan muun muassa <em>open-system</em>, <em>closed-system</em> ja <em>isolated-system</em> -jaottelulle, sekä <em>homeostasis</em>- ja <em>equilibrium</em>-ilmiöille. Emergenttien ilmiöiden kuvaamiseen se käyttää käsitteitä <em>emergence</em> ja <em>emergent-properties</em>. Sovelluksissa systeemiteoria yhdistyy <em>systems-biology</em>-, <em>control-theory</em>- ja <em>viable-system-model</em>-perinteisiin.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Systeemiteoria on oppimispolun <em>foundations</em>-kansion ensimmäisiä oppitunteja (Systeemiteorian perusteet, Bertalanffy ja GST, Kybernetiikan synty, Systeemitieteen kenttä). Sitä käsitellään myös <em>cybernetics</em>-kansion oppitunneissa (ensimmäisen ja toisen asteen kybernetiikka, tarkkailija) sekä <em>complexity</em>-kansiossa (kompleksiset adaptiiviset järjestelmät, autopoieesi). Syventävät oppitunnit käsittelevät systeemiteorian sovelluksia fysiikkaan, biologiaan ja yhteiskuntatieteisiin.</p>
+
+  <h2>Lähteet</h2>
+  <p>Ludwig von Bertalanffy, <em>General System Theory: Foundations, Development, Applications</em> (George Braziller, 1968). Norbert Wiener, <em>Cybernetics</em> (1948). Heinz von Foerster, <em>Observing Systems</em> (1981). W. Ross Ashby, <em>An Introduction to Cybernetics</em> (1956). Ilya Prigogine ja Isabelle Stengers, <em>Order out of Chaos</em> (1984). Francisco Varela, Humberto Maturana ja Robert Uribe, "Autopoiesis: The Organization of Living Systems" (1974). V.A. Shiva Ayyadurai, <em>The Science of Everything</em> (2023) ja <em>System and Revolution</em> (2024).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="systems-theory.html" class="wikilink" data-concept="systems-theory">systems-theory</a> — tämä käsite</li>
+    <li><a href="systems-thinking.html" class="wikilink" data-concept="systems-thinking">systems-thinking</a> — systeemiteorian käytännöllinen, ei-muodollinen serkku</li>
+    <li><a href="general-systems-theory.html" class="wikilink" data-concept="general-systems-theory">general-systems-theory</a> — Bertalanffyn versio systeemiteoriasta</li>
+    <li><a href="system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a> — Forresterin käytännöllinen, tietokoneavusteinen muunnelma</li>
+    <li><a href="cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — säätöpiiri, kybernetiikan keskeinen rakenne</li>
+    <li><a href="control-theory.html" class="wikilink" data-concept="control-theory">control-theory</a> — säätötekniikka, josta kybernetiikka ammentaa</li>
+    <li><a href="open-system.html" class="wikilink" data-concept="open-system">open-system</a> — järjestelmä, joka vaihtaa ainetta/energiaa ympäristön kanssa</li>
+    <li><a href="closed-system.html" class="wikilink" data-concept="closed-system">closed-system</a> — suljettu järjestelmä, vain energia vaihtaa</li>
+    <li><a href="isolated-system.html" class="wikilink" data-concept="isolated-system">isolated-system</a> — eristetty järjestelmä, ei vaihtoa ympäristön kanssa</li>
+    <li><a href="system.html" class="wikilink" data-concept="system">system</a> — systeemiteorian peruskohde</li>
+    <li><a href="holism.html" class="wikilink" data-concept="holism">holism</a> — filosofinen lähtökohta, johon systeemiteoria nojaa</li>
+    <li><a href="reductionism.html" class="wikilink" data-concept="reductionism">reductionism</a> — vastakohtainen, mutta systeemiteoriaa täydentävä lähestymistapa</li>
+    <li><a href="emergence.html" class="wikilink" data-concept="emergence">emergence</a> — systeemiteorian keskeinen selitysmalli</li>
+    <li><a href="first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order-cybernetics</a> — varhaisempi kybernetiikka</li>
+    <li><a href="second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order-cybernetics</a> — tarkkailijan sisällyttävä kybernetiikka</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Ludwig von Bertalanffy — <em>General System Theory</em> (1968); Norbert Wiener — <em>Cybernetics</em> (1948); Heinz von Foerster — <em>Observing Systems</em> (1981); W. Ross Ashby — <em>Introduction to Cybernetics</em> (1956); I. Prigogine & I. Stengers — <em>Order out of Chaos</em> (1984); V.A. Shiva Ayyadurai — <em>System and Revolution</em> ja <em>The Science of Everything</em>.
+  </p>
+</main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Muodosta oma, ladattava mikro-auktoriteetin päiväsuunnitelma.">
+  <title>Päiväsuunnitelma · Mikro-auktoriteetti</title>
+  <link rel="stylesheet" href="reference/course.css">
+</head>
+<body>
+<main>
+  <nav><a href="index.html">← Mikro-auktoriteetti</a><span>·</span><span>Päiväsuunnitelman muodostaja</span></nav>
+  <header class="hero">
+    <p class="kicker">Aikataulutettu suunnitelma · ladattava Markdown + ICS</p>
+    <h1>Anna päivälle yksi kaupallinen työ.</h1>
+    <p class="lead">Täytä todellinen tavoite ja yksi todellinen havainto. Työkalu muodostaa viikonpäivän mukaan aikataulun, jota voi muokata omiin tarpeisiin ja ladata työmuistiin tai kalenteriin.</p>
+  </header>
+  <section class="callout warn">
+    <h3>Ei robottirytmiä</h3>
+    <p>Viikkorytmi on lähtökohta, ei käsky. Jos sinulla on asiakascase, julkaise se kun näyttö on tuore. Jos mitään todellista ei ole, kerää havainto. Kalenteriin ei tarvitse varata aikaa AI-hötölle.</p>
+  </section>
+  <section class="grid">
+    <div class="card wide">
+      <label for="plan-date">Päivä</label>
+      <input id="plan-date" type="date">
+      <label for="plan-start">Aloitusaika</label>
+      <input id="plan-start" type="time" value="09:30">
+      <label for="plan-minutes">Käytettävä aika (min)</label>
+      <select id="plan-minutes"><option value="45">45 min</option><option value="60">60 min</option><option value="90" selected>90 min</option><option value="120">120 min</option></select>
+      <label for="plan-goal">Tämän jakson liiketoimintatavoite</label>
+      <input id="plan-goal" value="tehdä kasvujärjestelmien osaaminen näkyväksi oikeille asiakkaille">
+    </div>
+    <div class="card wide">
+      <label for="plan-audience">Kenelle puhut?</label>
+      <input id="plan-audience" value="omistajavetoiset palveluyritykset, joilla kasvu nojaa satunnaiseen myyntiin">
+      <label for="plan-evidence">Mikä todellinen havainto, näyttö tai case sinulla on tänään?</label>
+      <textarea id="plan-evidence">Yksi asiakkaan pullonkaula, työn aikana löytynyt mittari, toteutunut muutos tai perusteltu vastanäkemys.</textarea>
+      <button id="build-plan" type="button">Muodosta suunnitelma</button>
+      <p id="plan-status" class="small" aria-live="polite"></p>
+    </div>
+  </section>
+  <section id="plan-output" class="plan" aria-live="polite"></section>
+  <section class="no-print">
+    <button id="download-md" type="button">Lataa Markdown</button>
+    <button id="download-ics" class="secondary" type="button">Lataa kalenteriin (.ics)</button>
+    <button class="secondary" type="button" onclick="window.print()">Tulosta / tallenna PDF</button>
+  </section>
+  <section class="sourcebox">
+    <h3>Mitä tiedosto sisältää</h3>
+    <p>Markdown sisältää päivän briefin ja oppilokin. ICS sisältää yhden aikablokin Europe/Helsinki-aikavyöhykkeellä. Tuo ICS Google-, Apple- tai Outlook-kalenteriin vasta kun aika on oikeasti sinun — kalenteri on sitoumus, ei toivelista.</p>
+    <p><a href="lessons/0004-90-minuutin-rytmi.html">Lue ensin: 90 minuutin rytmi ilman sisältötehdasta →</a></p>
+  </section>
+</main>
+<script src="reference/planner.js"></script>
+</body>
+</html>

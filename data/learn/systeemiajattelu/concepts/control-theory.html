@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Käsite: control-theory</title>
+<style>
+  :root {
+    --bg: #fbfaf6;
+    --ink: #1a1a1a;
+    --muted: #666;
+    --rule: #d8d4c7;
+    --accent: #8a3a2a;
+    --accent-soft: #f3e9e1;
+    --code-bg: #f4f1e8;
+    --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #181715;
+      --ink: #ece8de;
+      --muted: #9a958a;
+      --rule: #3a3530;
+      --accent: #d28a72;
+      --accent-soft: #2a2520;
+      --code-bg: #221f1a;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--max); margin: 4rem auto; padding: 0 1.4rem; }
+  h1 { font-size: 1.9rem; font-weight: 700; line-height: 1.15; margin: 0 0 .3rem; letter-spacing: -.01em; }
+  h2 { font-size: 1.25rem; font-weight: 700; margin: 2.6rem 0 .8rem; letter-spacing: -.005em; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .5rem; }
+  .meta { color: var(--muted); font-size: .9rem; margin-bottom: 2rem; }
+  p { margin: 0 0 1rem; }
+  blockquote {
+    margin: 1.6rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-style: italic;
+    border-radius: 0 4px 4px 0;
+  }
+  blockquote p { margin: 0; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem 0; }
+  a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { text-decoration-thickness: 2px; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.4rem 0; }
+  @media (max-width: 540px) { .twocol { grid-template-columns: 1fr; } }
+  .col {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    background: var(--bg);
+  }
+  .col h3 { margin-top: 0; }
+  .col.wrong h3::before { content: "✗ "; color: var(--accent); }
+  .col.right h3::before { content: "✓ "; color: #3b6b3b; }
+  @media (prefers-color-scheme: dark) { .col.right h3::before { color: #7fb878; } }
+  ul, ol { padding-left: 1.4rem; margin: 0 0 1rem; }
+  li { margin-bottom: .4rem; }
+  label { display:block; font-weight: 600; margin: 1rem 0 .35rem; }
+  textarea {
+    width: 100%;
+    font: inherit;
+    padding: .55rem .65rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    resize: vertical;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: .6rem;
+    font: inherit;
+    padding: .55rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--ink);
+    cursor: pointer;
+  }
+  button:hover { border-color: var(--accent); }
+  #status { font-size: .88rem; color: var(--accent); margin-left: .4rem; }
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 3rem 0 0;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-size: .92rem;
+  }
+  .pager a { color: var(--accent); text-decoration: none; }
+  .pager a:hover { text-decoration: underline; }
+  .pager .next { text-align: right; }
+  .empty { flex: 1; }
+  .footer-note {
+    color: var(--muted);
+    font-size: .85rem;
+    margin-top: 2.4rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--rule);
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>control-theory</h1>
+  <p class="meta">Käsite · systeemiajattelu · säätötekniikka · kybernetiikka</p>
+
+  <h2>Määritelmä</h2>
+  <p><strong>Säätöteoria</strong> (engl. <em>control theory</em>) on matematiikan ja tekniikan ala, joka tutkii dynaamisia järjestelmiä ja sitä, miten niiden käyttäytymistä voidaan ohjata takaisinkytkennän avulla. Keskeinen kysymys on: <em>miten järjestelmä saadaan käyttäytymään halutulla tavalla, vaikka sen ympäristö, häiriöt ja epävarmuudet vaihtelevat?</em> Säätöteoria vastaa tähän kehittämällä malleja (differentiaaliyhtälöitä, tilayhtälöitä, siirtofunktioita), säätölakeja (PID-säätö, tilasäätö, robusti säätö) ja stabiilisuuskriteerejä (Routh–Hurwitz, Lyapunov, Nyquist).</p>
+
+  <p>Säätöteoria jakautuu kahteen päähaaraan. <em> Klassinen säätöteoria</em> (<em>classical control theory</em>) käsittelee lineaarisia, aikainvariantteja, yhden syötteen ja yhden ulostulon järjestelmiä taajuusvaste-, Laplace-muunnoksiin ja Bode-kaavioihin nojautuen. <em>Modernisaatio</em> tai <em>tilasäätöteoria</em> (<em>modern control theory</em>) laajentaa tarkastelun moniulotteisiin, aikavakiiviin epälineaarisiin järjestelmiin tilayhtälöiden, optimoinnin ja Kalman-suodatuksen avulla. Kolmas, 1990-luvulta kehittynyt haara on <em>robusti säätöteoria</em>, joka käsittelee järjestelmiä, joiden parametrit ovat epävarmoja.</p>
+
+  <p>Säätöteoria ei rajoitu tekniikkaan. Samaa muodollista kieltä sovelletaan biologiseen säätelyyn (homeostaasi, geeniverkosto), taloustieteeseen (dynaamiset makromallit), neurotieteeseen (aivojen moottoriikäsäätö) ja yhteiskuntatieteisiin (poliittisen järjestelmän säätöpiirit). Tässä mielessä säätöteoria on yksi selkeimmistä esimerkeistä siitä, miten <em>kvantitatiivinen systeemiajattelu</em> tuottaa ymmärrettävää tietoa eri tieteenalojen välillä.</p>
+
+  <p>Säätöteorian rajapinta systeemiajattelun kanssa on erityisen vahva. V.A. Shiva Ayyadurai korostaa teoksessaan <em>The Science of Everything</em> (2023), että säätöteoria on yksi niistä harvoista tieteenaloista, joka tarjoaa <em>formaalin kielen</em> kuvata dynaamista tasapainoa elävissä järjestelmissä — samaa kieltä, jota tarvitaan ymmärtämään niin kehoa, mieltä kuin yhteiskuntaa.</p>
+
+  <h2>Alkuperä</h2>
+  <p>Säätöteorian juuret ovat 1800-luvun teollisessa vallankumouksessa. <strong>James Clerk Maxwell</strong> julkaisi 1868 artikkelin "On Governors", jossa hän analysoi keskipakosäätimen dynamiikkaa — ensimmäistä kertaa, kun säätöpiiriä kuvattiin differentiaaliyhtälöillä. <strong>Edward John Routh</strong> (1877) ja saksalainen <strong>Adolf Hurwitz</strong> (1895) kehittivät toisistaan riippumatta stabiilisuuskriteerit, jotka yhä kantavat heidän nimeään. <strong>Harold Black</strong> ja <strong>Hendrik Bode</strong> Bell Labsilla kehittivät 1920- ja 1930-luvuilla taajuusvasteeseen perustuvan säätöteorian elektroniikan vahvistimia varten.</p>
+
+  <p>Toisen maailmansodan aikana säätöteoria institutionalisoitui. MIT:ssä kehitettiin palonsäätö- ja tykkien suuntausjärjestelmiä, ja sodanjälkeinen <em>Servomechanisms</em>-liike siirsi samat menetelmät teollisuusautomaatioon. <strong>Rudolf Kalman</strong> esitteli 1960 tilayhtälömuodon ja <em>Kalman-suodattimen</em>, jotka mullistivat moniulotteisten järjestelmien säädön ja vaikuttivat astronautiikkaan (Apollo-ohjelman ohjaus), taloustieteeseen ja signaalinkäsittelyyn.</p>
+
+  <p>Rinnakkain tekniikan säätöteorian kanssa kehittyi Norbert Wienerin <em>kybernetiikka</em> (1948), joka laajensi säätöteorian biologisiin ja sosiaalisiin järjestelmiin. <strong>W. Ross Ashby</strong> (<em>An Introduction to Cybernetics</em>, 1956) yhdisti säätöteorian ja yleisen systeemiteorian muotoilemalla <em>välttämättömän monimuotoisuuden lain</em> (<em>requisite variety</em>): säätäjällä on oltava vähintään yhtä paljon kapasiteettia kuin säädettävällä järjestelmällä. <strong>Stafford Beer</strong> (1959, 1972) sovelsi säätöteoriaa organisaatioihin ja loi <em>viable-system-model</em>in.</p>
+
+  <p>2000-luvulla säätöteoria on laajentunut kohti <em>verkkosäätöä</em> (<em>networked control</em>), <em>epälineaarista säätöä</em> ja <em>dataan perustuvaa säätöä</em> (<em>data-driven control</em>), missä tekoäly ja vahvistusoppiminen yhdistyvät klassisiin säätörakenteisiin. V.A. Shiva Ayyadurain integroiva lähestymistapa asettaa säätöteorian yhdeksi <em>Rosettan kiven</em> rakennuspalaksi, joka yhdistää länsimaisen tekniikan ja itäiset perinteet (kuten ayurvedan doshasäätelyn ja joogan hengityssäätelyn) yhteiseen dynaamiseen kieleen.</p>
+
+  <h2>Yhteydet muihin käsitteisiin</h2>
+  <p>Säätöteoria on läheisessä yhteydessä <em>control-systems-engineering</em>iin (käytännön sovellusala), <em>control-system</em>iin (yksittäinen säätöjärjestelmä) ja koko <em>feedback-loop</em>-käsitteistöön. Sen ydinmekanismi on <em>negative-feedback</em> (tasapainottava säätö); toisena ääripäänä on <em>positive-feedback</em>. Säätöpiirin osia ovat <em>receptor</em> (mittaus), <em>comparator</em> (vertailu) ja <em>effector</em> (säätö). Säätöteoria jakautuu <em>first-order-cybernetics</em> (havainnoija järjestelmän ulkopuolella) ja <em>second-order-cybernetics</em> (havainnoija osa järjestelmää). Syvällisempi systeemiajattelu laajentaa säätöteorian <em>requisite-variety</em>-käsitteeseen, <em>homeostasis</em>-ilmiöön ja <em>viable-system-model</em>iin. Säätöteoria on myös <em>cybernetics</em>-käsitteen isä ja <em>general-systems-theory</em>n serkku.</p>
+
+  <h2>Missä oppitunneissa käsitellään</h2>
+  <p>Säätöteoria esiintyy <em>cybernetics</em>-kansion oppitunneilla "Säätöteorian perusteet", "PID-säätö", "Tilasäätö ja Kalman-suodatin", "Stabiilisuusanalyysi" sekä "Robusti säätö". <em>foundations</em>-kansiossa sitä sivutaan <em>feedback-loop</em>-käsittelyn yhteydessä. <em>methods</em>-kansiossa se liittyy <em>system-dynamics</em>-menetelmään (Forresterin ja Stermanin perinne). <em>applications</em>-kansiossa säätöteoria sovelletaan robotiikkaan, ilmailuun, biolääketieteeseen ja taloustieteeseen. <em>complexity</em>-kansiossa käsitellään <em>complex-adaptive-system</em>ien säätöä, jossa säätöteoria yhdistyy monimutkaisten verkostojen teoriaan.</p>
+
+  <h2>Lähteet</h2>
+  <p>Norbert Wiener, <em>Cybernetics: Or Control and Communication in the Animal and the Machine</em> (MIT Press, 1948). W. Ross Ashby, <em>An Introduction to Cybernetics</em> (Chapman & Hall, 1956). Rudolf Kalman, "A New Approach to Linear Filtering and Prediction Problems" (1960). Katsuhiko Ogata, <em>Modern Control Engineering</em> (Prentice Hall, useita painoksia). Karl Johan Åström ja Richard Murray, <em>Feedback Systems: An Introduction for Scientists and Engineers</em> (Princeton University Press, 2008). James Clerk Maxwell, "On Governors" (Proceedings of the Royal Society, 1868). V.A. Shiva Ayyadurai, <em>The Science of Everything</em> (2023).</p>
+
+  <hr>
+
+  <h2>Aiheeseen liittyy</h2>
+  <ul>
+    <li><a href="control-theory.html" class="wikilink" data-concept="control-theory">control-theory</a> — tämä käsite</li>
+    <li><a href="control-systems-engineering.html" class="wikilink" data-concept="control-systems-engineering">control-systems-engineering</a> — säätöteorian tekninen sovellusala</li>
+    <li><a href="control-system.html" class="wikilink" data-concept="control-system">control-system</a> — yksittäinen säätöjärjestelmä</li>
+    <li><a href="cybernetic-loop.html" class="wikilink" data-concept="cybernetic-loop">cybernetic-loop</a> — säätöteorian perusrakenne</li>
+    <li><a href="feedback-loop.html" class="wikilink" data-concept="feedback-loop">feedback-loop</a> — säätöteorian ydinmekanismi</li>
+    <li><a href="negative-feedback.html" class="wikilink" data-concept="negative-feedback">negative-feedback</a> — tasapainottava takaisinkytkentä</li>
+    <li><a href="positive-feedback.html" class="wikilink" data-concept="positive-feedback">positive-feedback</a> — vahvistava takaisinkytkentä</li>
+    <li><a href="receptor.html" class="wikilink" data-concept="receptor">receptor</a> — säätöpiirin mittausosa</li>
+    <li><a href="comparator.html" class="wikilink" data-concept="comparator">comparator</a> — säätöpiirin vertailuosa</li>
+    <li><a href="effector.html" class="wikilink" data-concept="effector">effector</a> — säätöpiirin toimeenpaneva osa</li>
+    <li><a href="first-order-cybernetics.html" class="wikilink" data-concept="first-order-cybernetics">first-order-cybernetics</a> — Wienerin perinne säätöteoriaa</li>
+    <li><a href="second-order-cybernetics.html" class="wikilink" data-concept="second-order-cybernetics">second-order-cybernetics</a> — itsensä tarkasteleva säätö</li>
+    <li><a href="requisite-variety.html" class="wikilink" data-concept="requisite-variety">requisite-variety</a> — Ashbyn laki säätäjän kapasiteetista</li>
+    <li><a href="homeostasis.html" class="wikilink" data-concept="homeostasis">homeostasis</a> — biologinen säätöteorian sovellus</li>
+    <li><a href="viable-system-model.html" class="wikilink" data-concept="viable-system-model">viable-system-model</a> — Beeren organisaatiosovellus säätöteoriasta</li>
+    <li><a href="system-dynamics.html" class="wikilink" data-concept="system-dynamics">system-dynamics</a> — Forresterin dynaaminen mallinnus, joka ammentaa säätöteoriasta</li>
+  </ul>
+
+  <p class="footer-note">
+    Lähteet: Norbert Wiener — <em>Cybernetics</em> (1948); W. Ross Ashby — <em>An Introduction to Cybernetics</em> (1956); Rudolf Kalman — "A New Approach to Linear Filtering and Prediction Problems" (1960); James Clerk Maxwell — "On Governors" (1868); V.A. Shiva Ayyadurai — <em>The Science of Everything</em> (2023).
+  </p>
+</main>
+</body>
+</html>

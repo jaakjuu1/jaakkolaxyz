@@ -94,7 +94,8 @@ export function initAteneumSchema(): void {
       version INTEGER NOT NULL DEFAULT 1,
       proposed_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
       updated_by TEXT REFERENCES ateneum_users(id) ON DELETE SET NULL,
-      updated_at INTEGER NOT NULL DEFAULT (unixepoch())
+      updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      google_event_id TEXT
     );
 
     CREATE TABLE IF NOT EXISTS ateneum_activity_acceptances (
@@ -303,6 +304,11 @@ export function migrateAteneumSchema(): void {
     if (!activityColumns.has("updated_at")) {
       ateneumRawDb.exec(
         `ALTER TABLE ateneum_activities ADD COLUMN updated_at INTEGER NOT NULL DEFAULT 0`,
+      );
+    }
+    if (!activityColumns.has("google_event_id")) {
+      ateneumRawDb.exec(
+        `ALTER TABLE ateneum_activities ADD COLUMN google_event_id TEXT`,
       );
     }
     ateneumRawDb.exec(`
@@ -777,6 +783,7 @@ export function migrateAteneumSchema(): void {
       "proposed_by",
       "updated_by",
       "updated_at",
+      "google_event_id",
     ],
     ateneum_activity_acceptances: ["activity_id", "user_id", "version", "accepted_at"],
     ateneum_plans: [

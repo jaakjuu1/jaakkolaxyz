@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003-elementit — Elementtien tasapaino</title>
+<style>
+:root { --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7; --accent: #4a3a8a; --accent-soft: #ece8f5; --code-bg: #f4f1e8; --max: 38rem; }
+@media (prefers-color-scheme: dark) { :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #a89cd8; --accent-soft: #2a2535; --code-bg: #221f1a; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: Georgia, serif; line-height: 1.7; font-size: 1.05rem; margin: 0; }
+main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+p { margin: 0.9rem 0; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+a:hover { border-bottom-color: var(--accent); }
+code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+nav.path a { color: var(--muted); border-bottom: none; }
+.meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+.reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+.reflect h3 { margin-top: 0; }
+.svg-container { background: var(--code-bg); padding: 2rem; border-radius: 4px; margin: 1.5rem 0; text-align: center; }
+.svg-container svg { max-width: 100%; height: auto; }
+table { width:100%; border-collapse: collapse; margin: 1rem 0; }
+th, td { padding: 0.5rem 0.7rem; text-align: left; border-bottom: 1px solid var(--rule); }
+th { font-weight: bold; color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Esoteria</a> › <a href="../index.html">Harjoitus</a> › Oppitunti 3</nav>
+
+<h1>Elementtien tasapaino</h1>
+<p class="meta">Oppitunti 3 / 6 · ~28 min</p>
+
+<h2>Viisi elementtiä</h2>
+
+<p>Hermetrisessä ja länsimaaisessa perinteessä <strong>viisi elementtiä</strong> muodostavat todellisuuden perustan:</p>
+
+<div class="svg-container">
+<svg viewBox="0 0 400 400" width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Keskiympyrä -->
+  <circle cx="200" cy="200" r="160" stroke="#4a3a8a" stroke-width="2" fill="none" opacity="0.3"/>
+  <!-- Eetteri keskellä -->
+  <circle cx="200" cy="200" r="40" fill="rgba(155,127,184,0.3)" stroke="#8a6aaa" stroke-width="2"/>
+  <text x="200" y="198" text-anchor="middle" fill="#6a4a8a" font-size="11" font-family="Georgia" font-weight="bold">Eetteri</text>
+  <text x="200" y="215" text-anchor="middle" fill="#6a4a8a" font-size="10" font-family="Georgia" font-style="italic">(Henki)</text>
+  <!-- Tuli - ylhäällä -->
+  <circle cx="200" cy="60" r="40" fill="rgba(210,100,100,0.3)" stroke="#d26464" stroke-width="2"/>
+  <text x="200" y="58" text-anchor="middle" fill="#7a2a2a" font-size="13" font-family="Georgia" font-weight="bold">Tuli</text>
+  <text x="200" y="73" text-anchor="middle" fill="#7a2a2a" font-size="10" font-family="Georgia" font-style="italic">etelä</text>
+  <!-- Ilma - oikealla -->
+  <circle cx="335" cy="200" r="40" fill="rgba(232,200,74,0.3)" stroke="#c8a838" stroke-width="2"/>
+  <text x="335" y="198" text-anchor="middle" fill="#7a6a2a" font-size="13" font-family="Georgia" font-weight="bold">Ilma</text>
+  <text x="335" y="213" text-anchor="middle" fill="#7a6a2a" font-size="10" font-family="Georgia" font-style="italic">itä</text>
+  <!-- Vesi - alhaalla -->
+  <circle cx="200" cy="340" r="40" fill="rgba(90,138,170,0.3)" stroke="#5a8aaa" stroke-width="2"/>
+  <text x="200" y="338" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Vesi</text>
+  <text x="200" y="353" text-anchor="middle" fill="white" font-size="10" font-family="Georgia" font-style="italic">länsi</text>
+  <!-- Maa - vasemmalla -->
+  <circle cx="65" cy="200" r="40" fill="rgba(122,154,90,0.3)" stroke="#7a9a5a" stroke-width="2"/>
+  <text x="65" y="198" text-anchor="middle" fill="white" font-size="13" font-family="Georgia" font-weight="bold">Maa</text>
+  <text x="65" y="213" text-anchor="middle" fill="white" font-size="10" font-family="Georgia" font-style="italic">pohjoinen</text>
+</svg>
+</div>
+
+<ul>
+<li><strong>Tuli</strong> — etelä — voima, muutos, intohimo</li>
+<li><strong>Ilma</strong> — itä — äly, viestintä, uusi alku</li>
+<li><strong>Vesi</strong> — länsi — tunteet, intuitio, virtaus</li>
+<li><strong>Maa</strong> — pohjoinen — keho, vakaus, käytäntö</li>
+<li><strong>Eetteri</strong> — keskus — henki, ykseys, kaiken takana</li>
+</ul>
+
+<p>Nämä eivät ole "vain symboleja" — ne ovat <strong>voimia</strong>, jotka vaikuttavat meissä joka hetki.</p>
+
+<h2>Elementtitesti</h2>
+
+<p>Aloita arvioimalla <strong>tasapainosi</strong>:</p>
+
+<p>Anna itsellesi pisteet 1-5 jokaiselle elementille:</p>
+
+<table>
+<tr><th>Elementti</th><th>Kysymys</th></tr>
+<tr><td><strong>Tuli</strong></td><td>Onko elämässäni <em>riittävästi</em> voimaa ja intohimoa?</td></tr>
+<tr><td><strong>Ilma</strong></td><td>Onko ajatteluni <em>kirkasta</em> ja viestintäni sujuvaa?</td></tr>
+<tr><td><strong>Vesi</strong></td><td>Saanko <em>tunteitani</em> virrata vapaasti?</td></tr>
+<tr><td><strong>Maa</strong></td><td>Olenko <em>maadoittunut</em> ja käytännöllinen?</td></tr>
+<tr><td><strong>Eetteri</strong></td><td>Onko <em>henkinen yhteys</em> elävä?</td></tr>
+</table>
+
+<p>Pisteet:</p>
+<ul>
+<li><strong>1-2</strong> — elementti on heikko, tarvitsee vahvistusta</li>
+<li><strong>3</strong> — tasapainossa</li>
+<li><strong>4-5</strong> — vahva, mahdollisesti liian hallitseva</li>
+</ul>
+
+<h2>Elementin vahvistaminen</h2>
+
+<p>Jokaiselle elementille on omat <strong>harjoituksensa</strong>:</p>
+
+<h3>Tulen vahvistaminen</h3>
+
+<p>Tuli on <strong>voimaa, rohkeutta ja toimintaa</em>. Jos se on heikko:</p>
+
+<ul>
+<li><strong>Liiku</strong> — juokse, tanssi, harjoittele</li>
+<li><strong>Syö</strong> tulisia ruokia — chili, inkivääri, piparjuuri</li>
+<li><strong>Käytä</strong> punaista väriä — vaatteet, esineet</li>
+<li><strong>Toimi</strong> rohkeasti — tee se pelottava asia</li>
+<li><strong>Meditoi</strong> punaisella liekillä solar plexuksessa</li>
+</ul>
+
+<h3>Ilman vahvistaminen</h3>
+
+<p>Ilma on <strong>älyä ja kommunikaatiota</em>. Jos se on heikko:</p>
+
+<ul>
+<li><strong>Lue</strong> — monipuolisesti, kriittisesti</li>
+<li><strong>Kirjoita</strong> — päiväkirja, esseet</li>
+<li><strong>Keskustele</strong> — väittele, kysy, kuuntele</li>
+<li><strong>Hengitä</strong> syvään — tuuleta keuhkot</li>
+<li><strong>Meditoi</strong> keltaisella valolla otsalla</li>
+</ul>
+
+<h3>Veden vahvistaminen</h3>
+
+<p>Vesi on <strong>tunteita ja intuitiota</em>. Jos se on heikko:</p>
+
+<ul>
+<li><strong>Itke</strong> — anna tunteiden virrata</li>
+<li><strong>Ui</strong> — kirjaimellisesti vedessä</li>
+<li><strong>Kirjoita</strong> tunteita — runot, päiväkirja</li>
+<li><strong>Kuuntele</strong> intuitiota — hiljaisuus, hiljaiset hetket</li>
+<li><strong>Meditoi</strong> hopeisella valolla sydämessä</li>
+</ul>
+
+<h3>Maan vahvistaminen</h3>
+
+<p>Maa on <strong>kehoa ja käytäntöä</em>. Jos se on heikko:</p>
+
+<ul>
+<li><strong>Kävele</strong> paljain jaloin maassa</li>
+<li><strong>Syö</strong> maan antimia — juurekset, vihannekset</li>
+<li><strong>Työskentele</strong> käsillä — puutarha, nikkarointi</li>
+<li><strong>Lepää</strong> riittävästi</li>
+<li><strong>Meditoi</strong> ruskealla tai vihreällä valolla jaloissa</li>
+</ul>
+
+<h3>Eetterin vahvistaminen</h3>
+
+<p>Eetteri on <strong>henkeä ja ykseyttä</em>. Jos se on heikko:</p>
+
+<ul>
+<li><strong>Meditoi</strong> säännöllisesti</li>
+<li><strong>Hiljenny</strong> — paasto sensorisesta ylikuormituksesta</li>
+<li><strong>Yhdistä</strong> — luonto, taide, rakkaus</li>
+<li><strong>Lue</strong> hengellistä kirjallisuutta</li>
+<li><strong>Visualisoi</strong> valkoinen tai violetti valo koko kehoa ympäröimässä</li>
+</ul>
+
+<h2>Elementin ylivoima</h2>
+
+<p>Jos elementti on <strong>liian voimakas</strong>, se voi hallita:</p>
+
+<h3>Liika tulta</h3>
+<ul>
+<li>Aggressiivisuus, riidanhalu</li>
+<li>Stressi, uupumus</li>
+<li>Kyvyttömyys levätä</li>
+</ul>
+<p><strong>Ratkaisu:</strong> maadoitus, vesi, lepo</p>
+
+<h3>Liika ilmaa</h3>
+<ul>
+<li>Ylianalyyttinen, ahdistunut</li>
+<li>Ei toimintaa, vain ajatuksia</li>
+<li>Hermostuneisuus</li>
+</ul>
+<p><strong>Ratkaisu:</strong> maa, keho, yksinkertaisuus</p>
+
+<h3>Liika vettä</h3>
+<ul>
+<li>Tunnevyöry, hallitsemattomat tunteet</li>
+<li>Kyvyttömyys tehdä päätöksiä</li>
+<li>Masennus</li>
+</ul>
+<p><strong>Ratkaisu:</strong> tuli, toiminta, selkeys</p>
+
+<h3>Liika maata</h3>
+<ul>
+<li>Jähmeys, muutosvastarinta</li>
+<li>Materialismi, henkinen köyhyys</li>
+<li>Väsymys</li>
+</ul>
+<p><strong>Ratkaisu:</strong> ilma, oppiminen, kuvittelu</p>
+
+<h3>Liika eetteriä</h3>
+<ul>
+<li>Irtautuminen todellisuudesta</li>
+<li>Hajanaisuus, "päätön"</li>
+<li>Kyvyttömyys toimia maailmassa</li>
+</ul>
+<p><strong>Ratkaisu:</strong> maa, keho, käytäntö</p>
+
+<h2>Elementtiviikko</h2>
+
+<p>Hyvä harjoitus: <strong>omistaa yksi viikko kullekin elementille</strong>. Tämä syventää yhteyttä.</p>
+
+<h3>Esimerkki: Tuliviikko</h3>
+
+<table>
+<tr><th>Päivä</th><th>Tehtävä</th></tr>
+<tr><td><strong>Ma</strong></td><td>Syö tulisia ruokia</td></tr>
+<tr><td><strong>Ti</strong></td><td>Urheile intensiivisesti</td></tr>
+<tr><td><strong>Ke</strong></td><td>Tee pelottava asia</td></tr>
+<tr><td><strong>To</strong></td><td>Meditoi punaisella liekillä</td></tr>
+<tr><td><strong>Pe</strong></td><td>Puhu intohimoisesti tärkeästä aiheesta</td></tr>
+<tr><td><strong>La</strong></td><td>Luo jotain — kirjoita, maalaa, sävellä</td></tr>
+<tr><td><strong>Su</strong></td><td>Kiitä voimasta, joka sinussa on</td></tr>
+</table>
+
+<p>Toista tämä kaikille <strong>viidelle elementille</strong> — 5 viikkoa = 35 päivää syvää elementtityötä.</p>
+
+<h2>Elementtiruokavalio</h2>
+
+<p>Ravinto on <strong>elementtien maadoittamista</strong>:</p>
+
+<ul>
+<li><strong>Tuliruoka</strong> — chili, inkivääri, sipuli, valkosipuli, kaneli</li>
+<li><strong>Ilmaruoka</strong> — kevyt, tuore, salaatit, yrtit</li>
+<li><strong>Vesiruoka</strong> — keitot, smoothiet, kurkut, hedelmät</li>
+<li><strong>Maaruoka</strong> — juurekset, pähkinät, täysjyvät, liha</li>
+<li><strong>Eetteriruoka</strong> — paasto, kevyt ruoka, mehut</li>
+</ul>
+
+<p>Tasapainoinen ruokavalio sisältää <strong>kaikkia</strong>.</p>
+
+<h2>Elementit ja vuorokaudenaika</h2>
+
+<p>Päivän eri aikoina <strong>eri elementit hallitsevat</strong>:</p>
+
+<table>
+<tr><th>Aika</th><th>Elementti</th><th>Teema</th></tr>
+<tr><td><strong>3-7</strong></td><td>Eetteri → Vesi</td><td>Uni, unet</td></tr>
+<tr><td><strong>7-11</strong></td><td>Ilma</td><td>Äly, kommunikaatio</td></tr>
+<tr><td><strong>11-15</strong></td><td>Tuli</td><td>Voima, toiminta</td></tr>
+<tr><td><strong>15-19</strong></td><td>Maa</td><td>Käytäntö, työ</td></tr>
+<tr><td><strong>19-23</strong></td><td>Vesi → Eetteri</td><td>Tunteet, hiljaisuus</td></tr>
+</table>
+
+<p>Tämä voi ohjata <strong>päivän rytmiä</strong> — kevyet tehtävät aamuun, raskaat keskipäivään, lepo iltaan.</p>
+
+<h2>Elementit kehossa</h2>
+
+<p>Viisi elementtiä <strong>asuvat</strong> kehossasi:</p>
+
+<ul>
+<li><strong>Tuli</strong> — solar plexus (vatsa), muutos</li>
+<li><strong>Ilma</strong> — kurkku ja keuhkot, viestintä</li>
+<li><strong>Vesi</strong> — sydän ja lonkat, tunteet</li>
+<li><strong>Maa</strong> — jalat ja alaselkä, maadoitus</li>
+<li><strong>Eetteri</strong> — pään kruunu, henkisyys</li>
+</ul>
+
+<p>Kehosan <em>signaalit</em> kertovat mikä elementti kaipaa huomiota.</p>
+
+<h2>Elementtiharjoitus päivittäin</h2>
+
+<p>Tässä yksinkertainen 5 minuutin harjoitus joka aamu:</p>
+
+<ol>
+<li>Tunnista <strong>heikoin elementti</strong> tänään — keho kertoo</li>
+<li>Visualisoi sen <strong>värinen valo</strong> kehon kohdalle</li>
+<li>Hengitä sitä sisään — vahvista sitä</li>
+<li>Kiitä elementille</li>
+<li>Aseta <strong>yksi teko</strong> päivään, joka vahvistaa tätä elementtiä</li>
+</ol>
+
+<p>Tämä pitää elementit <strong>tasapainossa</strong> arjessa.</p>
+
+<h2>Yhteenveto</h2>
+
+<p>Viisi elementtiä — tuli, ilma, vesi, maa, eetteri — ovat todellisuuden perusta. Ne vaikuttavat meissä joka hetki. Tasapainon arviointi on ensimmäinen askel. Jokaiselle elementille on omat vahvistamiskeinonsa — liike, äly, tunteet, keho, henki. Liika elementti voi hallita — siksi tasapaino on tärkeää. Elementtiviikko syventää yhteyttä kuhunkin. Elementit näkyvät ruoassa, ajassa, kehossa. Kun ymmärrät elementit, opit näkemään <strong>mistä voima tulee</strong> — ja mistä pulaa.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Harjoitus: Elementtianalyysi (45 min)</h3>
+<ol>
+<li>Tee <strong>elementtitesti</strong> — pisteytä itsesi</li>
+<li>Tunnista <strong>heikoin</strong> ja <strong>vahvin</strong> elementti</li>
+<li>Suunnittele <strong>toimenpiteet</strong> kummallekin:
+<ul>
+<li>Heikoimmalle: vahvistaminen</li>
+<li>Vahvimmalle: mahdollinen hillitseminen</li>
+</ul>
+</li>
+<li>Toteuta <strong>2 viikkoa</strong></li>
+<li>Testaa uudelleen — mitä muuttui?</li>
+</ol>
+<p>Tämä antaa <strong>konkreettisen kartan</strong> sisäisestä tilastasi.</p>
+</div>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Mikä elementti tuntuu vahvimmalta? Mikä heikoimmalta? Miten tämä näkyy arjessasi? Mitä elementtiä haluaisit vahvistaa? Mitä se vaatisi?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..." style="width:100%; min-height:100px; margin-top:0.8rem; padding:0.5rem; font-family:inherit; font-size:0.95rem; border:1px solid var(--rule); background:var(--bg); color:var(--ink); border-radius:4px;"></textarea>
+</div>
+
+</main>
+</body>
+</html>

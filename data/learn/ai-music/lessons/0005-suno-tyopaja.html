@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oppitunti 0005 — Suno-käytännön työpaja</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#666; --accent:#0a6e3a; --rule:#e5e5e5; --bg:#fcfcfb; --warn:#c0392b; --soft:#fef9e7; }
+  * { box-sizing: border-box; }
+  body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+         color: var(--ink); max-width: 880px; margin: 2rem auto; padding: 0 1.2rem; background: #fbfaf6; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.3rem; margin-top: 2.4rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin-top: 1.6rem; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .key { background: #f6f6f4; border-left: 3px solid var(--accent); padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  .warn { background: #fdf6f3; border-left: 3px solid var(--warn); padding: 0.8rem 1 rem; margin: 1.2rem 0; }
+  .soft { background: var(--soft); border-left: 3px solid #d4ac0d; padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  pre { background: #1e1e1e; color: #e6e6e6; padding: 0.9rem 1.1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; line-height: 1.5; }
+  pre .comment { color: #6a9955; }
+  pre .tag { color: #d7ba7d; }
+  pre .lyric { color: #9cdcfe; }
+  pre .style-line { color: #ce9178; }
+  code { background: #f6f6f4; padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.92em; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.95rem; }
+  th, td { padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; }
+  th { background: #f6f6f4; font-weight: 600; }
+  .genre-card { background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 1rem 1.2rem; margin: 1rem 0; }
+  .genre-card h3 { margin-top: 0; color: var(--accent); }
+  details { margin: 1rem 0; padding: 0.8rem; background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; }
+  details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+  details[open] summary { margin-bottom: 0.6rem; }
+  ul, ol { padding-left: 1.4rem; }
+  li { margin: 0.3rem 0; }
+  form { margin: 1.5rem 0; padding: 1rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--bg); }
+  form input, form textarea { width:100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 3px; }
+  form button { background: var(--accent); color: white; border: 0; padding: 0.6rem 1rem; border-radius: 3px; cursor: pointer; font: inherit; font-weight: 600; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<h1>Suno-käytännön työpaja</h1>
+<p class="meta">Oppitunti 0005 · AI-musiikin tuotanto · ~25 min + oma harjoitus</p>
+
+<div class="key">
+  <strong>Ydinajatus:</strong> tässä oppitunnissa et lue — <em>kirjoitat</em>. Teoria on opittu (0001-0004), nyt tehdään. Kävelemme läpi yhden kappaleen alusta loppuun: briefistä ensimmäiseen promptiin, iterointiin ja lopulliseen versioon.
+</div>
+
+<h2>1. Aloita briefistä, älä promptista</h2>
+
+<p>Suurin virhe: hypätä suoraan Sunon editoriin ja kirjoittaa "tee hyvä biisi". Tämä tuottaa geneeristä kuraa. Aloita aina briefistä — muutama vastaus näihin kysymyksiin:</p>
+
+<ol>
+  <li><strong>Mikä genre?</strong> (suomipop, indie folk, synthwave, …)</li>
+  <li><strong>Mikä tunnelma?</strong> (iloinen, melankolinen, energinen, unenomainen, …)</li>
+  <li><strong>Mikä tempo?</strong> (hidas, keskinopea, nopea — ja bpm jos tiedät)</li>
+  <li><strong>Laulaja?</strong> (mies/nainen/ei laulua, korkea/matala ääni, voimakas/kuiskaus)</li>
+  <li><strong>Keskeiset soittimet?</strong> (akustinen kitara, syntetisaattori, piano, rummut, …)</li>
+  <li><strong>Onko tarina?</strong> (mitä lyriikka kertoo, vai instrumentaali)</li>
+  <li><strong>Referenssi?</strong> (muista joku artisti/tyyli joka on lähellä)</li>
+</ol>
+
+<div class="soft">
+  <strong>Esimerkki briefistä:</strong><br>
+  "Genre: suomipop-balladi. Tunnelma: haikea, syksyinen. Tempo: 80 bpm. Laulu: nainen, keskirekisteri, lempeä. Soittimet: piano, akustinen kitara, kevyet rummut. Tarina: entinen rakkaus, syksyinen kaupunki, ikävä. Referenssi: Chisu, Anna Puu."
+</div>
+
+<p>Tämä brief on nyt valmis muutettavaksi promptiksi.</p>
+
+<h2>2. Brief → prompti -muunnos (kaava)</h2>
+
+<p>Kun sinulla on brief, muunna se tällä kaavalla:</p>
+
+<pre><span class="comment"># STYLE-KENTTÄ (max ~40 sanaa, tiivis)</span>
+<span class="tag">Style:</span> [genre], [tunnelma-adjektiivi], [laulutyyli], [pääinstrumentit], [aika/bpm]
+
+<span class="comment"># LYRICS-KENTTÄ (metatagit + sanat)</span>
+<span class="tag">[Intro]</span>
+<span class="tag">[Verse 1]</span>
+<span class="lyric">lyriikat tähän (4-8 riviä)</span>
+<span class="tag">[Chorus]</span>
+<span class="lyric">lyriikat tähän (4-6 riviä, tarttuva)</span>
+<span class="tag">[Verse 2]</span>
+<span class="lyric">...</span>
+<span class="tag">[Bridge: tunnelma-muutos]</span>
+<span class="lyric">...</span>
+<span class="tag">[Final Chorus]</span>
+<span class="tag">[Outro]</span></pre>
+
+<p>Tämä kaava toimii 80 % tapauksista. Muunnelmat alla.</p>
+
+<h2>3. Neljä genreä, neljä valmista pohjaa</h2>
+
+<p>Valitse näistä se joka lähinnä omaa ideaasi, ja muokkaa brief-osio.</p>
+
+<div class="genre-card">
+  <h3>① Suomipop / suomirock</h3>
+  <p><strong>Brief-oletus:</strong> tarttuva melodinen, suomenkielinen, radiokelpoinen</p>
+  <pre><span class="tag">Style:</span> Finnish pop, melodic, female vocal, piano and light drums, hopeful, 120 bpm
+
+<span class="tag">[Intro: piano melody, light drums]</span>
+<span class="tag">[Verse 1]</span>
+<span class="lyric">Aamu sarastaa, maailma on uusi
+   Unet jää taakse, uusi päivä alkaa</span>
+
+<span class="tag">[Pre-Chorus]</span>
+<span class="lyric">Tunnen sydämessäni, että tänään on mahdollista</span>
+
+<span class="tag">[Chorus]</span>
+<span class="lyric">Juokse kotiin, juokse luokseni
+   Odotan sinua, olen täällä aina</span>
+
+<span class="tag">[Verse 2]</span>
+<span class="lyric">...</span>
+
+<span class="tag">[Bridge: drums drop out, vocal a cappella]</span>
+<span class="lyric">Muista hetki kun sanoit kyllä</span>
+
+<span class="tag">[Final Chorus: full band, layered vocals]</span>
+<span class="tag">[Outro]</span></pre>
+</div>
+
+<div class="genre-card">
+  <h3>② Indie / alternative</h3>
+  <p><strong>Brief-oletus:</strong> tunnelmallinen, akustinen tai sähköinen, ei-mainstream</p>
+  <pre><span class="tag">Style:</span> Indie folk, male vocal, fingerpicked acoustic guitar, intimate, melancholic, 95 bpm
+
+<span class="tag">[Intro: acoustic guitar fingerpicking]</span>
+<span class="tag">[Verse 1]</span>
+<span class="lyric">Istun keittiössä, kahvi kylmää
+   Ikkunan takana sataa hiljaa</span>
+
+<span class="tag">[Chorus: vocal harmony, light drums enter]</span>
+<span class="lyric">Sinä olit täällä, mutta nyt ei
+   Jäljellä vain kahden kupin muoto</span>
+
+<span class="tag">[Verse 2]</span>
+<span class="lyric">Valokuva pöydällä, hymyilevä
+   Mutta se on mennyttä aikaa</span>
+
+<span class="tag">[Bridge: electric guitar swell]</span>
+<span class="lyric">Jos voisin palata siihen yöhön</span>
+
+<span class="tag">[Final Chorus]</span>
+<span class="tag">[Outro: guitar fades]</span></pre>
+</div>
+
+<div class="genre-card">
+  <h3>③ Elektroninen / ambient</h3>
+  <p><strong>Brief-oletus:</strong> synthwave, lo-fi, äänimaisema, ei laulua tai minimal laulu</p>
+  <pre><span class="tag">Style:</span> Synthwave, instrumental, analog synths, driving beat, 80s vibe, 118 bpm
+
+<span class="tag">[Intro: arpeggiated synth, drum machine build]</span>
+<span class="tag">[Verse: pulsing bass, lead synth melody]</span>
+<span class="tag">[Pre-Chorus: synth pads rising]</span>
+<span class="tag">[Chorus: full beat drop, layered synths]</span>
+<span class="tag">[Instrumental Break: synth solo]</span>
+<span class="tag">[Verse 2]</span>
+<span class="tag">[Bridge: breakdown, minimal drums]</span>
+<span class="tag">[Final Chorus: full power]</span>
+<span class="tag">[Outro: reverb fade]</span></pre>
+</div>
+
+<div class="genre-card">
+  <h3>④ Folk / akustinen</h3>
+  <p><strong>Brief-oletus:</strong> orgaaninen, perinteinen, laulupainotteinen, tarinankerronta</p>
+  <pre><span class="tag">Style:</span> Modern folk, female vocal, kantele and acoustic guitar, ethereal, melancholic, 90 bpm
+
+<span class="tag">[Intro: kantele arpeggio, distant fiddle]</span>
+<span class="tag">[Verse 1: vocal enters softly]</span>
+<span class="lyric">Tuuli käy metsässä, kutsuu minut mukaan
+   Polut katoavat, mutta kuljen silti</span>
+
+<span class="tag">[Chorus: full folk instrumentation]</span>
+<span class="lyric">Kotini on siellä missä sydän on
+   Metsän sylissä, veden äärellä</span>
+
+<span class="tag">[Instrumental Break: fiddle solo]</span>
+<span class="tag">[Verse 2]</span>
+<span class="tag">[Bridge: a cappella vocal]</span>
+<span class="tag">[Final Chorus]</span>
+<span class="tag">[Outro: kantele fade]</span></pre>
+</div>
+
+<h2>4. Sudenkuopat — yleisimmät virheet</h2>
+
+<table>
+  <thead>
+    <tr><th>Virhe</th><th>Miksi tapahtuu</th><th>Korjaus</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Laulu ei ala ollenkaan</td><td>Style-kenttä epäselvä, intro-ohje puuttuu</td><td>Lisää <code>[Intro: instrument]</code> ennen ensimmäistä säettä</td></tr>
+    <tr><td>Kappale hyppii rakenteesta</td><td>Metatagit puuttuvat tai ristiriitaisia</td><td>Käytä selkeitä [Verse]/[Chorus]-tagi-jaksoja</td></tr>
+    <tr><td>Sama tunnelma koko ajan</td><td>Ei dynamiikkaa ohjaavia tageja</td><td>Lisää <code>[Bridge: drums drop out]</code> tai vastaavaa</td></tr>
+    <tr><td>Liian geneerinen soundi</td><td>Style-kenttä liian lyhyt tai liian yleinen</td><td>Lisää 2-3 tarkentavaa sanaa (esim. "akustinen", "lo-fi", "naisten laulu")</td></tr>
+    <tr><td>Lyriikat kummallisia</td><td>Suno keksi sanoja tyhjään tilaan</td><td>Täytä jokainen säe — älä jätä tyhjää</td></tr>
+    <tr><td>Kappale liian pitkä/lyhyt</td><td>Ei pituusohjausta</td><td>Säätele osastojen sanamäärää (vähemmän lyriikkaa = lyhyempi osasto)</td></tr>
+    <tr><td>Sekava genre-sekoitus</td><td>Ristiriitaiset tyylisanat</td><td>Pidä yksi genre + 1-2 tunnelmaa + 2-3 soitinta</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Iterointipäätökset — muuta vain YHTÄ asiaa kerrallaan</h2>
+
+<p>Tämä on ehkä koko oppitunnin tärkein kohta. Kun generoitu tulos ei ole hyvä, älä muokkaa koko promptia. Muuta <em>yhtä</em> asiaa ja generoi uudestaan. Tämä kertoo sinulle, mikä muutos vaikuttaa mihin.</p>
+
+<div class="warn">
+  <strong>Älä koskaan tee näin:</strong> "Tämä ei toimi, vaihdan kaikki tyylisanat, lyriikat ja metatagit." Et koskaan opi, mikä muutos vaikutti.
+</div>
+
+<div class="key">
+  <strong>Iterointijärjestys:</strong>
+  <ol>
+    <li>Generoi kerran. Kuuntele loppuun.</li>
+    <li>Merkitse <em>yksi</em> ongelma: väärä tunnelma / väärä rakenne / puuttuva instrumentti / liian lyhyt.</li>
+    <li>Muokkaa <em>vain sitä</em> osaa promptista.</li>
+    <li>Generoi uudestaan.</li>
+    <li>Vertaa: parantiko?</li>
+    <li>Toista kunnes hyvä.</li>
+  </ol>
+</div>
+
+<h2>6. Käytännön harjoitus — neljä askelta</h2>
+
+<p>Seuraa näitä askelia. Jokaisen kohdalla voit kopioida tuloksen lomakkeeseen ja lähettää minulle.</p>
+
+<h3>Askel 1: Brief (5 min)</h3>
+<p>Vastaa oppitunnin alun kysymyksiin lyhyesti. Pidä brief tiiviinä — yksi lause per kohta.</p>
+
+<h3>Askel 2: Ensimmäinen prompti (10 min)</h3>
+<p>Muunna brief Style- ja Lyrics-kentiksi käyttäen yhtä yllä olevista genre-pohjista. Kopioi se Sunoon ja generoi.</p>
+
+<h3>Askel 3: Analysoi (5 min)</h3>
+<p>Kuuntele lopputulos. Täytä arviointilomake:</p>
+
+<ul>
+  <li>Onnistuiko genre? (kyllä / osittain / ei)</li>
+  <li>Onnistuiko tunnelma?</li>
+  <li>Onnistuiko rakenne?</li>
+  <li>Mikä oli paras yllätys?</li>
+  <li>Mikä oli suurin pettymys?</li>
+</ul>
+
+<h3>Askel 4: Iteroi (10 min)</h3>
+<p>Valitse <em>yksi</em> ongelma. Muokkaa sitä. Generoi uudestaan. Toista 2-3 kertaa.</p>
+
+<form id="quiz" onsubmit="return false;">
+  <div style="margin-bottom: 1rem;">
+    <label for="q1" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">1. Brief — mitä yrität tehdä? (genre, tunnelma, lyhyesti)</label>
+    <textarea id="q1" rows="3"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q2" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">2. Ensimmäinen Style-kenttä — mitä kirjoitit?</label>
+    <textarea id="q2" rows="2"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q3" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">3. Lyrics-kentän runko — mitä metatageja käytit?</label>
+    <textarea id="q3" rows="3" placeholder="Esim. [Intro: piano] [Verse 1] ... [Chorus] ... jne."></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q4" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">4. Ensimmäisen generoinnin tulos — mikä toimi, mikä ei?</label>
+    <textarea id="q4" rows="3"></textarea>
+  </div>
+  <div style="margin-bottom: 1rem;">
+    <label for="q5" style="display:block; font-weight: 600; margin-bottom: 0.3rem;">5. Mitä aiot muuttaa seuraavaksi?</label>
+    <textarea id="q5" rows="2"></textarea>
+  </div>
+  <div style="display:flex; gap: 0.5rem; align-items:center; flex-wrap: wrap;">
+    <button type="button" onclick="copyAnswers()">📋 Kopioi kaikki vastaukset</button>
+    <button type="button" onclick="clearAnswers()" style="background: transparent; color: var(--muted); border: 1px solid var(--rule);">Tyhjennä</button>
+    <span id="status" style="color: var(--accent); font-size: 0.9rem;"></span>
+  </div>
+</form>
+
+<script>
+function copyAnswers() {
+  const labels = ['Brief', 'Style-kenttä', 'Lyrics-runko', 'Ensimmäisen generoinnin tulos', 'Seuraava muutos'];
+  const a = [1,2,3,4,5].map((i, idx) => labels[idx] + ':\n' + (document.getElementById('q'+i).value.trim() || '(tyhjä)')).join('\n\n');
+  navigator.clipboard.writeText(a).then(() => {
+    document.getElementById('status').textContent = '✓ Kopioitu — liitä tähän keskusteluun, niin käyn läpi';
+    setTimeout(() => document.getElementById('status').textContent = '', 6000);
+  });
+}
+function clearAnswers() {
+  [1,2,3,4,5].forEach(i => document.getElementById('q'+i).value = '');
+  document.getElementById('status').textContent = '';
+}
+</script>
+
+<hr>
+
+<h2>Yhteenveto — mitä tästä oppitunnista jää käteen</h2>
+
+<ul>
+  <li><strong>Brief ennen promptia</strong> — 7 kysymystä, jotka pakottavat sinut päättämään mitä teet</li>
+  <li><strong>Brief → prompti -kaava</strong> — toistettava muunnos</li>
+  <li><strong>4 genre-pohjaa</strong> — kopioi ja muokkaa</li>
+  <li><strong>7 yleistä virhettä</strong> — ja niiden korjaukset</li>
+  <li><strong>Iteroinnin kultainen sääntö</strong> — yksi muutos kerrallaan</li>
+  <li><strong>5-kysymyksen lomake</strong> — käytä joka kappaleen kanssa, lähetä minulle jos haluat palautetta</li>
+</ul>
+
+<h2>Lähteet</h2>
+<ul>
+  <li><a href="https://blakecrosley.com/guides/suno">Suno V5.5 Reference (Blake Crosley)</a></li>
+  <li><a href="https://hookgenius.app/learn/suno-prompt-guide-2026/">Suno AI Prompt Guide 2026</a> — 100+ valmista esimerkkiä</li>
+  <li><a href="https://www.reddit.com/r/SunoAI/">r/SunoAI</a> — yhteisö jossa voit jakaa tuloksia ja saada palautetta</li>
+</ul>
+
+<footer>
+  <p><strong>Tärkein asia:</strong> tämä on työpaja, ei teoriaa. Kirjoita brief, lähetä minulle, niin käyn sen läpi ja ehdotan parannuksia ennen kuin edes avaat Sunon.</p>
+  <p><a href="../index.html">← Takaisin oppimateriaali-hakemistoon</a></p>
+</footer>
+
+</body>
+</html>

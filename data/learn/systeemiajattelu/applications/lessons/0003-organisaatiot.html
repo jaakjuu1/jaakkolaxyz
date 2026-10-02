@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0003-organisaatiot — Organisaatiot ja VSM</title>
+<style>
+  :root {
+    --bg: #fbfaf6; --ink: #1a1a1a; --muted: #666; --rule: #d8d4c7;
+    --accent: #8a3a2a; --accent-soft: #f3e9e1; --code-bg: #f4f1e8; --max: 38rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #181715; --ink: #ece8de; --muted: #9a958a; --rule: #3a3530; --accent: #d28a72; --accent-soft: #2a2520; --code-bg: #221f1a; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: Georgia, "Times New Roman", serif; line-height: 1.7; font-size: 1.05rem; }
+  main { max-width: var(--max); margin: 3rem auto; padding: 0 1.5rem; }
+  h1, h2, h3 { font-family: Georgia, serif; line-height: 1.25; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; margin: 0 0 0.5rem; }
+  h2 { font-size: 1.4rem; margin: 2.5rem 0 0.8rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  h3 { font-size: 1.15rem; margin: 1.8rem 0 0.6rem; color: var(--accent); }
+  p { margin: 0.9rem 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  a:hover { border-bottom-color: var(--accent); }
+  code { background: var(--code-bg); padding: 0.08rem 0.3rem; border-radius: 3px; font-size: 0.92em; font-family: "SF Mono", Menlo, monospace; }
+  blockquote { border-left: 3px solid var(--accent); margin: 1.5rem 0; padding: 0.5rem 1.2rem; background: var(--accent-soft); font-style: italic; }
+  hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+  nav.path { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+  nav.path a { color: var(--muted); border-bottom: none; }
+  .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .reflect { background: var(--code-bg); border-left: 3px solid var(--accent); padding: 1rem 1.2rem; margin: 2rem 0; }
+  .reflect h3 { margin-top: 0; }
+  .copy-btn { background: var(--accent); color: var(--bg); border: 0; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; }
+  .copy-btn:hover { opacity: 0.85; }
+  textarea.copy-target { width: 100%; min-height: 100px; margin-top: 0.8rem; padding: 0.5rem; font-family: inherit; font-size: 0.95rem; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+<nav class="path"><a href="../../index.html">Systeemiajattelu</a> › <a href="../index.html">Sovellukset</a> › Oppitunti 3</nav>
+
+<h1>Organisaatiot ja VSM</h1>
+<p class="meta">Oppitunti 3 / 6 · ~22 min</p>
+
+<h2>Miksi useimmat organisaatiot eivät selviä</h2>
+<p>Surullinen tilastofakta: <strong>suurin osa organisaatioista epäonnistuu</strong>. Startupit kuolevat, keskisuuret yritykset eivät koskaan skaalaudu, suuret yhtiöt ajautuvat byrokratiaan, julkiset organisaatiot jähmettyvät. Tämä ei ole sattumaa — se on rakenteellinen piirre.</p>
+
+<p>Stafford Beerin Viable System Model selittää <strong>miksi</strong>: useimmilla organisaatioilla ei ole niitä viittä säätelytasoaa, jotka tekisivät niistä elinkelpoisia. Ne ovat elinkelpoisia vain hetken, kunnes ympäristö muuttuu ja rakenne paljastuu puutteelliseksi.</p>
+
+<blockquote>"Suurin osa organisaatioista ei ole suunniteltu — ne ovat kasvaneet. Ja kasvaneet organismit, joilta puuttuu elintärkeitä elimiä, kuolevat." — Stafford Beer</blockquote>
+
+<h2>Tyypillisiä epäonnistumisen malleja</h2>
+
+<h3>Malli 1: S1 ilman autonomiaa</h3>
+<p>Yritys, jossa jokaista päätöstä varten tarvitaan hyväksyntä ylimmältä johdolta. Alaisten motivaatio katoaa, päätökset viivästyvät, innovaatio tyrehtyy. Esimerkki: suuret byrokraattiset organisaatiot, joissa keskijohto on ylikuormitettu.</p>
+
+<h3>Malli 2: S2 puuttuu</h3>
+<p>Yritys, jossa osastot eivät koordinoi keskenään. Myynti lupaa asiakkaalle jotain, mitä tuotanto ei pysty toimittamaan. Tuotekehitys tekee päätöksiä, jotka rikkovat markkinoinnin suunnitelmat. Esimerkki: tyypillinen "siilo-organisaatio".</p>
+
+<h3>Malli 3: S3 ylikorostuu</h3>
+<p>Yritys, jossa valvonta on niin tiukkaa, että ihmiset eivät uskalla tehdä mitään. Kaikki raportoidaan, kaikki hyväksytetään, kaikki dokumentoidaan. Tehokkuus laskee, innovaatio kuolee. Esimerkki: liiallinen compliance-kulttuuri.</p>
+
+<h3>Malli 4: S4 puuttuu</h3>
+<p>Yritys, joka on sisäisesti tehokas mutta ulkoisesti sokea. Se tekee samaa asiaa yhä paremmin, vaikka maailma on muuttunut. Esimerkki: Kodak (filmi), Blockbuster (videovuokraamo), Nokia (peruspuhelin).</p>
+
+<h3>Malli 5: S5 puuttuu</h3>
+<p>Yritys, jolla ei ole selkeää identiteettiä. Se tekee sitä mitä sattuu, kopioi kilpailijoita, vaihtaa suuntaa joka vuosi. Ihmiset eivät tiedä, mitä varten he oikeasti työskentelevät. Esimerkki: monet startupit, joilla on liiketoimintasuunnitelma mutta ei visiota.</p>
+
+<h2>Tapaus: Boeing 737 MAX</h2>
+<p>Boeing 737 MAX -katastrofit (Lion Air 610 vuonna 2018 ja Ethiopian Airlines 302 vuonna 2019, yhteensä 346 ihmistä) ovat klassinen esimerkki organisaation systeemisestä epäonnistumisesta.</p>
+
+<p>Boeing oli aikaisemmin insinöörijohtoinen yhtiö, joka rakensi lentokoneita turvallisuus ensin. 1990-luvulta lähtien se alkoi muuttua talousjohtoiseksi. Muutos näkyi:</p>
+
+<ul>
+<li><strong>S1 (operatiivinen):</strong> tuotantoa kiihdytettiin, insinöörit ohitettiin.</li>
+<li><strong>S2 (koordinaatio):</strong> eri tiimit eivät kommunikoineet riittävästi.</li>
+<li><strong>S3 (valvonta):</strong> turvallisuuskulttuuri heikkeni, FAA:n valvonta löystyi.</li>
+<li><strong>S4 (strategia):</strong> kiire kilpailla Airbusin A320neo:n kanssa syrjäytti turvallisuuden prioriteettina.</li>
+<li><strong>S5 (identiteetti):</strong> "tehokas osakkeenomistaja-arvon tuottaja" korvasi "lentokoneiden rakentaja".</li>
+</ul>
+
+<p>MCAS-järjestelmä — joka aiheutti onnettomuudet — oli seurausta systeemisestä epäonnistumisesta, ei yksittäisestä virheestä.</p>
+
+<h2>Tapaus: Dropboxin kasvu</h2>
+<p>Dropbox on positiivinen esimerkki VSM:n onnistuneesta soveltamisesta. Yritys kasvoi nopeasti ja säilytti elinkelpoisuutensa, koska se ymmärsi rekursion.</p>
+
+<p>Drew Houston, perustaja, kertoi Public-tyylisesti, miten Dropboxin kasvu jakautui <strong>pienempiin, autonomisiin yksiköihin</strong>, joista kukin sisälsi oman VSM:n. Sen sijaan, että olisi rakennettu yksi jättimäinen organisaatio, Dropbox rakensi <em>useita pieniä VSM:iä</em>, jotka toimivat rinnakkain.</p>
+
+<p>Keskeiset opit:</p>
+<ul>
+<li>Jokainen tiimi oli riittävän autonominen tekemään päätöksiä.</li>
+<li>Tiimit koordinoivat keskenään kevyiden mekanismien kautta (yhteiset alustat, säännölliset synkat).</li>
+<li>Sisäinen auditointi (S3*) oli jatkuvaa, ei kerran vuodessa.</li>
+<li>Strategia (S4) pysyi ketteränä, koska tiimit toivat havaintoja ylös.</li>
+<li>Identiteetti (S5) — "yksinkertaista elämä" — pysyi vakaana.</li>
+</ul>
+
+<h2>Tapaus: julkishallinnon jähmettyminen</h2>
+<p>Monet julkiset organisaatiot kärsivät <strong>S2:n puutteesta</strong>. Eri osastot eivät koordinoi, ja tuloksena on kansalaisille näkyvää tehottomuutta:</p>
+
+<ul>
+<li>Terveydenhuollon eri yksiköt eivät jaa tietoa.</li>
+<li>Koulujen ja sosiaalitoimen yhteistyö on olematonta.</li>
+<li>Verohallinnon ja työllisyyspalveluiden välillä ei ole yhteyttä.</li>
+</ul>
+
+<p>Ratkaisu ei ole "lisää byrokratiaa" vaan <strong>kytkösten rakentaminen</strong>: yhteiset tietojärjestelmät, moniammatilliset tiimit, jaettu päätöksenteko. Tämä on S2-tason työtä.</p>
+
+<h2>Sovellus: oman organisaation diagnoosi</h2>
+<p>Voit käyttää VSM:ää työkaluna <strong>diagnosoidaksesi</strong> omaa työpaikkaasi, harrastustasi tai projektiasi. Käy jokainen taso läpi:</p>
+
+<ol>
+<li><strong>S1 — Toiminnallinen yksikkö:</strong> Mitkä ovat selkeitä, autonomisia yksiköitä? Onko niillä valtaa tehdä päätöksiä?</li>
+<li><strong>S2 — Koordinaatio:</strong> Miten yksiköt puhuvat keskenään? Onko ristiriitoja, joita ei ratkaista?</li>
+<li><strong>S3 — Sisäinen valvonta:</strong> Miten laatua ja tehokkuutta seurataan? Onko säännöllinen auditointi?</li>
+<li><strong>S4 — Strategia ja tulevaisuus:</strong> Miten organisaatio ennakoi muutoksia? Onko innovaatio?</li>
+<li><strong>S5 — Identiteetti:</strong> Mikä on organisaation <em>sielu</em>? Miksi ihmiset ovat täällä?</li>
+</ol>
+
+<p>Vastaukset paljastavat tyypillisesti 1–2 tasoa, jotka ovat alikehittyneitä. Nämä ovat kehityskohteita.</p>
+
+<h2>Konkreettinen interventio: S2:n rakentaminen</h2>
+<p>Jos S2 (koordinaatio) on organisaatiosi heikoin lenkki, tässä neljä konkreettista interventiota:</p>
+
+<ol>
+<li><strong>Yhteinen kieli:</strong> käyttäkää samoja termejä, samoja määritelmiä, samoja mittareita. Kun "asiakas" tarkoittaa jokaiselle samaa, kommunikaatio paranee.</li>
+<li><strong>Säännölliset poikkifunktionaaliset tapaamiset:</strong> viikoittain tai kuukausittain tiimit kohtaavat jakamaan tilannettaan.</li>
+<li><strong>Jaetut tavoitteet:</strong> yksiköiden tavoitteiden täytyy sisältää yhteistyöelementti, ei pelkästään oman yksikön mittareita.</li>
+<li><strong>Konfliktienratkaisumekanismit:</strong> selkeät prosessit, joilla ristiriidat ratkaistaan nopeasti, ennen kuin ne kärjistyvät.</li>
+</ol>
+
+<h2>Yhteenveto</h2>
+<p>Useimmat organisaatiot epäonnistuvat, koska niiltä puuttuu yksi tai useampi VSM:n viidestä tasosta. Boeing 737 MAX on traumaattinen esimerkki systeemisestä epäonnistumisesta. Dropbox osoittaa, että VSM-periaatteiden tietoinen soveltaminen voi tuottaa kasvua ja elinkelpoisuutta. Käytännössä VSM on tehokas työkalu oman organisaation tilan arviointiin ja kehittämiseen.</p>
+
+<hr>
+
+<div class="reflect">
+<h3>Pohdittavaksi</h3>
+<p>Valitse yksi organisaatio, johon kuulut. Käy VSM:n viisi tasoa läpi. Missä tasossa organisaatiosi on vahva, missä heikko? Mikä on ensisijainen kehityskohde? Mitä yksinkertaista interventiota voisit itse ehdottaa?</p>
+<textarea class="copy-target" placeholder="Kirjoita vastauksesi tähän..."></textarea>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.value); alert('Kopioitu leikepöydälle');">Kopioi vastaukset</button>
+</div>
+
+<h3 style="margin-top: 3rem;">Systeeminen silmä</h3>
+<p>Tämän oppitunnin jälkeen sinulla on yksi uusi "silmä": kyky nähdä organisaatio <em>viitenä sisäkkäisenä säätelyjärjestelmänä</em> eikä vain yhtenä rakennelmana. Kun seuraavan kerran koet ongelman työpaikalla — viestinnän katkeamisen, motivaation puutteen, muutosvastarinnan — kysy itseltäsi: <em>mikä VSM-taso on alikehittynyt?</em> Tämä yksinkertainen kysymys ohjaa sinut oikeaan suuntaan.</p>
+
+</main>
+</body>
+</html>

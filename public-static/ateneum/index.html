@@ -347,6 +347,12 @@
       <div class="loading">Ladataan ehdotusta…</div>
     </div>
 
+    <h2>Keho &amp; palautus</h2>
+    <p class="section-lead">Kirjastosta treeni- ja rentoutussuunnitelmat. Lyhyt ohje tulee sähköpostiin; kalenteriin ne menevät kun molemmat hyväksyvät.</p>
+    <div id="body-practice-card" class="hero">
+      <div class="loading">Ladataan…</div>
+    </div>
+
     <h2>Aikaehdotukset ja suunnitelmat</h2>
     <p class="section-lead">Valitse valmis idea tai luo oma. Ehdottamasi aika näkyy teille molemmille, mutta siitä tulee yhteinen suunnitelma vasta kumppanin hyväksynnällä.</p>
     <div class="section-actions human-write">
@@ -487,6 +493,16 @@
       <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Lähettää sinulle viikon ehdotuksen heti testiä varten.</div>
       <button class="btn btn-block human-write" onclick="testWeeklySend()">Lähetä minulle nyt</button>
       <div id="settings-test-msg" style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; text-align: center;"></div>
+    </div>
+
+    <div style="background: var(--card); border: 1px solid var(--rule); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+      <div style="font-size: 0.92rem; font-weight: 600; margin-bottom: 0.4rem;">Keho &amp; palautus</div>
+      <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 0.8rem;">Luo tämän viikon treeni- ja rentoutussuunnitelmat kirjastosta ja lähetä lyhyt sähköposti molemmille.</div>
+      <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.92rem; margin-bottom:0.6rem; cursor:pointer;">
+        <input type="checkbox" id="bp-conn-settings"> Sisällytä yhteysharjoitukset (tantra/hengitys/kosketus)
+      </label>
+      <button class="btn btn-primary btn-block human-write" onclick="proposeBodyPracticeWeek(true)">Luo ja lähetä tälle viikolle</button>
+      <div id="settings-body-msg" style="font-size: 0.85rem; color: var(--muted); margin-top: 0.5rem; text-align: center;"></div>
     </div>
   </section>
 </div>
@@ -999,8 +1015,111 @@ async function loadConnection() {
 }
 
 async function loadHome() {
-  await Promise.all([loadConnection(), loadWeeklySuggestion()]);
+  await Promise.all([loadConnection(), loadWeeklySuggestion(), loadBodyPractice()]);
   loadActivities();
+}
+
+const BODY_KIND_LABELS = { training: 'Treeni', recovery: 'Rentoutus', connection: 'Yhteys' };
+
+function formatBodyWhen(iso) {
+  try {
+    return new Date(iso).toLocaleString('fi-FI', {
+      weekday: 'short', day: 'numeric', month: 'numeric',
+      hour: 'numeric', minute: '2-digit'
+    });
+  } catch { return iso; }
+}
+
+async function loadBodyPractice() {
+  const card = document.getElementById('body-practice-card');
+  if (!card) return;
+  card.innerHTML = '<div class="loading">Ladataan…</div>';
+  try {
+    const data = await api('/body-practice/week');
+    const items = data.activities || [];
+    if (!items.length) {
+      card.innerHTML = `
+        <div class="label">Tämän viikon keho &amp; palautus</div>
+        <h3>Ei vielä suunnitelmaa</h3>
+        <p>Kirjastosta saa 2 treeniä ja 2 rentoutusta ohjeineen. Molemmat saavat lyhyen sähköpostin.</p>
+        ${canWrite() ? `<div class="actions human-write" style="display:flex; flex-direction:column; gap:0.5rem;">
+          <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.88rem; cursor:pointer;">
+            <input type="checkbox" id="bp-conn-home" ${document.getElementById('bp-conn-home')?.checked ? 'checked' : ''}> Sisällytä yhteysharjoitukset
+          </label>
+          <button class="btn btn-primary" onclick="proposeBodyPracticeWeek(true)">Luo suunnitelma + lähetä maili</button>
+        </div>` : ''}
+      `;
+      return;
+    }
+    const list = items.map(a => {
+      const kind = BODY_KIND_LABELS[a.kind] || a.kind || '';
+      const state = a.planState === 'accepted' ? '✓ hyväksytty' :
+        a.acceptedByMe ? 'odottaa kumppania' : 'odottaa sinua';
+      const instr = (a.instructions || '').length > 120
+        ? (a.instructions.slice(0, 117) + '…')
+        : (a.instructions || '');
+      return `<div style="border-top:1px solid var(--rule); padding:0.65rem 0;">
+        <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--accent); font-weight:600;">${escapeHtml(kind)}</div>
+        <div style="font-weight:600; margin:0.15rem 0;">${escapeHtml(a.title)}</div>
+        <div class="meta" style="margin:0.2rem 0;">
+          <span class="chip">${escapeHtml(formatBodyWhen(a.scheduledFor))}</span>
+          <span class="chip">${formatDuration(a.durationMin)}</span>
+          <span class="chip">${escapeHtml(state)}</span>
+        </div>
+        <p style="font-size:0.86rem; color:var(--muted); margin:0.25rem 0 0;">${escapeHtml(instr)}</p>
+        <div class="actions" style="margin-top:0.4rem;">
+          <a class="btn" href="activity.html?id=${encodeURIComponent(a.id)}">Avaa</a>
+        </div>
+      </div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="label">Viikko ${escapeHtml(data.weekKey || '')}</div>
+      <h3>Treeni &amp; rentoutus</h3>
+      <p style="font-size:0.88rem;color:var(--muted);margin:0 0 0.4rem;">Hyväksy ajat → kalenteriin. Ohjeet myös sähköpostissa.</p>
+      ${list}
+      ${canWrite() ? `<div class="actions human-write" style="margin-top:0.6rem; display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+        <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.85rem; cursor:pointer;">
+          <input type="checkbox" id="bp-conn-list" ${document.getElementById('bp-conn-list')?.checked ? 'checked' : ''}> yhteys
+        </label>
+        <button class="btn" onclick="loadBodyPractice()">Päivitä näkymä</button>
+      </div>` : ''}
+    `;
+  } catch (e) {
+    card.innerHTML = `<div class="empty">Virhe: ${escapeHtml(e.message)}</div>`;
+  }
+}
+
+async function proposeBodyPracticeWeek(sendEmail) {
+  const settingsMsg = document.getElementById('settings-body-msg');
+  if (settingsMsg) settingsMsg.textContent = 'Luodaan…';
+  const includeConnection = 
+    document.getElementById('bp-conn-home')?.checked ||
+    document.getElementById('bp-conn-list')?.checked ||
+    document.getElementById('bp-conn-settings')?.checked ||
+    false;
+  try {
+    const r = await api('/body-practice/propose', {
+      method: 'POST',
+      body: JSON.stringify({ sendEmail: !!sendEmail, includeConnection })
+    });
+    const n = (r.activities || []).length;
+    const mailed = (r.email || []).filter(x => x.sent).length;
+    const skipped = (r.email || []).filter(x => x.skipped).length;
+    let msg = r.reused
+      ? `Tämän viikon suunnitelma on jo olemassa (${n} kohtaa).`
+      : `Luotu ${n} kohtaa.`;
+    if (sendEmail) {
+      if (mailed) msg += ` Sähköposti lähetetty (${mailed}).`;
+      else if (skipped) msg += ' Sähköposti ohitettiin (jo lähetetty tai pois päältä).';
+      else msg += ' Sähköpostia ei lähetetty (tarkista SES / asetukset).';
+    }
+    toast(msg);
+    if (settingsMsg) settingsMsg.textContent = '✓ ' + msg;
+    await loadHome();
+  } catch (e) {
+    toast('Keho-suunnitelma epäonnistui: ' + e.message);
+    if (settingsMsg) settingsMsg.textContent = 'Virhe: ' + e.message;
+  }
 }
 
 async function loadWeeklySuggestion() {
