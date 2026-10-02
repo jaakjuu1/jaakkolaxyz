@@ -130,6 +130,13 @@ Pick the path that fits. In both cases the result must end up in
    `manual-publish.sh` (any multi-path track; the former fails for them). Both
    rsync to `data/learn/<slug>/` on production and back up the previous version.
 3. **Pull the result into this repo** (see "Keeping git in sync") and commit.
+   Hermes does this itself after every verified publish (Hermes skill
+   `jaakkola-xyz-site`): a worktree from `origin/main`, `rsync` of the published
+   track down from production, a branch `learn/<slug>-<date>` and a pull request.
+   Juuso merges it. Until the PR is merged, production's git checkout shows
+   `data/learn/**` as modified; that is expected, not drift to be "fixed".
+   After the merge, realign the checkout as described in
+   [deploy.md](deploy.md) (mixed `git reset`, files untouched).
 
 ### B. Directly by an agent working in this repo
 

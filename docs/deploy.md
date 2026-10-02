@@ -146,7 +146,10 @@ The expected `git status` is empty except for ignored runtime files. Never use
 `git reset --hard`, `git clean` or `git pull` there: untracked and ignored
 runtime data (`.env`, databases, `data/learn/.backups`) lives in that directory.
 Anything unexpected in `git status` is drift: stop and investigate it, do not
-overwrite it. Before the reset, compare the set of files that differ between the
+overwrite it. The exception is `data/learn/**`: Hermes publishes learning tracks
+straight to production and syncs them into git through a pull request (see
+[learn-sections.md](learn-sections.md)), so modified or new files there are
+expected until that PR is merged. Before the reset, compare the set of files that differ between the
 working tree and `origin/main` against the files you expect (read-only: load
 `origin/main` into a temporary `GIT_INDEX_FILE` and run `git diff --name-only`).
 Sort both lists with `LC_ALL=C`, or the comparison fails on ordering alone.
