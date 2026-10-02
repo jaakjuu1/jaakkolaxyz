@@ -79,7 +79,9 @@ ssh teppo-server 'cd ~/jaakkolaxyz && B=backups/db-$(date +%Y%m%d-%H%M%S) && mkd
 `.backup` is safe on a live WAL database. Check the copies with
 `PRAGMA integrity_check;`. Do not copy `data/*.db` with `cp` while the service is
 running. Backups sit on the same disk; copy them off the server if the data
-matters beyond a bad deploy. Migrations run on service start
+matters beyond a bad deploy (`scp -p teppo-server:jaakkolaxyz/backups/db-<ts>/* ~/backups/jaakkolaxyz/db-<ts>/`,
+directory mode 700, then compare `sha256sum` per file: `SHA256SUMS` holds server-side paths, so
+`sha256sum -c` does not work off the server). Migrations run on service start
 (`migrateAteneumSchema`), so test schema changes against a copy of the database
 (`tests/ateneum/migration_qa.py`) before the live start.
 
@@ -120,4 +122,7 @@ The expected `git status` is empty except for ignored runtime files. Never use
 `git reset --hard`, `git clean` or `git pull` there: untracked and ignored
 runtime data (`.env`, databases, `data/learn/.backups`) lives in that directory.
 Anything unexpected in `git status` is drift: stop and investigate it, do not
-overwrite it.
+overwrite it. Before the reset, compare the set of files that differ between the
+working tree and `origin/main` against the files you expect (read-only: load
+`origin/main` into a temporary `GIT_INDEX_FILE` and run `git diff --name-only`).
+Sort both lists with `LC_ALL=C`, or the comparison fails on ordering alone.
