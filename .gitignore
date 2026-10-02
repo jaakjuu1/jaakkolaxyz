@@ -26,3 +26,6 @@ _create_bot_user.cjs
 diag.cjs
 test-login.cjs
 test-pass.cjs
+
+# Stray output of a mis-targeted manual publish (slug ".")
+data/learn/teach-manual-publish-*/
