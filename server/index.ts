@@ -8,6 +8,8 @@ import { loadAteneumEnvFiles } from "./ateneum-env";
 import { initAteneumSchema, migrateAteneumSchema } from "./ateneum-db";
 import { seedAteneum } from "./ateneum-seed";
 import { registerAteneumRoutes } from "./ateneum-routes";
+import { initDashboardSchema } from "./dashboard-db";
+import { registerDashboardRoutes } from "./dashboard-routes";
 
 // Load local .env / .env.google before reading process.env in modules below.
 loadAteneumEnvFiles();
@@ -87,6 +89,18 @@ async function startServer() {
   );
   registerAteneumRoutes(app);
   log("ateneum routes registered", "ateneum");
+
+  // Ops dashboard — read-only view of the sites and servers Juuso runs
+  // (served at /dashboard/, API at /api/dashboard/*; Caddy adds Basic Auth).
+  // A failure here must not take the website down.
+  try {
+    initDashboardSchema();
+    log("dashboard schema ready", "dashboard");
+    registerDashboardRoutes(app);
+    log("dashboard routes registered", "dashboard");
+  } catch (err: any) {
+    console.error("[dashboard] initialization failed:", err);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
