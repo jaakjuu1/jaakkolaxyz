@@ -17,7 +17,7 @@ service restarts. A runbook is a plan, not permission.
 | App directory | `/home/clawdbot/jaakkolaxyz` (git checkout of this repo, plus untracked runtime files) |
 | Service | `jaakkolaxyz.service` (systemd): `node dist/index.cjs`, `WorkingDirectory` = app directory, `EnvironmentFile` = `.env`, `PORT=5000`, `Restart=on-failure` |
 | Reverse proxy | Caddy: everything on `jaakkola.xyz` → `localhost:5000`; `/api/dashboard/*` and `/dashboard/*` additionally sit behind basic auth (the dashboard code is not in the running bundle, so those routes have nothing behind them) |
-| Runtime data, **not in git** | `.env`, `data/ateneum.db`, `data/dashboard.db` (SQLite, WAL mode), `releases/`, `backups/` |
+| Runtime data, **not in git** | `.env`, `data/ateneum.db`, `data/dashboard.db`, `data/contact.db` (SQLite, WAL mode), `releases/`, `backups/` |
 
 There is no CI/CD. Production is updated by copying built files over SSH. The
 server never builds from git itself.
@@ -41,7 +41,7 @@ server never builds from git itself.
    ```bash
    RELEASE_DIR=$(mktemp -d /tmp/jaakkolaxyz-release.XXXXXX)
    git worktree add --detach "$RELEASE_DIR" "$MERGE_SHA" && cd "$RELEASE_DIR"
-   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run build
+   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run test:contact && npm run build
    test -s dist/index.cjs && node --check dist/index.cjs
    ```
 
@@ -90,13 +90,36 @@ separate service:
 - It needs `ssh2` (runtime external; installed on the server) and so shows up in
   `dist/runtime-externals.json`; check it like the other externals.
 
+## Contact form
+
+`POST /api/contact` (`server/contact.ts`, `server/contact-db.ts`) is the public contact form.
+
+- Every valid submission is **stored first** in `data/contact.db` (table `contact_submissions`), then
+  emailed through Resend. The request succeeds if at least one of the two worked; it returns 500
+  only when both failed. Nothing from the message is written to the logs.
+- Email needs two variables in the server's `.env`: `RESEND_API_KEY` and `CONTACT_TO_EMAIL` (the
+  recipient is deliberately not in the code). Without both, submissions are only stored and the
+  service logs a warning at start. `CONTACT_FROM_EMAIL` is optional: the default sender
+  `onboarding@resend.dev` only delivers to the Resend account owner's own address, so use an address on
+  a verified domain to send anywhere else.
+- Input is validated (length limits, valid email), user text is HTML-escaped in the email, the subject
+  is forced to one line, and the route allows 5 requests per IP per 10 minutes (in memory).
+- Read stored messages on the server: `sqlite3 data/contact.db 'select * from contact_submissions order by id desc'`.
+  There is intentionally no public endpoint that lists them.
+- `resend` is bundled (`script/build.ts` allowlist), so a release needs no `npm install` on the server.
+  Its optional `@react-email/render` import is lazy and only used for React email bodies, so like
+  `pg-native` it may be absent from `node_modules`.
+- History: before 2026-10 the form wrote to Postgres, `DATABASE_URL` was never set in production, and
+  every submission failed with HTTP 500 (21 logged attempts between 2026-08-28 and 2026-09-26, none
+  recoverable). A public `GET /api/contact/submissions` listing existed in the same code; it is gone.
+
 ## Backups
 
 Before any release or schema change:
 
 ```bash
 ssh teppo-server 'cd ~/jaakkolaxyz && B=backups/db-$(date +%Y%m%d-%H%M%S) && mkdir -m 700 "$B" &&
-  for db in ateneum dashboard; do sqlite3 data/$db.db ".backup $B/$db.db"; done &&
+  for db in ateneum dashboard contact; do [ -f data/$db.db ] && sqlite3 data/$db.db ".backup $B/$db.db"; done &&
   cp -p .env "$B/env.bak" && chmod 600 "$B"/* && echo "$B"'
 ```
 
