@@ -29,6 +29,7 @@ server never builds from git itself.
 | `data/learn/**` (learning tracks) | no | no | rsync, see [learn-sections.md](learn-sections.md) |
 | `content/blog/{en,fi}/*.md` | no | no | copy the files; posts are read from disk on each request (`server/routes.ts`) |
 | Blog images (`client/public/blog-images/`) | no | no | copy into **both** `client/public/blog-images/` and `dist/public/blog-images/` on the server (static files are served from `dist/public/`) |
+| Static report pages (`client/public/reports/<slug>/`) | no | no | copy into **both** `client/public/reports/` and `dist/public/reports/` on the server |
 | `client/`, `server/`, `shared/`, `public-static/`, `package.json` | **yes** | **yes** | full release (below) |
 
 ## Full release (code or client)
@@ -40,7 +41,7 @@ server never builds from git itself.
    ```bash
    RELEASE_DIR=$(mktemp -d /tmp/jaakkolaxyz-release.XXXXXX)
    git worktree add --detach "$RELEASE_DIR" "$MERGE_SHA" && cd "$RELEASE_DIR"
-   npm ci && npm run check && npm run test:ateneum && npm run build
+   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run build
    test -s dist/index.cjs && node --check dist/index.cjs
    ```
 
@@ -65,6 +66,29 @@ server never builds from git itself.
 The Ateneum P0 runbook contains a complete, tested implementation of steps 4-7
 (manifest-based backup, drift check after stop, restore on failure). Reuse its
 structure for other releases.
+
+## Ops dashboard
+
+`https://jaakkola.xyz/dashboard/` is a read-only view of the sites and servers
+Juuso runs on `teppo-server` and Hostinger. It is part of this app, not a
+separate service:
+
+- Code: `server/dashboard-*.ts`, `shared/dashboard-schema.ts`,
+  `public-static/dashboard/`. It is switched on by the `initDashboardSchema()` /
+  `registerDashboardRoutes(app)` block in `server/index.ts`. That block **must
+  stay in the repo**: it once existed only in production's copy of
+  `server/index.ts` and vanished when a release overwrote the file.
+  `tests/dashboard/wiring.test.ts` fails if it goes missing.
+- Data: `data/dashboard.db` (SQLite, in the backups described below).
+- Access: Caddy puts Basic Auth in front of `/dashboard/*` and `/api/dashboard/*`.
+  If `DASHBOARD_API_TOKEN` is set in `.env`, the API also wants it in the
+  `X-Dashboard-Token` header (used by cron callers).
+- A check runs when `POST /api/dashboard/refresh` is called (button on the page,
+  or a cron caller). Checks over SSH use the aliases in the `clawdbot` user's
+  `~/.ssh/config`; `DASHBOARD_LOCAL_SERVER_ALIASES` names the aliases that mean
+  "this server".
+- It needs `ssh2` (runtime external; installed on the server) and so shows up in
+  `dist/runtime-externals.json`; check it like the other externals.
 
 ## Backups
 
@@ -122,7 +146,10 @@ The expected `git status` is empty except for ignored runtime files. Never use
 `git reset --hard`, `git clean` or `git pull` there: untracked and ignored
 runtime data (`.env`, databases, `data/learn/.backups`) lives in that directory.
 Anything unexpected in `git status` is drift: stop and investigate it, do not
-overwrite it. Before the reset, compare the set of files that differ between the
+overwrite it. The exception is `data/learn/**`: Hermes publishes learning tracks
+straight to production and syncs them into git through a pull request (see
+[learn-sections.md](learn-sections.md)), so modified or new files there are
+expected until that PR is merged. Before the reset, compare the set of files that differ between the
 working tree and `origin/main` against the files you expect (read-only: load
 `origin/main` into a temporary `GIT_INDEX_FILE` and run `git diff --name-only`).
 Sort both lists with `LC_ALL=C`, or the comparison fails on ordering alone.
