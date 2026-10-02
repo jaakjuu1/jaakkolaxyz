@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<title>Ops Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --rule: #e3e3df;
+    --ok: #2f7d32;
+    --warn: #c77700;
+    --crit: #c0392b;
+    --unknown: #555;
+    --auth: #5a6c7d;
+    --accent: #0a6e3a;
+    --code-bg: #f0f0ec;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    padding-bottom: 100px;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 0; }
+  h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 .25rem; }
+  .subtitle { color: var(--muted); margin-bottom: 1.5rem; font-size: .9rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; }
+  .meta .pill { display: inline-flex; align-items: center; gap: .5rem; }
+  .pill-label { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .pill-value { font-weight: 500; }
+
+  .toolbar { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+  button.refresh {
+    appearance: none; border: 1px solid var(--accent); background: var(--accent);
+    color: #fff; padding: .5rem 1rem; border-radius: 4px; cursor: pointer; font: inherit;
+  }
+  button.refresh:disabled { opacity: .6; cursor: not-allowed; }
+  button.refresh.secondary { background: transparent; color: var(--accent); }
+  .toolbar-status { color: var(--muted); font-size: .9rem; }
+
+  .group { margin-bottom: 2rem; }
+  .group h2 {
+    font-size: 1.05rem; font-weight: 600; margin: 0 0 .75rem; color: var(--ink);
+    padding-bottom: .35rem; border-bottom: 1px solid var(--rule);
+    display: flex; align-items: baseline; gap: .75rem;
+  }
+  .group h2 .group-count { color: var(--muted); font-size: .8rem; font-weight: 400; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: .75rem; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--rule); border-radius: 6px;
+    padding: .85rem 1rem; display: flex; flex-direction: column; gap: .35rem;
+  }
+  .card .name { font-weight: 600; font-size: .95rem; }
+  .card .url { color: var(--muted); font-size: .8rem; word-break: break-all; }
+  .card .row { display: flex; align-items: center; gap: .5rem; font-size: .85rem; }
+  .badge {
+    display: inline-block; padding: .15rem .55rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 500; text-transform: uppercase; letter-spacing: .03em;
+    color: #fff; background: var(--unknown);
+  }
+  .badge.ok        { background: var(--ok); }
+  .badge.warn      { background: var(--warn); }
+  .badge.crit      { background: var(--crit); }
+  .badge.auth      { background: var(--auth); }
+  .badge.unknown   { background: var(--unknown); }
+  .badge.degraded  { background: var(--warn); }
+  .card .status-label { font-weight: 500; }
+  .kind-label {
+    display: inline-block; color: var(--muted); border: 1px solid var(--rule);
+    border-radius: 999px; padding: .1rem .45rem; font-size: .72rem; background: #fafaf8;
+  }
+  .aliases { color: var(--muted); font-size: .78rem; }
+  .resources {
+    display: grid; gap: .35rem; margin-top: .25rem; padding-top: .45rem;
+    border-top: 1px solid var(--rule);
+  }
+  .resource-row {
+    display: grid; grid-template-columns: 4.8rem 1fr 3.8rem; gap: .5rem;
+    align-items: center; font-size: .78rem;
+  }
+  .resource-label { color: var(--muted); }
+  .resource-value { text-align: right; font-variant-numeric: tabular-nums; }
+  .meter { height: .42rem; border-radius: 999px; background: #ecece7; overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: inherit; background: var(--ok); }
+  .meter-fill.warn { background: var(--warn); }
+  .meter-fill.crit { background: var(--crit); }
+  .server-meta { color: var(--muted); font-size: .76rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .card .notes { color: var(--muted); font-size: .8rem; }
+  .card a.report-link { font-size: .8rem; color: var(--accent); text-decoration: none; }
+  .card a.report-link:hover { text-decoration: underline; }
+
+  .alerts { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: .85rem 1rem; margin-bottom: 1.5rem; }
+  .alerts.crit { border-left: 4px solid var(--crit); }
+  .alerts.warn { border-left: 4px solid var(--warn); }
+  .alerts h3 { font-size: .9rem; font-weight: 600; margin: 0 0 .5rem; }
+  .alerts ul { margin: 0; padding-left: 1.25rem; }
+  .alerts li { margin: .15rem 0; }
+  .alerts li small { color: var(--muted); }
+
+  footer { color: var(--muted); font-size: .8rem; text-align: center; padding: 2rem 0 0; }
+  code { background: var(--code-bg); padding: .1rem .3rem; border-radius: 3px; font-size: .85em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Ops Dashboard</h1>
+  <div class="subtitle">Tuotantosovellusten ja palvelimien tila · <code>jaakkola.xyz</code></div>
+
+  <div class="meta">
+    <div class="pill">
+      <span class="pill-label">Tila</span>
+      <span class="pill-value" id="overall">—</span>
+    </div>
+    <div class="pill">
+      <span class="pill-label">Tarkistettu</span>
+      <span class="pill-value" id="taken-at">—</span>
+    </div>
+    <div class="pill">
+      <span class="pill-label">Lähde</span>
+      <span class="pill-value" id="source">—</span>
+    </div>
+    <div class="pill">
+      <span class="pill-label">Kesto</span>
+      <span class="pill-value" id="duration">—</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="refresh" id="btn-refresh">Aja tarkistus nyt</button>
+    <button class="refresh secondary" id="btn-poll">Päivitä näkymä</button>
+    <span class="toolbar-status" id="toolbar-status">Ladataan...</span>
+  </div>
+
+  <div id="alerts-container"></div>
+  <div id="groups-container"></div>
+</div>
+
+<footer>
+  v0.3 · Typed checks + palvelinkohtainen resurssinäkymä.
+</footer>
+
+<script>
+(async function () {
+  const fmtDate = (ts) => ts ? new Date(ts * 1000).toLocaleString('fi-FI') : '—';
+  const STATUS_LABEL = {
+    'up': 'OK',
+    'down': 'ALHAALLA',
+    'degraded': 'HEIKENTYNYT',
+    'auth-protected': 'VAATII TUNNUKSET',
+    'unknown': 'EI TIETOA',
+  };
+  const STATUS_BADGE = {
+    'up': 'ok',
+    'down': 'crit',
+    'degraded': 'warn',
+    'auth-protected': 'auth',
+    'unknown': 'unknown',
+  };
+  const OVERALL_LABEL = { 'OK': 'OK', 'WARN': 'VAROITUS', 'CRITICAL': 'KRITITINEN' };
+  const KIND_LABEL = {
+    'server': 'Palvelin',
+    'website': 'Verkkosivu',
+    'static-site': 'Staattinen',
+    'api-health': 'API',
+    'admin-auth': 'Admin/Auth',
+    'staging': 'Staging',
+    'investigate': 'Selvitys',
+  };
+
+  function groupByCategory(sites, reports) {
+    const groups = { teppo: [], hostinger: [], kuukilab: [], other: [] };
+    for (const s of sites) {
+      const rep = reports[s.id];
+      groups[s.category] = groups[s.category] || [];
+      groups[s.category].push({ site: s, report: rep });
+    }
+    return groups;
+  }
+
+  function renderReport(report) {
+    return report || { status: 'unknown', notes: [] };
+  }
+
+  function pctClass(value, warn, crit) {
+    if (value === null || value === undefined || Number.isNaN(value)) return '';
+    if (value >= crit) return 'crit';
+    if (value >= warn) return 'warn';
+    return '';
+  }
+
+  function pctBar(label, value, suffix, warn, crit) {
+    if (value === null || value === undefined || Number.isNaN(value)) {
+      return `
+        <div class="resource-row">
+          <span class="resource-label">${escapeHtml(label)}</span>
+          <span class="meter"><span class="meter-fill" style="width:0%"></span></span>
+          <span class="resource-value">—</span>
+        </div>`;
+    }
+    const safe = Math.max(0, Math.min(100, Number(value)));
+    const klass = pctClass(safe, warn, crit);
+    return `
+      <div class="resource-row">
+        <span class="resource-label">${escapeHtml(label)}</span>
+        <span class="meter"><span class="meter-fill ${klass}" style="width:${safe}%"></span></span>
+        <span class="resource-value">${safe}${suffix}</span>
+      </div>`;
+  }
+
+  function renderResources(site, rep) {
+    if (site.kind !== 'server') return '';
+    const diskFree = Number.isFinite(rep.disk_free_pct) ? Number(rep.disk_free_pct) : null;
+    const diskUsed = diskFree === null ? null : 100 - diskFree;
+    const memoryUsed = Number.isFinite(rep.memory_used_pct) ? Number(rep.memory_used_pct) : null;
+    const containers = Number.isFinite(rep.container_count) ? Number(rep.container_count) : null;
+    const uptime = rep.server_uptime || '—';
+    return `
+      <div class="resources">
+        ${pctBar('Levy käyt.', diskUsed, '%', 80, 90)}
+        ${pctBar('Muisti', memoryUsed, '%', 85, 95)}
+        <div class="server-meta">
+          <span>Uptime: <strong>${escapeHtml(uptime)}</strong></span>
+          <span>Kontit: <strong>${containers === null ? '—' : containers}</strong></span>
+          ${diskFree === null ? '' : `<span>Levy vapaana: <strong>${diskFree}%</strong></span>`}
+        </div>
+      </div>`;
+  }
+
+  function renderCard({ site, report }) {
+    const rep = report || { status: 'unknown' };
+    const badge = STATUS_BADGE[rep.status] || 'unknown';
+    const label = STATUS_LABEL[rep.status] || 'EI TIETOA';
+    const notes = (rep.notes_json ? safeParse(rep.notes_json) : []) || [];
+    const visibleNotes = notes.filter(n => !String(n).startsWith('PASS ')).slice(0, 4);
+    const notesHtml = visibleNotes.length
+      ? `<div class="notes">${visibleNotes.map(n => escapeHtml(n)).join(' · ')}</div>`
+      : '';
+    const aliasesHtml = (site.aliases && site.aliases.length)
+      ? `<div class="aliases">Aliakset: ${site.aliases.map(a => escapeHtml(a.replace(/^https?:\/\//, ''))).join(', ')}</div>`
+      : '';
+    const reportLink = rep.id
+      ? `<a class="report-link" href="/dashboard/report.html?site=${encodeURIComponent(site.id)}">Markdown-raportti ↗</a>`
+      : '';
+    const resourcesHtml = renderResources(site, rep);
+    const http = rep.http_status ? `HTTP ${rep.http_status}` : '';
+    const kind = KIND_LABEL[site.kind] || site.kind || 'Kohde';
+    return `
+      <div class="card">
+        <div class="row">
+          <span class="badge ${badge}">${label}</span>
+          <span class="kind-label">${escapeHtml(kind)}</span>
+          ${http ? `<span class="status-label">${http}</span>` : ''}
+        </div>
+        <div class="name">${escapeHtml(site.name)}</div>
+        <div class="url">${escapeHtml(site.primary_url)}</div>
+        ${aliasesHtml}
+        ${resourcesHtml}
+        ${notesHtml}
+        ${reportLink}
+      </div>`;
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function safeParse(s) {
+    try { return JSON.parse(s); } catch (_) { return []; }
+  }
+
+  function renderSnapshot(data) {
+    const snap = data.snapshot;
+    const sites = data.sites || [];
+    const reports = data.reports || {};
+
+    if (!snap) {
+      document.getElementById('overall').textContent = 'EI AINEISTOA';
+      document.getElementById('taken-at').textContent = '—';
+      document.getElementById('source').textContent = '—';
+      document.getElementById('duration').textContent = '—';
+      document.getElementById('groups-container').innerHTML = `
+        <p>Ei vielä tarkistusdataa. Klikkaa <strong>Aja tarkistus nyt</strong>.</p>`;
+      return;
+    }
+
+    document.getElementById('overall').textContent = OVERALL_LABEL[snap.overall_status] || snap.overall_status;
+    document.getElementById('taken-at').textContent = fmtDate(snap.taken_at);
+    document.getElementById('source').textContent = snap.source;
+    document.getElementById('duration').textContent = `${snap.duration_ms} ms`;
+
+    const groups = groupByCategory(sites, reports);
+    const orderedCategories = ['teppo', 'hostinger', 'kuukilab', 'other'];
+    const categoryTitles = { teppo: 'Teppo-palvelin', hostinger: 'Hostinger-palvelin', kuukilab: 'Kuukilab-hosting', other: 'Muut' };
+
+    let html = '';
+    for (const cat of orderedCategories) {
+      const items = groups[cat] || [];
+      if (items.length === 0) continue;
+      html += `
+        <div class="group">
+          <h2>${categoryTitles[cat]} <span class="group-count">${items.length} kohdetta</span></h2>
+          <div class="grid">
+            ${items.map(renderCard).join('')}
+          </div>
+        </div>`;
+    }
+    document.getElementById('groups-container').innerHTML = html;
+
+    // Alertit
+    loadAlerts();
+  }
+
+  const apiBase = `${window.location.protocol}//${window.location.host}`;
+  const apiLocation = new URL(window.location.href);
+  const apiAuthHeader = apiLocation.username
+    ? { Authorization: `Basic ${btoa(`${decodeURIComponent(apiLocation.username)}:${decodeURIComponent(apiLocation.password)}`)}` }
+    : {};
+
+  function apiUrl(path) {
+    // Do not resolve against window.location.href: userinfo URLs such as
+    // https://user:pass@example.com/dashboard/ would leak credentials into
+    // the constructed fetch URL, and browsers reject that request outright.
+    return new URL(path, apiBase).toString();
+  }
+
+  function apiFetch(path, options = {}) {
+    return fetch(apiUrl(path), {
+      ...options,
+      credentials: 'same-origin',
+      headers: { ...(options.headers || {}), ...apiAuthHeader },
+    });
+  }
+
+  async function loadAlerts() {
+    try {
+      const res = await apiFetch('/api/dashboard/alerts');
+      const data = await res.json();
+      const alerts = (data.alerts || []).filter(a => !a.acknowledged);
+      const container = document.getElementById('alerts-container');
+      if (alerts.length === 0) { container.innerHTML = ''; return; }
+      const crit = alerts.filter(a => a.severity === 'CRITICAL');
+      const warn = alerts.filter(a => a.severity === 'WARN');
+      const klass = crit.length ? 'crit' : 'warn';
+      container.innerHTML = `
+        <div class="alerts ${klass}">
+          <h3>${crit.length ? 'Kriittiset' : 'Varoitukset'} (${alerts.length})</h3>
+          <ul>
+            ${alerts.map(a => `
+              <li>
+                <strong>${escapeHtml(a.severity)}</strong>: ${escapeHtml(a.message)}
+                <small> · ${fmtDate(a.created_at)}</small>
+              </li>`).join('')}
+          </ul>
+        </div>`;
+    } catch (e) {
+      // ei kriittinen
+    }
+  }
+
+  async function loadSnapshot() {
+    document.getElementById('toolbar-status').textContent = 'Ladataan...';
+    try {
+      const res = await apiFetch('/api/dashboard/snapshot');
+      const data = await res.json();
+      renderSnapshot(data);
+      const staleNote = data.is_stale ? ' (vanhentunut)' : '';
+      document.getElementById('toolbar-status').textContent =
+        `Päivitetty ${new Date().toLocaleTimeString('fi-FI')}${staleNote}`;
+    } catch (e) {
+      document.getElementById('toolbar-status').textContent = 'Virhe: ' + e.message;
+    }
+  }
+
+  async function manualRefresh() {
+    const btn = document.getElementById('btn-refresh');
+    btn.disabled = true;
+    btn.textContent = 'Tarkistetaan...';
+    document.getElementById('toolbar-status').textContent = 'Tarkistus käynnissä...';
+    try {
+      const res = await apiFetch('/api/dashboard/refresh', { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        document.getElementById('toolbar-status').textContent =
+          `Valmis: ${data.overall} (${data.duration_ms} ms)`;
+        await loadSnapshot();
+      } else {
+        document.getElementById('toolbar-status').textContent = 'Virhe: ' + (data.error || 'tuntematon');
+      }
+    } catch (e) {
+      document.getElementById('toolbar-status').textContent = 'Virhe: ' + e.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Aja tarkistus nyt';
+    }
+  }
+
+  document.getElementById('btn-refresh').addEventListener('click', manualRefresh);
+  document.getElementById('btn-poll').addEventListener('click', loadSnapshot);
+
+  await loadSnapshot();
+  // Hiljainen uudelleenlataus 60s välein
+  setInterval(loadSnapshot, 60000);
+})();
+</script>
+</body>
+</html>
