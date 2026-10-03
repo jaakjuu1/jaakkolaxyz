@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -256,6 +257,12 @@ function ContactForm({ content, toast }: { content: any, toast: any }) {
           <Button type="submit" className="w-full h-12 text-lg" disabled={isSubmitting} data-testid="button-submit-form">
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : content.submit}
           </Button>
+          <p className="text-xs text-muted-foreground text-center" data-testid="text-privacy-note">
+            {content.privacyNote}{" "}
+            <Link href="/privacy" className="underline hover:text-foreground">
+              {content.privacyLink}
+            </Link>
+          </p>
         </form>
       </Form>
     </motion.div>

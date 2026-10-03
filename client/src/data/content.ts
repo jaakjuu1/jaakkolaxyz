@@ -208,6 +208,8 @@ export const content = {
         budget: "Budjettiluokka",
         submit: "Lähetä",
         success: "Kiitos viestistäsi! Olen pian yhteydessä.",
+        privacyNote: "Lomakkeen tiedot tallennetaan vastaamista ja roskaviestien torjuntaa varten.",
+        privacyLink: "Tietosuojaseloste",
         placeholders: {
           name: "Matti Meikäläinen",
           email: "matti@yritys.fi",
@@ -261,6 +263,56 @@ export const content = {
         { label: "LinkedIn", url: "https://www.linkedin.com/in/juusojaakkola/" },
         { label: "X", url: "https://x.com/juusojaa" },
         { label: "GitHub", url: "https://github.com/jaakjuu1" },
+        { label: "Tietosuoja", url: "/privacy" },
+      ],
+    },
+    privacy: {
+      title: "Tietosuojaseloste",
+      updated: "Päivitetty 3.10.2026",
+      sections: [
+        {
+          heading: "Rekisterinpitäjä",
+          body: [
+            "Juuso Jaakkola. Tietoihin liittyvät pyynnöt voi lähettää tämän sivuston yhteydenottolomakkeella.",
+          ],
+        },
+        {
+          heading: "Mitä tietoja kerään ja miksi",
+          body: ["Kun lähetät yhteydenottolomakkeen, tallennan:"],
+          items: [
+            "antamasi tiedot: nimi, sähköpostiosoite, yritys, viesti ja budjettiluokka",
+            "selaimesi tunnistetiedon, kielivalintasi ja sivun, jolta lomake lähetettiin (vain osoite ja polku)",
+            "IP-osoitteestasi lasketun salatun tunnisteen. IP-osoitetta itseään ei tallenneta.",
+          ],
+          after: [
+            "Käytän tietoja vastatakseni viestiisi sekä tunnistaakseni ja torjuakseni roskaviestit ja väärinkäytökset. Käsittelyn peruste on oikeutettu etu: yhteydenottoon vastaaminen ja sivuston suojaaminen.",
+          ],
+        },
+        {
+          heading: "Säilytysaika",
+          body: [
+            "Yhteydenottojen tiedot poistetaan 12 kuukauden kuluttua, ellei yhteistyö vaadi pidempää säilytystä.",
+          ],
+        },
+        {
+          heading: "Kenelle tietoja välitetään",
+          body: [
+            "Sivusto toimii Hetznerin palvelimella Helsingissä. Ilmoitus lähetetystä viestistä toimitetaan minulle sähköpostipalvelu Resendin kautta. Resend on yhdysvaltalainen palveluntarjoaja, joten sähköposti voi kulkea EU:n ulkopuolelle. Tietoja ei myydä eikä käytetä markkinointiin.",
+            "Sivusto lataa kirjasimet Google Fontsista, jolloin selaimesi IP-osoite välittyy Googlelle. Ajanvarauslinkki vie Calendlyyn, jonka tietosuojakäytäntöä noudatetaan siellä.",
+          ],
+        },
+        {
+          heading: "Evästeet ja selaimen muisti",
+          body: [
+            "Sivusto ei käytä evästeitä eikä seurantaa tai analytiikkaa. Kielivalintasi tallennetaan vain selaimesi paikalliseen muistiin (localStorage).",
+          ],
+        },
+        {
+          heading: "Oikeutesi",
+          body: [
+            "Voit pyytää tietojesi tarkistamista, oikaisua tai poistamista sekä rajoittaa tai vastustaa niiden käsittelyä. Jos epäilet käsittelyn rikkovan lakia, voit tehdä valituksen tietosuojavaltuutetulle (tietosuoja.fi).",
+          ],
+        },
       ],
     },
   },
@@ -384,6 +436,8 @@ export const content = {
         budget: "Budget Range",
         submit: "Send",
         success: "Thanks for your message! I'll be in touch soon.",
+        privacyNote: "Form details are stored to answer you and to prevent spam.",
+        privacyLink: "Privacy notice",
         placeholders: {
           name: "John Doe",
           email: "john@company.com",
@@ -437,6 +491,56 @@ export const content = {
         { label: "LinkedIn", url: "https://www.linkedin.com/in/juusojaakkola/" },
         { label: "X", url: "https://x.com/juusojaa" },
         { label: "GitHub", url: "https://github.com/jaakjuu1" },
+        { label: "Privacy", url: "/privacy" },
+      ],
+    },
+    privacy: {
+      title: "Privacy notice",
+      updated: "Updated 3 October 2026",
+      sections: [
+        {
+          heading: "Controller",
+          body: [
+            "Juuso Jaakkola. Requests about your data can be sent through this site's contact form.",
+          ],
+        },
+        {
+          heading: "What I collect and why",
+          body: ["When you send the contact form I store:"],
+          items: [
+            "what you enter: name, email address, company, message and budget range",
+            "your browser identifier, language setting and the page the form was sent from (address and path only)",
+            "an encrypted identifier computed from your IP address. The IP address itself is not stored.",
+          ],
+          after: [
+            "I use this to answer your message and to recognise and block spam and abuse. The basis for processing is legitimate interest: answering enquiries and protecting the site.",
+          ],
+        },
+        {
+          heading: "Retention",
+          body: [
+            "Contact details are deleted after 12 months unless a working relationship requires keeping them longer.",
+          ],
+        },
+        {
+          heading: "Who receives the data",
+          body: [
+            "The site runs on a Hetzner server in Helsinki. A notification of your message is delivered to me through the email service Resend. Resend is a US provider, so the email may travel outside the EU. Data is not sold or used for marketing.",
+            "The site loads fonts from Google Fonts, which sends your browser's IP address to Google. The booking link leads to Calendly, whose privacy policy applies there.",
+          ],
+        },
+        {
+          heading: "Cookies and browser storage",
+          body: [
+            "The site uses no cookies, tracking or analytics. Your language choice is kept only in your browser's local storage (localStorage).",
+          ],
+        },
+        {
+          heading: "Your rights",
+          body: [
+            "You can ask to see, correct or delete your data, and to restrict or object to its processing. If you believe the processing breaks the law, you can complain to the Finnish Data Protection Ombudsman (tietosuoja.fi).",
+          ],
+        },
       ],
     },
   },
