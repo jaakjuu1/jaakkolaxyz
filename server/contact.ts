@@ -1,4 +1,5 @@
 import type { NextFunction, Request, RequestHandler, Response } from "express";
+import { createHmac, randomBytes } from "crypto";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { Resend } from "resend";
@@ -21,6 +22,52 @@ export const contactInputSchema = z.object({
 });
 export type ContactInput = z.infer<typeof contactInputSchema>;
 
+/**
+ * Where a submission came from, kept for spam triage and for linking bursts to
+ * one sender. The IP address itself is never stored: only a keyed hash.
+ */
+export interface ContactMeta {
+  userAgent: string | null;
+  referer: string | null;
+  acceptLanguage: string | null;
+  ipHash: string | null;
+}
+
+function cleanHeader(value: unknown, maxLength: number): string | null {
+  if (typeof value !== "string") return null;
+  const printable = value
+    .split("")
+    .filter((char) => char.charCodeAt(0) >= 32 && char.charCodeAt(0) !== 127)
+    .join("")
+    .trim();
+  return printable ? printable.slice(0, maxLength) : null;
+}
+
+/** Keeps origin and path only: query strings can carry tokens or personal data. */
+function cleanReferer(value: unknown): string | null {
+  if (typeof value !== "string" || !value) return null;
+  try {
+    const url = new URL(value);
+    return cleanHeader(url.origin + url.pathname, 300);
+  } catch {
+    return null;
+  }
+}
+
+export function hashIp(ip: string | undefined, secret: string): string | null {
+  if (!ip) return null;
+  return createHmac("sha256", secret).update(ip).digest("hex").slice(0, 16);
+}
+
+export function extractContactMeta(req: Request, secret: string): ContactMeta {
+  return {
+    userAgent: cleanHeader(req.get("user-agent"), 300),
+    referer: cleanReferer(req.get("referer")),
+    acceptLanguage: cleanHeader(req.get("accept-language"), 100),
+    ipHash: hashIp(req.ip, secret),
+  };
+}
+
 export interface ContactEmail {
   from: string;
   to: string;
@@ -41,18 +88,31 @@ export function escapeHtml(value: string): string {
 
 const LINE_BREAKS = new RegExp("[\\r\\n\\u2028\\u2029]+", "g");
 
-export function buildContactEmail(input: ContactInput, config: { from: string; to: string }): ContactEmail {
+export function buildContactEmail(
+  input: ContactInput,
+  config: { from: string; to: string },
+  meta?: ContactMeta,
+): ContactEmail {
   // Subjects must be single-line: a CR/LF in user input could inject headers.
   const oneLine = (value: string) => value.replace(LINE_BREAKS, " ").trim();
   const subject = `Uusi yhteydenotto: ${oneLine(input.name)} (${oneLine(input.company) || "ei yritystä"})`.slice(0, 150);
   const budget = input.budget ? input.budget : "-";
   const company = input.company || "-";
+  const source = [
+    ["Selain", meta?.userAgent],
+    ["Viittaaja", meta?.referer],
+    ["Kieli", meta?.acceptLanguage],
+  ].filter((row): row is [string, string] => Boolean(row[1]));
+  const sourceText = source.length ? `\n--\n${source.map(([k, v]) => `${k}: ${v}`).join("\n")}\n` : "";
+  const sourceHtml = source.length
+    ? `<hr><p style="color:#666;font-size:12px">${source.map(([k, v]) => `${k}: ${escapeHtml(v)}`).join("<br>")}</p>`
+    : "";
   return {
     from: config.from,
     to: config.to,
     replyTo: input.email,
     subject,
-    text: `Uusi yhteydenotto jaakkola.xyz:stä\n\nNimi: ${input.name}\nSähköposti: ${input.email}\nYritys: ${company}\nBudjetti: ${budget}\n\nViesti:\n${input.message}\n`,
+    text: `Uusi yhteydenotto jaakkola.xyz:stä\n\nNimi: ${input.name}\nSähköposti: ${input.email}\nYritys: ${company}\nBudjetti: ${budget}\n\nViesti:\n${input.message}\n${sourceText}`,
     html: `
       <h2>Uusi yhteydenotto jaakkola.xyz:stä</h2>
       <p><strong>Nimi:</strong> ${escapeHtml(input.name)}</p>
@@ -61,6 +121,7 @@ export function buildContactEmail(input: ContactInput, config: { from: string; t
       <p><strong>Budjetti:</strong> ${escapeHtml(budget)}</p>
       <p><strong>Viesti:</strong></p>
       <p>${escapeHtml(input.message).replace(/\r?\n/g, "<br>")}</p>
+      ${sourceHtml}
     `,
   };
 }
@@ -68,6 +129,8 @@ export function buildContactEmail(input: ContactInput, config: { from: string; t
 export interface ContactDeps {
   /** Returns the row id. May throw. */
   store?: Pick<ContactStore, "save">;
+  /** Key for hashing client IPs. Without it a random key per process is used. */
+  ipHashSecret?: string;
   /** Sends one email. Must throw when the provider rejects it. */
   send?: (email: ContactEmail) => Promise<void>;
   emailConfig?: { from: string; to: string };
@@ -76,9 +139,12 @@ export interface ContactDeps {
 
 export function createContactHandler(deps: ContactDeps): RequestHandler {
   const log = deps.log ?? ((message: string) => console.log(`[contact] ${message}`));
+  const ipHashSecret = deps.ipHashSecret ?? randomBytes(32).toString("hex");
   return async (req: Request, res: Response) => {
+    const meta = extractContactMeta(req, ipHashSecret);
     const parsed = contactInputSchema.safeParse(req.body);
     if (!parsed.success) {
+      log(`rejected invalid input ip=${meta.ipHash ?? "-"} ua=${(meta.userAgent ?? "-").slice(0, 120)}`);
       return res.status(400).json({
         success: false,
         message: "Validation error",
@@ -90,7 +156,7 @@ export function createContactHandler(deps: ContactDeps): RequestHandler {
     let stored = false;
     try {
       if (deps.store) {
-        const id = deps.store.save(input);
+        const id = deps.store.save(input, meta);
         stored = true;
         log(`stored submission #${id}`);
       }
@@ -101,7 +167,7 @@ export function createContactHandler(deps: ContactDeps): RequestHandler {
     let emailed = false;
     try {
       if (deps.send && deps.emailConfig) {
-        await deps.send(buildContactEmail(input, deps.emailConfig));
+        await deps.send(buildContactEmail(input, deps.emailConfig, meta));
         emailed = true;
       }
     } catch (error: any) {
@@ -109,7 +175,7 @@ export function createContactHandler(deps: ContactDeps): RequestHandler {
     }
 
     if (!stored && !emailed) {
-      log("submission lost: neither storage nor email worked");
+      log(`submission lost: neither storage nor email worked ip=${meta.ipHash ?? "-"} ua=${(meta.userAgent ?? "-").slice(0, 120)}`);
       return res.status(500).json({ success: false, message: "Failed to submit contact form" });
     }
     return res.status(201).json({ success: true, message: "Contact form submitted successfully" });
@@ -136,9 +202,9 @@ export function createResendSender(apiKey: string): (email: ContactEmail) => Pro
 export function createDefaultContactDeps(env: NodeJS.ProcessEnv = process.env): ContactDeps {
   let store: ContactStore | undefined;
   const lazyStore: Pick<ContactStore, "save"> = {
-    save(input) {
+    save(input, meta) {
       store ??= openContactStore();
-      return store.save(input);
+      return store.save(input, meta);
     },
   };
   const to = env.CONTACT_TO_EMAIL?.trim();
@@ -149,6 +215,7 @@ export function createDefaultContactDeps(env: NodeJS.ProcessEnv = process.env): 
   }
   return {
     store: lazyStore,
+    ipHashSecret: env.CONTACT_IP_HASH_SECRET?.trim() || undefined,
     send: emailReady ? createResendSender(apiKey!) : undefined,
     emailConfig: emailReady
       ? { to: to!, from: env.CONTACT_FROM_EMAIL?.trim() || "jaakkola.xyz <onboarding@resend.dev>" }
