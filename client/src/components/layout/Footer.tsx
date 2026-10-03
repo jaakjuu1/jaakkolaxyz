@@ -1,3 +1,5 @@
+import { Link } from "wouter";
+
 interface FooterLink {
   label: string;
   url: string;
@@ -19,11 +21,17 @@ export function Footer({ content }: FooterProps) {
         </div>
         
         <div className="flex gap-8 text-sm font-mono text-background/60">
-          {content.links.map((link, i) => (
-            <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-              {link.label}
-            </a>
-          ))}
+          {content.links.map((link, i) =>
+            link.url.startsWith("/") ? (
+              <Link key={i} href={link.url} className="hover:text-white transition-colors">
+                {link.label}
+              </Link>
+            ) : (
+              <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                {link.label}
+              </a>
+            ),
+          )}
         </div>
 
         <div className="text-xs text-background/40 font-light">
