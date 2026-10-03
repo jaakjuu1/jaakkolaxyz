@@ -12,6 +12,8 @@ import {
   createDefaultContactDeps,
   createRateLimiter,
   createResendSender,
+  extractContactMeta,
+  hashIp,
   type ContactDeps,
   type ContactEmail,
   type ContactInput,
@@ -277,4 +279,108 @@ test("routes: /api/contact is rate limited and the public submissions listing is
 
 test("resend is bundled by the production build", () => {
   assert.match(readFileSync(path.resolve("script/build.ts"), "utf8"), /allowlist\s*=\s*\[[^\]]*"resend"/s);
+});
+
+test("source metadata: hashed IP only, cleaned headers, referer without query string", () => {
+  const headers: Record<string, string> = {
+    "user-agent": "Mozilla/5.0 (X11; Linux) Test\u0007Agent " + "x".repeat(400),
+    referer: "https://jaakkola.xyz/blog/post?token=SECRET&email=a@b.fi#frag",
+    "accept-language": "fi-FI,fi;q=0.9",
+  };
+  const req: any = { ip: "203.0.113.77", get: (name: string) => headers[name.toLowerCase()] };
+  const meta = extractContactMeta(req, "key-one");
+  assert.equal(meta.referer, "https://jaakkola.xyz/blog/post");
+  assert.equal(meta.acceptLanguage, "fi-FI,fi;q=0.9");
+  assert.ok(meta.userAgent && meta.userAgent.length <= 300 && !meta.userAgent.includes("\u0007"));
+  assert.match(meta.ipHash ?? "", /^[0-9a-f]{16}$/);
+  assert.ok(!JSON.stringify(meta).includes("203.0.113.77"), "the raw IP must not appear");
+  assert.equal(hashIp("203.0.113.77", "key-one"), meta.ipHash, "same IP and key give the same hash");
+  assert.notEqual(hashIp("203.0.113.77", "key-two"), meta.ipHash, "another key gives another hash");
+  assert.notEqual(hashIp("203.0.113.78", "key-one"), meta.ipHash);
+  const empty = extractContactMeta({ ip: undefined, get: () => undefined } as any, "k");
+  assert.deepEqual(empty, { userAgent: null, referer: null, acceptLanguage: null, ipHash: null });
+  assert.equal(extractContactMeta({ ip: "1.1.1.1", get: () => "not a url" } as any, "k").referer, null);
+});
+
+test("the handler passes the source metadata to the store and into the email, escaped", async () => {
+  let savedMeta: any;
+  const h = await start({
+    store: { save: (input, meta) => ((savedMeta = meta), 1) },
+    ipHashSecret: "test-secret",
+  });
+  try {
+    const res = await fetch(h.url, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "user-agent": "<b>EvilBot</b>/1.0",
+        referer: "https://example.test/landing?utm=1",
+        "accept-language": "de",
+      },
+      body: JSON.stringify(valid),
+    });
+    assert.equal(res.status, 201);
+    assert.equal(savedMeta.userAgent, "<b>EvilBot</b>/1.0");
+    assert.equal(savedMeta.referer, "https://example.test/landing");
+    assert.match(savedMeta.ipHash, /^[0-9a-f]{16}$/);
+    const mail = h.sent[0];
+    assert.ok(mail.text.includes("Selain: <b>EvilBot</b>/1.0"));
+    assert.ok(mail.html.includes("Selain: &lt;b&gt;EvilBot&lt;/b&gt;/1.0"));
+    assert.ok(!mail.html.includes("<b>EvilBot"));
+    assert.ok(!mail.text.includes(savedMeta.ipHash) && !mail.html.includes(savedMeta.ipHash), "the hash stays out of the email");
+  } finally {
+    h.close();
+  }
+});
+
+test("lost-submission and rejection logs carry the hash and agent but never the message", async () => {
+  const h = await start({
+    store: { save: () => { throw new Error("disk full"); } },
+    send: async () => { throw new Error("quota"); },
+    ipHashSecret: "test-secret",
+  });
+  try {
+    const secretMessage = "GEHEIM-VIESTI-98765";
+    await fetch(h.url, {
+      method: "POST",
+      headers: { "content-type": "application/json", "user-agent": "TestAgent/9" },
+      body: JSON.stringify({ ...valid, message: secretMessage }),
+    });
+    await fetch(h.url, {
+      method: "POST",
+      headers: { "content-type": "application/json", "user-agent": "TestAgent/9" },
+      body: JSON.stringify({ name: "" }),
+    });
+    const log = h.logs.join("\n");
+    assert.match(log, /submission lost: .*ip=[0-9a-f]{16} ua=TestAgent\/9/);
+    assert.match(log, /rejected invalid input ip=[0-9a-f]{16} ua=TestAgent\/9/);
+    assert.ok(!log.includes(secretMessage) && !log.includes(valid.email));
+  } finally {
+    h.close();
+  }
+});
+
+test("the store saves source metadata and upgrades a database created before the columns existed", () => {
+  const file = path.join(tempDir, "contact-old.db");
+  const old = new Database(file);
+  old.exec(`CREATE TABLE contact_submissions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL,
+    company TEXT NOT NULL DEFAULT '', message TEXT NOT NULL, budget TEXT,
+    created_at INTEGER NOT NULL DEFAULT (unixepoch()))`);
+  old.prepare("INSERT INTO contact_submissions (name, email, message) VALUES ('Vanha', 'v@v.fi', 'ennen')").run();
+  old.close();
+
+  const store = openContactStore(file);
+  const id = store.save(
+    { name: "Uusi", email: "u@u.fi", company: "", message: "nyt" },
+    { userAgent: "UA/1", referer: "https://x.test/p", acceptLanguage: "fi", ipHash: "0123456789abcdef" },
+  );
+  store.close();
+
+  const db = new Database(file, { readonly: true });
+  const rows = db.prepare("SELECT id, name, user_agent, referer, accept_language, ip_hash FROM contact_submissions ORDER BY id").all() as any[];
+  db.close();
+  assert.equal(id, 2);
+  assert.deepEqual(rows[0], { id: 1, name: "Vanha", user_agent: null, referer: null, accept_language: null, ip_hash: null });
+  assert.deepEqual(rows[1], { id: 2, name: "Uusi", user_agent: "UA/1", referer: "https://x.test/p", accept_language: "fi", ip_hash: "0123456789abcdef" });
 });

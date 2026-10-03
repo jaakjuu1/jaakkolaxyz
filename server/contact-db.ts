@@ -1,11 +1,11 @@
 import Database from "better-sqlite3";
 import fs from "fs";
 import path from "path";
-import type { ContactInput } from "./contact";
+import type { ContactInput, ContactMeta } from "./contact";
 
 export interface ContactStore {
   /** Persists one submission and returns its row id. Throws on failure. */
-  save(input: ContactInput): number;
+  save(input: ContactInput, meta?: ContactMeta): number;
   close(): void;
 }
 
@@ -28,15 +28,36 @@ export function openContactStore(
       company TEXT NOT NULL DEFAULT '',
       message TEXT NOT NULL,
       budget TEXT,
-      created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+      user_agent TEXT,
+      referer TEXT,
+      accept_language TEXT,
+      ip_hash TEXT
     )
   `);
+  // Databases created before the source columns existed get them added in place.
+  const existing = new Set(
+    (db.prepare("PRAGMA table_info(contact_submissions)").all() as Array<{ name: string }>).map((c) => c.name),
+  );
+  for (const column of ["user_agent", "referer", "accept_language", "ip_hash"]) {
+    if (!existing.has(column)) db.exec(`ALTER TABLE contact_submissions ADD COLUMN ${column} TEXT`);
+  }
   const insert = db.prepare(
-    "INSERT INTO contact_submissions (name, email, company, message, budget) VALUES (?, ?, ?, ?, ?)",
+    "INSERT INTO contact_submissions (name, email, company, message, budget, user_agent, referer, accept_language, ip_hash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
   );
   return {
-    save(input) {
-      const result = insert.run(input.name, input.email, input.company, input.message, input.budget ?? null);
+    save(input, meta) {
+      const result = insert.run(
+        input.name,
+        input.email,
+        input.company,
+        input.message,
+        input.budget ?? null,
+        meta?.userAgent ?? null,
+        meta?.referer ?? null,
+        meta?.acceptLanguage ?? null,
+        meta?.ipHash ?? null,
+      );
       return Number(result.lastInsertRowid);
     },
     close() {

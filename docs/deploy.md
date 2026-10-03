@@ -104,7 +104,14 @@ separate service:
   a verified domain to send anywhere else.
 - Input is validated (length limits, valid email), user text is HTML-escaped in the email, the subject
   is forced to one line, and the route allows 5 requests per IP per 10 minutes (in memory).
-- Read stored messages on the server: `sqlite3 data/contact.db 'select * from contact_submissions order by id desc'`.
+- Each row also keeps where it came from, for spam triage and for linking bursts of attempts to one
+  sender: `user_agent`, `referer` (origin and path only, no query string), `accept_language` and `ip_hash`.
+  The IP address itself is never stored: `ip_hash` is a keyed hash (HMAC-SHA256, first 16 hex characters).
+  The key is `CONTACT_IP_HASH_SECRET`; without it a random key is made at every service start, so hashes
+  only match within one run. Set it to a long random value if hashes should match across restarts. The
+  notification email ends with the browser, referer and language (not the hash). Logs get the hash and
+  user agent for rejected and lost submissions, never the message, name or email.
+- Read stored messages on the server: `sqlite3 data/contact.db "select id, datetime(created_at,'unixepoch'), name, email, ip_hash, user_agent, referer from contact_submissions order by id desc"`.
   There is intentionally no public endpoint that lists them.
 - `resend` is bundled (`script/build.ts` allowlist), so a release needs no `npm install` on the server.
   Its optional `@react-email/render` import is lazy and only used for React email bodies, so like
