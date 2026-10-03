@@ -241,6 +241,19 @@ export const sites: SiteDef[] = [
       { id: "homepage", label: "Etusivu", url: "https://ufo.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html" },
     ],
   },
+  {
+    id: "kaskas",
+    name: "kaskas.jaakkola.xyz",
+    category: "teppo",
+    kind: "static-site",
+    ssh_alias: "teppo-server",
+    primary_url: "https://kaskas.jaakkola.xyz/app/",
+    notes: "Kaskasohjain: staattinen sovellus osoitteessa /app/ (hakemisto sites/kaskasohjain, äänet signals/-kansiossa). Juuri ohjautuu /app/-polkuun.",
+    checks: [
+      { id: "app", label: "Sovellus", url: "https://kaskas.jaakkola.xyz/app/", expected_status: 200, expected_content_type: "text/html" },
+      { id: "root-redirect", label: "Juuri ohjaa sovellukseen", url: "https://kaskas.jaakkola.xyz/", expected_status: 200, allow_redirects: true, severity: "warn" },
+    ],
+  },
 
   // ============ TEPPO: API-only / API-first ============
   {
