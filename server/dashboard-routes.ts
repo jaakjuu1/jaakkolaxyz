@@ -120,11 +120,11 @@ export function registerDashboardRoutes(app: Express) {
     });
   });
 
-  // Manuaalinen triggeri
+  // Triggeri: nappi sivulla (manual) tai ajastettu kutsu ?source=cron (Teppon crontab, 6 h välein)
   app.post("/api/dashboard/refresh", async (req, res) => {
     if (!maybeRequireToken(req, res)) return;
     try {
-      const result = await runDashboardRefresh("manual");
+      const result = await runDashboardRefresh(req.query.source === "cron" ? "cron" : "manual");
       res.json({ ok: true, ...result });
     } catch (err: any) {
       res.status(500).json({ ok: false, error: err?.message || String(err) });

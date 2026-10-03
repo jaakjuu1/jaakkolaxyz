@@ -5,6 +5,7 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import express from "express";
+import { sites } from "../../server/dashboard-sites";
 
 // The dashboard was once lost from production because its wiring lived only in
 // the server's copy of server/index.ts. These tests keep it in the repo.
@@ -80,4 +81,27 @@ test("the token gate applies when DASHBOARD_API_TOKEN is set", async () => {
   } finally {
     delete process.env.DASHBOARD_API_TOKEN;
   }
+});
+
+test("the site list no longer carries projects that were archived or moved", () => {
+  const ids = new Set(sites.map((site) => site.id));
+  for (const gone of ["sponsorchain", "siteforge-staging-miriams", "hermes"]) {
+    assert.ok(!ids.has(gone), `${gone} should be removed`);
+  }
+  const ordops = sites.find((site) => site.id === "ordops");
+  assert.ok(ordops && !ordops.aliases?.length && ordops.checks.every((check) => !check.url.includes("app.ordops")), "ordops is the static site only");
+  const lahituottajatori = sites.find((site) => site.id === "lahituottajatori");
+  assert.equal(lahituottajatori?.category, "hostinger");
+  assert.equal(lahituottajatori?.ssh_alias, "hostinger");
+});
+
+test("a stopped shop does not turn the whole dashboard critical", () => {
+  const shop = sites.find((site) => site.id === "mysticmasterpieces");
+  assert.equal(shop?.affects_overall, false);
+  assert.ok(!JSON.stringify(shop).includes("www.mysticmasterpieces.com"), "no check for a hostname without DNS");
+});
+
+test("the refresh route labels scheduled calls as cron", () => {
+  const routes = readFileSync(path.resolve("server/dashboard-routes.ts"), "utf8");
+  assert.match(routes, /runDashboardRefresh\(req\.query\.source === "cron" \? "cron" : "manual"\)/);
 });

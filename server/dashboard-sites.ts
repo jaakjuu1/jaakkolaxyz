@@ -135,8 +135,8 @@ export const sites: SiteDef[] = [
     kind: "website",
     ssh_alias: "teppo-server",
     primary_url: "https://mysticmasterpieces.com",
-    aliases: ["https://www.mysticmasterpieces.com"],
-    notes: "WordPress 6.x + WooCommerce + MariaDB. Domain on .com, ei .fi.",
+    affects_overall: false,
+    notes: "WordPress 6.x + WooCommerce + MariaDB. Domain on .com, ei .fi. WP-kontti pysäytetty 2026-09-15 OOM-myrskyn (apache2 ~450 MB/prosessi) jälkeen; jatko päätettävä. www-osoitteella ei ole DNS-tietuetta.",
     checks: [
       {
         id: "homepage",
@@ -145,25 +145,17 @@ export const sites: SiteDef[] = [
         expected_status: 200,
         expected_content_type: "text/html",
       },
-      {
-        id: "www-alias",
-        label: "www-alias",
-        url: "https://www.mysticmasterpieces.com/",
-        expected_status: 200,
-        expected_content_type: "text/html",
-        severity: "warn",
-        timeout_ms: 5000,
-      },
     ],
   },
   {
     id: "lahituottajatori",
     name: "lahituottajatori.fi",
-    category: "teppo",
+    category: "hostinger",
     kind: "website",
-    ssh_alias: "teppo-server",
+    ssh_alias: "hostinger",
     primary_url: "https://lahituottajatori.fi",
     aliases: ["https://www.lahituottajatori.fi"],
+    notes: "Siirretty Hostingerille (DNS osoittaa 62.72.20.134); Teppon Caddy-lohko poistettiin 2026-10-03.",
     checks: [
       { id: "homepage", label: "Etusivu", url: "https://lahituottajatori.fi/", expected_status: 200, expected_content_type: "text/html" },
       { id: "www-alias", label: "www-alias", url: "https://www.lahituottajatori.fi/", expected_status: 200, expected_content_type: "text/html", severity: "warn" },
@@ -176,11 +168,9 @@ export const sites: SiteDef[] = [
     kind: "website",
     ssh_alias: "teppo-server",
     primary_url: "https://ordops.jaakkola.xyz",
-    aliases: ["https://app.ordops.jaakkola.xyz"],
-    notes: "Ordops-sovellus. app.ordops.jaakkola.xyz on erillinen upstream; sen hajoaminen tekee kohteesta degraded, ei koko palvelinta alas.",
+    notes: "Staattinen ordops-sivu. Sovellus (app.ordops) arkistoitiin 2026-10-03: sillä ei ollut DNS-tietuetta eikä ajossa olevaa upstreamia.",
     checks: [
       { id: "public-site", label: "Public site", url: "https://ordops.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html" },
-      { id: "app-upstream", label: "App upstream", url: "https://app.ordops.jaakkola.xyz/", expected_status: 200, severity: "warn", timeout_ms: 5000 },
     ],
   },
   {
@@ -251,18 +241,6 @@ export const sites: SiteDef[] = [
       { id: "homepage", label: "Etusivu", url: "https://ufo.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html" },
     ],
   },
-  {
-    id: "hermes",
-    name: "hermes.jaakkola.xyz",
-    category: "teppo",
-    kind: "website",
-    ssh_alias: "teppo-server",
-    primary_url: "https://hermes.jaakkola.xyz",
-    notes: "Hermes-agentin julkinen web-pinta (FastAPI).",
-    checks: [
-      { id: "homepage", label: "Etusivu", url: "https://hermes.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html" },
-    ],
-  },
 
   // ============ TEPPO: API-only / API-first ============
   {
@@ -310,32 +288,6 @@ export const sites: SiteDef[] = [
     affects_overall: false,
     checks: [
       { id: "homepage", label: "Staging homepage", url: "https://toejoki.staging.siteforge.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html" },
-    ],
-  },
-  {
-    id: "siteforge-staging-miriams",
-    name: "miriams.staging.siteforge.jaakkola.xyz",
-    category: "teppo",
-    kind: "staging",
-    ssh_alias: "teppo-server",
-    primary_url: "https://miriams.staging.siteforge.jaakkola.xyz",
-    affects_overall: false,
-    notes: "Staging-kohde. 404 ei nosta koko dashboardia kriittiseksi, mutta näkyy selvityskohteena.",
-    checks: [
-      { id: "homepage", label: "Staging homepage", url: "https://miriams.staging.siteforge.jaakkola.xyz/", expected_status: 200, expected_content_type: "text/html", severity: "warn" },
-    ],
-  },
-  {
-    id: "sponsorchain",
-    name: "sponsorchain.jaakkola.xyz",
-    category: "teppo",
-    kind: "investigate",
-    ssh_alias: "teppo-server",
-    primary_url: "https://sponsorchain.jaakkola.xyz",
-    affects_overall: false,
-    notes: "Caddy-reitti olemassa, mutta upstream ei kuuntele portissa 3002. Näytetään selvityskohteena, ei kriittisenä tuotantohälynä.",
-    checks: [
-      { id: "root", label: "Root", url: "https://sponsorchain.jaakkola.xyz/", expected_status: 200, severity: "warn", timeout_ms: 5000 },
     ],
   },
 
