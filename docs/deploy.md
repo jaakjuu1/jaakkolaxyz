@@ -83,8 +83,12 @@ separate service:
 - Access: Caddy puts Basic Auth in front of `/dashboard/*` and `/api/dashboard/*`.
   If `DASHBOARD_API_TOKEN` is set in `.env`, the API also wants it in the
   `X-Dashboard-Token` header (used by cron callers).
-- A check runs when `POST /api/dashboard/refresh` is called (button on the page,
-  or a cron caller). Checks over SSH use the aliases in the `clawdbot` user's
+- A check runs when `POST /api/dashboard/refresh` is called: the button on the page, or the
+  `clawdbot` crontab on `teppo-server`, which calls it every 6 hours
+  (`7 */6 * * * curl -s -m 120 -X POST "http://127.0.0.1:5000/api/dashboard/refresh?source=cron" -o /dev/null`).
+  `?source=cron` labels the snapshot; before 2026-10-03 nothing scheduled checks, so the data only
+  moved when someone pressed the button. The monitored sites live in `server/dashboard-sites.ts`;
+  remove entries when a project is retired, and give a deliberately stopped one `affects_overall: false`. Checks over SSH use the aliases in the `clawdbot` user's
   `~/.ssh/config`; `DASHBOARD_LOCAL_SERVER_ALIASES` names the aliases that mean
   "this server".
 - It needs `ssh2` (runtime external; installed on the server) and so shows up in
