@@ -105,3 +105,10 @@ test("the refresh route labels scheduled calls as cron", () => {
   const routes = readFileSync(path.resolve("server/dashboard-routes.ts"), "utf8");
   assert.match(routes, /runDashboardRefresh\(req\.query\.source === "cron" \? "cron" : "manual"\)/);
 });
+
+test("kaskas is monitored through its /app/ page", () => {
+  const kaskas = sites.find((site) => site.id === "kaskas");
+  assert.ok(kaskas, "kaskas must be in the site list");
+  assert.equal(kaskas?.primary_url, "https://kaskas.jaakkola.xyz/app/");
+  assert.ok(kaskas?.checks.some((check) => check.url === "https://kaskas.jaakkola.xyz/app/" && check.expected_status === 200));
+});
