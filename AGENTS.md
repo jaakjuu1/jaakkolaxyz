@@ -16,6 +16,28 @@ sync a learn section, read [docs/learn-sections.md](docs/learn-sections.md)
 first. It covers the folder layout, page rules, how to deploy and how to verify
 against production.
 
+## Site content (EmDash)
+
+Posts, pages and the `/learn/` track cards live in the EmDash database on production, not
+in git (`content/blog/` is only the source of the 2026-10-08 import). Agents maintain them
+with the EmDash CLI, run from `cms/` with Node >= 24.15 (`nvm use 24.21.0`):
+
+- Read `cms/.agents/skills/emdash-cli/SKILL.md` first.
+- Auth: `npx emdash login --url https://jaakkola.xyz` (device flow: Juuso approves the code
+  at `/_emdash/admin/device`). The token is in `~/.config/emdash/auth.json`: content and
+  media read/write, schema read; it refreshes for 90 days. Check with
+  `npx emdash whoami --url https://jaakkola.xyz`. New tags, settings, users and plugins
+  need the admin UI.
+- `/_emdash/*` answers only from Juuso's IP (Caddy), so the CLI works from his machine.
+- `create` and `update` publish immediately unless `--draft`. Always write with
+  `--draft`, show Juuso the draft, and publish (`content publish`) only on his yes.
+- Verify on the live URL (`curl`) and with `CMS_URL=https://jaakkola.xyz npm run test:smoke`
+  in `cms/` (adjust the count constants at the top of `cms/tests/smoke.test.ts` when
+  posts are added or removed).
+- Code or design changes to `cms/`: PR, merge, then a release built on the server
+  ([docs/deploy-cms.md](docs/deploy-cms.md) §6.5; the GitHub login secret is inlined at
+  build time, so releases are not built locally).
+
 ## Deploying
 
 Production is updated by copying built files over SSH; there is no CI/CD. Read
