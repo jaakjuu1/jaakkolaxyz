@@ -756,7 +756,12 @@ GitHub account's **primary verified** email.
      ! grep -rqF node_modules/.astro/sessions dist
      PATH="$NODE_BIN:$PATH" npm prune --omit=dev
      chmod -R go-rwx dist
-     ln -sfn "$CMS/data" "$REL/data"
+     # astro.config.mjs creates data/uploads at config load, so the build leaves a real data/ dir.
+     # `ln -sfn` onto a directory would put the link INSIDE it; remove the empty dirs first.
+     find "$REL/data" -mindepth 1 ! -type d | grep -q . && { echo "files in build data/, stop"; exit 1; }
+     rm -rf "$REL/data"
+     ln -s "$CMS/data" "$REL/data"
+     test "$(readlink "$REL/data")" = "$CMS/data"
      rm -f /tmp/cms-src-$SHA.tar.gz
    '
    ```
