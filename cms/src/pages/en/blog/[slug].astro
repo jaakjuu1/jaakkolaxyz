@@ -1,9 +1,11 @@
 ---
 import BlogPostPage from "../../../components/BlogPostPage.astro";
 import NotFound from "../../../components/NotFound.astro";
-import { loadPublishedPost } from "../../../utils/blog";
+import { isPostPath, loadPublishedPost, postSlug } from "../../../utils/blog";
 
-const post = await loadPublishedPost("en", Astro.params.slug);
+// Only the post's own URL serves it: /en/blog/<slug>.html and other variants are 404s.
+const found = await loadPublishedPost("en", Astro.params.slug);
+const post = found && isPostPath(Astro.url, "en", postSlug(found.entry)) ? found : null;
 if (Astro.cache?.enabled && post) Astro.cache.set(post.cacheHint);
 if (!post) Astro.response.status = 404;
 ---

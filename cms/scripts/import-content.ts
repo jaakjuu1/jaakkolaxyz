@@ -490,6 +490,8 @@ interface UpsertInput {
   publishedAt?: string;
   taxonomies?: Record<string, string[]>;
   translationOf?: string;
+  /** SEO fields (REST `seo`); only sent when given. */
+  seo?: { description: string };
 }
 
 /**
@@ -514,6 +516,7 @@ async function upsert(input: UpsertInput, index: Map<string, ExistingEntry>): Pr
           _rev: current._rev,
           ...(input.publishedAt ? { publishedAt: input.publishedAt } : {}),
           ...(input.taxonomies ? { taxonomies: input.taxonomies } : {}),
+          ...(input.seo ? { seo: input.seo } : {}),
         },
       });
       if (input.publish) {
@@ -541,6 +544,7 @@ async function upsert(input: UpsertInput, index: Map<string, ExistingEntry>): Pr
       ...(input.publishedAt ? { publishedAt: input.publishedAt } : {}),
       ...(input.taxonomies ? { taxonomies: input.taxonomies } : {}),
       ...(input.translationOf ? { translationOf: input.translationOf } : {}),
+      ...(input.seo ? { seo: input.seo } : {}),
     },
   });
   const id = created.item.id;
@@ -674,10 +678,27 @@ function pageListItem(text: string): PTBlock {
 type PrivacyPage = (typeof siteContent)["fi"]["privacy"];
 
 /**
- * Privacy page -> Portable Text. The Google Fonts sentence is dropped (fonts are
- * self-hosted); the rest of each paragraph is kept verbatim.
+ * The storage sentence of the privacy notice. The old site kept the language in
+ * localStorage; now the language comes from the URL and localStorage keeps the
+ * theme. client/src/data/content.ts still has the old sentence, so it is replaced here.
  */
-function privacyBlocks(page: PrivacyPage): PTBlock[] {
+const STORAGE_SENTENCE: Record<Locale, { old: string; replacement: string }> = {
+  fi: {
+    old: "Kielivalintasi tallennetaan vain selaimesi paikalliseen muistiin (localStorage).",
+    replacement: "Valitsemasi teema (vaalea tai tumma) tallennetaan vain selaimesi paikalliseen muistiin (localStorage).",
+  },
+  en: {
+    old: "Your language choice is kept only in your browser's local storage (localStorage).",
+    replacement: "Your theme choice (light or dark) is kept only in your browser's local storage (localStorage).",
+  },
+};
+
+/**
+ * Privacy page -> Portable Text. The Google Fonts sentence is dropped (fonts are
+ * self-hosted) and the storage sentence is updated; the rest of each paragraph is kept verbatim.
+ */
+function privacyBlocks(page: PrivacyPage, locale: Locale): PTBlock[] {
+  const storage = STORAGE_SENTENCE[locale];
   const blocks: PTBlock[] = [pageParagraph(page.updated)];
   for (const section of page.sections) {
     blocks.push(pageHeading(section.heading));
@@ -688,13 +709,22 @@ function privacyBlocks(page: PrivacyPage): PTBlock[] {
             .filter((sentence) => !/Google Fonts|fonts\.googleapis/i.test(sentence))
             .join(" ")
         : paragraph;
-      if (kept.trim()) blocks.push(pageParagraph(kept));
+      const text = kept.replace(storage.old, storage.replacement);
+      if (text.trim()) blocks.push(pageParagraph(text));
     }
     for (const item of section.items ?? []) blocks.push(pageListItem(item));
     for (const paragraph of section.after ?? []) blocks.push(pageParagraph(paragraph));
   }
+  const updated = blocks.some((block) => JSON.stringify(block).includes(storage.replacement));
+  if (!updated) throw new Error(`privacy (${locale}): storage sentence not found; update STORAGE_SENTENCE`);
   return blocks;
 }
+
+/** Search-result descriptions of the privacy pages (the pages have no excerpt field). */
+const PRIVACY_DESCRIPTION: Record<Locale, string> = {
+  fi: "Miten jaakkola.xyz käsittelee yhteydenottolomakkeen henkilötietoja, kuinka kauan niitä säilytetään ja mitkä ovat oikeutesi.",
+  en: "How jaakkola.xyz handles personal data from the contact form, how long it is kept, and your rights.",
+};
 
 async function importPrivacy(index: Map<string, ExistingEntry>): Promise<void> {
   const fiId = await upsert(
@@ -703,8 +733,9 @@ async function importPrivacy(index: Map<string, ExistingEntry>): Promise<void> {
       type: "pages",
       slug: "tietosuoja",
       locale: "fi",
-      data: { title: siteContent.fi.privacy.title, content: privacyBlocks(siteContent.fi.privacy) },
+      data: { title: siteContent.fi.privacy.title, content: privacyBlocks(siteContent.fi.privacy, "fi") },
       publish: true,
+      seo: { description: PRIVACY_DESCRIPTION.fi },
     },
     index,
   );
@@ -714,9 +745,10 @@ async function importPrivacy(index: Map<string, ExistingEntry>): Promise<void> {
       type: "pages",
       slug: "privacy",
       locale: "en",
-      data: { title: siteContent.en.privacy.title, content: privacyBlocks(siteContent.en.privacy) },
+      data: { title: siteContent.en.privacy.title, content: privacyBlocks(siteContent.en.privacy, "en") },
       publish: true,
       translationOf: fiId,
+      seo: { description: PRIVACY_DESCRIPTION.en },
     },
     index,
   );

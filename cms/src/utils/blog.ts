@@ -10,6 +10,7 @@ import {
 	type TaxonomyTerm,
 } from "emdash";
 import { DATE_LOCALE, localizePath, otherLang, type Lang } from "../i18n/ui";
+import { requestPath } from "./request-path";
 
 /** Placeholder posts from the old site. They were not imported and redirect to /blog. */
 const PLACEHOLDER_SLUGS = new Set(["example-post", "esimerkki-postaus"]);
@@ -117,4 +118,12 @@ async function termsFor(entries: PostEntry[], lang: Lang): Promise<Map<string, T
 		"tag",
 		{ locale: lang },
 	);
+}
+
+/**
+ * True when the request is the post's own URL (a trailing slash is allowed). Variants
+ * such as /blog/<slug>.html must not serve the post.
+ */
+export function isPostPath(url: URL, lang: Lang, slug: string): boolean {
+	return requestPath(url) === blogPostPath(lang, slug);
 }

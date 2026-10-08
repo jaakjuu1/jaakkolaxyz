@@ -91,6 +91,9 @@ const pageCtx = createPublicPageContext({
 	seo: { ogImage, robots },
 	articleMeta: { publishedTime, modifiedTime, author },
 	siteName: SITE_NAME,
+	// Same origin as the canonical, so hreflang and canonical agree (EmDashHead would
+	// otherwise fall back to the request origin, e.g. localhost).
+	siteUrl: origin,
 });
 
 const ogLocale = lang === "fi" ? "fi_FI" : "en_US";

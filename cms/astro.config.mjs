@@ -35,6 +35,10 @@ export default defineConfig({
 		defaultLocale: "fi",
 		locales: ["fi", "en"],
 	},
+	// Old English privacy URL (client/src/pages/privacy.tsx). Permanent, like the other legacy URLs.
+	redirects: {
+		"/privacy": { status: 301, destination: "/en/privacy" },
+	},
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
