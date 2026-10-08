@@ -57,7 +57,10 @@ inventory of the current site. The facts that shape the plan are repeated here s
   Taxonomy names must match the seed exactly. Validate the seed with `npx emdash seed seed/seed.json --validate`.
 - EmDash serves `/_emdash/*`, `/_astro/*`, `/_image`, `/sitemap*.xml`, `/robots.txt`.
 - On a fresh production DB the first visitor to finish the setup wizard becomes admin.
-- SQLite does not create `data/`; `astro.config.mjs` creates `data/uploads` at load time.
+- SQLite does not create `data/`; `astro.config.mjs` creates `data/uploads` at config load (dev and
+  build only). In production `data/` must exist before the first start (`mkdir -p` in the runbook).
+- Production gets its own `EMDASH_ENCRYPTION_KEY` (never the dev key from `cms/.env`), kept in a
+  secret backup.
 - `@emdash-cms/registry-verification` wants Node `^22.22.2 || ^24.15.0`; production needs that.
 - The template already self-hosts fonts through Astro's `fonts` config (downloaded at build time).
 
