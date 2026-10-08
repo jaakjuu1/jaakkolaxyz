@@ -68,6 +68,9 @@ inventory of the current site. The facts that shape the plan are repeated here s
 
 - Work only inside the paths your section names. Never touch `.env*`, databases outside `cms/data/`,
   or anything on `teppo-server`. No `ssh`, `rsync`, `git push`. Do not commit; the orchestrator commits.
+- Write and edit files only with the Edit/Write tools, never through shell heredocs or `python -c`
+  scripts that embed file content: on 2026-10-08 a heredoc whose body contained its own terminator
+  executed runbook commands against production (no damage; Caddy reloaded the same config).
 - Read `cms/AGENTS.md` and `cms/.agents/skills/building-emdash-site/SKILL.md` (after section 1 exists)
   before writing EmDash code. Use the installed packages' own types and docs; do not guess APIs.
   When unsure, read the source under `cms/node_modules/emdash/`.
