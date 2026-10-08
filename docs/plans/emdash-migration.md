@@ -16,7 +16,7 @@ inventory of the current site. The facts that shape the plan are repeated here s
 - Same look, rebuilt in Astro; small refinements are fine, no redesign.
 - Keep fi + en and keep existing URLs working.
 
-## Defaults taken (open questions for Juuso; all reversible)
+## Confirmed defaults (Juuso approved all of them 2026-10-08)
 
 1. **URL scheme.** EmDash only supports Astro's `prefix-other-locales` i18n routing (prefixing the
    default locale breaks the admin). Finnish is the default locale (it is the site's default today):
