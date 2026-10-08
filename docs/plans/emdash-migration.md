@@ -139,6 +139,13 @@ whose slug+locale exists is skipped, or updated with `--update`).
   Today only 6 cards link to a track; `b2c-appit` and `mikroauktoriteetti` folders are not linked.
   Every track folder without a linked card becomes a **draft** entry (title from its `index.html`
   `<title>`), so Juuso can publish it from the admin.
+- Verified API facts (section 2 review): create accepts only `status: "draft"`; send `publishedAt`
+  on create, then `POST /_emdash/api/content/{collection}/{id}/publish`, which keeps it.
+  `translationOf` is the source entry's id. Tag terms must exist per locale first:
+  `POST /_emdash/api/taxonomies/tag/terms {"slug","label","locale"}`; the fi and en `tag`
+  taxonomies come from the seed. Media upload: `POST /_emdash/api/media` (multipart).
+  Every fresh DB also gets a built-in `category` taxonomy from a core migration; the script deletes
+  it (`DELETE /_emdash/api/taxonomies/category`) if present.
 - Publish everything after create, keeping `publishedAt`.
 - Acceptance: running it twice against a fresh local instance gives the same counts (4 fi + 5 en posts,
   2 pages, 7 learn tracks) and no duplicates; a REST/CLI read of `2026-05-22-agentless-server-operations` shows

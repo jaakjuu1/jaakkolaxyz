@@ -50,6 +50,42 @@ npm run dev
 
 Open http://localhost:4321/_emdash/admin and complete the setup wizard. EmDash runs database migrations and applies the blog seed during setup. The site is available at http://localhost:4321.
 
+## Local development
+
+Reset the local database and uploads (`data/` is gitignored):
+
+```bash
+rm -rf data/
+npm run dev
+```
+
+Skip the setup wizard with the dev bypass (dev server only):
+
+```bash
+curl -s -X POST "http://localhost:4321/_emdash/api/setup/dev-bypass?token=1"
+```
+
+This applies `seed/seed.json`, creates the admin `dev@emdash.local` and returns an API token in
+`data.token`. The migrations also add a built-in `category` taxonomy that the seed cannot remove, so
+delete it once after a reset:
+
+```bash
+export EMDASH_TOKEN=<data.token from the response above>
+curl -s -X DELETE -H "Authorization: Bearer $EMDASH_TOKEN" http://localhost:4321/_emdash/api/taxonomies/category
+```
+
+Check the schema (`posts`, `pages`, `learn_tracks`, taxonomy `tag`):
+
+```bash
+npx emdash schema list --url http://localhost:4321
+npx emdash taxonomy list --url http://localhost:4321
+```
+
+Tokens for scripts: on localhost the CLI needs no token (it uses the dev bypass session). For
+`EMDASH_TOKEN`, use the token from `?token=1` as above (each call replaces the previous
+`dev-bypass-token`), or create one in the admin under Settings > API Tokens. Scripts read
+`EMDASH_URL` (default `http://localhost:4321`) and `EMDASH_TOKEN`.
+
 ## Want Cloudflare Instead?
 
 See the [Cloudflare variant](../blog-cloudflare) for a version that deploys to Cloudflare Workers with D1 and R2.
