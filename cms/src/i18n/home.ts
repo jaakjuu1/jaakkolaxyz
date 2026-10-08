@@ -70,9 +70,82 @@ export interface HomeContent {
 		text: string;
 		signature: string;
 	};
-	leadCapture: {
+	leadCapture: LeadCaptureContent;
+}
+
+/**
+ * Contact section (the React island in components/LeadCapture.tsx). Everything the
+ * island shows or validates comes from here, so the component has no copy of its own.
+ */
+export interface LeadCaptureContent {
+	title: string;
+	subtitle: string;
+	booking: {
 		title: string;
 		subtitle: string;
+		cta: string;
+		url: string;
+	};
+	tabs: {
+		form: string;
+		quiz: string;
+	};
+	form: {
+		name: string;
+		email: string;
+		company: string;
+		message: string;
+		budget: string;
+		submit: string;
+		sending: string;
+		success: string;
+		sendAnother: string;
+		privacyNote: string;
+		privacyLink: string;
+		privacyHref: string;
+		placeholders: {
+			name: string;
+			email: string;
+			company: string;
+			budget: string;
+			message: string;
+		};
+		/** Option values are sent to POST /api/contact as they are; keep them unchanged. */
+		budgetOptions: { value: string; label: string }[];
+		/** Client-side rules; the same as before the migration. */
+		validation: {
+			nameMin: string;
+			nameMax: string;
+			emailInvalid: string;
+			emailMax: string;
+			companyMin: string;
+			companyMax: string;
+			messageMin: string;
+			messageMax: string;
+		};
+		/** Shown when the request fails without a usable server message. */
+		networkError: string;
+		/** Server responses by status (400/422, 429, 500). Server text is never shown. */
+		serverErrors: {
+			invalid: string;
+			tooMany: string;
+			failed: string;
+		};
+	};
+	quiz: {
+		title: string;
+		subtitle: string;
+		start: string;
+		questionPrefix: string;
+		recommendationTitle: string;
+		restart: string;
+		questions: { q: string; options: string[] }[];
+		results: {
+			book_call: string;
+			audit: string;
+			quote: string;
+			cta: string;
+		};
 	};
 }
 
@@ -244,6 +317,92 @@ const fi: HomeContent = {
 	leadCapture: {
 		title: "Aloitetaan keskustelu",
 		subtitle: "Kerro lyhyesti tarpeestasi. Vastaan yleensä 24h sisällä.",
+		booking: {
+			title: "Aika kalenteriin",
+			subtitle: "Tule jakamaan haasteesi.",
+			cta: "Varaa 20min kartoituspuhelu",
+			url: "https://calendly.com/juuso-jaakkola/consultation",
+		},
+		tabs: {
+			form: "Viesti",
+			quiz: "Project Fit -kysely",
+		},
+		form: {
+			name: "Nimi",
+			email: "Sähköposti",
+			company: "Yritys",
+			message: "Mitä haluat saavuttaa?",
+			budget: "Budjettiluokka",
+			submit: "Lähetä",
+			sending: "Lähetetään…",
+			success: "Kiitos viestistäsi! Olen pian yhteydessä.",
+			sendAnother: "Lähetä uusi viesti",
+			privacyNote: "Lomakkeen tiedot tallennetaan vastaamista ja roskaviestien torjuntaa varten.",
+			privacyLink: "Tietosuojaseloste",
+			privacyHref: "/tietosuoja",
+			placeholders: {
+				name: "Matti Meikäläinen",
+				email: "matti@yritys.fi",
+				company: "Yritys Oy",
+				budget: "Valitse budjetti",
+				message: "Kerro lyhyesti mitä tarvitset...",
+			},
+			budgetOptions: [
+				{ value: "<2k", label: "< 2000€" },
+				{ value: "2k-5k", label: "2000€ - 5000€" },
+				{ value: "5k-10k", label: "5000€ - 10000€" },
+				{ value: "10k+", label: "10000€+" },
+			],
+			validation: {
+				nameMin: "Nimen on oltava vähintään 2 merkkiä.",
+				nameMax: "Nimi voi olla enintään 200 merkkiä.",
+				emailInvalid: "Anna kelvollinen sähköpostiosoite.",
+				emailMax: "Sähköpostiosoite on liian pitkä.",
+				companyMin: "Yrityksen nimen on oltava vähintään 2 merkkiä.",
+				companyMax: "Yrityksen nimi voi olla enintään 200 merkkiä.",
+				messageMin: "Viestin on oltava vähintään 10 merkkiä.",
+				messageMax: "Viesti voi olla enintään 5000 merkkiä.",
+			},
+			networkError: "Viestin lähetys epäonnistui. Tarkista yhteys ja yritä uudelleen.",
+			serverErrors: {
+				invalid: "Lomakkeen tiedoissa on virhe. Tarkista kentät ja yritä uudelleen.",
+				tooMany: "Liian monta lähetystä. Yritä uudelleen noin 10 minuutin kuluttua.",
+				failed: "Viestiä ei voitu tallentaa. Yritä myöhemmin uudelleen.",
+			},
+		},
+		quiz: {
+			title: "Project Fit -kartoitus",
+			subtitle: "Selvitetään paras tapa auttaa sinua kolmessa vaiheessa.",
+			start: "Aloita kartoitus",
+			questionPrefix: "Kysymys",
+			recommendationTitle: "Suositus",
+			restart: "Aloita alusta",
+			questions: [
+				{
+					q: "Mikä kuvaa tilannettasi parhaiten?",
+					options: [
+						"Haluan automatisoida manuaalista työtä",
+						"Tarvitsen verkkokaupan/sivuston kehitystä",
+						"Haluan parempaa dataa/analytiikkaa",
+						"Muu / En osaa sanoa",
+					],
+				},
+				{
+					q: "Mikä on projektin aikataulu?",
+					options: ["Heti / ASAP", "1-2 kuukauden sisällä", "Puolen vuoden sisällä", "Vain alustava selvitys"],
+				},
+				{
+					q: "Onko budjetti jo mietitty?",
+					options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"],
+				},
+			],
+			results: {
+				book_call: "Varaa 20min puhelu, niin katsotaan tarkemmin.",
+				audit: "Suosittelen teknistä auditointia nykytilan selvittämiseksi.",
+				quote: "Vaikuttaa selkeältä projektilta. Pyydä tarjous.",
+				cta: "Jatka tästä",
+			},
+		},
 	},
 };
 
@@ -415,6 +574,92 @@ const en: HomeContent = {
 	leadCapture: {
 		title: "Let's start a conversation",
 		subtitle: "Briefly describe your needs. I usually respond within 24 hours.",
+		booking: {
+			title: "Direct Booking",
+			subtitle: "Skip the queue if you are ready.",
+			cta: "Book a 20min Discovery Call",
+			url: "https://calendly.com/juuso-jaakkola/consultation",
+		},
+		tabs: {
+			form: "Message",
+			quiz: "Project Fit Quiz",
+		},
+		form: {
+			name: "Name",
+			email: "Email",
+			company: "Company",
+			message: "What do you want to achieve?",
+			budget: "Budget Range",
+			submit: "Send",
+			sending: "Sending…",
+			success: "Thanks for your message! I'll be in touch soon.",
+			sendAnother: "Send another message",
+			privacyNote: "Form details are stored to answer you and to prevent spam.",
+			privacyLink: "Privacy notice",
+			privacyHref: "/en/privacy",
+			placeholders: {
+				name: "John Doe",
+				email: "john@company.com",
+				company: "Acme Inc",
+				budget: "Select range",
+				message: "Tell me briefly what you need...",
+			},
+			budgetOptions: [
+				{ value: "<2k", label: "< 2000€" },
+				{ value: "2k-5k", label: "2000€ - 5000€" },
+				{ value: "5k-10k", label: "5000€ - 10000€" },
+				{ value: "10k+", label: "10000€+" },
+			],
+			validation: {
+				nameMin: "Name must be at least 2 characters.",
+				nameMax: "Name can be at most 200 characters.",
+				emailInvalid: "Enter a valid email address.",
+				emailMax: "The email address is too long.",
+				companyMin: "Company name must be at least 2 characters.",
+				companyMax: "Company name can be at most 200 characters.",
+				messageMin: "Message must be at least 10 characters.",
+				messageMax: "Message can be at most 5000 characters.",
+			},
+			networkError: "The message could not be sent. Check your connection and try again.",
+			serverErrors: {
+				invalid: "Some of the details are not valid. Check the fields and try again.",
+				tooMany: "Too many submissions. Please try again in about 10 minutes.",
+				failed: "The message could not be saved. Please try again later.",
+			},
+		},
+		quiz: {
+			title: "Project Fit Quiz",
+			subtitle: "Let's find the best way to help you in 3 steps.",
+			start: "Start Quiz",
+			questionPrefix: "Question",
+			recommendationTitle: "Recommendation",
+			restart: "Restart",
+			questions: [
+				{
+					q: "What describes your situation best?",
+					options: [
+						"I want to automate manual work",
+						"I need ecommerce/website development",
+						"I want better data/analytics",
+						"Other / Not sure",
+					],
+				},
+				{
+					q: "What is the project timeline?",
+					options: ["Immediate / ASAP", "Within 1-2 months", "Within 6 months", "Just preliminary research"],
+				},
+				{
+					q: "Is there a budget in mind?",
+					options: ["< 2000€", "2000€ - 5000€", "5000€ - 10000€", "10000€+"],
+				},
+			],
+			results: {
+				book_call: "Book a 20min call, let's look closer.",
+				audit: "I recommend a technical audit to clarify current state.",
+				quote: "Seems like a clear project. Request a quote.",
+				cta: "Continue",
+			},
+		},
 	},
 };
 

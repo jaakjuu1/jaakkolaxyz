@@ -18,10 +18,13 @@
   "dependencies": {
     "@astrojs/node": "^11.1.5",
     "@astrojs/react": "^6.0.5",
+    "@hookform/resolvers": "^5.9.1",
     "astro": "^7.3.2",
     "emdash": "^1.0.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.89.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

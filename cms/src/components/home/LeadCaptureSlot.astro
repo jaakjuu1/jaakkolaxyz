@@ -1,21 +1,19 @@
 ---
+import { LeadCapture } from "../LeadCapture";
 import type { HomeContent } from "../../i18n/home";
+import { getLang } from "../../i18n/ui";
 
 interface Props {
 	content: HomeContent;
 }
 
 const { content } = Astro.props;
-const { title, subtitle } = content.leadCapture;
+const lang = getLang(Astro);
 ---
 
-<!-- Contact section. Section 8 replaces only the placeholder comment below with the LeadCapture island. -->
+<!-- Contact section. The island renders its own heading and intro in the left column, as the old component did. -->
 <section id="lead-capture" class="scroll-mt-24 border-t border-border/40 bg-background py-24">
-	<div class="container mx-auto max-w-3xl px-4 text-center md:px-6">
-		<h2 class="mb-6 font-serif text-3xl md:text-4xl">{title}</h2>
-		<p class="mx-auto max-w-xl text-lg leading-relaxed font-light text-muted-foreground">{subtitle}</p>
-		<div class="mt-12">
-			<!-- LEAD CAPTURE ISLAND (section 8): <LeadCapture client:visible /> goes here. -->
-		</div>
+	<div class="container mx-auto max-w-5xl px-4 md:px-6">
+		<LeadCapture client:visible lang={lang} content={content.leadCapture} />
 	</div>
 </section>
