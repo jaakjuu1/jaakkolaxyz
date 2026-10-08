@@ -133,6 +133,9 @@ whose slug+locale exists is skipped, or updated with `--update`).
   self-hosted now) and keep everything else verbatim, including the "updated" date line.
 - Learn track cards: the 7 `.path` cards in `data/learn/index.html` → `learn_tracks` entries (fi),
   fields as in section 6b; `order` = position on the page.
+  Today only 6 cards link to a track; `b2c-appit` and `mikroauktoriteetti` folders are not linked.
+  Every track folder without a linked card becomes a **draft** entry (title from its `index.html`
+  `<title>`), so Juuso can publish it from the admin.
 - Publish everything after create, keeping `publishedAt`.
 - Acceptance: running it twice against a fresh local instance gives the same counts (4 fi + 5 en posts,
   2 pages, 7 learn tracks) and no duplicates; a REST/CLI read of `2026-05-22-agentless-server-operations` shows
