@@ -30,9 +30,18 @@ interface BlogPost {
   content: string;
 }
 
-// Get blog posts directory
-function getBlogDir(lang: string): string {
+const BLOG_LANGS = new Set(["fi", "en"]);
+const BLOG_SLUG = /^[a-z0-9][a-z0-9-]*$/i;
+
+// Get blog posts directory; null for anything but a known language, so the
+// query string can never point the reader outside content/blog/.
+export function getBlogDir(lang: unknown): string | null {
+  if (typeof lang !== "string" || !BLOG_LANGS.has(lang)) return null;
   return path.join(process.cwd(), "content", "blog", lang);
+}
+
+export function isBlogSlug(slug: string): boolean {
+  return BLOG_SLUG.test(slug);
 }
 
 // Parse a markdown file
@@ -63,8 +72,10 @@ export async function registerRoutes(
   // Get all blog posts for a language
   app.get("/api/blog/posts", (req, res) => {
     try {
-      const lang = (req.query.lang as string) || "en";
-      const blogDir = getBlogDir(lang);
+      const blogDir = getBlogDir(req.query.lang ?? "en");
+      if (!blogDir) {
+        return res.status(400).json({ success: false, message: "Unknown language" });
+      }
 
       if (!fs.existsSync(blogDir)) {
         return res.json({ success: true, data: [] });
@@ -96,9 +107,11 @@ export async function registerRoutes(
   // Get a single blog post
   app.get("/api/blog/posts/:slug", (req, res) => {
     try {
-      const lang = (req.query.lang as string) || "en";
       const { slug } = req.params;
-      const blogDir = getBlogDir(lang);
+      const blogDir = getBlogDir(req.query.lang ?? "en");
+      if (!blogDir || !isBlogSlug(slug)) {
+        return res.status(404).json({ success: false, message: "Post not found" });
+      }
       const filePath = path.join(blogDir, `${slug}.md`);
 
       if (!fs.existsSync(filePath)) {
