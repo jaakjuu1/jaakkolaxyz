@@ -117,3 +117,58 @@
     @apply font-serif tracking-tight;
   }
 }
+
+/*
+ * Home page motion (section 7). Replaces framer-motion. Elements are hidden only when
+ * html.js is set (HomeMotion.astro), so content stays visible without JavaScript.
+ * prefers-reduced-motion turns all of it off.
+ */
+@keyframes home-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes home-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+html.js .hero-in {
+  animation: home-rise 0.8s ease-out both;
+  animation-delay: var(--delay, 0s);
+}
+
+html.js .hero-fade {
+  animation: home-fade 1s ease-out both;
+  animation-delay: var(--delay, 0s);
+}
+
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+  transition-delay: var(--delay, 0s);
+}
+
+html.js .reveal.reveal-scale {
+  transform: scale(0.98);
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .hero-in,
+  html.js .hero-fade,
+  html.js .reveal,
+  html.js .reveal.reveal-scale {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}

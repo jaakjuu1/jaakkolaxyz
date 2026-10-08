@@ -1,0 +1,62 @@
+---
+import { Picture } from "astro:assets";
+import aiIcon from "../../assets/icon-ai.png";
+import webIcon from "../../assets/icon-web.png";
+import dataIcon from "../../assets/icon-data.png";
+import type { HomeContent } from "../../i18n/home";
+
+interface Props {
+	content: HomeContent;
+}
+
+const { content } = Astro.props;
+const { title, items } = content.services;
+
+// Decorative symbols, cycled through the three generated icons (old component: "Recycle for demo").
+const icons = [aiIcon, webIcon, dataIcon];
+---
+
+<section id="services" class="relative scroll-mt-24 bg-secondary/30 py-24">
+	<div class="container mx-auto max-w-6xl px-4 md:px-6">
+		<div class="mx-auto mb-16 max-w-3xl md:text-center">
+			<h2 class="mb-6 font-serif text-3xl md:text-4xl">{title}</h2>
+			<div class="h-1 w-20 rounded-full bg-primary/10 md:mx-auto"></div>
+		</div>
+
+		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+			{
+				items.map((item, index) => (
+					<div class="reveal h-full" style={`--delay: ${index * 0.1}s`}>
+						<div class="group relative h-full overflow-hidden rounded-xl border border-border/40 bg-card/50 text-card-foreground shadow backdrop-blur-sm transition-all duration-300 hover:border-primary/20 hover:shadow-lg">
+							<div class="relative flex flex-col space-y-1.5 p-6 pb-4">
+								<div class="absolute top-0 right-0 p-4 opacity-5 transition-opacity group-hover:opacity-10">
+									<Picture
+										src={icons[index % icons.length]}
+										alt=""
+										formats={["avif", "webp"]}
+										widths={[64, 128]}
+										sizes="64px"
+										layout="none"
+										loading="lazy"
+										class="h-16 w-16 object-contain"
+									/>
+								</div>
+								<h3 class="relative z-10 font-sans text-xl leading-none font-medium tracking-tight">{item.title}</h3>
+							</div>
+							<div class="relative z-10 space-y-6 p-6 pt-0">
+								<p class="text-base leading-relaxed text-muted-foreground">{item.description}</p>
+								<div class="flex flex-wrap gap-2 pt-2">
+									{item.tags.map((tag) => (
+										<span class="inline-flex items-center rounded-md border border-transparent bg-secondary/50 px-2.5 py-0.5 font-mono text-[10px] font-semibold tracking-wider whitespace-nowrap text-secondary-foreground uppercase transition-colors hover:border-border hover:bg-secondary">
+											{tag}
+										</span>
+									))}
+								</div>
+							</div>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>
