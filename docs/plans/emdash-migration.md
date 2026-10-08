@@ -274,7 +274,9 @@ whose slug+locale exists is skipped, or updated with `--update`).
 
 ### 10. Express side (in this repo's `server/`)
 
-Not deployed until cutover is approved.
+Done on its own branch `feat/express-split` (based on this one). Merge and deploy it only after the
+EmDash site is live behind Caddy and verified: once deployed, Express no longer serves `/`, so a
+Caddy-only rollback stops working (restore the previous `dist/` instead).
 
 - Remove the blog API and its helpers from `server/routes.ts` (keep `/api/contact` there; the contact test
   checks it). Remove the `/learn` static mount from `server/index.ts` (Astro serves it).
@@ -307,4 +309,6 @@ Not deployed until cutover is approved.
 ### Cutover (needs Juuso's explicit yes for each production write)
 
 Node version check on teppo-server, install, first start with `/_emdash` restricted, setup wizard by
-Juuso (passkey), site import, Caddy switch, verification, then a later deploy of section 10.
+Juuso (passkey), site import, Caddy switch, verification, then a later merge + deploy of
+`feat/express-split` (section 10), then cleanup: delete `client/`, `attached_assets/`, Vite config and
+unused deps once production content is imported and verified.
