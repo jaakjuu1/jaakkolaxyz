@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, fontProviders, sessionDrivers } from "astro/config";
 import emdash, { local } from "emdash/astro";
+import { github } from "emdash/auth/providers/github";
 import { sqlite } from "emdash/db";
 
 // SQLite and local storage do not create their directories; paths are relative to the cwd.
@@ -90,6 +91,10 @@ export default defineConfig({
 			}),
 			...(siteUrl ? { siteUrl } : {}),
 			trustedProxyHeaders: ["x-forwarded-for"],
+			// Admin login with GitHub in addition to passkeys; the GitHub account's primary
+			// verified email must match the EmDash user. Needs EMDASH_OAUTH_GITHUB_CLIENT_ID
+			// and EMDASH_OAUTH_GITHUB_CLIENT_SECRET at run time (cms/.env.production).
+			authProviders: [github()],
 		}),
 	],
 	// Fonts are downloaded at build time and self-hosted; no runtime request

@@ -175,6 +175,12 @@ only a tampered tarball.
 
 ## 2. Build the release
 
+> **GitHub login is enabled (section 6.5), so releases are built on the server.** EmDash reads
+> `EMDASH_OAUTH_GITHUB_CLIENT_ID`/`_SECRET` through `import.meta.env`, which Astro inlines into
+> `dist/server` at build time (not into `dist/client`; checked). A release built without them has
+> no GitHub login, and building locally would copy the secret off the server. Follow 6.5 for the
+> build; 2.1-2.4 below describe the first release, which had no OAuth.
+
 ### 2.1 Build in a clean worktree (local machine, no production access)
 
 ```bash
@@ -714,6 +720,52 @@ file (5.4 rollback). Recreating the DB is a data move: only with Juuso's yes, an
 import:
 `ssh teppo-server 'mv /home/clawdbot/jaakkolaxyz/cms/data/emdash.db /home/clawdbot/jaakkolaxyz/cms/data/emdash.db.empty-<TS>'`
 (after `systemctl stop`).
+
+### 6.5 GitHub login and building on the server **[needs Juuso's yes]**
+
+Passkeys stay the main login; GitHub is the fallback (`authProviders: [github()]` in
+`cms/astro.config.mjs`). EmDash links the GitHub account to the EmDash user whose email equals the
+GitHub account's **primary verified** email.
+
+1. Juuso creates a GitHub OAuth app (github.com/settings/applications/new): homepage
+   `https://jaakkola.xyz`, callback `https://jaakkola.xyz/_emdash/api/auth/oauth/github/callback`,
+   then a client secret. He appends both to the server's env file himself, so the secret never
+   leaves his terminal:
+   ```bash
+   read -rp "Client ID: " ID && read -rsp "Client secret: " SEC && echo && printf 'EMDASH_OAUTH_GITHUB_CLIENT_ID=%s\nEMDASH_OAUTH_GITHUB_CLIENT_SECRET=%s\n' "$ID" "$SEC" | ssh teppo-server 'cat >> ~/jaakkolaxyz/cms/.env.production' && unset ID SEC
+   ```
+2. Build on the server from the merge commit, with only the variables the build needs (the
+   encryption key is not exported into the build). The source is `git archive` of `cms/`:
+   ```bash
+   git -C /home/juuso/temp/jaakkolaxyz archive --format=tar.gz -o /tmp/cms-src-<SHA>.tar.gz <SHA> cms
+   scp /tmp/cms-src-<SHA>.tar.gz teppo-server:/tmp/
+   ssh teppo-server '
+     set -euo pipefail
+     CMS=/home/clawdbot/jaakkolaxyz/cms; SHA=<SHA>; REL="$CMS/releases/$SHA"; NODE_BIN=/opt/node-v24.21.0/bin
+     test ! -e "$REL"; mkdir -p "$REL"
+     tar -xzf /tmp/cms-src-$SHA.tar.gz -C "$REL" --strip-components=1
+     cd "$REL"
+     ID=$(grep ^EMDASH_OAUTH_GITHUB_CLIENT_ID= "$CMS/.env.production" | cut -d= -f2-)
+     SEC=$(grep ^EMDASH_OAUTH_GITHUB_CLIENT_SECRET= "$CMS/.env.production" | cut -d= -f2-)
+     PATH="$NODE_BIN:$PATH" npm ci
+     env -i PATH="$NODE_BIN:/usr/bin:/bin" HOME="$HOME" EMDASH_SITE_URL=https://jaakkola.xyz \
+       EMDASH_OAUTH_GITHUB_CLIENT_ID="$ID" EMDASH_OAUTH_GITHUB_CLIENT_SECRET="$SEC" npm run build
+     grep -rqF -- "$ID" dist/server && ! grep -rqF -- "$SEC" dist/client   # in the server bundle, never in the client
+     unset ID SEC
+     grep -qF "\"allowedDomains\":[{\"hostname\":\"jaakkola.xyz\"}]" dist/server/chunks/app_*.mjs
+     ! grep -rqF node_modules/.astro/sessions dist
+     PATH="$NODE_BIN:$PATH" npm prune --omit=dev
+     chmod -R go-rwx dist
+     ln -sfn "$CMS/data" "$REL/data"
+     rm -f /tmp/cms-src-$SHA.tar.gz
+   '
+   ```
+   `dist/server` now holds the secret: the release directory is mode 700 for `clawdbot`, like
+   `.env.production`. The server needs npm registry and Google Fonts access during the build.
+3. Switch: `ln -sfn` the new release to `releases/current.new`, `mv -T` it over `current`,
+   `systemctl restart jaakkolaxyz-cms`, then the smoke suite (9.1). Rollback: point `current` back at
+   the previous release and restart (10.4).
+4. Juuso tests the "GitHub" button on `/_emdash/admin/login` from his IP.
 
 ## 7. Content
 
