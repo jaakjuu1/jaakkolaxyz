@@ -2,7 +2,7 @@ import { mkdirSync } from "node:fs";
 import node from "@astrojs/node";
 import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig, fontProviders } from "astro/config";
+import { defineConfig, fontProviders, sessionDrivers } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { sqlite } from "emdash/db";
 
@@ -62,6 +62,12 @@ export default defineConfig({
 	adapter: node({
 		mode: "standalone",
 	}),
+	// Sessions as files under data/sessions, relative to the process working directory. Without
+	// this, @astrojs/node stores them in node_modules/.astro/sessions of the BUILD directory (a
+	// path baked at build time), which a service with PrivateTmp/ProtectHome cannot write.
+	session: {
+		driver: sessionDrivers.fsLite({ base: "./data/sessions" }),
+	},
 	i18n: {
 		defaultLocale: "fi",
 		locales: ["fi", "en"],

@@ -108,6 +108,39 @@ EMDASH_TOKEN=<token> npm run import                # add what is missing
 EMDASH_TOKEN=<token> npm run import -- --update    # also rewrite existing entries
 ```
 
+## Smoke tests
+
+`npm run test:smoke` checks the public site over HTTP: status codes, redirect targets, `<html lang>`,
+translation links, the learn files, the RSS feeds, the sitemaps and robots.txt. It is read-only: it
+sends only GET and HEAD, never follows a redirect (a 301 is checked by its Location) and writes
+nothing, so the same suite can run against production.
+
+`CMS_URL` picks the site (default `http://localhost:4321`). Against the dev server:
+
+```bash
+npm run dev                    # in one shell
+npm run test:smoke             # in another
+```
+
+Against the production build, on a free port:
+
+```bash
+npm run build
+LEARN_DIR=$(realpath ../data/learn) HOST=127.0.0.1 PORT=4333 node --env-file=.env dist/server/entry.mjs
+CMS_URL=http://127.0.0.1:4333 npm run test:smoke
+```
+
+Against production, once the cutover is done: `CMS_URL=https://jaakkola.xyz npm run test:smoke`.
+
+The counts and slugs that follow the content (published posts, learn tracks) are in the constants block
+at the top of `tests/smoke.test.ts`. Change them there after publishing or unpublishing content.
+
+Origins are checked too. Canonical, og:url, og:image and hreflang must name the public origin
+(`SITE_URL`, default `https://jaakkola.xyz`). Sitemap URLs and redirect Locations must be on `CMS_URL`'s
+origin. Production therefore needs `EMDASH_SITE_URL=https://jaakkola.xyz` set at build and run time: without
+it the sitemaps list `localhost` (Astro falls back to localhost for a Host header it does not trust), and
+the suite fails on the sitemap check.
+
 ## Want Cloudflare Instead?
 
 See the [Cloudflare variant](../blog-cloudflare) for a version that deploys to Cloudflare Workers with D1 and R2.

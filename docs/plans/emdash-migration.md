@@ -68,6 +68,9 @@ inventory of the current site. The facts that shape the plan are repeated here s
 
 - Work only inside the paths your section names. Never touch `.env*`, databases outside `cms/data/`,
   or anything on `teppo-server`. No `ssh`, `rsync`, `git push`. Do not commit; the orchestrator commits.
+- Write and edit files only with the Edit/Write tools, never through shell heredocs or `python -c`
+  scripts that embed file content: on 2026-10-08 a heredoc whose body contained its own terminator
+  executed runbook commands against production (no damage; Caddy reloaded the same config).
 - Read `cms/AGENTS.md` and `cms/.agents/skills/building-emdash-site/SKILL.md` (after section 1 exists)
   before writing EmDash code. Use the installed packages' own types and docs; do not guess APIs.
   When unsure, read the source under `cms/node_modules/emdash/`.
@@ -274,7 +277,9 @@ whose slug+locale exists is skipped, or updated with `--update`).
 
 ### 10. Express side (in this repo's `server/`)
 
-Not deployed until cutover is approved.
+Done on its own branch `feat/express-split` (based on this one). Merge and deploy it only after the
+EmDash site is live behind Caddy and verified: once deployed, Express no longer serves `/`, so a
+Caddy-only rollback stops working (restore the previous `dist/` instead).
 
 - Remove the blog API and its helpers from `server/routes.ts` (keep `/api/contact` there; the contact test
   checks it). Remove the `/learn` static mount from `server/index.ts` (Astro serves it).
@@ -298,8 +303,8 @@ Not deployed until cutover is approved.
   backups (`sqlite3 .backup`, uploads, encryption key), verification (`cms/tests` against
   production), and rollback (point Caddy back at :5000 only; the old Express app keeps serving the
   SPA until section 10 is deployed).
-- Caddy: add `Cache-Control: public, max-age=31536000, immutable` for `/_astro/*` (hashed assets; the
-  Node server sends `max-age=0`).
+- `/_astro/*` already gets `Cache-Control: public, max-age=31536000, immutable` from Astro; Caddy adds
+  nothing (verified in the section 11 review).
 - Update `AGENTS.md` and `docs/deploy.md` to point at it; note that blog posts are now edited in the
   EmDash admin.
 - Acceptance: a Sonnet review confirms every step is concrete, ordered, and has a check and a rollback.
@@ -307,4 +312,6 @@ Not deployed until cutover is approved.
 ### Cutover (needs Juuso's explicit yes for each production write)
 
 Node version check on teppo-server, install, first start with `/_emdash` restricted, setup wizard by
-Juuso (passkey), site import, Caddy switch, verification, then a later deploy of section 10.
+Juuso (passkey), site import, Caddy switch, verification, then a later merge + deploy of
+`feat/express-split` (section 10), then cleanup: delete `client/`, `attached_assets/`, Vite config and
+unused deps once production content is imported and verified.
