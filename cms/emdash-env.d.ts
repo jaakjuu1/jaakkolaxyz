@@ -15,6 +15,8 @@ export interface LearnTrack {
   lesson_count?: number;
   track_status?: "julkaistu" | "tulossa";
   order?: number;
+  group?: "ymmartaminen" | "rakentaja";
+  stats_note?: string;
   createdAt: Date;
   updatedAt: Date;
   publishedAt: Date | null;

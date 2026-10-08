@@ -120,6 +120,22 @@
           "slug": "order",
           "label": "Order",
           "type": "integer"
+        },
+        {
+          "slug": "group",
+          "label": "Group",
+          "type": "select",
+          "validation": {
+            "options": [
+              "ymmartaminen",
+              "rakentaja"
+            ]
+          }
+        },
+        {
+          "slug": "stats_note",
+          "label": "Stats note",
+          "type": "text"
         }
       ]
     }

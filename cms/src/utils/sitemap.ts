@@ -7,13 +7,14 @@ import { getSiteSettings } from "emdash";
 import { DEFAULT_LANG, LANGS, localizePath, type Lang } from "../i18n/ui";
 
 /**
- * Child sitemaps listed in /sitemap.xml, in order. Section 6b adds "sitemap-learn.xml"
- * here and writes its route; the index needs no other change.
+ * Child sitemaps listed in /sitemap.xml, in order. sitemap-learn.xml is ours: the
+ * learn tracks are plain files, which EmDash does not list.
  */
 export const CHILD_SITEMAPS: readonly string[] = [
 	"sitemap-static.xml",
 	"sitemap-posts.xml",
 	"sitemap-pages.xml",
+	"sitemap-learn.xml",
 ];
 
 /** Locale-neutral paths of the static pages, each listed in every language with alternates. */

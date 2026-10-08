@@ -81,6 +81,20 @@ npx emdash schema list --url http://localhost:4321
 npx emdash taxonomy list --url http://localhost:4321
 ```
 
+A database created before the learn tracks got their `group` and `stats_note` fields (fresh databases
+get them from the seed; the seed is not re-applied to an existing one) needs them added once. The CLI
+cannot set select options, so create the `group` field with the CLI and set its options with the REST
+API. Then re-run the import so the cards get their group and stats note:
+
+```bash
+npx emdash schema add-field learn_tracks group --type=select --label=Group --url http://localhost:4321
+curl -s -X PUT "http://localhost:4321/_emdash/api/schema/collections/learn_tracks/fields/group" \
+  -H "Authorization: Bearer $EMDASH_TOKEN" -H "Content-Type: application/json" \
+  -d '{"label":"Group","type":"select","validation":{"options":["ymmartaminen","rakentaja"]}}'
+npx emdash schema add-field learn_tracks stats_note --type=text --label="Stats note" --url http://localhost:4321
+EMDASH_TOKEN=$EMDASH_TOKEN npm run import -- --update
+```
+
 Tokens for scripts: on localhost the CLI needs no token (it uses the dev bypass session). For
 `EMDASH_TOKEN`, use the token from `?token=1` as above (each call replaces the previous
 `dev-bypass-token`), or create one in the admin under Settings > API Tokens. Scripts read

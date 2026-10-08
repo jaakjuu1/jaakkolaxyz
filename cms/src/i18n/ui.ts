@@ -56,6 +56,11 @@ const fi = {
 	"notFound.title": "Sivua ei löytynyt",
 	"notFound.body": "Etsimääsi sivua ei ole olemassa tai se on siirretty.",
 	"notFound.home": "Etusivulle",
+
+	"learn.group.ymmartaminen": "Ymmärtämisen ja harjoituksen polut",
+	"learn.group.rakentaja": "Rakentajan polut",
+	"learn.group.ymmartaminen.lead": "Ihmisen, maailman, järjestelmien ja merkitysten tutkimiseen.",
+	"learn.group.rakentaja.lead": "Luovan teknologian ja digitaalisten tuotteiden tekemiseen.",
 } as const;
 
 export type UIKey = keyof typeof fi;
@@ -93,6 +98,11 @@ const en: Record<UIKey, string> = {
 	"notFound.title": "Page not found",
 	"notFound.body": "The page you are looking for does not exist or has moved.",
 	"notFound.home": "Back to home",
+
+	"learn.group.ymmartaminen": "Understanding and practice paths",
+	"learn.group.rakentaja": "Building paths",
+	"learn.group.ymmartaminen.lead": "For exploring people, the world, systems and meaning.",
+	"learn.group.rakentaja.lead": "For creative technology and digital products.",
 };
 
 export const ui: Record<Lang, Record<UIKey, string>> = { fi, en };

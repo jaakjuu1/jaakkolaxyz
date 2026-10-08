@@ -760,13 +760,29 @@ async function importPrivacy(index: Map<string, ExistingEntry>): Promise<void> {
 
 const TRACK_STATUSES = new Set(["julkaistu", "tulossa"]);
 
+/** Group headings (h2) of the old catalogue page and the `group` value each one starts. */
+const GROUP_BY_HEADING: Record<string, string> = {
+  "Ymmärtämisen ja harjoituksen polut": "ymmartaminen",
+  "Rakentajan polut": "rakentaja",
+};
+
 async function importLearnTracks(index: Map<string, ExistingEntry>): Promise<void> {
   const indexHtml = join(LEARN_DIR, "index.html");
   const page = parseHtml(readFileSync(indexHtml, "utf8"));
-  const cards = page.querySelectorAll("div.path");
+  // Headings and cards in document order: a card belongs to the nearest h2 before it.
+  const sections = page.querySelectorAll("h2, div.path");
+  const cards: { card: (typeof sections)[number]; group: string | null }[] = [];
+  let group: string | null = null;
+  for (const node of sections) {
+    if (node.tagName === "H2") {
+      group = GROUP_BY_HEADING[node.text.trim()] ?? null;
+    } else {
+      cards.push({ card: node, group });
+    }
+  }
   const linked = new Set<string>();
 
-  for (const [position, card] of cards.entries()) {
+  for (const [position, { card, group }] of cards.entries()) {
     const link = card.querySelector("h3 a");
     const href = link?.getAttribute("href") ?? "";
     const slug = href.replace(/\/+$/, "");
@@ -777,11 +793,19 @@ async function importLearnTracks(index: Map<string, ExistingEntry>): Promise<voi
 
     const statusText = card.querySelector(".status")?.text.trim().toLowerCase() ?? "";
     if (!TRACK_STATUSES.has(statusText)) throw new Error(`learn card ${slug}: unknown status "${statusText}"`);
+    if (!group) throw new Error(`learn card ${slug} is not under a known group heading`);
 
     const lessonStat = card
       .querySelectorAll(".stats span")
       .find((stat) => /oppituntia/.test(stat.text));
     const lessonCount = Number.parseInt(lessonStat?.querySelector("strong")?.text ?? "", 10);
+    // The other stats spans (topic, format, duration) are the card's stats note.
+    const statsNote = card
+      .querySelectorAll(".stats span")
+      .filter((stat) => stat !== lessonStat)
+      .map((stat) => stat.text.trim())
+      .filter(Boolean)
+      .join(" · ");
 
     await upsert(
       {
@@ -794,7 +818,9 @@ async function importLearnTracks(index: Map<string, ExistingEntry>): Promise<voi
           kind: card.querySelector(".kind")?.text.trim() ?? "",
           blurb: card.querySelector(".blurb")?.text.trim() ?? "",
           ...(Number.isFinite(lessonCount) ? { lesson_count: lessonCount } : {}),
+          ...(statsNote ? { stats_note: statsNote } : {}),
           track_status: statusText,
+          group,
           order: position + 1,
         },
         publish: statusText === "julkaistu",
@@ -823,6 +849,9 @@ async function importLearnTracks(index: Map<string, ExistingEntry>): Promise<voi
         data: {
           title: trackTitle || folder,
           track_status: "tulossa",
+          // No card on the old page: the one draft track is a "build" path (its page
+          // describes a practical path for building a micro-authority).
+          group: "rakentaja",
           order: cards.length + offset + 1,
         },
         publish: false,

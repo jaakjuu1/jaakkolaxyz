@@ -25,6 +25,37 @@ const reportDirectoryIndex = {
 	},
 };
 
+// Dev only: the Vite dev server joins the raw request path onto the project root, so
+// `..` segments (also %2e%2e) reach files outside the site. This guard refuses them
+// before Vite serves anything; the production server does not serve files from the
+// project tree at all. Malformed percent-encoding is not covered here: Astro's own
+// dev trailing-slash middleware runs earlier and answers 500 (production answers 400).
+// The decode check below only matters if that order ever changes.
+function isUnsafeDevPath(url) {
+	let decoded;
+	try {
+		decoded = decodeURIComponent(url.split(/[?#]/)[0]);
+	} catch {
+		return true;
+	}
+	return /(^|[\\/])\.\.?([\\/]|$)/.test(decoded) || decoded.includes("\0");
+}
+
+const devPathGuard = {
+	name: "dev-path-guard",
+	configureServer(server) {
+		server.middlewares.use((req, res, next) => {
+			if (isUnsafeDevPath(req.url ?? "")) {
+				res.statusCode = 404;
+				res.setHeader("Content-Type", "text/plain; charset=utf-8");
+				res.end("Not found");
+				return;
+			}
+			next();
+		});
+	},
+};
+
 export default defineConfig({
 	site: "https://jaakkola.xyz",
 	output: "server",
@@ -84,7 +115,7 @@ export default defineConfig({
 		},
 	],
 	vite: {
-		plugins: [tailwindcss(), reportDirectoryIndex],
+		plugins: [tailwindcss(), reportDirectoryIndex, devPathGuard],
 		server: {
 			proxy: {
 				"/api/contact": "http://localhost:5000",
