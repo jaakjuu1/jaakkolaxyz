@@ -135,6 +135,8 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - Privacy pages from `client/src/data/content.ts` `privacy` (fi slug `tietosuoja`, en slug `privacy`,
   linked as translations), converted to Portable Text. Remove the Google Fonts paragraph (fonts are
   self-hosted now) and keep everything else verbatim, including the "updated" date line.
+  The cookies/storage paragraph must say the **theme** choice is kept in localStorage (the language now
+  comes from the URL); section 6 updates that sentence in both languages.
 - Learn track cards: the 7 `.path` cards in `data/learn/index.html` → `learn_tracks` entries (fi),
   fields as in section 6b; `order` = position on the page.
   All 7 cards link to a track; only the `mikroauktoriteetti` folder has no card.
@@ -201,6 +203,10 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - `src/pages/[slug].astro` and `src/pages/en/[slug].astro` render `pages` entries
   (`/tietosuoja`, `/en/privacy`) in the same layout and style as `client/src/pages/privacy.tsx`.
 - `/privacy` → 301 `/en/privacy` (Astro redirect or EmDash redirect).
+- Update the privacy cookies/storage sentence: localStorage holds the theme choice, not the language
+  (fi and en), via `npm run import -- --update` or the REST API.
+- Delete the template `src/pages/pages/` and `src/pages/posts/` routes once `/blog` and the privacy
+  routes exist (section 5 deletes `posts/`).
 - Acceptance: `/tietosuoja` 200 Finnish, `/en/privacy` 200 English, `/privacy` 301; neither page
   mentions Google Fonts; `/sitemap.xml` lists home, blog, posts and privacy pages with hreflang alternates.
 
