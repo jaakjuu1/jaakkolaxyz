@@ -1,0 +1,63 @@
+---
+import { localizePath, type Lang } from "../i18n/ui";
+import { formatPostDate, postSlug, type BlogListItem } from "../utils/blog";
+
+interface Props extends BlogListItem {
+	lang: Lang;
+}
+
+const { lang, entry, tags } = Astro.props;
+const publishedAt = entry.data.publishedAt;
+const href = localizePath(`/blog/${postSlug(entry)}`, lang);
+---
+
+<article
+	class="group relative flex flex-col gap-4 overflow-hidden rounded-lg border border-border bg-secondary/10 p-8 transition-colors hover:bg-secondary/20"
+>
+	<div class="flex items-start justify-between">
+		{
+			publishedAt && (
+				<time class="font-mono text-xs text-muted-foreground" datetime={publishedAt.toISOString()}>
+					{formatPostDate(publishedAt, lang)}
+				</time>
+			)
+		}
+		<span
+			class="rounded-full border border-border/50 bg-background p-2 transition-colors group-hover:border-primary/30"
+			aria-hidden="true"
+		>
+			<svg
+				class="block h-4 w-4 text-muted-foreground transition-colors group-hover:text-primary"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg
+			>
+		</span>
+	</div>
+
+	<h2 class="font-serif text-xl transition-colors group-hover:text-primary">
+		<!-- The stretched link makes the whole card clickable; the tag chips are plain text. -->
+		<a href={href} class="after:absolute after:inset-0 after:content-['']">{entry.data.title}</a>
+	</h2>
+
+	{
+		entry.data.excerpt && (
+			<p class="line-clamp-3 text-sm text-muted-foreground">{entry.data.excerpt}</p>
+		)
+	}
+
+	{
+		tags.length > 0 && (
+			<div class="flex flex-wrap gap-2 pt-2">
+				{tags.map((tag) => (
+					<span class="rounded bg-secondary/50 px-2 py-1 font-mono text-xs text-muted-foreground">
+						#{tag.label}
+					</span>
+				))}
+			</div>
+		)
+	}
+</article>

@@ -46,6 +46,8 @@ const fi = {
 	"skip.content": "Siirry sisältöön",
 
 	"blog.title": "Blogi",
+	"blog.intro": "Ajatuksia web-kehityksestä, automaatiosta ja teknologiasta.",
+	"blog.feedTitle": "Juuso Jaakkola: Blogi",
 	"blog.back": "Takaisin blogiin",
 	"blog.empty": "Ei vielä kirjoituksia.",
 	"translation.toEn": "Lue englanniksi",
@@ -81,6 +83,8 @@ const en: Record<UIKey, string> = {
 	"skip.content": "Skip to content",
 
 	"blog.title": "Blog",
+	"blog.intro": "Thoughts on web development, automation, and technology.",
+	"blog.feedTitle": "Juuso Jaakkola: Blog",
 	"blog.back": "Back to blog",
 	"blog.empty": "No posts yet.",
 	"translation.toEn": "Read in English",

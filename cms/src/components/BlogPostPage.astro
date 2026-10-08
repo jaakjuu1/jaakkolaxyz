@@ -1,0 +1,101 @@
+---
+/**
+ * One blog post page for one locale: /blog/<slug> (fi) and /en/blog/<slug> (en).
+ * SEO comes from Base, which feeds the EmDash page context (one set of tags).
+ */
+import { PortableText } from "emdash/ui";
+import Base from "../layouts/Base.astro";
+import CodeBlock from "./CodeBlock.astro";
+import ProseBreak from "./ProseBreak.astro";
+import ProseTable from "./ProseTable.astro";
+import { localizePath, otherLang, t, type Lang } from "../i18n/ui";
+import { formatPostDate, postSlug, type BlogPostView } from "../utils/blog";
+
+interface Props {
+	lang: Lang;
+	post: BlogPostView;
+}
+
+const { lang, post } = Astro.props;
+const { entry, tags, translation } = post;
+const other = otherLang(lang);
+const publishedAt = entry.data.publishedAt;
+const title = entry.data.title;
+const blogHref = localizePath("/blog", lang);
+// The label is written in the language it switches to.
+const translationLabel = t(other, other === "en" ? "translation.toEn" : "translation.toFi");
+// Navbar switch: the translation when there is one, else the other language's blog index.
+const switchPath = translation ?? localizePath("/blog", other);
+const components = { type: { code: CodeBlock, break: ProseBreak, table: ProseTable } };
+---
+
+<Base
+	title={title}
+	pageTitle={title}
+	description={entry.data.excerpt || undefined}
+	lang={lang}
+	translationPath={switchPath}
+	type="article"
+	publishedTime={publishedAt?.toISOString() ?? null}
+	modifiedTime={publishedAt?.toISOString() ?? null}
+	content={{ collection: "posts", id: entry.data.id, slug: postSlug(entry) }}
+>
+	<div class="container mx-auto max-w-3xl px-4 pt-[calc(4rem+23px)] pb-16 md:px-6">
+		<a
+			href={blogHref}
+			class="-ml-2 mb-8 inline-flex items-center gap-2 rounded px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+		>
+			<svg
+				class="h-4 w-4"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg
+			>
+			{t(lang, "blog.back")}
+		</a>
+
+		<header class="mb-12">
+			{
+				publishedAt && (
+					<time class="font-mono text-sm text-muted-foreground" datetime={publishedAt.toISOString()}>
+						{formatPostDate(publishedAt, lang)}
+					</time>
+				)
+			}
+			<h1 class="mt-4 mb-6 font-serif text-3xl leading-tight tracking-tight md:text-4xl">{title}</h1>
+			{
+				tags.length > 0 && (
+					<div class="flex flex-wrap gap-2">
+						{tags.map((tag) => (
+							<span class="rounded bg-secondary/50 px-2 py-1 font-mono text-xs text-muted-foreground">
+								#{tag.label}
+							</span>
+						))}
+					</div>
+				)
+			}
+			{
+				translation && (
+					<p class="mt-6">
+						<a
+							href={translation}
+							hreflang={other}
+							class="text-sm font-medium text-primary underline underline-offset-4"
+						>
+							{translationLabel}
+						</a>
+					</p>
+				)
+			}
+			<div class="mt-8 h-1 w-20 rounded-full bg-primary/10"></div>
+		</header>
+
+		<article class="prose max-w-none">
+			<PortableText value={entry.data.content} components={components} />
+		</article>
+	</div>
+</Base>

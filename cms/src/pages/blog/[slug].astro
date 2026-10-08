@@ -1,0 +1,18 @@
+---
+import BlogPostPage from "../../components/BlogPostPage.astro";
+import NotFound from "../../components/NotFound.astro";
+import { legacyBlogRedirect, loadPublishedPost } from "../../utils/blog";
+
+// Finnish post URLs. An old URL whose post exists only in English moves to
+// /en/blog/<slug>; placeholder posts move to /blog; anything else is a 404.
+const post = await loadPublishedPost("fi", Astro.params.slug);
+if (Astro.cache?.enabled && post) Astro.cache.set(post.cacheHint);
+
+if (!post) {
+	const target = await legacyBlogRedirect(Astro.params.slug);
+	if (target) return Astro.redirect(target, 301);
+	Astro.response.status = 404;
+}
+---
+
+{post ? <BlogPostPage lang="fi" post={post} /> : <NotFound lang="fi" />}

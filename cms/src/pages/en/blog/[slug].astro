@@ -1,0 +1,11 @@
+---
+import BlogPostPage from "../../../components/BlogPostPage.astro";
+import NotFound from "../../../components/NotFound.astro";
+import { loadPublishedPost } from "../../../utils/blog";
+
+const post = await loadPublishedPost("en", Astro.params.slug);
+if (Astro.cache?.enabled && post) Astro.cache.set(post.cacheHint);
+if (!post) Astro.response.status = 404;
+---
+
+{post ? <BlogPostPage lang="en" post={post} /> : <NotFound lang="en" />}

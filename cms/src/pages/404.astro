@@ -1,22 +1,8 @@
 ---
-import Base from "../layouts/Base.astro";
-import { getLang, localizePath, t } from "../i18n/ui";
+import NotFound from "../components/NotFound.astro";
+import { getLang } from "../i18n/ui";
 
 const lang = getLang(Astro);
 ---
 
-<Base title={t(lang, "notFound.title")} description={t(lang, "notFound.body")} lang={lang} noindex>
-	<section class="mx-auto flex min-h-[70vh] max-w-xl flex-col items-start justify-center gap-6 px-6 py-24">
-		<p class="font-mono text-sm tracking-wider text-muted-foreground">404</p>
-		<h1 class="font-serif text-4xl font-bold tracking-tight md:text-5xl">
-			{t(lang, "notFound.title")}
-		</h1>
-		<p class="text-lg text-muted-foreground">{t(lang, "notFound.body")}</p>
-		<a
-			href={localizePath("/", lang)}
-			class="inline-flex rounded-full bg-primary px-6 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-		>
-			{t(lang, "notFound.home")}
-		</a>
-	</section>
-</Base>
+<NotFound lang={lang} />
