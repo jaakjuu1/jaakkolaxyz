@@ -99,9 +99,9 @@ const formattedDate = date
 		tags && tags.length > 0 && (
 			<div class="card-tags">
 				{tags.slice(0, 2).map((tag) => (
-					<a href={`/tag/${tag.slug}`} class="card-tag">
+					<span class="card-tag">
 						{tag.label}
-					</a>
+					</span>
 				))}
 			</div>
 		)

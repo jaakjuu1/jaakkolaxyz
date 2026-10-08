@@ -11,6 +11,20 @@ mkdirSync("data/uploads", { recursive: true });
 
 const siteUrl = process.env.EMDASH_SITE_URL;
 
+// Dev only: serve public/reports/<name>/ from its index.html, as the production
+// server does. Without this, `astro dev` answers 404 for the directory URL.
+const reportDirectoryIndex = {
+	name: "report-directory-index",
+	configureServer(server) {
+		server.middlewares.use((req, _res, next) => {
+			if (req.url) {
+				req.url = req.url.replace(/^(\/reports\/[^/?]+)\/?(\?.*)?$/, "$1/index.html$2");
+			}
+			next();
+		});
+	},
+};
+
 export default defineConfig({
 	site: "https://jaakkola.xyz",
 	output: "server",
@@ -37,24 +51,36 @@ export default defineConfig({
 			trustedProxyHeaders: ["x-forwarded-for"],
 		}),
 	],
+	// Fonts are downloaded at build time and self-hosted; no runtime request
+	// to Google. Used by src/layouts/Base.astro via <Font cssVariable=... />.
 	fonts: [
 		{
 			provider: fontProviders.google(),
 			name: "Inter",
-			cssVariable: "--font-body",
+			cssVariable: "--font-inter",
 			weights: [400, 500, 600, 700],
+			styles: ["normal", "italic"],
 			fallbacks: ["sans-serif"],
 		},
 		{
 			provider: fontProviders.google(),
-			name: "JetBrains Mono",
-			cssVariable: "--font-mono",
+			name: "Playfair Display",
+			cssVariable: "--font-playfair",
+			weights: [400, 500, 600, 700, 800, 900],
+			styles: ["normal", "italic"],
+			fallbacks: ["Georgia", "serif"],
+		},
+		{
+			provider: fontProviders.google(),
+			name: "Geist Mono",
+			cssVariable: "--font-geist-mono",
 			weights: [400, 500],
+			styles: ["normal"],
 			fallbacks: ["monospace"],
 		},
 	],
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [tailwindcss(), reportDirectoryIndex],
 		server: {
 			proxy: {
 				"/api/contact": "http://localhost:5000",

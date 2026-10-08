@@ -1,0 +1,125 @@
+---
+import { localizePath, otherLang, t, type Lang } from "../i18n/ui";
+
+interface Props {
+	lang: Lang;
+	/** Same page in the other language, if one exists (path with locale prefix). */
+	translationPath?: string | null;
+}
+
+const { lang, translationPath } = Astro.props;
+const other = otherLang(lang);
+const homeHref = localizePath("/", lang);
+const blogHref = localizePath("/blog", lang);
+const contactHref = `${homeHref}#lead-capture`;
+const switchHref = translationPath ?? localizePath("/", other);
+const path = Astro.url.pathname;
+const onBlog = path === blogHref || path.startsWith(`${blogHref}/`);
+const onLearn = path === "/learn" || path.startsWith("/learn/");
+const currentName = t(lang, `lang.${lang}` as const);
+const switchName = t(lang, `lang.${other}` as const);
+---
+
+<nav
+	class="fixed top-0 right-0 left-0 z-50 flex items-center justify-between border-b border-border/50 bg-background/80 px-6 py-4 backdrop-blur-md transition-all duration-300"
+	aria-label={t(lang, "nav.main")}
+>
+	<div class="flex items-center gap-2">
+		<a
+			href={homeHref}
+			class="cursor-pointer font-serif text-xl font-bold tracking-tighter transition-opacity hover:opacity-80"
+		>
+			JJ.
+		</a>
+	</div>
+
+	<div class="flex items-center gap-4">
+		<a
+			href={blogHref}
+			aria-current={onBlog ? "page" : undefined}
+			class="inline-flex h-8 items-center justify-center rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-secondary/50"
+		>
+			{t(lang, "nav.blog")}
+		</a>
+		<a
+			href="/learn/"
+			aria-current={onLearn ? "page" : undefined}
+			class="inline-flex h-8 items-center justify-center rounded-md px-3 text-sm font-medium whitespace-nowrap transition-colors hover:bg-secondary/50"
+		>
+			{t(lang, "nav.learn")}
+		</a>
+
+		<a
+			href={switchHref}
+			hreflang={other}
+			aria-label={`${lang.toUpperCase()}, ${currentName}. ${t(lang, "nav.switchLang")}: ${switchName}`}
+			title={`${t(lang, "nav.switchLang")}: ${switchName}`}
+			class="inline-flex h-9 w-9 items-center justify-center rounded-full font-mono text-xs font-medium uppercase transition-colors hover:bg-secondary/50"
+		>
+			{lang.toUpperCase()}
+		</a>
+
+		<button
+			type="button"
+			data-theme-toggle
+			aria-label={t(lang, "theme.toggle")}
+			aria-pressed="false"
+			class="inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-secondary/50"
+		>
+			<svg
+				class="block h-4 w-4 dark:hidden"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg
+			>
+			<svg
+				class="hidden h-4 w-4 dark:block"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+				><circle cx="12" cy="12" r="4"></circle><path
+					d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+				></path></svg
+			>
+		</button>
+
+		<a
+			href={contactHref}
+			class="hidden h-8 items-center justify-center rounded-full bg-primary px-6 text-xs font-medium whitespace-nowrap text-primary-foreground transition-colors hover:bg-primary/90 sm:inline-flex"
+		>
+			{t(lang, "nav.contact")}
+		</a>
+	</div>
+</nav>
+
+<script>
+	// Theme toggle: flips the `dark` class on <html> and saves the explicit
+	// choice. The head script in Base.astro applies it before first paint on
+	// every later page; with no saved choice the OS preference applies.
+	const toggle = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+	const syncPressed = () => {
+		toggle?.setAttribute(
+			"aria-pressed",
+			String(document.documentElement.classList.contains("dark")),
+		);
+	};
+	syncPressed();
+	toggle?.addEventListener("click", () => {
+		const dark = !document.documentElement.classList.contains("dark");
+		document.documentElement.classList.toggle("dark", dark);
+		syncPressed();
+		try {
+			localStorage.setItem("theme", dark ? "dark" : "light");
+		} catch {
+			// Storage blocked (private window): the choice lasts for this page only.
+		}
+	});
+</script>

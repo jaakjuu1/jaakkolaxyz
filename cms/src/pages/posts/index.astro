@@ -101,9 +101,9 @@ const formatDate = (date: Date) =>
 							{tags.length > 0 && (
 								<div class="post-tags">
 									{tags.slice(0, 3).map((t) => (
-										<a href={`/tag/${t.slug}`} class="post-tag">
+										<span class="post-tag">
 											{t.label}
-										</a>
+										</span>
 									))}
 								</div>
 							)}
