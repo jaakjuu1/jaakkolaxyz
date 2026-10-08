@@ -9,8 +9,9 @@ inventory of the current site. The facts that shape the plan are repeated here s
 
 ## Decisions (made by Juuso)
 
-- Only the public site moves: home, blog (fi + en), privacy. Ateneum, the ops dashboard, the contact
-  form API (`POST /api/contact`) and `/learn/` stay on the Express app (port 5000).
+- The public site moves: home, blog (fi + en), privacy, `/learn/` (added by Juuso 2026-10-08) and
+  `/reports/`. Ateneum, the ops dashboard and the contact form API (`POST /api/contact`) stay on the
+  Express app (port 5000).
 - EmDash runs as its own Node.js process on teppo-server (not Cloudflare Workers), behind Caddy.
 - Same look, rebuilt in Astro; small refinements are fine, no redesign.
 - Keep fi + en and keep existing URLs working.
@@ -28,8 +29,16 @@ inventory of the current site. The facts that shape the plan are repeated here s
    (6 services, 5 real cases); the invented cases are dropped.
 3. **Placeholder posts** `example-post` and `esimerkki-postaus` are not imported (301 → `/blog`).
 4. **Fonts are self-hosted**, so the privacy notice's Google Fonts paragraph is removed in both languages.
-5. Not in this migration (listed for later): 12-month deletion of contact submissions promised by the
-   privacy notice; linking `/learn` and `/reports` from the site; Cloudflare in front of teppo-server.
+5. **Learn, step A (this migration):** the track catalogue ("Oppimispolut", `/learn/`) becomes CMS
+   content (`learn_tracks` collection) rendered in the site design and linked from the nav; the 335
+   lesson/concept pages stay self-contained HTML, served by the Astro app at runtime from the same
+   `data/learn/` directory, so Hermes keeps publishing with rsync, no build or restart.
+   Step B (later, separate project): lessons as EmDash content with a quiz block, Hermes publishing
+   through the EmDash CLI.
+6. **Reports:** `/reports/age-pressure-finland/` (a standalone Three.js page) moves as a static file
+   into `cms/public/reports/`, URL unchanged, still unlinked.
+7. Not in this migration (listed for later): 12-month deletion of contact submissions promised by the
+   privacy notice; Cloudflare in front of teppo-server.
 
 ## Facts that constrain the build
 
@@ -48,6 +57,9 @@ inventory of the current site. The facts that shape the plan are repeated here s
   Taxonomy names must match the seed exactly. Validate the seed with `npx emdash seed seed/seed.json --validate`.
 - EmDash serves `/_emdash/*`, `/_astro/*`, `/_image`, `/sitemap*.xml`, `/robots.txt`.
 - On a fresh production DB the first visitor to finish the setup wizard becomes admin.
+- SQLite does not create `data/`; `astro.config.mjs` creates `data/uploads` at load time.
+- `@emdash-cms/registry-verification` wants Node `^22.22.2 || ^24.15.0`; production needs that.
+- The template already self-hosts fonts through Astro's `fonts` config (downloaded at build time).
 
 ## Rules for every implementer
 
@@ -88,13 +100,14 @@ inventory of the current site. The facts that shape the plan are repeated here s
     `urlPattern: "/blog/{slug}"`.
   - `pages`: `title`, `content` (portableText); `supports: ["drafts","revisions","seo"]`;
     `urlPattern: "/{slug}"`.
+  - `learn_tracks` (fields in section 6b), `urlPattern: "/learn/{slug}/"`.
 - Taxonomy `tag` on posts. Remove template sample content, categories and anything the site doesn't use.
 - Site settings: title "Juuso Jaakkola", tagline from the Finnish hero.
 - A short `cms/README.md` section on how to reset the local DB (`rm -rf data/`) and re-run setup in dev
   (the dev setup bypass, `/_emdash/api/setup/dev-bypass`) and how to get an API token for scripts.
 - Acceptance: `npx emdash seed seed/seed.json --validate` passes; after a fresh local DB and dev setup,
-  `npx emdash schema list` (or the REST schema endpoint) shows exactly `posts` and `pages` and the
-  `tag` taxonomy.
+  `npx emdash schema list` (or the REST schema endpoint) shows exactly `posts`, `pages` and
+  `learn_tracks` and the `tag` taxonomy.
 
 ### 3. Import script (`cms/scripts/import-content.ts`)
 
@@ -118,9 +131,11 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - Privacy pages from `client/src/data/content.ts` `privacy` (fi slug `tietosuoja`, en slug `privacy`,
   linked as translations), converted to Portable Text. Remove the Google Fonts paragraph (fonts are
   self-hosted now) and keep everything else verbatim, including the "updated" date line.
+- Learn track cards: the 7 `.path` cards in `data/learn/index.html` → `learn_tracks` entries (fi),
+  fields as in section 6b; `order` = position on the page.
 - Publish everything after create, keeping `publishedAt`.
 - Acceptance: running it twice against a fresh local instance gives the same counts (4 fi + 5 en posts,
-  2 pages) and no duplicates; a REST/CLI read of `2026-05-22-agentless-server-operations` shows
+  2 pages, 7 learn tracks) and no duplicates; a REST/CLI read of `2026-05-22-agentless-server-operations` shows
   `publishedAt` 2026-05-22, locale `en`, a translation link to the fi post, and code blocks with
   language `bash`; john-dee has its 4 images and the table.
 
@@ -129,8 +144,9 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - Port tokens from `client/src/index.css:1-115` into `cms/src/styles/global.css` (Tailwind v4
   `@theme inline`, same HSL values, `.dark` class variant), and the blog prose block
   (`index.css:118-425`) into `cms/src/styles/prose.css`, scoped to `.prose`.
-- Fonts self-hosted with `@fontsource-variable/inter`, `@fontsource/playfair-display`,
-  `@fontsource/geist-mono` (or the variable versions).
+- Fonts self-hosted: Inter, Playfair Display, Geist Mono through the template's Astro `fonts` config
+  (replace its Inter + JetBrains Mono), or `@fontsource` packages if that config can't do it.
+- Copy `client/public/reports/` to `cms/public/reports/` unchanged.
 - `src/i18n/ui.ts`: every UI string fi + en (nav, blog list/post labels, 404, form labels), plus
   helpers `getLang(Astro)`, `localizePath(path, lang)`.
 - `src/layouts/Base.astro`: `<html lang>` from the locale, `<EmDashHead>` / body hooks, per-page title
@@ -173,6 +189,29 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - `/privacy` → 301 `/en/privacy` (Astro redirect or EmDash redirect).
 - Acceptance: `/tietosuoja` 200 Finnish, `/en/privacy` 200 English, `/privacy` 301; neither page
   mentions Google Fonts; `/sitemap.xml` lists home, blog, posts and privacy pages with hreflang alternates.
+
+### 6b. Learn (`/learn/`)
+
+- Collection `learn_tracks` (add to the seed; Finnish only): `title`, `kind` (string), `blurb` (text),
+  `lesson_count` (integer), `track_status` (select: julkaistu / tulossa), `order` (integer);
+  slug = track folder name. Import the 7 cards from `data/learn/index.html` in the import script.
+- `src/pages/learn/index.astro`: the catalogue in the site design (cards like the current page:
+  title link to `/learn/<slug>/`, kind, blurb, stats), title "Oppimispolut". Nav gets an
+  "Oppimispolut"/"Learn" link (English nav links to the Finnish page; content is Finnish).
+- `src/pages/learn/[...path].ts`: serves files from `LEARN_DIR` (env, default `../data/learn` in dev)
+  at request time with the right content type: `<dir>/` → `<dir>/index.html`, `/learn/<slug>` →
+  301 `/learn/<slug>/`, real 404 for missing files, rejects any path that resolves outside
+  `LEARN_DIR` (test with `..` and `%2e%2e`). `/learn/index.html` → 301 `/learn/`. Track pages and
+  lessons are returned byte-for-byte; no rebuild is needed when Hermes rsyncs new files.
+- Sitemap: add `/learn/` and every track index and lesson (a custom sitemap entry or a
+  `sitemap-learn.xml` route listed in robots.txt), Finnish only.
+- Update `docs/learn-sections.md`: Astro serves `/learn` now; the card list on `/learn/` is edited in
+  the EmDash admin (`learn_tracks`), not in `data/learn/index.html`. Hermes's rsync target is unchanged.
+- Acceptance: `/learn/` 200 with 7 cards; `/learn/ai-music/` and
+  `/learn/ai-music/lessons/0004-suno-promptitiede.html` 200 and byte-identical to the files;
+  a `.wav` and `.png` from a `reference/` folder have the right content type; `/learn/ai-music` 301;
+  `/learn/nope.html` 404; `/learn/..%2f..%2fpackage.json` and `/learn/%2e%2e/%2e%2e/package.json` 404;
+  a file added to `data/learn/` while the server runs is served without restart.
 
 ### 7. Home page sections
 
@@ -217,8 +256,8 @@ whose slug+locale exists is skipped, or updated with `--update`).
 Not deployed until cutover is approved.
 
 - Remove the blog API and its helpers from `server/routes.ts` (keep `/api/contact` there; the contact test
-  checks it). In `server/static.ts` keep `express.static(dist/public)` (Ateneum, dashboard and
-  `reports/` live there) but remove the SPA catch-all, so unknown paths get a real 404; keep the
+  checks it). Remove the `/learn` static mount from `server/index.ts` (Astro serves it).
+  In `server/static.ts` keep `express.static(dist/public)` (Ateneum and dashboard live there) but remove the SPA catch-all, so unknown paths get a real 404; keep the
   `serveStatic(app)` call and its position (dashboard wiring test). Stop building the React client
   into `dist/public` only if Ateneum/dashboard/reports still get copied there.
 - Update tests that read these files; add a test that `/` is not served by Express.
@@ -231,7 +270,8 @@ Not deployed until cutover is approved.
   files to copy, systemd unit `jaakkolaxyz-cms.service` (`node dist/server/entry.mjs`, `PORT=4321`,
   `HOST=127.0.0.1`, `WorkingDirectory` with `data/` for DB and uploads, `EnvironmentFile`), Caddy
   config (routes to :5000 for `/api/ateneum/*`, `/ateneum*`, `/api/dashboard/*`, `/dashboard*`,
-  `/api/contact`, `/learn*`, `/reports*` (static report stays on Express); everything else → :4321;
+  `/api/contact`; everything else, including `/learn*` and `/reports*`, → :4321; `LEARN_DIR` in the
+  unit points at `/home/clawdbot/jaakkolaxyz/data/learn` so Hermes's rsync target is unchanged;
   `/_emdash/*` limited to Juuso's IP until the setup wizard is done), first-start procedure (setup
   wizard with passkey, then `emdash site import` of a package exported from the local instance),
   backups (`sqlite3 .backup`, uploads, encryption key), verification (`cms/tests` against
