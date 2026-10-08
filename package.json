@@ -12,6 +12,7 @@
     "test:ateneum": "tsx --test tests/ateneum/*.test.ts",
     "test:dashboard": "tsx --test tests/dashboard/*.test.ts",
     "test:contact": "tsx --test tests/contact/*.test.ts",
+    "test:express-split": "tsx --test tests/express-split/*.test.ts",
     "test:ateneum:browser": "python3 tests/ateneum/browser_qa.py",
     "db:push": "drizzle-kit push"
   },

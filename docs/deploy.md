@@ -16,7 +16,7 @@ service restarts. A runbook is a plan, not permission.
 | SSH (root) | alias `hetzner-teppo` |
 | App directory | `/home/clawdbot/jaakkolaxyz` (git checkout of this repo, plus untracked runtime files) |
 | Service | `jaakkolaxyz.service` (systemd): `node dist/index.cjs`, `WorkingDirectory` = app directory, `EnvironmentFile` = `.env`, `PORT=5000`, `Restart=on-failure` |
-| Reverse proxy | Caddy: everything on `jaakkola.xyz` → `localhost:5000`; `/api/dashboard/*` and `/dashboard/*` additionally sit behind basic auth (the dashboard code is not in the running bundle, so those routes have nothing behind them) |
+| Reverse proxy | Caddy. Today everything on `jaakkola.xyz` → `localhost:5000`. After the EmDash cutover only `/api/ateneum/*`, `/ateneum*`, `/api/dashboard/*`, `/dashboard*` and `/api/contact` go to `localhost:5000`; the rest (home, blog, privacy, `/learn/`, `/reports/`) goes to the EmDash app in `cms/` on `localhost:4321` (runbook: [deploy-cms.md](deploy-cms.md)). `/api/dashboard/*` and `/dashboard/*` additionally sit behind basic auth |
 | Runtime data, **not in git** | `.env`, `data/ateneum.db`, `data/dashboard.db`, `data/contact.db` (SQLite, WAL mode), `releases/`, `backups/` |
 
 There is no CI/CD. Production is updated by copying built files over SSH. The
@@ -27,12 +27,16 @@ server never builds from git itself.
 | You changed | Needs build | Needs restart | How |
 |---|---|---|---|
 | `data/learn/**` (learning tracks) | no | no | rsync, see [learn-sections.md](learn-sections.md) |
-| `content/blog/{en,fi}/*.md` | no | no | copy the files; posts are read from disk on each request (`server/routes.ts`) |
-| Blog images (`client/public/blog-images/`) | no | no | copy into **both** `client/public/blog-images/` and `dist/public/blog-images/` on the server (static files are served from `dist/public/`) |
-| Static report pages (`client/public/reports/<slug>/`) | no | no | copy into **both** `client/public/reports/` and `dist/public/reports/` on the server |
-| `client/`, `server/`, `shared/`, `public-static/`, `package.json` | **yes** | **yes** | full release (below) |
+| Blog posts, blog images, report pages, public pages | no | no | not this app: the EmDash site in `cms/` (edit posts in the admin; runbook [deploy-cms.md](deploy-cms.md)) |
+| `server/`, `shared/`, `public-static/`, `script/`, `package.json` | **yes** | **yes** | full release (below) |
 
 ## Full release (code or client)
+
+> **Order matters after the EmDash split.** This build no longer serves `/`, `/blog`,
+> `/learn` or the old SPA. Deploy it only after the EmDash site is live behind Caddy and
+> verified ([deploy-cms.md](deploy-cms.md)). Once it is deployed, pointing Caddy back at
+> :5000 does **not** bring the old site back; roll back by restoring the previous
+> `dist/` from the backup (see Rollback).
 
 1. **Start from merged `main`.** Work happens on a branch and PR; deploy the merge
    commit (`MERGE_SHA`), never a dirty working tree.
@@ -41,11 +45,12 @@ server never builds from git itself.
    ```bash
    RELEASE_DIR=$(mktemp -d /tmp/jaakkolaxyz-release.XXXXXX)
    git worktree add --detach "$RELEASE_DIR" "$MERGE_SHA" && cd "$RELEASE_DIR"
-   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run test:contact && npm run build
+   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run test:contact && npm run test:express-split && npm run build
    test -s dist/index.cjs && node --check dist/index.cjs
    ```
 
-   Output: `dist/index.cjs` (server bundle) and `dist/public/` (client). Native
+   Output: `dist/index.cjs` (server bundle) and `dist/public/` (Ateneum and dashboard
+   pages, copied from `public-static/`; there is no React build). Native
    packages listed in `dist/runtime-externals.json` (`argon2`, `better-sqlite3`,
    ...) are **not** bundled; they must exist in the server's `node_modules` at
    the lockfile version.
@@ -148,7 +153,8 @@ directory mode 700, then compare `sha256sum` per file: `SHA256SUMS` holds server
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/                      # 200
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/api/ateneum/auth/me   # 401 without a session
-curl -s https://jaakkola.xyz/learn/ | grep -o '<title>[^<]*'                        # Oppimispolut title, not the SPA
+curl -s https://jaakkola.xyz/learn/ | grep -o '<title>[^<]*'                        # Oppimispolut title (served by the EmDash site)
+curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/no-such-page           # 404 (Express no longer serves an SPA)
 ssh teppo-server 'systemctl is-active jaakkolaxyz; journalctl -u jaakkolaxyz -n 30 --no-pager'
 ```
 
@@ -164,6 +170,9 @@ just the status code. Look for restart loops in the journal.
   run `PRAGMA quick_check`, start.
 - Keep the previous release directory under `releases/` until the new one has
   been stable.
+- **After the EmDash split** (the release that stopped serving `/`): pointing Caddy
+  back at :5000 alone does not restore the public site. Restore the previous `dist/`
+  from the backup as above, then route Caddy back to :5000.
 
 ## Keeping production's git checkout aligned
 

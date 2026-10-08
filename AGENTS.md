@@ -1,20 +1,26 @@
 # jaakkola.xyz
 
-Personal site and apps of Juuso Jaakkola: React + Vite client (`client/`),
-Express server (`server/`), shared types (`shared/`), blog posts as Markdown in
-`content/blog/{en,fi}/`, the private Ateneum app (`server/ateneum-*.ts`,
-`public-static/ateneum/`), the ops dashboard at `/dashboard/` (`server/dashboard-*.ts`),
-the public contact form (`server/contact.ts`), and the static learning tracks at `/learn/`.
+Personal site and apps of Juuso Jaakkola. Two parts:
+
+- The public site (home, blog fi + en, privacy, `/learn/`, `/reports/`) is the EmDash
+  app in `cms/` (Astro). Blog posts are edited in the EmDash admin; `content/blog/` is
+  the original Markdown the import was made from. Runbook: `docs/deploy-cms.md` (coming).
+- This repo's Express server (`server/`, shared types in `shared/`) serves only the
+  private Ateneum app (`server/ateneum-*.ts`, `public-static/ateneum/`), the ops
+  dashboard at `/dashboard/` (`server/dashboard-*.ts`, `public-static/dashboard/`) and
+  the public contact form `POST /api/contact` (`server/contact.ts`). The old React
+  client (`client/`) is no longer built or served; it stays only as the source the
+  `cms/` import script reads, until the cutover cleanup.
 
 Production runs on `teppo-server` (SSH alias) from `/home/clawdbot/jaakkolaxyz`
 as the `jaakkolaxyz` systemd service (`node dist/index.cjs`).
 
 ## Learn sections
 
-`/learn/` is static HTML served from `data/learn/`. To create, edit, publish or
-sync a learn section, read [docs/learn-sections.md](docs/learn-sections.md)
-first. It covers the folder layout, page rules, how to deploy and how to verify
-against production.
+`/learn/` is static HTML in `data/learn/`, served by the Astro site in `cms/` at request
+time (no rebuild). To create, edit, publish or sync a learn section, read
+[docs/learn-sections.md](docs/learn-sections.md) first. It covers the folder layout,
+page rules, how to deploy and how to verify against production.
 
 ## Deploying
 

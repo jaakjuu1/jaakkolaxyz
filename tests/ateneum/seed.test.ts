@@ -266,6 +266,7 @@ test("production entrypoint fails fast before listening when Ateneum seed is inv
       env: {
         ...childEnv,
         ATENEUM_DB_PATH: path.join(tempDir, "entrypoint.db"),
+        DASHBOARD_DB_PATH: path.join(tempDir, "dashboard.db"),
         NODE_ENV: "production",
         PORT: "0",
       },

@@ -1,5 +1,4 @@
 import { build as esbuild } from "esbuild";
-import { build as viteBuild } from "vite";
 import { copyFile, mkdir, readdir, readFile, rm, writeFile } from "fs/promises";
 import { builtinModules } from "node:module";
 import path from "path";
@@ -53,9 +52,6 @@ async function copyDirectoryContents(source: string, destination: string) {
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
 
-  console.log("building client...");
-  await viteBuild();
-
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));
   const allDeps = [
@@ -105,6 +101,8 @@ async function buildAll() {
   );
   console.log("runtime externals:", runtimeExternals.join(", ") || "none");
 
+  // The React client is no longer built: the public site is the EmDash app in cms/, and
+  // nothing in this app loads client assets (Ateneum and the dashboard are standalone HTML).
   console.log("copying standalone static pages...");
   await copyDirectoryContents("public-static", "dist/public");
 }

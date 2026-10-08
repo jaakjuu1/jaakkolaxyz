@@ -34,7 +34,7 @@ after(() => {
   rmSync(tempDir, { recursive: true, force: true });
 });
 
-test("production entrypoint initialises the dashboard and registers its routes before the SPA fallback", () => {
+test("production entrypoint initialises the dashboard and registers its routes before the static pages", () => {
   const serverIndex = readFileSync(path.resolve("server/index.ts"), "utf8");
   assert.match(serverIndex, /import\s*\{\s*initDashboardSchema\s*\}\s*from\s*["']\.\/dashboard-db["']/);
   assert.match(serverIndex, /import\s*\{\s*registerDashboardRoutes\s*\}\s*from\s*["']\.\/dashboard-routes["']/);
@@ -43,7 +43,7 @@ test("production entrypoint initialises the dashboard and registers its routes b
   const spaFallback = serverIndex.indexOf("serveStatic(app)");
   assert.ok(init >= 0, "initDashboardSchema() must be called");
   assert.ok(register > init, "registerDashboardRoutes(app) must follow the schema init");
-  assert.ok(spaFallback > register, "the SPA fallback must not swallow /api/dashboard/*");
+  assert.ok(spaFallback > register, "static file serving must not shadow /api/dashboard/*");
 });
 
 test("dashboard failures cannot stop the site from starting", () => {

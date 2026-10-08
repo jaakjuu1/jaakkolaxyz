@@ -2,8 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
-import cookieParser from "cookie-parser";
 import path from "path";
+import cookieParser from "cookie-parser";
 import { loadAteneumEnvFiles } from "./ateneum-env";
 import { initAteneumSchema, migrateAteneumSchema } from "./ateneum-db";
 import { seedAteneum } from "./ateneum-seed";
@@ -110,24 +110,14 @@ async function startServer() {
     throw err;
   });
 
-  // Learning workspace — generated HTML lives outside the Vite bundle.
-  // Mount it before the SPA catch-all so /learn/* resolves from data/learn.
-  app.use(
-    "/learn",
-    express.static(path.resolve(process.cwd(), "data/learn"), {
-      fallthrough: false,
-    }),
-  );
-  log("learn workspace static mounted from data/learn", "learn");
+  // /learn/ is served by the Astro site in cms/, not by this app.
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
+  // Ateneum and dashboard pages: from dist/public in production, straight from
+  // public-static/ in development (the build only copies that folder).
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
-    const { setupVite } = await import("./vite");
-    await setupVite(httpServer, app);
+    serveStatic(app, path.resolve(process.cwd(), "public-static"));
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
