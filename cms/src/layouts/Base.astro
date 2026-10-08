@@ -1,0 +1,175 @@
+---
+import { Font } from "astro:assets";
+import { EmDashHead, EmDashBodyStart, EmDashBodyEnd } from "emdash/ui";
+import { createPublicPageContext } from "emdash/page";
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+import {
+	getLang,
+	localizePath,
+	OG_IMAGE_PATH,
+	SITE_FALLBACK_URL,
+	SITE_NAME,
+	t,
+	type Lang,
+} from "../i18n/ui";
+import "../styles/global.css";
+import "../styles/prose.css";
+
+interface Props {
+	/** Page name. Omit on the home page: the title is then the site name and tagline. */
+	title?: string | null;
+	/** og:title override (defaults to the full <title>). */
+	pageTitle?: string | null;
+	/** Meta description (defaults to the site description). */
+	description?: string | null;
+	/** Absolute URL or path on this site (defaults to /opengraph.jpg). */
+	image?: string | null;
+	/** Absolute canonical URL (defaults to the current URL on https://jaakkola.xyz). */
+	canonical?: string | null;
+	/** noindex pages get no canonical, og:url or hreflang. */
+	noindex?: boolean;
+	robots?: string | null;
+	type?: "website" | "article";
+	publishedTime?: string | null;
+	modifiedTime?: string | null;
+	author?: string | null;
+	/** Set for CMS content entries: EmDashHead then renders hreflang itself. */
+	content?: { collection: string; id: string; slug?: string | null };
+	/** Defaults to the language of the URL. */
+	lang?: Lang;
+	/** The same page in the other language, as a locale-prefixed path (e.g. "/en/"). */
+	translationPath?: string | null;
+}
+
+const {
+	title,
+	pageTitle,
+	description,
+	image,
+	canonical: canonicalProp,
+	noindex = false,
+	robots: robotsProp,
+	type = "website",
+	publishedTime,
+	modifiedTime,
+	author,
+	content,
+	translationPath,
+} = Astro.props;
+
+const lang: Lang = Astro.props.lang ?? getLang(Astro);
+const origin = (Astro.site ?? new URL(SITE_FALLBACK_URL)).origin;
+const absolute = (path: string) => new URL(path, origin).href;
+
+const siteTagline = t(lang, "site.tagline");
+const fullTitle = title
+	? title === SITE_NAME || title.endsWith(` | ${SITE_NAME}`)
+		? title
+		: `${title} | ${SITE_NAME}`
+	: `${SITE_NAME} | ${siteTagline}`;
+const metaDescription = description ?? t(lang, "site.description");
+const selfHref = absolute(Astro.url.pathname);
+// A noindex page (the 404) has no canonical: it is not a URL worth pointing at.
+const canonical = noindex ? null : (canonicalProp ?? selfHref);
+const ogImage = absolute(image ?? OG_IMAGE_PATH);
+const robots = robotsProp ?? (noindex ? "noindex, nofollow" : undefined);
+
+// Description, canonical, og:* and twitter:* tags come from EmDash's page
+// context (no twitter:site). This layout adds og:locale, hreflang for static
+// pages, the favicon, fonts and the theme script.
+const pageCtx = createPublicPageContext({
+	Astro,
+	kind: content ? "content" : "custom",
+	pageType: type,
+	title: fullTitle,
+	pageTitle: pageTitle ?? fullTitle,
+	description: metaDescription,
+	canonical,
+	image: ogImage,
+	content,
+	seo: { ogImage, robots },
+	articleMeta: { publishedTime, modifiedTime, author },
+	siteName: SITE_NAME,
+	// Same origin as the canonical, so hreflang and canonical agree (EmDashHead would
+	// otherwise fall back to the request origin, e.g. localhost).
+	siteUrl: origin,
+});
+
+const ogLocale = lang === "fi" ? "fi_FI" : "en_US";
+const ogLocaleAlternate = lang === "fi" ? "en_US" : "fi_FI";
+
+// hreflang for static pages with a translation. Content entries get theirs
+// from EmDashHead, so they are skipped here to avoid duplicates.
+const alternates =
+	translationPath && !content && !noindex
+		? (() => {
+				const otherHref = absolute(translationPath);
+				const fiHref = lang === "fi" ? selfHref : otherHref;
+				const enHref = lang === "en" ? selfHref : otherHref;
+				return [
+					{ hreflang: "fi", href: fiHref },
+					{ hreflang: "en", href: enHref },
+					{ hreflang: "x-default", href: fiHref },
+				];
+			})()
+		: [];
+---
+
+<!doctype html>
+<html lang={lang}>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>{fullTitle}</title>
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link
+			rel="alternate"
+			type="application/rss+xml"
+			title={t(lang, "blog.feedTitle")}
+			href={localizePath("/rss.xml", lang)}
+		/>
+		<Font cssVariable="--font-inter" preload={[{ weight: 400, style: "normal" }]} />
+		<Font cssVariable="--font-playfair" preload={[{ weight: 400, style: "normal" }]} />
+		<Font cssVariable="--font-geist-mono" />
+		<meta property="og:locale" content={ogLocale} />
+		<meta property="og:locale:alternate" content={ogLocaleAlternate} />
+		{
+			alternates.map((alt) => (
+				<link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+			))
+		}
+		<script is:inline>
+			// Apply the saved theme before first paint. With no saved choice the
+			// OS preference decides. Storage may be blocked, so read it guarded.
+			(function () {
+				var saved = null;
+				try {
+					saved = localStorage.getItem("theme");
+				} catch (e) {}
+				var dark =
+					saved === "dark" ||
+					(saved !== "light" &&
+						window.matchMedia("(prefers-color-scheme: dark)").matches);
+				if (dark) document.documentElement.classList.add("dark");
+			})();
+		</script>
+		<EmDashHead page={pageCtx} />
+	</head>
+	<body class="flex min-h-screen flex-col bg-background font-sans text-foreground antialiased">
+		<EmDashBodyStart page={pageCtx} />
+		<a
+			href="#main"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-lg focus:ring-2 focus:ring-ring"
+		>
+			{t(lang, "skip.content")}
+		</a>
+		<Navbar lang={lang} translationPath={translationPath} />
+		<main id="main" class="flex-1 pt-[69px]">
+			<slot />
+		</main>
+		<Footer lang={lang} />
+		<EmDashBodyEnd page={pageCtx} />
+	</body>
+</html>

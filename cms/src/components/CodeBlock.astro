@@ -1,0 +1,26 @@
+---
+/**
+ * Portable Text code block, highlighted at build/request time with Astro's
+ * shiki-based <Code>. Unknown or missing languages fall back to plaintext.
+ */
+import type { CodeLanguage } from "astro";
+import { Code } from "astro/components";
+
+interface Props {
+	node: {
+		_type: "code";
+		_key: string;
+		code?: string;
+		language?: string;
+	};
+}
+
+const { node } = Astro.props;
+if (!node?.code) return null;
+// Astro's Code maps languages it does not bundle to plaintext at runtime.
+const lang = (node.language?.trim() || "plaintext") as CodeLanguage;
+---
+
+<div class="code-frame">
+	<Code code={node.code} lang={lang} theme="github-dark" />
+</div>

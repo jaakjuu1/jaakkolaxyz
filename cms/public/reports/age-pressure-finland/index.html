@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Väestön painopiste siirtyy · jaakkola.xyz</title>
+  <meta name="description" content="Interaktiivinen datajournalistinen Three.js-esimerkki Suomen ikärakenteen muutoksesta vuosina 1990–2024 Maailmanpankin avoimella datalla." />
+  <link rel="canonical" href="https://jaakkola.xyz/reports/age-pressure-finland/" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Väestön painopiste siirtyy" />
+  <meta property="og:description" content="Suomen ikärakenne 1990–2024 esitettynä saavutettavana datajournalistisena Three.js-reportaasina." />
+  <meta property="og:url" content="https://jaakkola.xyz/reports/age-pressure-finland/" />
+  <meta property="og:image" content="https://jaakkola.xyz/opengraph.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <style>
+    :root { color-scheme: dark; --bg:#070a12; --fg:#edf3ff; --muted:#a8b3c7; --line:#26344f; --accent:#7dd3fc; --accent2:#fbbf24; --pink:#f0abfc; --panel:#101827; --danger:#fb7185; }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin:0; font:16px/1.62 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; background: radial-gradient(circle at 20% 0%, #12213d 0, transparent 38rem), linear-gradient(180deg,#070a12,#0b1020 55%,#070a12); color:var(--fg); }
+    a { color: var(--accent); }
+    header, main, footer { width:min(1160px, calc(100% - 36px)); margin:0 auto; }
+    header { padding: 72px 0 38px; }
+    .kicker { color:var(--accent); text-transform:uppercase; letter-spacing:.12em; font-weight:800; font-size:.78rem; }
+    h1 { font-size: clamp(2.8rem, 8vw, 7.2rem); letter-spacing:-.07em; line-height:.86; margin:.18em 0 .22em; max-width: 980px; }
+    h2 { font-size: clamp(1.55rem, 3vw, 2.7rem); letter-spacing:-.04em; margin:2.3em 0 .55em; }
+    h3 { margin:1.4rem 0 .35rem; }
+    .lead { color:var(--muted); font-size:clamp(1.12rem, 2.2vw, 1.45rem); max-width:820px; }
+    .meta { display:flex; flex-wrap:wrap; gap:.65rem; margin-top:1.35rem; }
+    .pill { border:1px solid var(--line); background:rgba(16,24,39,.72); border-radius:999px; padding:.45rem .72rem; color:#dbeafe; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr); gap:24px; align-items:start; }
+    .panel { background:rgba(16,24,39,.76); border:1px solid var(--line); border-radius:22px; padding:22px; box-shadow: 0 24px 80px rgba(0,0,0,.24); }
+    .statgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:28px 0; }
+    .stat { padding:18px; border:1px solid var(--line); border-radius:18px; background:rgba(4,8,17,.65); }
+    .stat b { display:block; font-size:clamp(1.6rem,4vw,2.7rem); line-height:1; color:#fff; letter-spacing:-.04em; }
+    .stat span { color:var(--muted); font-size:.92rem; }
+    figure { margin:34px 0; }
+    .scene-shell { position:relative; border-radius:28px; overflow:hidden; border:1px solid var(--line); background:#020617; min-height:620px; }
+    #scene { position:absolute; inset:0; }
+    .scene-overlay { position:absolute; inset:18px 18px auto auto; width:min(340px, calc(100% - 36px)); z-index:2; backdrop-filter: blur(16px); }
+    .controls { position:absolute; left:18px; right:18px; bottom:18px; z-index:2; display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center; }
+    input[type=range] { width:100%; accent-color:var(--accent); }
+    button { background:#162033; color:var(--fg); border:1px solid var(--line); padding:.7rem .9rem; border-radius:12px; cursor:pointer; }
+    button:focus-visible, input:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+    figcaption { color:var(--muted); font-size:.95rem; }
+    .legend { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:.9rem; }
+    .key { display:inline-flex; align-items:center; gap:.4rem; color:var(--muted); font-size:.93rem; }
+    .swatch { width:12px; height:12px; border-radius:999px; display:inline-block; }
+    .fallback-svg { width:100%; height:auto; margin: 1rem 0; }
+    table { width:100%; border-collapse:collapse; margin:1rem 0 2rem; font-size:.95rem; }
+    th,td { text-align:left; border-bottom:1px solid var(--line); padding:.72rem .55rem; }
+    th { color:#dbeafe; }
+    td { color:#cbd5e1; }
+    .finding { border-left:3px solid var(--accent); padding-left:1rem; margin:1rem 0 1.4rem; }
+    .warning { border-color:rgba(251,191,36,.45); background:rgba(251,191,36,.08); }
+    footer { color:var(--muted); padding:50px 0 70px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    @media (max-width: 820px) { .grid,.statgrid { grid-template-columns:1fr; } .scene-shell { min-height:560px; } .scene-overlay { position:relative; inset:auto; width:auto; margin:12px; } .controls { grid-template-columns:1fr; } }
+    @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.001ms!important; transition-duration:.001ms!important; scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="kicker">Datajournalismi × Three.js · jaakkola.xyz reports</div>
+    <h1>Väestön painopiste siirtyy</h1>
+    <p class="lead">Suomen ikärakenne on muuttunut 35 vuodessa hiljaa mutta rajusti: lasten osuus on pienentynyt, yli 65-vuotiaiden osuus kasvanut, ja työikäisten harteille piirtyy yhä jyrkempi huoltosuhteen rinne.</p>
+    <div class="meta">
+      <span class="pill">Aineisto: World Bank Open Data</span>
+      <span class="pill">Ajanjakso: 1990–2024</span>
+      <span class="pill">Toteutus: HTML + Three.js + fallback SVG</span>
+    </div>
+  </header>
+  <main>
+    <section class="grid" aria-labelledby="summary-title">
+      <div>
+        <h2 id="summary-title">Mitä tämä näyttää</h2>
+        <p>Vuonna 1990 yli 65-vuotiaiden osuus Suomen väestöstä oli noin <strong>13.4 %</strong>. Vuonna 2024 osuus oli <strong>23.9 %</strong>. Samalla lasten osuus laski noin <strong>4.7 prosenttiyksikköä</strong>. Huoltosuhteen suunta on selvä: yhä pienempi työikäisten joukko kannattelee suurempaa ei-työikäisten osuutta.</p>
+        <p>Tämä sivu on esimerkkitoteutus datajournalismiskillille: väitteet ovat HTML:ssä, lähteet näkyvissä, 3D on perusteltu mutta ei ainoa lukutapa, ja WebGL:n pettäessä tarina ei katoa mustaan laatikkoon.</p>
+      </div>
+      <aside class="panel warning" aria-label="Tärkein rajaus">
+        <strong>Tärkein rajaus</strong>
+        <p>Ikäryhmien osuus ei yksin kerro hyvinvointivaltion kestävyyttä. Työllisyysaste, tuottavuus, maahanmuutto, terveys, eläkeikä ja palvelurakenne ratkaisevat. Tämä visualisointi näyttää väestörakenteen suunnan — ei ennusta politiikan lopputulosta.</p>
+      </aside>
+    </section>
+
+    <section aria-labelledby="numbers-title">
+      <h2 id="numbers-title">Kolme lukua, jotka muuttavat mittakaavan</h2>
+      <div class="statgrid">
+        <div class="stat"><b>+10.5</b><span>prosenttiyksikköä: 65+ osuuden kasvu 1990–2024</span></div>
+        <div class="stat"><b>62.7</b><span>huoltosuhdeluku 2024: lapset + 65+ per 100 työikäistä</span></div>
+        <div class="stat"><b>61.5 %</b><span>työikäisten osuus väestöstä 2024</span></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="interactive-title">
+      <h2 id="interactive-title">Interaktiivinen väestörinne</h2>
+      <p id="scene-description">3D-näkymä näyttää vuodet vasemmalta oikealle ja kolme ikäryhmää syvyyssuunnassa. Pylvään korkeus vastaa ikäryhmän osuutta väestöstä. Ohjaimella voi pysäyttää vuoden ja lukea tarkan tekstikortin.</p>
+      <figure>
+        <div class="scene-shell">
+          <div id="scene" role="img" aria-describedby="scene-description"></div>
+          <aside class="panel scene-overlay" id="year-card" aria-live="polite">
+            <strong id="card-year">2024</strong>
+            <p id="card-text">Ladataan dataa…</p>
+            <div class="legend">
+              <span class="key"><i class="swatch" style="background:#38bdf8"></i>0–14</span>
+              <span class="key"><i class="swatch" style="background:#fbbf24"></i>15–64</span>
+              <span class="key"><i class="swatch" style="background:#f0abfc"></i>65+</span>
+            </div>
+          </aside>
+          <div class="controls panel">
+            <label for="year-range"><span class="sr-only">Valitse vuosi</span><input id="year-range" type="range" min="1990" max="2024" value="2024" step="1" /></label>
+            <button id="play-button" type="button">Toista muutos</button>
+          </div>
+        </div>
+        <figcaption>3D on tässä analyysin toinen lukutapa: se tekee ikäryhmien kerroksista ja ajan suunnasta kehollisemman. Tarkka arvovertailu tehdään alla olevasta 2D-kuviosta ja taulukosta.</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="fallback-title">
+      <h2 id="fallback-title">2D-varmistus: sama väite ilman WebGL:ää</h2>
+      <svg class="fallback-svg" viewBox="0 0 920 360" role="img" aria-label="Huoltosuhde Suomessa 1990-2024 Maailmanpankin aineiston mukaan">
+  <rect width="920" height="360" rx="18" fill="#0b1020"/>
+  <line x1="52" x2="868" y1="282.4" y2="282.4" stroke="#26324b"/><text x="16" y="287.4" fill="#9fb0ca" font-size="14">50</text><line x1="52" x2="868" y1="191.6" y2="191.6" stroke="#26324b"/><text x="16" y="196.6" fill="#9fb0ca" font-size="14">55</text><line x1="52" x2="868" y1="100.7" y2="100.7" stroke="#26324b"/><text x="16" y="105.7" fill="#9fb0ca" font-size="14">60</text>
+  <line x1="52.0" x2="52.0" y1="52" y2="308" stroke="#182033"/><text x="34.0" y="342" fill="#9fb0ca" font-size="14">1990</text><line x1="292.0" x2="292.0" y1="52" y2="308" stroke="#182033"/><text x="274.0" y="342" fill="#9fb0ca" font-size="14">2000</text><line x1="532.0" x2="532.0" y1="52" y2="308" stroke="#182033"/><text x="514.0" y="342" fill="#9fb0ca" font-size="14">2010</text><line x1="772.0" x2="772.0" y1="52" y2="308" stroke="#182033"/><text x="754.0" y="342" fill="#9fb0ca" font-size="14">2020</text><line x1="868.0" x2="868.0" y1="52" y2="308" stroke="#182033"/><text x="850.0" y="342" fill="#9fb0ca" font-size="14">2024</text>
+  <polyline fill="none" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="52.0,308.0 76.0,304.6 100.0,301.5 124.0,297.3 148.0,291.8 172.0,286.0 196.0,282.6 220.0,282.8 244.0,287.1 268.0,291.7 292.0,293.1 316.0,292.8 340.0,291.3 364.0,288.9 388.0,285.1 412.0,284.0 436.0,279.7 460.0,277.1 484.0,278.3 508.0,273.7 532.0,262.5 556.0,242.0 580.0,217.2 604.0,191.1 628.0,165.8 652.0,143.5 676.0,125.1 700.0,107.9 724.0,92.1 748.0,80.2 772.0,70.1 796.0,61.6 820.0,55.9 844.0,52.8 868.0,52.0"/>
+  <circle cx="868.0" cy="52.0" r="6" fill="#fbbf24"/>
+  <text x="52" y="32" fill="#e5eefc" font-size="16" font-weight="700">Huoltosuhde: lapset + 65+ suhteessa työikäisiin</text>
+</svg>
+      <p>Jos selain, laite tai saavutettavuusasetus ei suosi WebGL:ää, tämä 2D-kuvio ja taulukko kantavat jutun varsinaisen väitteen. Canvas ei ole artikkeli; se on vain näyttämö.</p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Vuosi</th><th>0–14</th><th>15–64</th><th>65+</th><th>Huoltosuhde</th></tr></thead>
+          <tbody><tr><td>1990</td><td>19.3 %</td><td>67.3 %</td><td>13.4 %</td><td>48.6</td></tr>
+<tr><td>1995</td><td>19.0 %</td><td>66.8 %</td><td>14.2 %</td><td>49.8</td></tr>
+<tr><td>2000</td><td>18.2 %</td><td>66.9 %</td><td>14.9 %</td><td>49.4</td></tr>
+<tr><td>2005</td><td>17.4 %</td><td>66.7 %</td><td>15.9 %</td><td>49.9</td></tr>
+<tr><td>2010</td><td>16.6 %</td><td>66.2 %</td><td>17.3 %</td><td>51.1</td></tr>
+<tr><td>2015</td><td>16.4 %</td><td>63.4 %</td><td>20.2 %</td><td>57.6</td></tr>
+<tr><td>2020</td><td>15.7 %</td><td>61.8 %</td><td>22.5 %</td><td>61.7</td></tr>
+<tr><td>2024</td><td>14.6 %</td><td>61.5 %</td><td>23.9 %</td><td>62.7</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="findings-title">
+      <h2 id="findings-title">Keskeiset havainnot</h2>
+      <article class="finding"><h3>1. Ikääntyminen ei ole äkillinen kriisi, vaan pitkä rinne</h3><p><strong>Observation:</strong> 65+ osuuden kasvu on jatkunut tasaisesti koko tarkastelujakson. <strong>Interpretation:</strong> julkisten palveluiden paine ei synny yhdessä budjettiriihessä, vaan vuosikymmenten väestörakenteesta.</p></article>
+      <article class="finding"><h3>2. Lasten osuuden lasku muuttaa tulevaa työvoimapohjaa</h3><p><strong>Observation:</strong> lasten osuus on pienentynyt samaan aikaan kun vanhempien ikäryhmien osuus on kasvanut. <strong>Limitation:</strong> tämä ei suoraan kerro syntyvyyden, muuttoliikkeen tai työllisyyden tulevaa kehitystä.</p></article>
+      <article class="finding"><h3>3. Huoltosuhde on hyvä varoitusvalo, ei koko kojelauta</h3><p><strong>Observation:</strong> huoltosuhde nousee noin 14.1 pistettä vuosien 1990 ja 2024 välillä. <strong>Alternative explanation:</strong> korkeampi työllisyys, parempi tuottavuus ja onnistunut maahanmuutto voivat keventää vaikutusta.</p></article>
+    </section>
+
+    <section class="grid" aria-labelledby="method-title">
+      <div>
+        <h2 id="method-title">Menetelmä ja lähteet</h2>
+        <ul>
+          <li>Lähde: World Bank Open Data, Finland, indikaattorit <code>SP.POP.0014.TO.ZS</code>, <code>SP.POP.1564.TO.ZS</code>, <code>SP.POP.65UP.TO.ZS</code> ja <code>SP.POP.TOTL</code>.</li>
+          <li>Huoltosuhde on laskettu kaavalla <code>(0–14 % + 65+ %) / 15–64 % × 100</code>.</li>
+          <li>Data ladattiin World Bank API:sta 2026-05-23 ja upotettiin staattisena JSONina sivuun.</li>
+          <li>Visualisointi ei sisällä ennusteita, vaan historialliset vuosihavainnot 1990–2024.</li>
+        </ul>
+      </div>
+      <aside class="panel">
+        <h3>Three.js-päätös</h3>
+        <p><strong>secondary-only.</strong> Tarkka vertailu on 2D:ssä selkeämpi. Three.js on mukana siksi, että se havainnollistaa kerroksia ja ajan suuntaa ja toimii skillin teknisenä esimerkkinä. Eli 3D sai tulla sisään, mutta ei istua pöydän päätyyn.</p>
+      </aside>
+    </section>
+  </main>
+  <footer>
+    <p>Julkaistu esimerkkiraporttina osoitteessa <a href="https://jaakkola.xyz/reports/age-pressure-finland/">jaakkola.xyz/reports/age-pressure-finland/</a>.</p>
+  </footer>
+  <script id="population-data" type="application/json">[{"year": 1990, "old": 13.384948586956, "young": 19.3168958653986, "working": 67.2981555476454, "pop": 4986431.0, "dependency": 48.59248249263313}, {"year": 1991, "old": 13.5414289931151, "young": 19.244826362019, "working": 67.2137446448659, "pop": 5013740.0, "dependency": 48.779093514823934}, {"year": 1992, "old": 13.6867561206057, "young": 19.1773129229844, "working": 67.1359309564098, "pop": 5041992.0, "dependency": 48.95153545264483}, {"year": 1993, "old": 13.8314724499121, "young": 19.1353948118952, "working": 67.0331327381927, "pop": 5066447.0, "dependency": 49.179959096591865}, {"year": 1994, "old": 14.0121905288213, "young": 19.0920884979213, "working": 66.8957209732574, "pop": 5088333.0, "dependency": 49.48639247041908}, {"year": 1995, "old": 14.2161612671296, "young": 19.0295565369287, "working": 66.7542821959417, "pop": 5107790.0, "dependency": 49.803123800317735}, {"year": 1996, "old": 14.3982989107788, "young": 18.9313691791536, "working": 66.6703319100676, "pop": 5124573.0, "dependency": 49.99175365572078}, {"year": 1997, "old": 14.5498718366513, "young": 18.7740190761538, "working": 66.6761090871948, "pop": 5139835.0, "dependency": 49.97875756251196}, {"year": 1998, "old": 14.6626071979925, "young": 18.5553428434158, "working": 66.7820499585916, "pop": 5153498.0, "dependency": 49.74083614085699}, {"year": 1999, "old": 14.7704798513837, "young": 18.334702670556, "working": 66.8948174780603, "pop": 5165474.0, "dependency": 49.488411464456576}, {"year": 2000, "old": 14.9164594925449, "young": 18.1537272071035, "working": 66.9298133003516, "pop": 5176209.0, "dependency": 49.4102479432356}, {"year": 2001, "old": 15.0767515855428, "young": 18.0025485878776, "working": 66.9206998265796, "pop": 5188008.0, "dependency": 49.43059510606306}, {"year": 2002, "old": 15.2453992330805, "young": 17.8694217876354, "working": 66.8851789792841, "pop": 5200598.0, "dependency": 49.50995351447341}, {"year": 2003, "old": 15.4567323140138, "young": 17.7166885192755, "working": 66.8265791667106, "pop": 5213014.0, "dependency": 49.64105786491389}, {"year": 2004, "old": 15.722183075154, "young": 17.5461654872815, "working": 66.7316514375645, "pop": 5228172.0, "dependency": 49.8539266536241}, {"year": 2005, "old": 15.9351969717591, "young": 17.3604320328962, "working": 66.7043709953447, "pop": 5246096.0, "dependency": 49.91521321290774}, {"year": 2006, "old": 16.2327000834465, "young": 17.1668948652518, "working": 66.6004050513017, "pop": 5266268.0, "dependency": 50.14923696480656}, {"year": 2007, "old": 16.4860618184775, "young": 16.9775427278108, "working": 66.5363954537118, "pop": 5288720.0, "dependency": 50.29368410792306}, {"year": 2008, "old": 16.629047778842, "young": 16.8045011675249, "working": 66.5664510536331, "pop": 5313399.0, "dependency": 50.22582459658129}, {"year": 2009, "old": 16.8796258150036, "young": 16.6656661403055, "working": 66.4547080446908, "pop": 5338871.0, "dependency": 50.478428003550746}, {"year": 2010, "old": 17.2594164785613, "young": 16.5570849788765, "working": 66.1834985425622, "pop": 5363352.0, "dependency": 51.09506478520564}, {"year": 2011, "old": 17.8213910625007, "young": 16.4866697684829, "working": 65.6919391690164, "pop": 5388272.0, "dependency": 52.22567831756899}, {"year": 2012, "old": 18.4499585932434, "young": 16.4425320672634, "working": 65.1075093394932, "pop": 5413971.0, "dependency": 53.59211405026295}, {"year": 2013, "old": 19.0733570715343, "young": 16.4222521825031, "working": 64.5043907459626, "pop": 5438972.0, "dependency": 55.028206364787835}, {"year": 2014, "old": 19.6661048130943, "young": 16.401937570903, "working": 63.9319576160027, "pop": 5461512.0, "dependency": 56.41629590108026}, {"year": 2015, "old": 20.2090618722589, "young": 16.3570111050433, "working": 63.4339270226978, "pop": 5479531.0, "dependency": 57.64434695051782}, {"year": 2016, "old": 20.6838033296157, "young": 16.2879910704619, "working": 63.0282055999224, "pop": 5495303.0, "dependency": 58.659125780542794}, {"year": 2017, "old": 21.1457473282604, "young": 16.198971533637, "working": 62.6552811381026, "pop": 5508214.0, "dependency": 59.60346547577284}, {"year": 2018, "old": 21.6154814502107, "young": 16.069177706368, "working": 62.3153408434214, "pop": 5515525.0, "dependency": 60.47412827487897}, {"year": 2019, "old": 22.061393842071, "young": 15.876109406441, "working": 62.0624967514881, "pop": 5521606.0, "dependency": 61.12790370071981}, {"year": 2020, "old": 22.4906828905898, "young": 15.6603302365519, "working": 61.8489868728584, "pop": 5529543.0, "dependency": 61.684135918940584}, {"year": 2021, "old": 22.8749565743109, "young": 15.4543387339099, "working": 61.6707046917791, "pop": 5541017.0, "dependency": 62.151544237713594}, {"year": 2022, "old": 23.2287672110978, "young": 15.2209461190717, "working": 61.5502866698304, "pop": 5556106.0, "dependency": 62.468780261613446}, {"year": 2023, "old": 23.5778747195571, "young": 14.9350079550124, "working": 61.4871173254305, "pop": 5583911.0, "dependency": 62.63569402796012}, {"year": 2024, "old": 23.8972369428395, "young": 14.6331861128204, "working": 61.4695769443402, "pop": 5619911.0, "dependency": 62.68210222196361}]</script>
+  <script type="module">
+    const data = JSON.parse(document.getElementById('population-data').textContent);
+    const range = document.getElementById('year-range');
+    const cardYear = document.getElementById('card-year');
+    const cardText = document.getElementById('card-text');
+    const playButton = document.getElementById('play-button');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const byYear = new Map(data.map(d => [d.year, d]));
+    function fmt(n) { return Number(n).toLocaleString('fi-FI', { maximumFractionDigits: 1 }); }
+    function updateCard(year) {
+      const d = byYear.get(Number(year));
+      cardYear.textContent = String(year);
+      cardText.innerHTML = `0–14: <strong>${fmt(d.young)} %</strong><br>15–64: <strong>${fmt(d.working)} %</strong><br>65+: <strong>${fmt(d.old)} %</strong><br>Huoltosuhde: <strong>${fmt(d.dependency)}</strong>`;
+      highlightYear(Number(year));
+    }
+    range.addEventListener('input', e => updateCard(e.target.value));
+    let timer = null;
+    playButton.addEventListener('click', () => {
+      if (timer) { clearInterval(timer); timer = null; playButton.textContent = 'Toista muutos'; return; }
+      if (reduced) { range.value = data[data.length - 1].year; updateCard(range.value); return; }
+      range.value = data[0].year; updateCard(range.value); playButton.textContent = 'Pysäytä';
+      timer = setInterval(() => {
+        const next = Number(range.value) + 1;
+        if (next > data[data.length - 1].year) { clearInterval(timer); timer = null; playButton.textContent = 'Toista muutos'; return; }
+        range.value = next; updateCard(next);
+      }, 150);
+    });
+    let bars = [];
+    updateCard(range.value);
+    function highlightYear(year) {
+      for (const item of bars) {
+        const active = item.year === year;
+        item.mesh.material.opacity = active ? 1 : .42;
+        item.mesh.scale.y = active ? 1.08 : 1;
+      }
+    }
+    async function initThree() {
+      const mount = document.getElementById('scene');
+      try {
+        const THREE = await import('https://unpkg.com/three@0.181.2/build/three.module.js');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020617);
+        const camera = new THREE.PerspectiveCamera(42, mount.clientWidth / mount.clientHeight, .1, 1000);
+        camera.position.set(17, 15, 25); camera.lookAt(0, 3, 0);
+        const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+        renderer.setSize(mount.clientWidth, mount.clientHeight);
+        mount.appendChild(renderer.domElement);
+        scene.add(new THREE.HemisphereLight(0xffffff, 0x172033, 2.7));
+        const dir = new THREE.DirectionalLight(0xffffff, 2.4); dir.position.set(5,10,8); scene.add(dir);
+        const groups = [{key:'young', z:-5, color:0x38bdf8}, {key:'working', z:0, color:0xfbbf24}, {key:'old', z:5, color:0xf0abfc}];
+        const geom = new THREE.BoxGeometry(.34, 1, .72);
+        const minYear = data[0].year, maxYear = data[data.length-1].year;
+        const yearStep = 22 / (data.length - 1);
+        groups.forEach(g => {
+          data.forEach((d, i) => {
+            const value = d[g.key];
+            const height = value / 6.5;
+            const mat = new THREE.MeshStandardMaterial({ color:g.color, transparent:true, opacity:.42, roughness:.56, metalness:.08 });
+            const mesh = new THREE.Mesh(geom, mat);
+            mesh.position.set(-11 + i * yearStep, height/2, g.z);
+            mesh.scale.set(1, height, 1);
+            scene.add(mesh);
+            bars.push({year:d.year, mesh});
+          });
+        });
+        const grid = new THREE.GridHelper(26, 26, 0x334155, 0x1e293b); scene.add(grid);
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(28, 14), new THREE.MeshBasicMaterial({color:0x07111f, transparent:true, opacity:.55, side:THREE.DoubleSide}));
+        plane.rotation.x = Math.PI/2; plane.position.y=-.02; scene.add(plane);
+        function addLabel(text, x, z) {
+          const canvas = document.createElement('canvas'); canvas.width=256; canvas.height=64;
+          const ctx = canvas.getContext('2d'); ctx.fillStyle='#dbeafe'; ctx.font='24px system-ui'; ctx.fillText(text, 8, 38);
+          const tex = new THREE.CanvasTexture(canvas); const sprite = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true}));
+          sprite.position.set(x, .25, z); sprite.scale.set(3.2, .8, 1); scene.add(sprite);
+        }
+        addLabel('0–14', -12.2, -5); addLabel('15–64', -12.2, 0); addLabel('65+', -12.2, 5);
+        addLabel(String(minYear), -11, 7); addLabel(String(maxYear), 11, 7);
+        let t = 0;
+        function render() {
+          if (!reduced) { t += .003; camera.position.x = 17 + Math.sin(t)*1.2; camera.lookAt(0,3,0); }
+          renderer.render(scene, camera); requestAnimationFrame(render);
+        }
+        render(); highlightYear(Number(range.value));
+        window.addEventListener('resize', () => { camera.aspect = mount.clientWidth / mount.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(mount.clientWidth, mount.clientHeight); });
+      } catch (err) {
+        mount.innerHTML = '<div class="panel" style="margin:18px">WebGL/Three.js-näkymä ei latautunut. Alla oleva SVG ja taulukko sisältävät saman journalistisen väitteen.</div>';
+        console.warn(err);
+      }
+    }
+    initThree();
+  </script>
+</body>
+</html>

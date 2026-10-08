@@ -1,0 +1,163 @@
+{
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "defaultLocale": "fi",
+  "meta": {
+    "name": "Jaakkola.xyz",
+    "description": "Personal site of Juuso Jaakkola: blog, pages and learning tracks",
+    "author": "Juuso Jaakkola"
+  },
+  "settings": {
+    "title": "Juuso Jaakkola",
+    "tagline": "Älykästä kasvua & automaatiota."
+  },
+  "collections": [
+    {
+      "slug": "posts",
+      "label": "Posts",
+      "labelSingular": "Post",
+      "urlPattern": "/blog/{slug}",
+      "supports": [
+        "drafts",
+        "revisions",
+        "seo",
+        "search"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "excerpt",
+          "label": "Excerpt",
+          "type": "text"
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText",
+          "searchable": true
+        },
+        {
+          "slug": "featured_image",
+          "label": "Featured Image",
+          "type": "image",
+          "translatable": false
+        }
+      ]
+    },
+    {
+      "slug": "pages",
+      "label": "Pages",
+      "labelSingular": "Page",
+      "urlPattern": "/{slug}",
+      "supports": [
+        "drafts",
+        "revisions",
+        "seo"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText"
+        }
+      ]
+    },
+    {
+      "slug": "learn_tracks",
+      "label": "Learn tracks",
+      "labelSingular": "Learn track",
+      "urlPattern": "/learn/{slug}/",
+      "supports": [
+        "drafts",
+        "revisions"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "kind",
+          "label": "Kind",
+          "type": "string"
+        },
+        {
+          "slug": "blurb",
+          "label": "Blurb",
+          "type": "text"
+        },
+        {
+          "slug": "lesson_count",
+          "label": "Lesson count",
+          "type": "integer"
+        },
+        {
+          "slug": "track_status",
+          "label": "Track status",
+          "type": "select",
+          "validation": {
+            "options": [
+              "julkaistu",
+              "tulossa"
+            ]
+          }
+        },
+        {
+          "slug": "order",
+          "label": "Order",
+          "type": "integer"
+        },
+        {
+          "slug": "group",
+          "label": "Group",
+          "type": "select",
+          "validation": {
+            "options": [
+              "ymmartaminen",
+              "rakentaja"
+            ]
+          }
+        },
+        {
+          "slug": "stats_note",
+          "label": "Stats note",
+          "type": "text"
+        }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "hierarchical": false,
+      "collections": [
+        "posts"
+      ],
+      "id": "tax:tag:fi"
+    },
+    {
+      "id": "tax:tag:en",
+      "name": "tag",
+      "label": "Tags",
+      "labelSingular": "Tag",
+      "locale": "en",
+      "translationOf": "tax:tag:fi"
+    }
+  ]
+}

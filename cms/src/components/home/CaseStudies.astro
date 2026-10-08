@@ -1,0 +1,72 @@
+---
+import type { HomeContent } from "../../i18n/home";
+
+interface Props {
+	content: HomeContent;
+}
+
+const { content } = Astro.props;
+const { labels } = content;
+const { title, items } = content.cases;
+---
+
+<section id="cases" class="scroll-mt-24 bg-background py-24">
+	<div class="container mx-auto max-w-6xl px-4 md:px-6">
+		<div class="mb-16 md:text-center">
+			<h2 class="mb-6 font-serif text-3xl md:text-4xl">{title}</h2>
+			<div class="h-1 w-20 rounded-full bg-primary/10 md:mx-auto"></div>
+		</div>
+
+		<div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+			{
+				items.map((item, index) => {
+					// An odd count leaves the last card alone in its row. It spans both columns
+					// and sits centred at two thirds width (5 cases: 2 + 2 + 1).
+					const alone = items.length % 2 === 1 && index === items.length - 1;
+					return (
+						<div
+							class:list={["reveal reveal-scale h-full", alone && "md:col-span-2 md:mx-auto md:w-2/3"]}
+							style={`--delay: ${index * 0.1}s`}
+						>
+							<div class="h-full overflow-hidden rounded-xl border border-border bg-secondary/10 text-card-foreground shadow transition-colors hover:bg-secondary/20">
+								<div class="space-y-6 p-8">
+									<div class="flex items-start justify-between gap-4">
+										<h3 class="font-serif text-2xl">{item.client}</h3>
+										<div class="shrink-0 rounded-full border border-border/50 bg-background p-2">
+											<svg class="h-4 w-4 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+										</div>
+									</div>
+
+									<div class="grid grid-cols-1 gap-6 pt-2 sm:grid-cols-2">
+										<div>
+											<h4 class="mb-2 font-mono text-xs text-muted-foreground uppercase">{labels.challenge}</h4>
+											<p class="text-sm">{item.challenge}</p>
+										</div>
+										<div>
+											<h4 class="mb-2 font-mono text-xs text-muted-foreground uppercase">{labels.solution}</h4>
+											<p class="text-sm">{item.solution}</p>
+										</div>
+									</div>
+
+									<div class="border-t border-border/30 pt-4">
+										<div class="mb-4 flex items-center gap-2">
+											<div class="rounded-full bg-green-500/10 p-1 text-green-600">
+												<svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+											</div>
+											<span class="font-medium">{item.result}</span>
+										</div>
+										<div class="flex flex-wrap gap-x-4 gap-y-2 font-mono text-xs text-muted-foreground">
+											{item.stack.map((tech) => (
+												<span># {tech}</span>
+											))}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					);
+				})
+			}
+		</div>
+	</div>
+</section>

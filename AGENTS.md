@@ -22,6 +22,8 @@ Production is updated by copying built files over SSH; there is no CI/CD. Read
 [docs/deploy.md](docs/deploy.md) before any production change: it says which
 kind of change needs a build and a restart, how to back up, verify and roll
 back. The Ateneum release in detail: [docs/ateneum-p0-deploy.md](docs/ateneum-p0-deploy.md).
+The public site (home, blog, privacy, `/learn/`, `/reports/`) is the EmDash app in `cms/`:
+its runbook is [docs/deploy-cms.md](docs/deploy-cms.md). Blog posts are edited in the EmDash admin.
 
 ## Rules
 

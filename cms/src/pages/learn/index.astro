@@ -1,0 +1,141 @@
+---
+/**
+ * /learn/: the track catalogue "Oppimispolut". Finnish only. The cards are the
+ * published learn_tracks entries (edited in the EmDash admin), grouped by their
+ * `group` field under the two headings of the old page. The intro copy is from
+ * data/learn/index.html, which is no longer served.
+ */
+import Base from "../../layouts/Base.astro";
+import TrackCard from "../../components/TrackCard.astro";
+import { SITE_FALLBACK_URL, t, type UIKey } from "../../i18n/ui";
+import { listPublishedTracks } from "../../utils/learn";
+
+const { tracks, cacheHint } = await listPublishedTracks();
+if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+
+const title = "Oppimispolut";
+// Browser title in the old page's wording; Base appends the site name.
+const pageTitle = "Oppimispolut — itseopiskeltavia työkaluja";
+const description =
+	"Avoin oppimiskirjasto uteliaille ja rakentajille — lähteistettyjä polkuja ymmärtämiseen, harjoitteluun ja digitaalisten tuotteiden tekemiseen.";
+const canonical = new URL("/learn/", Astro.site ?? new URL(SITE_FALLBACK_URL)).href;
+
+// Groups in the order of the old page. Each `group` value has its heading key in ui.ts.
+const GROUPS: { group: string; heading: UIKey; lead: UIKey }[] = [
+	{ group: "ymmartaminen", heading: "learn.group.ymmartaminen", lead: "learn.group.ymmartaminen.lead" },
+	{ group: "rakentaja", heading: "learn.group.rakentaja", lead: "learn.group.rakentaja.lead" },
+];
+const grouped = GROUPS.map(({ group, heading, lead }) => ({
+	heading,
+	lead,
+	tracks: tracks.filter((entry) => entry.data.group === group),
+})).filter((section) => section.tracks.length > 0);
+// A published track without a known group is still listed, after the groups.
+const ungrouped = tracks.filter(
+	(entry) => !GROUPS.some(({ group }) => group === entry.data.group),
+);
+
+const reasons = [
+	{
+		title: "Lähteet näkyvät",
+		body: "Jokainen polku kertoo, mihin sen tieto, menetelmät ja tulkinnat perustuvat.",
+	},
+	{
+		title: "Opittu viedään käytäntöön",
+		body: "Mukana on harjoituksia, ajatuskokeita, laskureita ja rakennettavia työkaluja — ei vain lukemista.",
+	},
+	{
+		title: "Väitteiden luonne erotellaan",
+		body: "Tutkimustieto, historiallinen lähde, tulkinta ja käytännön playbook eivät esiinny samana asiana.",
+	},
+];
+---
+
+<Base title={pageTitle} description={description} lang="fi" canonical={canonical}>
+	<section class="container mx-auto max-w-4xl px-4 py-16 md:px-6">
+		<header class="mb-12">
+			<h1 class="mb-4 font-serif text-4xl tracking-tight md:text-5xl">{title}</h1>
+			<p class="text-lg text-muted-foreground">
+				Lähteistettyjä polkuja ymmärtämiseen, harjoitteluun ja tekemiseen
+			</p>
+		</header>
+
+		<div class="mb-12 rounded-r-lg border-l-4 border-primary bg-secondary/40 p-6">
+			<p class="text-base leading-relaxed">
+				Tämä on avoin oppimiskirjasto <strong>uteliaille ja rakentajille</strong>. Polut auttavat
+				ymmärtämään maailmaa ja omaa toimintaa, harjoittelemaan käytännössä sekä rakentamaan
+				digitaalisia tuotteita — yksi kokonaisuus kerrallaan.
+			</p>
+		</div>
+
+		<h2 class="mb-6 font-serif text-2xl">Miksi tämä on olemassa</h2>
+		<ol class="mb-16 grid grid-cols-1 gap-4 md:grid-cols-3">
+			{
+				reasons.map((reason, index) => (
+					<li class="rounded-lg border border-border bg-background p-5">
+						<span
+							class="mb-3 inline-flex h-7 w-7 items-center justify-center rounded-full bg-secondary font-mono text-sm font-medium"
+							aria-hidden="true"
+						>
+							{index + 1}
+						</span>
+						<h3 class="mb-1 font-medium">{reason.title}</h3>
+						<p class="text-sm text-muted-foreground">{reason.body}</p>
+					</li>
+				))
+			}
+		</ol>
+
+		{
+			tracks.length === 0 ? (
+				<p class="py-16 text-center text-muted-foreground">Ei vielä julkaistuja polkuja.</p>
+			) : (
+				<>
+					{grouped.map(({ heading, lead, tracks: groupTracks }) => (
+						<section class="mb-16">
+							<h2 class="mb-2 font-serif text-2xl">{t("fi", heading)}</h2>
+							<p class="text-muted-foreground">{t("fi", lead)}</p>
+							<ul class="mt-6 grid grid-cols-1 gap-6">
+								{groupTracks.map((entry) => (
+									<li>
+										<TrackCard entry={entry} />
+									</li>
+								))}
+							</ul>
+						</section>
+					))}
+					{
+						ungrouped.length > 0 && (
+							<ul class="mb-16 grid grid-cols-1 gap-6">
+								{ungrouped.map((entry) => (
+									<li>
+										<TrackCard entry={entry} />
+									</li>
+								))}
+							</ul>
+						)
+					}
+				</>
+			)
+		}
+
+		<hr class="my-16 border-border" />
+
+		<h2 class="mb-3 font-serif text-2xl">Miten polkuja luetaan</h2>
+		<p class="mb-3 text-muted-foreground">
+			Jokainen polku on itsenäinen — voit aloittaa mistä tahansa aiheesta. Oppitunnit sisältävät polun
+			luonteeseen sopivia harjoituksia, ajatuskokeita tai rakennustehtäviä. Lähteet ja tiedon luonne
+			pidetään näkyvillä.
+		</p>
+		<p class="mb-3 text-muted-foreground">
+			Jos jokin työkalu resonoi, kokeile sitä saman tien — ei tarvitse lukea koko polkua läpi yhdellä
+			istumalla.
+		</p>
+
+		<p class="mt-10 border-t border-dashed border-border pt-6 text-sm text-muted-foreground">
+			Polut päivittyvät ajan myötä. Jokainen polku kertoo omasta lähde-, väite- ja turvallisuuskehyksestään.
+			Mielenterveysmateriaali on itseopiskelua eikä korvaa lääkärin tai psykoterapeutin apua silloin kun
+			sitä oikeasti tarvitaan.
+		</p>
+	</section>
+</Base>

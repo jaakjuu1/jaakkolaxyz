@@ -1,0 +1,24 @@
+---
+// Finnish home page (default locale, unprefixed URL). Sections in the old order; copy from i18n/home.ts.
+import Base from "../layouts/Base.astro";
+import HomeMotion from "../components/home/HomeMotion.astro";
+import Hero from "../components/home/Hero.astro";
+import Services from "../components/home/Services.astro";
+import CaseStudies from "../components/home/CaseStudies.astro";
+import Process from "../components/home/Process.astro";
+import About from "../components/home/About.astro";
+import LeadCaptureSlot from "../components/home/LeadCaptureSlot.astro";
+import { home } from "../i18n/home";
+
+const content = home.fi;
+---
+
+<Base lang="fi" translationPath="/en/" description={content.hero.subheadline}>
+	<HomeMotion />
+	<Hero content={content} />
+	<Services content={content} />
+	<CaseStudies content={content} />
+	<Process content={content} />
+	<About content={content} />
+	<LeadCaptureSlot content={content} />
+</Base>

@@ -1,0 +1,43 @@
+---
+import type { HomeContent } from "../../i18n/home";
+
+interface Props {
+	content: HomeContent;
+}
+
+const { content } = Astro.props;
+const { title, steps } = content.process;
+---
+
+<section class="relative overflow-hidden bg-foreground py-24 text-background">
+	<!-- Abstract background glow -->
+	<div class="pointer-events-none absolute top-0 right-0 h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-background/5 blur-3xl"></div>
+
+	<div class="container relative z-10 mx-auto max-w-6xl px-4 md:px-6">
+		<div class="mb-20">
+			<h2 class="mb-6 font-serif text-3xl md:text-4xl">{title}</h2>
+			<div class="h-1 w-20 rounded-full bg-background/20"></div>
+		</div>
+
+		<div class="relative grid grid-cols-1 gap-12 md:grid-cols-3">
+			<!-- Connecting line -->
+			<div class="absolute top-12 left-0 hidden h-px w-full bg-gradient-to-r from-transparent via-background/20 to-transparent md:block"></div>
+
+			{
+				steps.map((step, index) => (
+					<div class="reveal relative" style={`--delay: ${index * 0.2}s`}>
+						<div class="flex flex-col gap-6">
+							<div class="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border border-background/20 bg-foreground font-serif text-4xl italic">
+								{step.step}
+							</div>
+							<div>
+								<h3 class="mb-3 text-xl font-medium">{step.name}</h3>
+								<p class="leading-relaxed font-light text-background/70">{step.description}</p>
+							</div>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</div>
+</section>

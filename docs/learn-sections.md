@@ -7,14 +7,21 @@ others) and humans. The content itself is in Finnish.
 ## What `/learn` is
 
 - Plain static HTML. No React, no build step, no database.
-- Served by `express.static` from `data/learn/` (see `server/index.ts`,
-  "Learning workspace" block). It is mounted **before** the SPA catch-all, with
-  `fallthrough: false`, so an unknown `/learn/...` path is a real 404 and not the
-  SPA page.
-- `data/learn/` is resolved from the process working directory
-  (`path.resolve(process.cwd(), "data/learn")`). It lives outside `dist/`, so
-  `npm run build` does not touch it. **Publishing a section needs no rebuild and
-  no restart.**
+- Served by the Astro site in `cms/` (`cms/src/pages/learn/`, helpers in
+  `cms/src/utils/learn-files.ts`) from the directory named by `LEARN_DIR`. Files
+  are read at request time and returned byte for byte. An unknown `/learn/...`
+  path is a real 404 (the site's 404 page). `/learn/` is the catalogue page; its
+  cards are CMS content (see below).
+- `LEARN_DIR` defaults to `../data/learn` (the dev server runs in `cms/`).
+  Production sets `LEARN_DIR=/home/clawdbot/jaakkolaxyz/data/learn` in the CMS
+  service's environment, so Hermes's rsync target does not change. The directory
+  lives outside `dist/`, so `npm run build` does not touch it. **Publishing a
+  section needs no rebuild and no restart.**
+- Never served: dot-files and dot-directories (`.backups/`, `.git`) and
+  `teach-manual-publish-*/`. Symlinks that point outside `LEARN_DIR` are not
+  followed.
+- Until the production cutover (see `docs/plans/emdash-migration.md`), production
+  still serves `/learn` with `express.static` from `server/index.ts`.
 - This directory is the **published output**. It is committed to git so the repo
   matches what is live.
 
@@ -23,7 +30,8 @@ others) and humans. The content itself is in Finnish.
 | What | Where |
 |---|---|
 | Published pages (this repo) | `data/learn/` |
-| Aggregate index of all tracks | `data/learn/index.html` (page "Oppimispolut") |
+| Catalogue cards on `/learn/` (page "Oppimispolut") | EmDash admin, collection `learn_tracks` (not a file in this repo) |
+| Old catalogue page | `data/learn/index.html`: no longer served. It is the source of the initial `learn_tracks` import and stays here only until the production cutover |
 | One track | `data/learn/<slug>/` |
 | Live copy on production | `teppo-server:/home/clawdbot/jaakkolaxyz/data/learn/` |
 | Authoring workspaces (**not** in this repo) | `~/learn/<slug>/` on Juuso's machine, plus `~/learn/_root/` for the aggregate index |
@@ -144,22 +152,15 @@ Pick the path that fits. In both cases the result must end up in
    existing track and reuse its CSS.
 2. Write the track `index.html`, lessons and reference pages. Run the grep check
    above.
-3. Add a card for the track to `data/learn/index.html` inside `<div class="paths">`:
-
-   ```html
-   <div class="path">
-     <h3><a href="<slug>/">Track title</a> <span class="status live">Julkaistu</span></h3>
-     <span class="kind">Short category</span>
-     <p class="blurb">One or two sentences.</p>
-     <div class="stats">
-       <span><strong>6</strong> oppituntia</span>
-       <span>Topic · format</span>
-     </div>
-   </div>
-   ```
-
-   The aggregate page is **not** regenerated automatically; add the card by hand
-   and update the lesson count when lessons are added.
+3. Add a card in the EmDash admin, collection `learn_tracks`, and publish it.
+   The slug is the track folder name (`<slug>`). Fields: `title`, `kind` (short
+   category), `blurb` (one or two sentences), `lesson_count` (integer),
+   `track_status` (`julkaistu` or `tulossa`), `group` (`ymmartaminen` for
+   "Ymmärtämisen ja harjoituksen polut", `rakentaja` for "Rakentajan polut") and
+   `order` (position within its group on `/learn/`). Only published entries appear
+   on `/learn/`. Update `lesson_count` when lessons are added. A track without a
+   published entry (a draft, such as `mikroauktoriteetti`) is not listed on `/learn/`
+   or in `sitemap-learn.xml`, but its pages still answer at their URLs. Do not edit `data/learn/index.html` for cards: it is no longer served.
 4. Commit, then deploy (next section).
 
 ## Deploying to production
@@ -172,8 +173,10 @@ which owns the app directory. Deploy one track without deleting anything on the 
 
 ```bash
 rsync -rc --chmod=D755,F644 data/learn/<slug>/ teppo-server:jaakkolaxyz/data/learn/<slug>/
-rsync -c  --chmod=F644      data/learn/index.html teppo-server:jaakkolaxyz/data/learn/index.html
 ```
+
+The track folder is the only thing to copy. `data/learn/index.html` is not synced
+any more; the catalogue cards are CMS content.
 
 Do not pass `--delete` against `data/learn/` as a whole, and never replace the
 whole directory: it contains every other track. Do not restart the service.
@@ -219,8 +222,9 @@ a page on purpose, delete it in git as well.)
 - Reporting "published" without a `curl` check. Do not do this.
 - Passing slug `.` to `manual-publish.sh` creates `data/learn/./` (a
   `teach-manual-publish-*` directory) which nothing serves. To update the
-  aggregate index use `TEACH_JAAKKOLA_ROOT=1 publish-jaakkola.sh ~/learn/_root`
-  or the `rsync` of `index.html` above.
+  aggregate index use `TEACH_JAAKKOLA_ROOT=1 publish-jaakkola.sh ~/learn/_root`.
+  That only rewrites `data/learn/index.html`, which is no longer served: the
+  catalogue cards on `/learn/` are changed in the admin.
 - Large source PDFs (for example books) belong in the authoring workspace's
   `_sources/`, not in `data/learn/` or git.
 - Subagents writing many pages time out (about 10 minutes). Check what was

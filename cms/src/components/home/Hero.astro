@@ -1,0 +1,72 @@
+---
+import { Picture } from "astro:assets";
+import heroBg from "../../assets/hero-bg.png";
+import type { HomeContent } from "../../i18n/home";
+
+interface Props {
+	content: HomeContent;
+}
+
+const { content } = Astro.props;
+const { hero, labels } = content;
+---
+
+<section class="relative flex min-h-[90vh] items-center justify-center overflow-hidden pt-20">
+	<!-- Background image with overlay. Decorative, so alt is empty. -->
+	<div class="absolute inset-0 z-0">
+		<Picture
+			src={heroBg}
+			alt=""
+			formats={["avif", "webp"]}
+			widths={[704, 1408]}
+			sizes="100vw"
+			layout="none"
+			loading="eager"
+			fetchpriority="high"
+			class="h-full w-full object-cover opacity-80 grayscale-[20%] dark:opacity-40"
+		/>
+		<div class="absolute inset-0 z-10 bg-gradient-to-b from-background/80 via-background/50 to-background"></div>
+	</div>
+
+	<div class="container relative z-20 mx-auto flex max-w-4xl flex-col items-center space-y-8 px-4 text-center md:px-6">
+		<div class="hero-in space-y-4" style="--delay: 0s">
+			<span class="inline-block rounded-full border border-border/50 bg-secondary/80 px-3 py-1 font-mono text-xs tracking-wider text-secondary-foreground uppercase backdrop-blur-sm">
+				{labels.eyebrow}
+			</span>
+			<h1 class="font-serif text-4xl leading-[1.1] font-medium tracking-tight text-foreground md:text-6xl lg:text-7xl">
+				{hero.headline}
+			</h1>
+		</div>
+
+		<p class="hero-in max-w-2xl text-lg leading-relaxed font-light text-muted-foreground md:text-xl" style="--delay: 0.2s">
+			{hero.subheadline}
+		</p>
+
+		<div class="hero-in flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row" style="--delay: 0.4s">
+			<a
+				href={hero.bookingUrl}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="group inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-border bg-primary px-8 text-base font-medium whitespace-nowrap text-primary-foreground shadow-lg transition-all duration-300 hover:shadow-xl sm:w-auto"
+			>
+				{hero.ctaPrimary}
+				<svg class="ml-2 h-4 w-4 shrink-0 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+			</a>
+			<a
+				href="#cases"
+				class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-primary/10 bg-background/50 px-8 text-base font-medium whitespace-nowrap shadow-xs backdrop-blur-sm transition-all duration-300 hover:bg-background/80 sm:w-auto"
+			>
+				{hero.ctaSecondary}
+			</a>
+		</div>
+	</div>
+
+	<!-- Scroll indicator (desktop only). Fades in on its own after the text. -->
+	<div
+		class="hero-fade absolute bottom-10 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex"
+		style="--delay: 1s"
+		aria-hidden="true"
+	>
+		<div class="h-12 w-px bg-gradient-to-b from-transparent to-foreground/30"></div>
+	</div>
+</section>

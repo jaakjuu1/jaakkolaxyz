@@ -1,0 +1,91 @@
+---
+/**
+ * Portable Text table as a plain <table>, so the .prose table rules apply
+ * (EmDash's Table component ships unlayered scoped borders and padding that
+ * beat them). Keeps the semantics: header row in <thead>, other header cells
+ * as <th>, colspan, rowspan and text alignment.
+ */
+import { PortableText } from "emdash/ui";
+
+interface Cell {
+	_key: string;
+	content?: unknown[];
+	markDefs?: unknown[];
+	isHeader?: boolean;
+	colspan?: number;
+	rowspan?: number;
+	textAlign?: "left" | "center" | "right";
+}
+
+interface Props {
+	node: {
+		hasHeaderRow?: boolean;
+		rows?: { _key: string; cells?: Cell[] }[];
+	};
+}
+
+const { node } = Astro.props;
+const rows = (node?.rows ?? []).map((row) => ({ key: row._key, cells: row.cells ?? [] }));
+const first = rows[0];
+const hasHeaderRow =
+	node?.hasHeaderRow === true &&
+	first !== undefined &&
+	first.cells.length > 0 &&
+	first.cells.every((cell) => cell.isHeader === true && (cell.rowspan ?? 1) === 1);
+const headerRow = hasHeaderRow ? first : undefined;
+const bodyRows = hasHeaderRow ? rows.slice(1) : rows;
+
+function block(cell: Cell) {
+	return [
+		{
+			_type: "block",
+			_key: cell._key,
+			style: "normal",
+			children: cell.content ?? [],
+			markDefs: cell.markDefs ?? [],
+		},
+	];
+}
+
+function attrs(cell: Cell, scope?: "col" | "row") {
+	return {
+		scope,
+		colspan: (cell.colspan ?? 1) > 1 ? cell.colspan : undefined,
+		rowspan: (cell.rowspan ?? 1) > 1 ? cell.rowspan : undefined,
+		style: cell.textAlign ? `text-align: ${cell.textAlign};` : undefined,
+	};
+}
+---
+
+<table>
+	{
+		headerRow && (
+			<thead>
+				<tr>
+					{headerRow.cells.map((cell) => (
+						<th {...attrs(cell, "col")}>
+							<PortableText value={block(cell)} />
+						</th>
+					))}
+				</tr>
+			</thead>
+		)
+	}
+	<tbody>
+		{
+			bodyRows.map((row) => (
+				<tr>
+					{row.cells.map((cell, index) => {
+						const Tag = cell.isHeader ? "th" : "td";
+						const scope = cell.isHeader && index === 0 && (cell.rowspan ?? 1) === 1 ? "row" : undefined;
+						return (
+							<Tag {...attrs(cell, scope)}>
+								<PortableText value={block(cell)} />
+							</Tag>
+						);
+					})}
+				</tr>
+			))
+		}
+	</tbody>
+</table>

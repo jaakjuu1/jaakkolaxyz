@@ -1,0 +1,46 @@
+---
+/**
+ * One track card on /learn/: title link to the track's front page, kind, blurb,
+ * lesson count and status.
+ */
+import { trackPath, trackSlug, type TrackEntry } from "../utils/learn";
+
+interface Props {
+	entry: TrackEntry;
+}
+
+const { entry } = Astro.props;
+const slug = trackSlug(entry);
+const { lesson_count: lessons, track_status: status, kind, blurb, stats_note: note } = entry.data;
+const STATUS_LABEL: Record<string, string> = { julkaistu: "Julkaistu", tulossa: "Tulossa" };
+---
+
+<article
+	class="group relative flex flex-col gap-3 overflow-hidden rounded-lg border border-border bg-secondary/10 p-8 transition-colors hover:bg-secondary/20"
+>
+	{
+		kind && (
+			<p class="w-fit rounded-full border border-primary/30 px-3 py-0.5 font-mono text-xs tracking-wider text-muted-foreground uppercase">
+				{kind}
+			</p>
+		)
+	}
+	<h3 class="font-serif text-2xl transition-colors group-hover:text-primary">
+		<a href={trackPath(slug)} class="after:absolute after:inset-0 after:content-['']">
+			{entry.data.title}
+		</a>
+	</h3>
+	{blurb && <p class="text-sm text-muted-foreground">{blurb}</p>}
+	<div class="flex flex-wrap gap-x-5 gap-y-1 pt-2 font-mono text-xs text-muted-foreground">
+		{
+			lessons != null && (
+				<span>
+					<strong class="font-semibold text-primary">{lessons}</strong>{" "}
+					{lessons === 1 ? "oppitunti" : "oppituntia"}
+				</span>
+			)
+		}
+		{note && <span>{note}</span>}
+		{status && <span>{STATUS_LABEL[status] ?? status}</span>}
+	</div>
+</article>

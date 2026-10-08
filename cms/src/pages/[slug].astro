@@ -1,0 +1,15 @@
+---
+import ContentPage from "../components/ContentPage.astro";
+import NotFound from "../components/NotFound.astro";
+import { isPagePath, loadPublishedPage, pageSlug } from "../utils/pages";
+
+// Finnish pages at the root, e.g. /tietosuoja. Old /privacy is redirected in astro.config.mjs.
+// Static routes (/blog, /learn, /rss.xml, /404) take priority over this one.
+const found = await loadPublishedPage("fi", Astro.params.slug);
+// Only the page's own URL serves it: /tietosuoja.html and other variants are 404s.
+const page = found && isPagePath(Astro.url, "fi", pageSlug(found.entry)) ? found : null;
+if (Astro.cache?.enabled && page) Astro.cache.set(page.cacheHint);
+if (!page) Astro.response.status = 404;
+---
+
+{page ? <ContentPage lang="fi" page={page} /> : <NotFound lang="fi" />}

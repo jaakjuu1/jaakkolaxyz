@@ -1,0 +1,95 @@
+---
+/**
+ * One CMS page for one locale: /tietosuoja (fi) and /en/privacy (en). Layout and
+ * spacing follow the old privacy notice (client/src/pages/privacy.tsx); the body
+ * deliberately does not use .prose (its blog lead-paragraph and heading rules
+ * do not fit a notice). SEO comes from Base, which feeds the EmDash page context.
+ */
+import { getSeoMeta } from "emdash";
+import { PortableText } from "emdash/ui";
+import Base from "../layouts/Base.astro";
+import CodeBlock from "./CodeBlock.astro";
+import ProseBreak from "./ProseBreak.astro";
+import ProseTable from "./ProseTable.astro";
+import { localizePath, otherLang, t, type Lang } from "../i18n/ui";
+import { pageSlug, type PageView } from "../utils/pages";
+
+interface Props {
+	lang: Lang;
+	page: PageView;
+}
+
+const { lang, page } = Astro.props;
+const { entry, translation } = page;
+const other = otherLang(lang);
+const title = entry.data.title;
+const seo = getSeoMeta(entry, { defaultDescription: t(lang, "site.description") });
+// Navbar switch: the translation when there is one, else the other language's home.
+const switchPath = translation ?? localizePath("/", other);
+const components = { type: { code: CodeBlock, break: ProseBreak, table: ProseTable } };
+---
+
+<Base
+	title={title}
+	pageTitle={seo.ogTitle}
+	description={seo.description}
+	robots={seo.robots}
+	lang={lang}
+	translationPath={switchPath}
+	content={{ collection: "pages", id: entry.data.id, slug: pageSlug(entry) }}
+>
+	<section class="mx-auto max-w-3xl px-4 pt-[91px] pb-32 md:px-6">
+		<h1 class="mb-3 font-serif text-4xl md:text-5xl">{title}</h1>
+		<div class="page-body">
+			<PortableText value={entry.data.content} components={components} />
+		</div>
+	</section>
+</Base>
+
+<style>
+	/* Old classes: body text-muted-foreground leading-relaxed; sections space-y-10; paragraphs space-y-3; lists list-disc pl-6 space-y-1. */
+	.page-body {
+		color: hsl(var(--muted-foreground));
+		line-height: 1.625;
+	}
+
+	.page-body :global(p),
+	.page-body :global(ul) {
+		margin: 0;
+	}
+
+	.page-body :global(p + p),
+	.page-body :global(p + ul),
+	.page-body :global(ul + p) {
+		margin-top: 0.75rem;
+	}
+
+	.page-body :global(ul) {
+		list-style: disc;
+		padding-left: 1.5rem;
+	}
+
+	.page-body :global(li + li) {
+		margin-top: 0.25rem;
+	}
+
+	/* text-2xl font-serif, regular weight, mb-3; sections are spaced by space-y-10. */
+	.page-body :global(h2) {
+		margin: 2.5rem 0 0.75rem;
+		font-family: var(--font-serif);
+		font-size: 1.5rem;
+		font-weight: 400;
+		line-height: 2rem;
+		color: hsl(var(--foreground));
+	}
+
+	/* The "updated" line: text-sm muted with mb-12 before the first section. */
+	.page-body > :global(p:first-child) {
+		margin-bottom: 3rem;
+		font-size: 0.875rem;
+	}
+
+	.page-body > :global(p:first-child + h2) {
+		margin-top: 0;
+	}
+</style>

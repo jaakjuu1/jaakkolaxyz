@@ -1,0 +1,54 @@
+---
+import { localizePath, SITE_NAME, t, type Lang } from "../i18n/ui";
+
+interface Props {
+	lang: Lang;
+}
+
+const { lang } = Astro.props;
+const year = new Date().getFullYear();
+const privacyHref = lang === "fi" ? "/tietosuoja" : "/en/privacy";
+
+// Same links as the old site's footer (client/src/data/content.ts).
+const links = [
+	{ label: "LinkedIn", url: "https://www.linkedin.com/in/juusojaakkola/" },
+	{ label: "X", url: "https://x.com/juusojaa" },
+	{ label: "GitHub", url: "https://github.com/jaakjuu1" },
+];
+---
+
+<footer class="border-t border-white/10 bg-foreground py-12 text-background">
+	<div class="flex flex-col items-center justify-between gap-6 px-6 md:flex-row">
+		<a
+			href={localizePath("/", lang)}
+			class="font-serif text-2xl font-bold tracking-tighter transition-opacity hover:opacity-80"
+		>
+			JJ.
+		</a>
+
+		<nav
+			aria-label={t(lang, "footer.nav")}
+			class="flex flex-wrap justify-center gap-8 font-mono text-sm text-background/60"
+		>
+			{
+				links.map((link) => (
+					<a
+						href={link.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="transition-colors hover:text-white"
+					>
+						{link.label}
+					</a>
+				))
+			}
+			<a href={privacyHref} class="transition-colors hover:text-white">
+				{t(lang, "footer.privacy")}
+			</a>
+		</nav>
+
+		<p class="text-xs font-light text-background/40">
+			© {year} {SITE_NAME}
+		</p>
+	</div>
+</footer>
