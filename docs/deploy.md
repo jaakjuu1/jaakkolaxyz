@@ -44,7 +44,7 @@ server never builds from git itself.
    ```bash
    RELEASE_DIR=$(mktemp -d /tmp/jaakkolaxyz-release.XXXXXX)
    git worktree add --detach "$RELEASE_DIR" "$MERGE_SHA" && cd "$RELEASE_DIR"
-   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run test:contact && npm run build
+   npm ci && npm run check && npm run test:ateneum && npm run test:dashboard && npm run test:contact && npm run test:blog && npm run build
    test -s dist/index.cjs && node --check dist/index.cjs
    ```
 
