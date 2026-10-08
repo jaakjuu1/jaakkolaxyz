@@ -5,6 +5,9 @@ production write. For the Ateneum P0 release in full detail (explicit file
 manifest, stop/apply/start with automatic restore) see
 [ateneum-p0-deploy.md](ateneum-p0-deploy.md); this page is the general version.
 
+The public site (home, blog, privacy, `/learn/`, `/reports/`) is the EmDash app in `cms/`, with
+its own runbook: [deploy-cms.md](deploy-cms.md). Until that cutover, Express still serves it.
+
 **Every step that writes to `teppo-server` needs Juuso's explicit yes**, including
 service restarts. A runbook is a plan, not permission.
 
