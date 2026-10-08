@@ -6,6 +6,7 @@ import { defineConfig, fontProviders, sessionDrivers } from "astro/config";
 import emdash, { local } from "emdash/astro";
 import { github } from "emdash/auth/providers/github";
 import { sqlite } from "emdash/db";
+import { emdashSmtp } from "emdash-smtp";
 
 // SQLite and local storage do not create their directories; paths are relative to the cwd.
 mkdirSync("data/uploads", { recursive: true });
@@ -95,6 +96,9 @@ export default defineConfig({
 			// verified email must match the EmDash user. Needs EMDASH_OAUTH_GITHUB_CLIENT_ID
 			// and EMDASH_OAUTH_GITHUB_CLIENT_SECRET at run time (cms/.env.production).
 			authProviders: [github()],
+			// Email (magic links, invites) through Resend. The API key and sender are entered on the
+			// plugin's admin page and stored encrypted in the DB (EMDASH_ENCRYPTION_KEY).
+			plugins: [emdashSmtp()],
 		}),
 	],
 	// Fonts are downloaded at build time and self-hosted; no runtime request
