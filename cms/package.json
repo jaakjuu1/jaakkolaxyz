@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
     "typecheck": "astro check",
+    "test:smoke": "tsx --test tests/*.test.ts",
     "import": "tsx scripts/import-content.ts"
   },
   "dependencies": {
