@@ -86,6 +86,14 @@ Tokens for scripts: on localhost the CLI needs no token (it uses the dev bypass 
 `dev-bypass-token`), or create one in the admin under Settings > API Tokens. Scripts read
 `EMDASH_URL` (default `http://localhost:4321`) and `EMDASH_TOKEN`.
 
+Import the old site's posts, privacy notice, learn tracks and blog images into a running instance
+(idempotent; existing entries are skipped, `--update` rewrites them):
+
+```bash
+EMDASH_TOKEN=<token> npm run import                # add what is missing
+EMDASH_TOKEN=<token> npm run import -- --update    # also rewrite existing entries
+```
+
 ## Want Cloudflare Instead?
 
 See the [Cloudflare variant](../blog-cloudflare) for a version that deploys to Cloudflare Workers with D1 and R2.
