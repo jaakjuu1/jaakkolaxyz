@@ -12,7 +12,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "start": "node ./dist/server/entry.mjs",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "import": "tsx scripts/import-content.ts"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.5",
@@ -25,6 +26,9 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@tailwindcss/vite": "^4.3.3",
-    "tailwindcss": "^4.3.3"
+    "gray-matter": "^4.0.3",
+    "node-html-parser": "^9.0.4",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15"
   }
 }

@@ -120,7 +120,8 @@ whose slug+locale exists is skipped, or updated with `--update`).
 - Posts from `../content/blog/{fi,en}/*.md` (gray-matter): skip `example-post`, `esimerkki-postaus`.
   slug = filename; `title`, `excerpt`; `date` → `publishedAt` (`YYYY-MM-DDT09:00:00+03:00`);
   `tags` → taxonomy `tag` (create terms per locale first); locale from folder.
-- Drop a leading `# H1` that repeats the title (7 posts have one).
+- Drop a leading `# H1` that repeats the title (5 imported posts have one; john-dee's differing H1
+  becomes an h2).
 - Translation pairs (create fi first, en with `translationOf`): `2026-01-28-ai-cold-email-agent` (fi/en),
   `2026-03-10-sointimaisemia` (fi/en), `2026-05-22-agentiton-palvelinoperointi` (fi) ↔
   `2026-05-22-agentless-server-operations` (en). Expect 4 fi + 5 en posts.
@@ -136,8 +137,8 @@ whose slug+locale exists is skipped, or updated with `--update`).
   self-hosted now) and keep everything else verbatim, including the "updated" date line.
 - Learn track cards: the 7 `.path` cards in `data/learn/index.html` → `learn_tracks` entries (fi),
   fields as in section 6b; `order` = position on the page.
-  Today only 6 cards link to a track; `b2c-appit` and `mikroauktoriteetti` folders are not linked.
-  Every track folder without a linked card becomes a **draft** entry (title from its `index.html`
+  All 7 cards link to a track; only the `mikroauktoriteetti` folder has no card.
+  Every track folder without a card becomes a **draft** entry (title from its `index.html`
   `<title>`), so Juuso can publish it from the admin.
 - Verified API facts (section 2 review): create accepts only `status: "draft"`; send `publishedAt`
   on create, then `POST /_emdash/api/content/{collection}/{id}/publish`, which keeps it.
@@ -220,7 +221,7 @@ whose slug+locale exists is skipped, or updated with `--update`).
   `sitemap-learn.xml` route listed in robots.txt), Finnish only.
 - Update `docs/learn-sections.md`: Astro serves `/learn` now; the card list on `/learn/` is edited in
   the EmDash admin (`learn_tracks`), not in `data/learn/index.html`. Hermes's rsync target is unchanged.
-- Acceptance: `/learn/` 200 with 7 cards; `/learn/ai-music/` and
+- Acceptance: `/learn/` 200 with 7 published cards (draft `mikroauktoriteetti` hidden); `/learn/ai-music/` and
   `/learn/ai-music/lessons/0004-suno-promptitiede.html` 200 and byte-identical to the files;
   a `.wav` and `.png` from a `reference/` folder have the right content type; `/learn/ai-music` 301;
   `/learn/nope.html` 404; `/learn/..%2f..%2fpackage.json` and `/learn/%2e%2e/%2e%2e/package.json` 404;
