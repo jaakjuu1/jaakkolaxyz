@@ -300,8 +300,8 @@ Caddy-only rollback stops working (restore the previous `dist/` instead).
   backups (`sqlite3 .backup`, uploads, encryption key), verification (`cms/tests` against
   production), and rollback (point Caddy back at :5000 only; the old Express app keeps serving the
   SPA until section 10 is deployed).
-- Caddy: add `Cache-Control: public, max-age=31536000, immutable` for `/_astro/*` (hashed assets; the
-  Node server sends `max-age=0`).
+- `/_astro/*` already gets `Cache-Control: public, max-age=31536000, immutable` from Astro; Caddy adds
+  nothing (verified in the section 11 review).
 - Update `AGENTS.md` and `docs/deploy.md` to point at it; note that blog posts are now edited in the
   EmDash admin.
 - Acceptance: a Sonnet review confirms every step is concrete, ordered, and has a check and a rollback.
