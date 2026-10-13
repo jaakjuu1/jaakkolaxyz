@@ -41,7 +41,7 @@ Authoring workspaces also hold private material: `MISSION.md`, `RESOURCES.md`,
 `NOTES.md`, `PUBLISH.md`, `learning-records/`, `_sources/` (source PDFs,
 transcripts). **None of it belongs in `data/learn/` or in git.**
 
-Current tracks: `ai-music`, `b2c-appit`, `esoteria`, `fysiikka`, `hypnoterapia`,
+Current tracks: `ai-music`, `b2c-appit`, `esoteria`, `fysiikka`, `hypnoterapia`, `laulu`,
 `mielenterveys`, `mikroauktoriteetti`, `systeemiajattelu`.
 
 Not versioned (see `.gitignore`): `data/learn/.backups/` (publish-time snapshots),

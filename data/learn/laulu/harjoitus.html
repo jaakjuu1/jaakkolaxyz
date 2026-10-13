@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Selaimessa toimiva laulun harjoitustyökalu: sävelkorkeus sentteinä, aloitukset, vakaus, vibrato, voimakkuus ja kirkkaus.">
+  <title>Harjoitustyökalu · Laulu</title>
+  <link rel="stylesheet" href="reference/course.css">
+</head>
+<body>
+<main>
+  <nav><a href="index.html">← Laulu</a><span>·</span><span>Harjoitustyökalu</span></nav>
+  <header class="hero">
+    <p class="kicker">Mikrofoni + selain · ei tallenna eikä lähetä mitään</p>
+    <h1>Näe mitä äänesi tekee.</h1>
+    <p class="lead">Laula kohdesävelet ja katso samalla, osuitko, liu'utko sävelen alkuun ja pysyykö ääni tasaisena. Mittari näyttää sen, mitä korva ei laulaessa ehdi huomata.</p>
+  </header>
+
+  <section class="callout warn">
+    <h3>Käytä kuulokkeita</h3>
+    <p>Mikrofonin kaiunpoisto on pois päältä, jotta ääni mitataan tarkasti. Kaiuttimesta soiva referenssiääni kuuluu silloin myös mikrofoniin. Työkalu ei mittaa referenssin soidessa, mutta kuulokkeilla et menetä mittausaikaa. Ääni käsitellään vain tässä selaimessa.</p>
+  </section>
+
+  <section class="tool-bar" aria-label="Asetukset">
+    <div class="field">
+      <label for="base">Pohjasävel</label>
+      <select id="base">
+        <option value="45">A2 · bassot</option>
+        <option value="48">C3 · baritonit, matalat miesäänet</option>
+        <option value="50">D3</option>
+        <option value="53" selected>F3 · tenorit, altot</option>
+        <option value="55">G3</option>
+        <option value="57">A3 · mezzot</option>
+        <option value="60">C4 · sopraanot, korkeat naisäänet</option>
+        <option value="62">D4</option>
+        <option value="65">F4</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="drill">Harjoitus</label>
+      <select id="drill">
+        <option value="sniper">1. Pitkät sävelet</option>
+        <option value="triad">2. Kolmisointu 1–3–5–3–1</option>
+        <option value="scale">3. Viiden sävelen asteikko</option>
+        <option value="leap">4. Oktaavihyppy</option>
+        <option value="free">5. Vapaa laulu</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="tol">Osumaraja</label>
+      <select id="tol">
+        <option value="50">±50 senttiä (aloittelija)</option>
+        <option value="25" selected>±25 senttiä</option>
+        <option value="15">±15 senttiä (tiukka)</option>
+      </select>
+    </div>
+    <label class="check"><input type="checkbox" id="cue"> Soita jokainen kohdesävel ennen kuin laulat (vaatii kuulokkeet)</label>
+    <button type="button" id="mic">Avaa mikrofoni</button>
+    <button type="button" id="go">Aloita harjoitus</button>
+    <button type="button" id="ref" class="secondary">Soita kohdesävel</button>
+    <span id="status" class="small" aria-live="polite"></span>
+  </section>
+
+  <section class="tool">
+    <div class="side">
+      <div class="panel">
+        <div class="label">Sävel nyt</div>
+        <div class="note" id="note">--</div>
+        <div class="small mono" id="hz">–</div>
+        <div class="cents" aria-hidden="true"><span class="zone" id="cent-zone"></span><span class="mid"></span><span class="dot" id="cent-dot"></span></div>
+        <div class="scale"><span>−50 c</span><span id="cent-text">–</span><span>+50 c</span></div>
+      </div>
+      <div class="panel">
+        <dl class="stats">
+          <dt>Kohde</dt><dd id="target">–</dd>
+          <dt>Vakaus (0,5 s)</dt><dd id="stab">–</dd>
+          <dt>Vibrato</dt><dd id="vib">–</dd>
+          <dt>Viim. aloitus</dt><dd id="onset">–</dd>
+        </dl>
+      </div>
+      <div class="panel">
+        <div class="label">Voimakkuus mikrofonissa</div>
+        <div class="meter"><i id="vol"></i></div>
+        <div class="scale"><span id="vol-text">–</span><span>vaihtelu <b class="mono" id="vol-var">–</b></span></div>
+        <div class="label" style="margin-top:1rem">Kirkkaus 2–4 kHz</div>
+        <div class="meter ring"><i id="ring"></i></div>
+        <div class="scale"><span>−40 dB</span><span id="ring-text">–</span><span>0 dB</span></div>
+      </div>
+      <div class="panel hint" aria-live="polite">
+        <h3 id="hint-title">Aloita avaamalla mikrofoni</h3>
+        <p class="small" id="hint-text">Selain kysyy lupaa mikrofonin käyttöön. Valitse pohjasävel niin, että harjoituksen ylin sävel (enintään oktaavi pohjasävelen yläpuolella) on sinulle mukava.</p>
+      </div>
+    </div>
+    <div>
+      <div class="canvas-wrap pitch"><canvas id="pitch-canvas" aria-label="Sävelkorkeuskäyrä ja kohdesävelet"></canvas></div>
+      <p class="canvas-cap">Laatikot ovat kohdesäveliä, ja niiden korkeus on osumaraja. Viiva on äänesi: vihreä osuu, sininen ei. Pystyviiva on nyt-hetki.</p>
+      <div class="canvas-wrap spectrum"><canvas id="spec-canvas" aria-label="Äänen taajuusspektri 0–5 kHz"></canvas></div>
+      <p class="canvas-cap">Spektri 0–5 kHz. Korostettu alue on 2–4 kHz, josta kirkkausmittari lasketaan.</p>
+    </div>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+
+  <section class="sourcebox">
+    <h3>Mitä lukemat tarkoittavat</h3>
+    <ul>
+      <li><b>Sentti</b> on sadasosa puolisävelaskeleesta. <a href="lessons/0001-savelkorkeus-ja-sentit.html">Oppitunti 1</a>.</li>
+      <li><b>Aloitus</b>: sävelen ensimmäisten 0,15 sekunnin ero asettuneeseen säveleen. Miinus tarkoittaa, että liu'ut alhaalta. <a href="lessons/0002-aloitus-ilman-liukumaa.html">Oppitunti 2</a>.</li>
+      <li><b>Voimakkuus</b> on mikrofonin kuulema taso, ei ilmanpaineesi. Se riippuu myös mikrofonin etäisyydestä. Vaihtelu kertoo, pysyykö taso tasaisena. <a href="lessons/0003-tasainen-ilmavirta.html">Oppitunti 3</a>.</li>
+      <li><b>Kirkkaus</b> on voimakkaimman 2–4 kHz:n huipun ero voimakkaimpaan 0–2 kHz:n huippuun (singing power ratio). Suurempi luku = kirkkaampi, ”soivampi” ääni. Lukema riippuu mikrofonista ja vokaalista, joten vertaa vain itseesi samalla laitteella. <a href="lessons/0004-resonanssi-ja-kirkkaus.html">Oppitunti 4</a>.</li>
+      <li><b>Vakaus ja vibrato</b>: sävelen hajonta puolen sekunnin ajalta sekä vibraton nopeus ja laajuus. <a href="lessons/0005-suora-savel-ja-vibrato.html">Oppitunti 5</a>.</li>
+    </ul>
+    <p>Sävelnimet ovat kansainvälisiä (B = suomalainen H). Sävelentunnistus käyttää YIN-algoritmia (de Cheveigné &amp; Kawahara 2002). Tarkimmat tulokset saat hiljaisessa huoneessa noin 20–40 cm:n päässä mikrofonista.</p>
+  </section>
+</main>
+<script src="reference/harjoitus.js"></script>
+</body>
+</html>
