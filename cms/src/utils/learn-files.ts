@@ -218,6 +218,9 @@ async function respondFrom(
 		// Revalidate every time: validators make that cheap, and a re-rsynced file shows up at once.
 		"Cache-Control": "public, max-age=0, must-revalidate",
 		"X-Content-Type-Options": "nosniff",
+		// EmDash's middleware sets this only when absent; its default (microphone=()) would
+		// block the /learn/laulu/ practice tool. The browser still asks before opening the mic.
+		"Permissions-Policy": "camera=(), microphone=(self), geolocation=(), payment=()",
 		"Accept-Ranges": "bytes",
 		ETag: validators.etag,
 		"Last-Modified": validators.lastModified,
