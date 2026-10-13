@@ -533,6 +533,11 @@ describe("learn", () => {
 		expectMatch(res.headers.get("content-type") ?? "", /^text\/html/, "content type");
 	});
 
+	it("learn pages allow the microphone for the same origin only", async () => {
+		const res = await call("HEAD", LEARN.lesson);
+		expectMatch(res.headers.get("permissions-policy") ?? "", /(^|[\s,])microphone=\(self\)/, "permissions-policy");
+	});
+
 	it("a .wav reference file is served with ranges", async () => {
 		const head = await call("HEAD", LEARN.wav);
 		assert.equal(head.status, 200);
