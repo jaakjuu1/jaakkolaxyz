@@ -27,7 +27,7 @@ const COUNTS = {
 	/** Published English posts on /en/blog (content/blog/en, minus the example-post placeholder). */
 	enPosts: 5,
 	/** Published learn_tracks cards on /learn/. */
-	learnTracks: 7,
+	learnTracks: 8,
 	/** <img> tags inside the john-dee article (the English post with the table). */
 	johnDeeImages: 4,
 };
