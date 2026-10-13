@@ -318,13 +318,16 @@
     const sorted = [...r].sort((a, b) => a - b);
     const extent = (sorted[Math.floor(sorted.length * 0.95)] - sorted[Math.floor(sorted.length * 0.05)]) / 2;
     const H = Math.max(4, extent * 0.3);
-    let state = 0, crossings = 0;
-    for (const v of r) {
-      if (v > H && state !== 1) { if (state === -1) crossings++; state = 1; }
-      else if (v < -H && state !== -1) { if (state === 1) crossings++; state = -1; }
+    // Nopeus ensimmäisen ja viimeisen ylityksen väliltä, ettei ikkunan alun suora sävel laimenna sitä.
+    let state = 0;
+    const times = [];
+    for (let i = 0; i < r.length; i++) {
+      const v = r[i];
+      if (v > H && state !== 1) { if (state === -1) times.push(xs[i]); state = 1; }
+      else if (v < -H && state !== -1) { if (state === 1) times.push(xs[i]); state = -1; }
     }
-    const dur = xs[xs.length - 1] - xs[0];
-    return { rate: crossings / (2 * dur), extent };
+    if (times.length < 4) return { rate: 0, extent };
+    return { rate: (times.length - 1) / (2 * (times[times.length - 1] - times[0])), extent };
   }
 
   function volumeVar(t) {
