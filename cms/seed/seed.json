@@ -138,6 +138,43 @@
           "type": "text"
         }
       ]
+    },
+    {
+      "slug": "projects",
+      "label": "Projects",
+      "labelSingular": "Project",
+      "supports": [
+        "drafts",
+        "revisions"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "blurb",
+          "label": "Blurb",
+          "type": "text"
+        },
+        {
+          "slug": "url",
+          "label": "URL",
+          "type": "string"
+        },
+        {
+          "slug": "kind",
+          "label": "Kind",
+          "type": "string"
+        },
+        {
+          "slug": "order",
+          "label": "Order",
+          "type": "integer"
+        }
+      ]
     }
   ],
   "taxonomies": [

@@ -7,10 +7,14 @@ import Services from "../components/home/Services.astro";
 import CaseStudies from "../components/home/CaseStudies.astro";
 import Process from "../components/home/Process.astro";
 import About from "../components/home/About.astro";
+import Projects from "../components/home/Projects.astro";
 import LeadCaptureSlot from "../components/home/LeadCaptureSlot.astro";
 import { home } from "../i18n/home";
+import { listPublishedProjects } from "../utils/projects";
 
 const content = home.fi;
+const { projects, cacheHint } = await listPublishedProjects("fi");
+if (Astro.cache?.enabled && cacheHint) Astro.cache.set(cacheHint);
 ---
 
 <Base lang="fi" translationPath="/en/" description={content.hero.subheadline}>
@@ -20,5 +24,6 @@ const content = home.fi;
 	<CaseStudies content={content} />
 	<Process content={content} />
 	<About content={content} />
+	<Projects content={content} projects={projects} />
 	<LeadCaptureSlot content={content} />
 </Base>

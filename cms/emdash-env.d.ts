@@ -55,10 +55,28 @@ export interface Post {
   terms?: Record<string, TaxonomyTerm[]>;
 }
 
+export interface Project {
+  id: string;
+  slug: string | null;
+  status: string;
+  title: string;
+  blurb?: string;
+  url?: string;
+  kind?: string;
+  order?: number;
+  createdAt: Date;
+  updatedAt: Date;
+  publishedAt: Date | null;
+  byline?: BylineSummary | null;
+  bylines?: ContentBylineCredit[];
+  terms?: Record<string, TaxonomyTerm[]>;
+}
+
 declare module "emdash" {
   interface EmDashCollections {
     learn_tracks: LearnTrack;
     pages: Page;
     posts: Post;
+    projects: Project;
   }
 }
