@@ -74,7 +74,7 @@ export EMDASH_TOKEN=<data.token from the response above>
 curl -s -X DELETE -H "Authorization: Bearer $EMDASH_TOKEN" http://localhost:4321/_emdash/api/taxonomies/category
 ```
 
-Check the schema (`posts`, `pages`, `learn_tracks`, taxonomy `tag`):
+Check the schema (`posts`, `pages`, `learn_tracks`, `projects`, taxonomy `tag`):
 
 ```bash
 npx emdash schema list --url http://localhost:4321
@@ -94,6 +94,25 @@ curl -s -X PUT "http://localhost:4321/_emdash/api/schema/collections/learn_track
 npx emdash schema add-field learn_tracks stats_note --type=text --label="Stats note" --url http://localhost:4321
 EMDASH_TOKEN=$EMDASH_TOKEN npm run import -- --update
 ```
+
+A database created before the `projects` collection (the project list after About on the home
+pages) needs it created once. Until then the home pages simply leave the list out. Against
+production, use an admin API token (Settings > API Tokens): the device-login token can only read
+the schema.
+
+```bash
+U=http://localhost:4321
+npx emdash schema create projects --label=Projects --label-singular=Project --url $U
+npx emdash schema add-field projects title --type=string --label=Title --required --url $U
+npx emdash schema add-field projects blurb --type=text --label=Blurb --url $U
+npx emdash schema add-field projects url --type=string --label=URL --url $U
+npx emdash schema add-field projects kind --type=string --label=Kind --url $U
+npx emdash schema add-field projects order --type=integer --label=Order --url $U
+```
+
+Each entry is one row: `title`, a one-line `blurb`, `url` (a site path such as `/learn/` or a full
+URL, which opens in a new tab), `kind` (one word) and `order`. Entries are per locale; the English
+home page shows the list only once it has published `en` entries.
 
 Tokens for scripts: on localhost the CLI needs no token (it uses the dev bypass session). For
 `EMDASH_TOKEN`, use the token from `?token=1` as above (each call replaces the previous

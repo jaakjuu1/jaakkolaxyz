@@ -1,0 +1,69 @@
+---
+/**
+ * A quiet list of Juuso's own projects after About: one row per published `projects`
+ * entry (name, one-line blurb, kind). Rows, not cards, so it does not compete with the
+ * services and case studies. With no published entries for the locale the section is
+ * left out.
+ */
+import type { HomeContent } from "../../i18n/home";
+import type { ProjectEntry } from "../../utils/projects";
+
+interface Props {
+	content: HomeContent;
+	projects: ProjectEntry[];
+}
+
+const { content, projects } = Astro.props;
+const { title } = content.projects;
+
+/** Off-site links open in a new tab; site paths such as /learn/ do not. */
+const isExternal = (url: string) => /^https?:\/\//.test(url);
+---
+
+{
+	projects.length > 0 && (
+		<section aria-labelledby="projects-title" class="bg-background py-20">
+			<div class="container mx-auto max-w-3xl px-4 md:px-6">
+				<h2 id="projects-title" class="mb-8 font-mono text-xs tracking-widest text-muted-foreground uppercase">
+					{title}
+				</h2>
+				<ul class="divide-y divide-border/40 border-y border-border/40">
+					{projects.map((project, index) => {
+						const { title: name, blurb, kind, url } = project.data;
+						const external = url ? isExternal(url) : false;
+						return (
+							<li class="reveal group relative" style={`--delay: ${index * 0.05}s`}>
+								<div class="flex items-baseline gap-4 py-4 transition-colors group-hover:text-primary">
+									<div class="min-w-0 flex-1">
+										<h3 class="inline font-serif text-lg">
+											{url ? (
+												<a
+													href={url}
+													class="after:absolute after:inset-0 after:content-['']"
+													{...(external ? { target: "_blank", rel: "noopener" } : {})}
+												>
+													{name}
+												</a>
+											) : (
+												name
+											)}
+										</h3>
+										{blurb && <p class="mt-1 text-sm text-muted-foreground">{blurb}</p>}
+									</div>
+									{kind && (
+										<span class="hidden shrink-0 font-mono text-xs text-muted-foreground sm:inline"># {kind}</span>
+									)}
+									{url && (
+										<svg class="h-4 w-4 shrink-0 self-center text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+											{external ? <path d="M7 17 17 7M7 7h10v10"></path> : <path d="M5 12h14m-7-7 7 7-7 7"></path>}
+										</svg>
+									)}
+								</div>
+							</li>
+						);
+					})}
+				</ul>
+			</div>
+		</section>
+	)
+}

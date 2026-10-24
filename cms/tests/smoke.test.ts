@@ -28,6 +28,8 @@ const COUNTS = {
 	enPosts: 5,
 	/** Published learn_tracks cards on /learn/. */
 	learnTracks: 8,
+	/** Published `projects` rows on each home page; 0 means the section is left out. */
+	homeProjects: { fi: 0, en: 0 },
 	/** <img> tags inside the john-dee article (the English post with the table). */
 	johnDeeImages: 4,
 };
@@ -358,6 +360,18 @@ describe("home page", () => {
 			for (const title of [...HOME_TITLES[lang].services, ...HOME_TITLES[lang].cases]) {
 				assert.ok(text.includes(title), `"${title}" on ${path}`);
 			}
+		});
+
+		it(`${path} shows one project row per published project, or no section`, async () => {
+			const html = await htmlPage(path);
+			const section = html.match(/<section aria-labelledby="projects-title"[\s\S]*?<\/section>/)?.[0];
+			const expected = COUNTS.homeProjects[lang];
+			if (expected === 0) {
+				assert.equal(section, undefined, "no project section");
+				return;
+			}
+			assert.ok(section, "project section");
+			assert.equal(section.match(/<li\b/g)?.length ?? 0, expected, "project rows");
 		});
 
 		it(`${path} navbar links to the blog, learn and the contact section`, async () => {

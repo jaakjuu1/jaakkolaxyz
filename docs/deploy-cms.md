@@ -709,11 +709,13 @@ npx emdash schema get learn_tracks --url https://jaakkola.xyz --token "$EMDASH_T
 npx emdash taxonomy list --url https://jaakkola.xyz --token "$EMDASH_TOKEN"
 ```
 
-**Check:** collections are exactly `posts`, `pages`, `learn_tracks`. `learn_tracks` has the fields
+**Check:** collections are exactly `posts`, `pages`, `learn_tracks`, `projects`. `learn_tracks` has the fields
 `title`, `kind`, `blurb`, `lesson_count`, `track_status`, `order`, `group` (select:
-`ymmartaminen`, `rakentaja`) and `stats_note`. Taxonomy `tag` is present. A fresh DB gets all of
-this from the seed. If `group` or `stats_note` is missing, the seed did not apply: follow the
-"older database" steps in `cms/README.md`, not a hand edit.
+`ymmartaminen`, `rakentaja`) and `stats_note`. `projects` has `title`, `blurb`, `url`, `kind` and
+`order`. Taxonomy `tag` is present. A fresh DB gets all of this from the seed. If `group` or
+`stats_note` is missing, the seed did not apply: follow the "older database" steps in
+`cms/README.md`, not a hand edit. The same goes for a missing `projects` collection (the home pages
+leave the project list out until it exists).
 
 **Rollback for section 6:** no content has been imported yet. Stop the unit and restore the Caddy
 file (5.4 rollback). Recreating the DB is a data move: only with Juuso's yes, and only before any

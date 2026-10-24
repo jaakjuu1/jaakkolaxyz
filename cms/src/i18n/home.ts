@@ -70,6 +70,10 @@ export interface HomeContent {
 		text: string;
 		signature: string;
 	};
+	/** Heading of the project list after About; the items are the EmDash `projects` entries. */
+	projects: {
+		title: string;
+	};
 	leadCapture: LeadCaptureContent;
 }
 
@@ -313,6 +317,9 @@ const fi: HomeContent = {
 		title: "Tietoa minusta",
 		text: "Olen yrittäjähenkinen kehittäjä ja automaatioarkkitehti. Uskon, että suurin osa 'kiireestä' on vain huonosti suunniteltuja prosesseja. Rakennan järjestelmiä, jotka taistelevat entropiaa vastaan ja tuottavat mitattavaa arvoa. En myy tunteja, vaan tuloksia.",
 		signature: "JJ",
+	},
+	projects: {
+		title: "Muuta, mitä olen tehnyt",
 	},
 	leadCapture: {
 		title: "Aloitetaan keskustelu",
@@ -570,6 +577,9 @@ const en: HomeContent = {
 		title: "About Me",
 		text: "I am an entrepreneurial developer and automation architect. I believe most 'busyness' is just poorly designed processes. I build systems that fight entropy and deliver measurable value. I don't sell hours, I sell results.",
 		signature: "JJ",
+	},
+	projects: {
+		title: "Other things I have made",
 	},
 	leadCapture: {
 		title: "Let's start a conversation",
