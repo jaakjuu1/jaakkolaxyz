@@ -750,8 +750,14 @@ GitHub account's **primary verified** email.
      ID=$(grep ^EMDASH_OAUTH_GITHUB_CLIENT_ID= "$CMS/.env.production" | cut -d= -f2-)
      SEC=$(grep ^EMDASH_OAUTH_GITHUB_CLIENT_SECRET= "$CMS/.env.production" | cut -d= -f2-)
      PATH="$NODE_BIN:$PATH" npm ci
+     # The server checkout's cms/tsconfig.json (above releases/) extends astro/tsconfigs/base but has
+     # no node_modules, and the build fails with "Tsconfig not found astro/tsconfigs/base". Give it
+     # the release's node_modules for the build only; the trap removes the link even on failure.
+     test ! -e "$CMS/node_modules"; ln -s "$REL/node_modules" "$CMS/node_modules"; trap 'rm -f "$CMS/node_modules"' EXIT
      env -i PATH="$NODE_BIN:/usr/bin:/bin" HOME="$HOME" EMDASH_SITE_URL=https://jaakkola.xyz \
        EMDASH_OAUTH_GITHUB_CLIENT_ID="$ID" EMDASH_OAUTH_GITHUB_CLIENT_SECRET="$SEC" npm run build
+     rm -f "$CMS/node_modules"; trap - EXIT
+     ! grep -rqF "jaakkolaxyz/cms/node_modules" dist
      grep -rqF -- "$ID" dist/server && ! grep -rqF -- "$SEC" dist/client   # in the server bundle, never in the client
      unset ID SEC
      grep -qF "\"allowedDomains\":[{\"hostname\":\"jaakkola.xyz\"}]" dist/server/chunks/app_*.mjs
