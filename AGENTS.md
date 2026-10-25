@@ -25,7 +25,8 @@ with the EmDash CLI, run from `cms/` with Node >= 24.15 (`nvm use 24.21.0`):
 - Read `cms/.agents/skills/emdash-cli/SKILL.md` first.
 - Auth: `npx emdash login --url https://jaakkola.xyz` (device flow: Juuso approves the code
   at `/_emdash/admin/device`). The token is in `~/.config/emdash/auth.json`: content and
-  media read/write, schema read; it refreshes for 90 days. Check with
+  media read/write, and schema write too (`emdash schema create`/`add-field` worked on
+  2026-10-25); it refreshes for 90 days. Check with
   `npx emdash whoami --url https://jaakkola.xyz`. New tags, settings, users and plugins
   need the admin UI.
 - `/_emdash/*` answers only from Juuso's IP (Caddy), so the CLI works from his machine.

@@ -97,8 +97,8 @@ EMDASH_TOKEN=$EMDASH_TOKEN npm run import -- --update
 
 A database created before the `projects` collection (the project list after About on the home
 pages) needs it created once. Until then the home pages simply leave the list out. Against
-production, use an admin API token (Settings > API Tokens): the device-login token can only read
-the schema.
+production, the device-login session of an admin (`npx emdash whoami` shows `Role: admin`) can
+create the collection and its fields; no separate API token is needed.
 
 ```bash
 U=http://localhost:4321
