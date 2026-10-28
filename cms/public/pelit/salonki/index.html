@@ -8,7 +8,12 @@
 <meta name="description" content="Salonki on selaimessa pelattava Klondike-pasianssi: nosto yksi tai kolme, kumoa, vihjeet ja ennätykset.">
 <link rel="canonical" href="https://jaakkola.xyz/pelit/salonki/">
 <link rel="icon" href="/favicon.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/pelit/salonki/apple-touch-icon.png">
+<link rel="manifest" href="/pelit/salonki/manifest.webmanifest">
+<meta name="theme-color" content="#0e4a32">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Salonki">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Salonki — pasianssi">
 <meta property="og:description" content="Klondike-pasianssi selaimessa: nosto yksi tai kolme, kumoa ja vihjeet.">
@@ -357,6 +362,31 @@
     .card { transition: none; }
     .stats b.bump { animation: none; }
   }
+  /* Install suggestion (PWA) */
+  button.pill.install { border-color: var(--brass); color: var(--brass); }
+  .install-tip {
+    position: fixed;
+    z-index: 7;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    width: min(460px, calc(100% - 24px));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px 12px 16px;
+    background: rgba(7, 22, 15, .94);
+    border: 1px solid rgba(215,181,106,.55);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .install-tip[hidden] { display: none; }
+  .install-tip p { margin: 0; flex: 1; }
+  .install-tip div { display: flex; gap: 6px; flex: none; }
+  .install-tip button { background: transparent; border: 1px solid rgba(215,181,106,.38); border-radius: 999px; padding: 7px 12px; font-size: 14px; }
+  .install-tip button.go { background: var(--brass); border-color: var(--brass); color: #1a140c; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -375,6 +405,7 @@
       <button type="button" id="draw3" aria-pressed="false" title="Nosta kolme">Kolme</button>
     </div>
     <button type="button" class="pill" id="muteBtn" title="Äänet (M)">Äänet</button>
+    <button type="button" class="pill install" id="installBtn" title="Asenna Salonki sovellukseksi" hidden>Asenna</button>
   </div>
   <div class="stats">
     <span>Aika <b id="time">0:00</b></span>
@@ -1272,6 +1303,73 @@ paintDraw();
 paintMute();
 coach.hidden = !!data.seen;
 newGame();
+</script>
+<div class="install-tip" id="installTip" role="status" hidden>
+  <p id="installText">Asenna Salonki laitteellesi: se aukeaa omana sovelluksenaan ja toimii ilman nettiä.</p>
+  <div><button type="button" class="go" id="installGo">Asenna</button><button type="button" id="installNo">Ei nyt</button></div>
+</div>
+<script>
+// Installing the game as an app (PWA). The toolbar button shows while the browser allows installing,
+// or on iPhone/iPad, where it explains the share menu. The tip at the bottom is offered once, after
+// some play, and "Ei nyt" closes it for good.
+(() => {
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/pelit/salonki/sw.js").catch(() => {});
+  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) return;
+  const KEY = "salonki-install-tip";
+  const btn = document.getElementById("installBtn");
+  const tip = document.getElementById("installTip");
+  const text = document.getElementById("installText");
+  const go = document.getElementById("installGo");
+  const no = document.getElementById("installNo");
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let deferred = null;
+  let offered = false;
+  const seen = () => { try { return !!localStorage.getItem(KEY); } catch { return true; } };
+  const remember = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch {} };
+  const iosHelp = () => {
+    text.textContent = "Napauta selaimen Jaa-painiketta ja valitse Lisää Koti-valikkoon.";
+    go.hidden = true;
+    no.textContent = "Selvä";
+    tip.hidden = false;
+  };
+  const install = async () => {
+    remember();
+    tip.hidden = true;
+    if (deferred) {
+      const prompt = deferred;
+      deferred = null;
+      prompt.prompt();
+      const choice = await prompt.userChoice;
+      if (choice.outcome === "accepted") btn.hidden = true;
+    } else if (ios) iosHelp();
+  };
+  const offer = () => {
+    btn.hidden = false;
+    if (offered || seen()) return;
+    offered = true;
+    // after some play, right when a move ends, so the tip never covers the start of a game
+    setTimeout(() => addEventListener("pointerup", () => {
+      if ((deferred || ios) && !seen() && btn.hidden === false) tip.hidden = false;
+    }, { once: true }), 45000);
+  };
+  addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    offer();
+  });
+  addEventListener("appinstalled", () => {
+    remember();
+    btn.hidden = true;
+    tip.hidden = true;
+  });
+  btn.addEventListener("click", install);
+  go.addEventListener("click", install);
+  no.addEventListener("click", () => {
+    remember();
+    tip.hidden = true;
+  });
+  if (ios) offer();
+})();
 </script>
 </body>
 </html>

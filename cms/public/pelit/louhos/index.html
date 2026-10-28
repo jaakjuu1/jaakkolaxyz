@@ -8,7 +8,12 @@
 <meta name="description" content="Louhos on selaimessa pelattava miinaharava ketjukertoimella, vihjeillä, purkusuojalla ja loogikkotilalla, joka näyttää numeroiden pakottamat siirrot.">
 <link rel="canonical" href="https://jaakkola.xyz/pelit/louhos/">
 <link rel="icon" href="/favicon.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/pelit/louhos/apple-touch-icon.png">
+<link rel="manifest" href="/pelit/louhos/manifest.webmanifest">
+<meta name="theme-color" content="#10120f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Louhos">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Louhos — miinaharava">
 <meta property="og:description" content="Miinaharava, mutta elävämpi. Ketjukerroin, vihjeet, purku ja loogikkotila.">
@@ -407,6 +412,31 @@
       transition: none !important;
     }
   }
+  /* Install suggestion (PWA) */
+  .tools .install { border-color: rgba(255, 225, 74, .55); color: var(--yellow); }
+  .install-tip {
+    position: fixed;
+    z-index: 30;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    width: min(460px, calc(100% - 24px));
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 12px 12px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--yellow);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .45);
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .install-tip p { margin: 0; flex: 1; }
+  .install-tip div { display: flex; gap: 6px; flex: none; }
+  .install-tip button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 7px 12px; }
+  .install-tip button.go { background: var(--yellow); border-color: var(--yellow); color: #16180f; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -455,6 +485,7 @@
     <div class="pill" id="shieldPill" title="Jos osut miinaan, purku katkaisee johdot kerran. Sitä ei tarvitse klikata.">Purku <b id="shieldCount">1</b></div>
     <button type="button" id="logicBtn" aria-pressed="false" title="Näyttää siirrot, jotka numerot jo pakottavat. Ei arvaa. (L)">Loogikko</button>
     <button type="button" id="muteBtn" aria-pressed="false" title="Äänet (M)">Äänet</button>
+    <button type="button" id="installBtn" class="install" title="Asenna Louhos sovellukseksi" hidden>Asenna</button>
   </section>
   <p class="legend" id="logicLegend" hidden>Keltainen piste = varma tyhjä · oranssi piste = varma miina · rengas = lippu, jonka numerot kumoavat</p>
   <section class="custom" id="custom" hidden>
@@ -1669,6 +1700,73 @@ class Game {
 }
 
 new Game().init();
+</script>
+<div class="install-tip" id="installTip" role="status" hidden>
+  <p id="installText">Asenna Louhos laitteellesi: se aukeaa omana sovelluksenaan ja toimii ilman nettiä.</p>
+  <div><button type="button" class="go" id="installGo">Asenna</button><button type="button" id="installNo">Ei nyt</button></div>
+</div>
+<script>
+// Installing the game as an app (PWA). The toolbar button shows while the browser allows installing,
+// or on iPhone/iPad, where it explains the share menu. The tip at the bottom is offered once, after
+// some play, and "Ei nyt" closes it for good.
+(() => {
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/pelit/louhos/sw.js").catch(() => {});
+  if (matchMedia("(display-mode: standalone)").matches || navigator.standalone === true) return;
+  const KEY = "louhos-install-tip";
+  const btn = document.getElementById("installBtn");
+  const tip = document.getElementById("installTip");
+  const text = document.getElementById("installText");
+  const go = document.getElementById("installGo");
+  const no = document.getElementById("installNo");
+  const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let deferred = null;
+  let offered = false;
+  const seen = () => { try { return !!localStorage.getItem(KEY); } catch { return true; } };
+  const remember = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch {} };
+  const iosHelp = () => {
+    text.textContent = "Napauta selaimen Jaa-painiketta ja valitse Lisää Koti-valikkoon.";
+    go.hidden = true;
+    no.textContent = "Selvä";
+    tip.hidden = false;
+  };
+  const install = async () => {
+    remember();
+    tip.hidden = true;
+    if (deferred) {
+      const prompt = deferred;
+      deferred = null;
+      prompt.prompt();
+      const choice = await prompt.userChoice;
+      if (choice.outcome === "accepted") btn.hidden = true;
+    } else if (ios) iosHelp();
+  };
+  const offer = () => {
+    btn.hidden = false;
+    if (offered || seen()) return;
+    offered = true;
+    // after some play, right when a move ends, so the tip never covers the start of a game
+    setTimeout(() => addEventListener("pointerup", () => {
+      if ((deferred || ios) && !seen() && btn.hidden === false) tip.hidden = false;
+    }, { once: true }), 45000);
+  };
+  addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    offer();
+  });
+  addEventListener("appinstalled", () => {
+    remember();
+    btn.hidden = true;
+    tip.hidden = true;
+  });
+  btn.addEventListener("click", install);
+  go.addEventListener("click", install);
+  no.addEventListener("click", () => {
+    remember();
+    tip.hidden = true;
+  });
+  if (ios) offer();
+})();
 </script>
 </body>
 </html>
