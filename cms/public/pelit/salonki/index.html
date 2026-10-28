@@ -234,6 +234,32 @@
   }
   .royal b { font-size: 2.7em; line-height: .8; font-weight: 500; }
   .royal i { font-style: normal; font-size: 1.35em; }
+  /* Small cards: a large rank and suit across the top strip, one big suit in the middle. */
+  .mini, .big { display: none; }
+  .small .corner, .small .pips, .small .ace, .small .royal { display: none; }
+  .small .mini {
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    right: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: Bahnschrift, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: calc(var(--cw) * .3);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .small .mini b { letter-spacing: -.04em; }
+  .small .mini i, .small .big { font-style: normal; }
+  .small .big {
+    position: absolute;
+    inset: 32% 0 4%;
+    display: grid;
+    place-items: center;
+    font-size: calc(var(--cw) * .62);
+    line-height: 1;
+  }
   .card.playable { cursor: grab; }
   body.dragging, body.dragging .card { cursor: grabbing; }
   .card.picked .front { box-shadow: 0 0 0 2px var(--brass), 0 10px 18px rgba(0,0,0,.3); }
@@ -408,6 +434,7 @@ const S = {
   hist: [],
   selected: null,
   drag: null,
+  pan: null,
   busy: false,
   won: false,
   started: false,
@@ -476,7 +503,7 @@ function makeCards() {
     const el = document.createElement("div");
     el.className = "card" + (suit.red ? " red" : " black") + (rank === 10 ? " ten" : "");
     el.dataset.id = String(id);
-    el.innerHTML = `<div class="face back"></div><div class="face front"><span class="corner tl"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span>${pipMarkup(rank, suit.sym)}<span class="corner br"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span></div>`;
+    el.innerHTML = `<div class="face back"></div><div class="face front"><span class="corner tl"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span>${pipMarkup(rank, suit.sym)}<span class="corner br"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span><span class="mini"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span><span class="big">${suit.sym}</span></div>`;
     cardsLayer.appendChild(el);
     S.cards.push({ id, suit: suit.id, sym: suit.sym, suitName: suit.name, rank, rankName: RANK_NAMES[rank - 1], red: suit.red, el, pile: "stock", up: false, x: 0, y: 0, playable: false, fi: 0, ci: 0 });
   }
@@ -502,18 +529,22 @@ coach.className = "coach";
 coach.textContent = "Vedä kortteja. Kaksoisklikkaus vie kotiin. Ctrl+A vie kaikki sinne sopivat. Välilyönti nostaa pakasta.";
 board.appendChild(coach);
 
-function measure() {
+function measure(cap = 128) {
   const w = document.getElementById("table").clientWidth;
   const h = document.getElementById("table").clientHeight;
   const inner = Math.max(320, w - 36);
   const fit = Math.floor((h - 138) / 2.8);
-  const cardW = Math.max(50, Math.min(fit, Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)))));
+  const cardW = Math.max(50, Math.min(cap, fit, Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)))));
   const cardH = Math.round(cardW * 1.4);
   const gap = Math.max(8, Math.min(16, Math.floor((inner - cardW * 7) / 6)));
   const rowW = cardW * 7 + gap * 6;
   const x0 = Math.max(12, Math.floor((w - rowW) / 2));
   const top = 16;
-  return { w, h, cardW, cardH, gap, x0, top, tabY: top + cardH + 28, fs: Math.max(13, Math.round(cardW * 0.155)) };
+  const fs = Math.max(13, Math.round(cardW * 0.155));
+  const small = cardW < 90;
+  // peek: how much of a covered face-up card must show for its rank and suit to stay readable
+  const peek = small ? Math.round(cardW * 0.3 + 8) : Math.round(fs * 1.15 + 8);
+  return { w, h, cardW, cardH, gap, x0, top, tabY: top + cardH + 28, fs, small, peek };
 }
 function placeSlot(el, x, y) {
   el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -537,14 +568,25 @@ function tag() {
   S.foundations.forEach((pile, fi) => pile.forEach((c, i) => { c.pile = "found"; c.fi = fi; c.up = true; c.playable = i === pile.length - 1; }));
   S.tableau.forEach((col, ci) => col.forEach((c) => { c.pile = "tab"; c.ci = ci; c.playable = c.up; }));
 }
+function tallest(m) {
+  const fans = S.tableau.map((col) => col.slice(0, -1).reduce((a, c) => a + (c.up ? m.peek : 6), 0));
+  return m.tabY + m.cardH + Math.max(...fans) + 28;
+}
 function layout(animate) {
   if (S.drag) return;
   document.body.classList.toggle("compact", document.body.clientHeight < 520);
-  const m = measure();
+  let m = measure();
+  // Long columns on a short table: shrink the cards by up to a fifth if that makes the table fit;
+  // otherwise keep the size and let the table scroll.
+  const floor = Math.max(50, Math.round(m.cardW * 0.8));
+  let s = m;
+  while (s.cardW > floor && tallest(s) > s.h) s = measure(s.cardW - 2);
+  if (tallest(s) <= s.h) m = s;
   S.metrics = m;
   board.style.setProperty("--cw", m.cardW + "px");
   board.style.setProperty("--ch", m.cardH + "px");
   board.style.setProperty("--fs", m.fs + "px");
+  board.classList.toggle("small", m.small);
   if (!animate) board.classList.add("instant");
   const sx = m.x0;
   const wx = m.x0 + m.cardW + m.gap;
@@ -570,7 +612,7 @@ function layout(animate) {
   S.waste.forEach((c) => {
     const fi = fan.indexOf(c);
     if (fi < 0) setCard(c, wx, m.top, 2, true);
-    else setCard(c, wx + fi * (S.drawN === 3 ? 20 : 0), m.top, 12 + fi, true);
+    else setCard(c, wx + fi * (S.drawN === 3 ? Math.max(20, Math.round(m.cardW * 0.36)) : 0), m.top, 12 + fi, true);
   });
   S.foundations.forEach((pile, fi) => {
     const x = m.x0 + (m.cardW + m.gap) * (3 + fi);
@@ -582,10 +624,16 @@ function layout(animate) {
     const x = m.x0 + (m.cardW + m.gap) * ci;
     const gaps = [];
     for (let i = 0; i < col.length - 1; i++) gaps.push(col[i].up ? Math.max(36, Math.round(m.cardH * 0.23)) : Math.max(20, Math.round(m.cardH * 0.15)));
-    const extra = gaps.reduce((a, b) => a + b, 0);
-    if (extra + m.cardH > avail && extra > 0) {
-      const scale = (avail - m.cardH) / extra;
-      for (let i = 0; i < gaps.length; i++) gaps[i] = Math.max(11, Math.floor(gaps[i] * scale));
+    // Too tall: squeeze face-down gaps first, then face-up ones, never below the readable peek.
+    let over = gaps.reduce((a, b) => a + b, 0) + m.cardH - avail;
+    for (const [up, min] of [[false, 6], [true, m.peek]]) {
+      if (over <= 0) break;
+      const idx = gaps.map((g, i) => i).filter((i) => col[i].up === up && gaps[i] > min);
+      const room = idx.reduce((a, i) => a + gaps[i] - min, 0);
+      if (!room) continue;
+      const take = Math.min(over, room);
+      idx.forEach((i) => { gaps[i] -= Math.ceil((gaps[i] - min) * take / room); });
+      over -= take;
     }
     let y = m.tabY;
     col.forEach((c, i) => {
@@ -684,9 +732,8 @@ function newGame() {
   for (const c of S.stock) c.up = false;
   data.played = (data.played || 0) + 1;
   save();
-  const m = measure();
-  S.metrics = m;
   layout(false);
+  const m = S.metrics;
   board.classList.add("instant");
   for (const c of S.cards) setCard(c, m.x0, m.top, 1, false);
   void board.offsetWidth;
@@ -1030,7 +1077,7 @@ let lastTap = { id: -1, t: 0 };
 function onDown(e) {
   if (S.busy || S.won || e.button !== 0) return;
   const card = cardFrom(e);
-  if (!card || !card.playable) return;
+  if (!card || !card.playable) { startPan(e); return; }
   if (card.pile === "stock") return;
   const stack = stackFrom(card);
   if (!stack) return;
@@ -1063,7 +1110,19 @@ function applyDrag() {
   }
   d.stack.forEach((c, i) => setCard(c, d.ox[i] + dx, d.oy[i] + dy, 900 + i, true));
 }
+function startPan(e) {
+  if (table.scrollHeight <= table.clientHeight) return;
+  cardsLayer.setPointerCapture(e.pointerId);
+  S.pan = { pointer: e.pointerId, y: toPage(e.clientX, e.clientY).y, top: table.scrollTop, moved: false };
+}
 function onMove(e) {
+  const pan = S.pan;
+  if (pan && e.pointerId === pan.pointer) {
+    const dy = toPage(e.clientX, e.clientY).y - pan.y;
+    if (Math.abs(dy) > 6) pan.moved = true;
+    if (pan.moved) table.scrollTop = pan.top - dy;
+    return;
+  }
   const d = S.drag;
   if (!d || e.pointerId !== d.pointer) return;
   const p = toPage(e.clientX, e.clientY);
@@ -1072,6 +1131,15 @@ function onMove(e) {
   if (!d.raf) d.raf = requestAnimationFrame(applyDrag);
 }
 function onUp(e) {
+  const pan = S.pan;
+  if (pan && e.pointerId === pan.pointer) {
+    S.pan = null;
+    if (pan.moved) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 40);
+    }
+    return;
+  }
   const d = S.drag;
   if (!d || e.pointerId !== d.pointer) return;
   if (d.raf) cancelAnimationFrame(d.raf);
