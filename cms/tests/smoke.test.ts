@@ -668,11 +668,15 @@ describe("feeds, sitemaps and robots", () => {
 });
 
 // ---------------------------------------------------------------------------------------------
-// Misc: reports, static assets, 404 pages, admin
+// Misc: reports, games, static assets, 404 pages, admin
 // ---------------------------------------------------------------------------------------------
 describe("misc", () => {
 	it("/reports/age-pressure-finland/ is served", async () => {
 		await htmlPage("/reports/age-pressure-finland/");
+	});
+
+	it("/pelit/louhos/ is served", async () => {
+		await htmlPage("/pelit/louhos/");
 	});
 
 	for (const [path, type] of [

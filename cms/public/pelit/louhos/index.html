@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Louhos — miinaharava · jaakkola.xyz</title>
+<meta name="description" content="Louhos on selaimessa pelattava miinaharava ketjukertoimella, vihjeillä, purkusuojalla ja loogikkotilalla, joka näyttää numeroiden pakottamat siirrot.">
+<link rel="canonical" href="https://jaakkola.xyz/pelit/louhos/">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Louhos — miinaharava">
+<meta property="og:description" content="Miinaharava, mutta elävämpi. Ketjukerroin, vihjeet, purku ja loogikkotila.">
+<meta property="og:url" content="https://jaakkola.xyz/pelit/louhos/">
+<meta property="og:image" content="https://jaakkola.xyz/opengraph.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --bg: #10120f;
+    --ink: #eef2e6;
+    --muted: #a7b09d;
+    --line: #2a3228;
+    --yellow: #ffe14a;
+    --orange: #ff5c1a;
+    --lime: #d6ff4a;
+    --panel: #171c16;
+    --mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+    --sans: Bahnschrift, "Segoe UI Variable", "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background:
+      radial-gradient(900px 480px at 0% -10%, rgba(255, 92, 26, .18), transparent 55%),
+      radial-gradient(700px 420px at 100% 0%, rgba(255, 225, 74, .08), transparent 50%),
+      var(--bg);
+    user-select: none;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 8px;
+    z-index: 100;
+    background: repeating-linear-gradient(90deg, var(--yellow) 0 14px, #16180f 14px 22px, var(--orange) 22px 36px, #16180f 36px 44px);
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+  .app {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+    padding: 28px 20px 40px;
+  }
+  .top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; gap: 12px; align-items: stretch; }
+  .hazard {
+    width: 12px;
+    border-radius: 3px;
+    background: repeating-linear-gradient(-45deg, var(--yellow) 0 8px, #16180f 8px 16px);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 52px);
+    line-height: .85;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .brand p { margin: 6px 0 0; color: var(--muted); letter-spacing: .01em; }
+  .streak {
+    margin-left: auto;
+    background: var(--yellow);
+    color: #16180f;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 6px 10px;
+    align-self: center;
+  }
+  .modes { display: flex; flex-wrap: wrap; gap: 6px; }
+  .modes button, .tools button, .pill, .custom button, .modal-actions button {
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 999px;
+    padding: 8px 12px;
+  }
+  .modes button[aria-pressed="true"], .tools button[aria-pressed="true"] {
+    background: var(--yellow);
+    color: #16180f;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+  .setup, .flavor, .help, .records, .legend, #customWarn {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .setup { margin: 14px 0 0; letter-spacing: .04em; text-transform: uppercase; }
+  .panel {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 14px 22px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+    padding: 12px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+  }
+  .stat { min-width: 84px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+  .stat span, .chain-name, #chainName {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .stat strong {
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -.04em;
+    line-height: 1;
+  }
+  .stat.hot strong { color: var(--yellow); }
+  .stat.bad strong { color: var(--orange); }
+  #chainName { font-style: normal; letter-spacing: .08em; text-transform: uppercase; font-size: 11px; color: var(--muted); }
+  .chain-life, #chainLife {
+    display: block;
+    height: 3px;
+    width: 72px;
+    margin: 5px 0 3px;
+    border-radius: 99px;
+    background: var(--yellow);
+    transform-origin: left center;
+    transform: scaleX(0);
+  }
+  .tension, #tension {
+    display: block;
+    width: 92px;
+    height: 10px;
+    margin-top: 8px;
+    border-radius: 99px;
+    background: #0d100c;
+    box-shadow: inset 0 0 0 1px #2c3428;
+    position: relative;
+    overflow: hidden;
+  }
+  #tension > i {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--yellow), var(--orange));
+    transform-origin: left center;
+  }
+  body.panic #tension > i { animation: throb .45s ease-in-out infinite; }
+  @keyframes throb { 50% { filter: brightness(1.35); } }
+  .face {
+    width: 72px;
+    height: 72px;
+    border: 0;
+    border-radius: 18px;
+    padding: 4px;
+    background: #2a3128;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 8px 0 #12150f;
+  }
+  .face:active { transform: translateY(2px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 6px 0 #12150f; }
+  .face svg { width: 100%; height: 100%; display: block; }
+  .face .eyes { transform: translate(calc(var(--lx) * 2.4px), calc(var(--ly) * 1.8px)); }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .tools b, .pill b { font-family: var(--mono); }
+  .pill { color: var(--muted); }
+  .pill.spent { opacity: .55; text-decoration: line-through; }
+  .legend { margin: 8px 0 0; }
+  .custom {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    align-items: end;
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+  }
+  .custom label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+  .custom input {
+    width: 88px;
+    background: #0d100c;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 10px;
+    user-select: text;
+  }
+  .custom button, .modal-actions .primary {
+    background: var(--yellow);
+    color: #16180f;
+    border-color: var(--yellow);
+    font-weight: 700;
+  }
+  #customWarn { flex: 1 0 180px; margin: 0; color: var(--orange); }
+  .frame {
+    margin-top: 14px;
+    overflow: auto;
+    max-height: min(72vh, 840px);
+    padding: 12px;
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.06), transparent 28%),
+      #2b3329;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.16), inset 0 -10px 18px rgba(0,0,0,.28), 0 24px 60px rgba(0,0,0,.35);
+  }
+  .frame.shake { animation: shake .38s linear; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--cell));
+    grid-auto-rows: var(--cell);
+    gap: var(--gap);
+    width: max-content;
+    margin: 0 auto;
+    background: #0b0d0a;
+    padding: var(--gap);
+    border-radius: 12px;
+    touch-action: manipulation;
+  }
+  .cell {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 5px;
+    display: grid;
+    place-items: center;
+    position: relative;
+    background: linear-gradient(160deg, #616b59, #3c4438 52%, #333a31);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 2px 0 #1a1e18;
+    color: var(--ink);
+    cursor: crosshair;
+    -webkit-touch-callout: none;
+  }
+  .cell:hover:not(.open):not(.deadmine):not(.exploded) { filter: brightness(1.08); }
+  .cell:active:not(.open) { transform: translateY(1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 1px 0 #1a1e18; }
+  .cell.open { background: #171b16; box-shadow: inset 0 0 0 1px rgba(255,255,255,.035); cursor: pointer; }
+  .cell.just { animation: pop .28s ease var(--d, 0ms) both; }
+  @keyframes pop {
+    0% { transform: scale(.86); filter: brightness(1.7); }
+    100% { transform: none; filter: none; }
+  }
+  .cell svg { width: 64%; height: 64%; display: block; }
+  .num { font-family: var(--mono); font-weight: 700; font-size: calc(var(--cell) * .5); line-height: 1; }
+  .q { font-family: var(--mono); font-weight: 700; font-size: calc(var(--cell) * .48); color: #c9d0bc; }
+  .cell.open[data-n="1"] { color: #6ec8ff; }
+  .cell.open[data-n="2"] { color: #b6f25c; }
+  .cell.open[data-n="3"] { color: #ffd15c; }
+  .cell.open[data-n="4"] { color: #d2a6ff; }
+  .cell.open[data-n="5"] { color: #ff8d6a; }
+  .cell.open[data-n="6"] { color: #7ee0d6; }
+  .cell.open[data-n="7"] { color: #f4f1e8; }
+  .cell.open[data-n="8"] { color: #9aa392; }
+  .cell.deadmine { background: #2a211c; }
+  .cell.exploded { background: var(--orange); }
+  .cell.defused { background: #1c2418; box-shadow: inset 0 0 0 1px var(--lime); }
+  .cell.badflag { background: #2a1814; }
+  .cell.peek { outline: 2px solid rgba(255, 225, 74, .85); outline-offset: -2px; z-index: 1; }
+  .board.show-cursor .cell.cursor { outline: 2px solid #fff; outline-offset: -3px; z-index: 1; }
+  .cell.pip-safe::before, .cell.pip-mine::before, .cell.pip-wrong::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+  }
+  .cell.pip-safe::before { background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+  .cell.pip-mine::before { background: var(--orange); box-shadow: 0 0 8px var(--orange); }
+  .cell.pip-wrong::before { background: var(--orange); box-shadow: 0 0 0 2px var(--yellow); }
+  .cell.hinted::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border: 2px solid var(--yellow);
+    border-radius: 4px;
+    animation: hint .7s ease-in-out infinite;
+  }
+  @keyframes hint { 50% { opacity: .35; } }
+  .flavor { min-height: 1.3em; }
+  .help, .records { line-height: 1.45; }
+  .records { color: var(--ink); }
+  .home a { color: var(--muted); text-decoration: none; }
+  .home a:hover, .home a:focus-visible { color: var(--yellow); }
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 80; }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+    background: radial-gradient(circle at center, transparent 35%, rgba(255, 60, 20, .5));
+    transition: opacity .15s linear;
+  }
+  .vignette.on { opacity: 1; }
+  .floater {
+    position: fixed;
+    z-index: 45;
+    transform: translate(-50%, 0);
+    color: var(--yellow);
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-shadow: 0 2px 0 #000;
+    pointer-events: none;
+    animation: floatup .7s ease forwards;
+  }
+  @keyframes floatup { to { transform: translate(-50%, -28px); opacity: 0; } }
+  .toasts {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 90;
+    pointer-events: none;
+    width: min(92vw, 420px);
+  }
+  .toast {
+    background: var(--yellow);
+    color: #16180f;
+    font-weight: 750;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+  }
+  dialog {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    width: min(92vw, 440px);
+  }
+  dialog::backdrop { background: rgba(6, 7, 5, .72); }
+  .modal-card {
+    background: #171b16;
+    border-radius: 22px;
+    padding: 26px;
+    border: 1px solid var(--line);
+    border-top: 6px solid var(--yellow);
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    user-select: text;
+  }
+  .modal-card.lose { border-top-color: var(--orange); }
+  .kicker {
+    margin: 0;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    font-size: 12px;
+    color: var(--yellow);
+  }
+  .modal-card.lose .kicker { color: var(--orange); }
+  .modal-card h2 { margin: 6px 0 0; font-size: 36px; letter-spacing: -.03em; }
+  .modal-card p { line-height: 1.45; }
+  .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 16px 0; }
+  .modal-stats div { background: #10140f; border-radius: 12px; padding: 10px 12px; }
+  .modal-stats span { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .modal-stats strong { font-family: var(--mono); font-size: 22px; }
+  .share {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    background: #10140f;
+    border-radius: 10px;
+    padding: 8px 10px;
+    word-break: break-word;
+  }
+  .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .bump { animation: bump .25s ease; }
+  @keyframes bump { 50% { transform: scale(1.16); } }
+  @media (max-width: 720px) {
+    .stat strong { font-size: 22px; }
+    .face { width: 58px; height: 58px; }
+    .app { padding-inline: 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="vignette" id="vignette"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<main class="app">
+  <header class="top">
+    <div class="brand">
+      <span class="hazard" aria-hidden="true"></span>
+      <div>
+        <h1>Louhos</h1>
+        <p>Miinaharava, mutta elävämpi.</p>
+      </div>
+    </div>
+    <div class="streak" id="streak" hidden></div>
+    <nav class="modes" id="modes" aria-label="Vaikeustaso"></nav>
+  </header>
+  <p class="setup" id="setup"></p>
+  <section class="panel" aria-label="Tilanne">
+    <div class="stat" id="mineStat">
+      <span title="Miinat miinus liput. Voi mennä pakkaselle.">Miinat</span>
+      <strong id="mines">010</strong>
+    </div>
+    <button type="button" class="face" id="face" aria-label="Uusi peli" title="Uusi peli (N)"></button>
+    <div class="stat">
+      <span>Aika</span>
+      <strong id="timer">00:00</strong>
+    </div>
+    <div class="stat">
+      <span title="Tunnelma kentän tiheydestä. Ei kerro, missä miinat ovat.">Jännite</span>
+      <span class="tension" id="tension" aria-hidden="true"><i></i></span>
+    </div>
+    <div class="stat" id="chainStat">
+      <span title="Nopeat avaukset kasvattavat kerrointa. Ikkuna on 2,2 sekuntia.">Ketju</span>
+      <strong id="chain">×1</strong>
+      <i id="chainLife"></i>
+      <em id="chainName">valmis</em>
+    </div>
+    <div class="stat">
+      <span>Pisteet</span>
+      <strong id="score">0</strong>
+    </div>
+  </section>
+  <section class="tools" aria-label="Työkalut">
+    <button type="button" id="hintBtn" title="Vilauttaa turvallisen ruudun. Ei avaa sitä. (H)">Vihje <b id="hintCount">3</b></button>
+    <div class="pill" id="shieldPill" title="Jos osut miinaan, purku katkaisee johdot kerran. Sitä ei tarvitse klikata.">Purku <b id="shieldCount">1</b></div>
+    <button type="button" id="logicBtn" aria-pressed="false" title="Näyttää siirrot, jotka numerot jo pakottavat. Ei arvaa. (L)">Loogikko</button>
+    <button type="button" id="muteBtn" aria-pressed="false" title="Äänet (M)">Äänet</button>
+  </section>
+  <p class="legend" id="logicLegend" hidden>Keltainen piste = varma tyhjä · oranssi piste = varma miina · rengas = lippu, jonka numerot kumoavat</p>
+  <section class="custom" id="custom" hidden>
+    <label>Leveys <input id="cw" type="number" min="5" max="40" inputmode="numeric"></label>
+    <label>Korkeus <input id="ch" type="number" min="5" max="24" inputmode="numeric"></label>
+    <label>Miinat <input id="cm" type="number" min="1" inputmode="numeric"></label>
+    <button type="button" id="applyCustom">Kaiva</button>
+    <p id="customWarn"></p>
+  </section>
+  <div class="frame" id="frame">
+    <div id="board" class="board" role="group" aria-label="Miinakenttä"></div>
+  </div>
+  <p class="flavor" id="flavor"></p>
+  <footer>
+    <p class="help">Vasen avaa. Oikea klikkaus: lippu, kysymys, tyhjä. Pitkä painallus liputtaa. Numeroruudun klikkaus avaa naapurit, jos liput täsmäävät. Näppäimet: nuolet, välilyönti, F, H, L, M, N.</p>
+    <p class="records" id="records"></p>
+    <p class="home"><a href="/">← jaakkola.xyz</a></p>
+  </footer>
+</main>
+<dialog id="modal">
+  <form method="dialog" class="modal-card" id="modalCard">
+    <p class="kicker" id="modalKicker"></p>
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <div class="modal-stats" id="modalStats"></div>
+    <p class="share" id="modalShare"></p>
+    <div class="modal-actions">
+      <button type="submit" class="primary" value="again">Uusi kenttä</button>
+      <button type="button" id="modalCopy">Kopioi tulos</button>
+    </div>
+  </form>
+</dialog>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script>
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const KEY = "louhos-v1";
+const MODES = [
+  ["easy", "Helppo", "9×9, 10 miinaa"],
+  ["medium", "Keskivaikea", "16×16, 40 miinaa"],
+  ["hard", "Vaikea", "30×16, 99 miinaa"],
+  ["custom", "Oma", "Omat mitat"],
+  ["daily", "Päivä", "Päivän siemen. Sama aloitusruutu, sama kenttä."]
+];
+const NAMES = { easy: "Helppo", medium: "Keskivaikea", hard: "Vaikea", custom: "Oma kenttä", daily: "Päivän kenttä" };
+const CHAIN_NAME = ["", "valmis", "luisto", "ketju", "kuuma", "panos", "hurmos", "vaara", "täysi"];
+const CHAIN_TOAST = { 3: "Ketju syttyi", 5: "Panos päällä", 8: "Täysi louhos" };
+const FLAVOR = [
+  "Älä luota tuuriin. Luota numeroihin.",
+  "Lippu on lupaus. Pidä se.",
+  "Tyhjä ruutu on lahja. Älä tuhlaa sitä.",
+  "Ketju palkitsee nopean käden, ei hätäisen.",
+  "Yksi purku. Käytä se kuin se olisi viimeinen.",
+  "Kahdeksikko on vain numero. Hengitä.",
+  "Oikea klikkaus on halvempi kuin räjähdys.",
+  "Jos numerot pakottavat siirron, Loogikko näyttää sen."
+];
+const LOSE_LINES = [
+  "Metalli muisti sinut.",
+  "Se oli miina. Tietenkin se oli.",
+  "Louhos 1 — sinä 0.",
+  "Numero ei valehdellut. Sinä arvasit.",
+  "Seuraava kenttä ei tiedä tästä mitään."
+];
+const WIN_LINES = [
+  "Kenttä hiljeni.",
+  "Voit kävellä ulos.",
+  "Kaikki johdot paikallaan.",
+  "Puhdas työ. Tai ainakin selvisit."
+];
+const MINE = '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#1a120c" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g><circle cx="12" cy="12" r="5.2" fill="#1a120c"/><circle cx="10.2" cy="10" r="1.3" fill="#fff"/></svg>';
+const FLAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V3" stroke="#d7d2c5" stroke-width="2" stroke-linecap="round"/><path d="M8 4.5h9.5L14 9l3.5 4.5H8z" fill="#ffe14a"/></svg>';
+const BADFLAG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V3" stroke="#d7d2c5" stroke-width="2"/><path d="M8 4.5h9.5L14 9l3.5 4.5H8z" fill="#ffe14a" opacity=".45"/><path d="M6 18L18 6" stroke="#ff5c1a" stroke-width="2.4" stroke-linecap="round"/></svg>';
+const DEFUSED = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="none" stroke="#d6ff4a" stroke-width="1.6"/><path d="M7 12.5h10M9.2 9.2c1.3 1.2 1.3 4.4 0 5.6M14.8 9.2c-1.3 1.2-1.3 4.4 0 5.6" stroke="#d6ff4a" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+
+function faceWrap(inner) {
+  return `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28" fill="#ffe14a"/>${inner}</svg>`;
+}
+const EYES = '<g class="eyes" fill="#1a120c"><circle cx="24" cy="28" r="3.2"/><circle cx="40" cy="28" r="3.2"/></g>';
+const SMILE = '<path d="M22 40c3.5 6 16.5 6 20 0" fill="none" stroke="#1a120c" stroke-width="2.6" stroke-linecap="round"/>';
+const FACES = {
+  idle: faceWrap(EYES + SMILE),
+  wow: faceWrap('<g class="eyes" fill="#1a120c"><circle cx="24" cy="28" r="4.5"/><circle cx="40" cy="28" r="4.5"/></g><circle cx="32" cy="43" r="4" fill="none" stroke="#1a120c" stroke-width="2.5"/>'),
+  sweat: faceWrap(EYES + SMILE + '<path d="M49 16c2.2 3.4.6 7.2-1.4 8.6" fill="none" stroke="#3aa7ef" stroke-width="2.3" stroke-linecap="round"/>'),
+  dead: faceWrap('<path d="M18 23l8 8M26 23l-8 8M38 23l8 8M46 23l-8 8" stroke="#1a120c" stroke-width="2.6" stroke-linecap="round"/><path d="M22 45c4-5 16-5 20 0" fill="none" stroke="#1a120c" stroke-width="2.6" stroke-linecap="round"/>'),
+  cool: faceWrap('<rect x="15" y="24" width="14" height="9" rx="2" fill="#1a120c"/><rect x="35" y="24" width="14" height="9" rx="2" fill="#1a120c"/><path d="M29 28.5h6" stroke="#1a120c" stroke-width="2.4"/>' + SMILE)
+};
+
+function clamp(n, a, b) {
+  n = Number(n);
+  if (!Number.isFinite(n)) return a;
+  return Math.max(a, Math.min(b, Math.round(n)));
+}
+function pad3(n) {
+  if (n < 0) return "-" + String(Math.abs(n)).padStart(2, "0");
+  return String(n).padStart(3, "0");
+}
+function fmt(sec) {
+  sec = Math.max(0, Math.floor(sec));
+  return String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
+}
+function fmtScore(n) {
+  return String(Math.max(0, Math.round(n))).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+function todayKey() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+}
+function hashStr(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0;
+    a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+class Sfx {
+  constructor() { this.ctx = null; this.master = null; this.muted = false; }
+  setMuted(m) {
+    this.muted = m;
+    if (this.master) this.master.gain.value = m ? 0 : 0.22;
+  }
+  ensure() {
+    if (this.muted) return null;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!this.ctx) {
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = 0.22;
+      this.master.connect(this.ctx.destination);
+    }
+    if (this.ctx.state === "suspended") this.ctx.resume();
+    return this.ctx;
+  }
+  tone(freq, dur, type, gain, endFreq) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(Math.max(40, freq), ctx.currentTime);
+    if (endFreq) o.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), ctx.currentTime + dur);
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g); g.connect(this.master);
+    o.start();
+    o.stop(ctx.currentTime + dur + 0.02);
+  }
+  noise(dur, gain, freq) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const n = Math.floor(ctx.sampleRate * dur);
+    const buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.value = freq;
+    const g = ctx.createGain();
+    g.gain.value = gain;
+    src.connect(filter); filter.connect(g); g.connect(this.master);
+    src.start();
+  }
+  flag() { this.tone(620, 0.06, "square", 0.18); }
+  reveal(adj) { this.tone(280 + adj * 42, 0.07, "triangle", 0.28); }
+  flood() { this.tone(160, 0.16, "sine", 0.3, 420); }
+  boom() { this.noise(0.45, 0.9, 220); this.tone(96, 0.38, "sine", 0.7, 42); }
+  defuse() { this.tone(220, 0.16, "sawtooth", 0.18, 70); setTimeout(() => this.tone(660, 0.1, "triangle", 0.3), 140); }
+  win() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.tone(f, 0.16, "triangle", 0.4), i * 90)); }
+}
+
+class Fx {
+  constructor(canvas) {
+    this.c = canvas;
+    this.ctx = canvas.getContext("2d");
+    this.p = [];
+    this.last = 0;
+    this.resize();
+    addEventListener("resize", () => this.resize());
+    requestAnimationFrame((t) => this.loop(t));
+  }
+  resize() {
+    const dpr = devicePixelRatio || 1;
+    this.c.width = innerWidth * dpr;
+    this.c.height = innerHeight * dpr;
+  }
+  burst(x, y, color, n, speed) {
+    if (REDUCE) return;
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const s = speed * (0.35 + Math.random());
+      this.p.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 30, g: 520, life: 0.45 + Math.random() * 0.45, age: 0, color, w: 2 + Math.random() * 3 });
+    }
+    if (this.p.length > 240) this.p.splice(0, this.p.length - 240);
+  }
+  confetti() {
+    if (REDUCE) return;
+    const colors = ["#ffe14a", "#ff5c1a", "#d6ff4a", "#7ecbff", "#eef2e6"];
+    for (let i = 0; i < 100; i++) {
+      this.p.push({
+        x: Math.random() * innerWidth,
+        y: -20 - Math.random() * 120,
+        vx: -50 + Math.random() * 100,
+        vy: 70 + Math.random() * 240,
+        g: 40,
+        life: 2.4 + Math.random(),
+        age: 0,
+        color: colors[i % colors.length],
+        w: 4 + Math.random() * 4
+      });
+    }
+  }
+  loop(t) {
+    if (!this.last) this.last = t;
+    const dt = Math.min(0.034, (t - this.last) / 1000);
+    this.last = t;
+    const ctx = this.ctx;
+    const dpr = devicePixelRatio || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    const next = [];
+    for (const p of this.p) {
+      p.age += dt;
+      if (p.age >= p.life) continue;
+      p.vy += p.g * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      ctx.globalAlpha = 1 - p.age / p.life;
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, p.w, p.w * 0.7);
+      next.push(p);
+    }
+    ctx.globalAlpha = 1;
+    this.p = next;
+    requestAnimationFrame((n) => this.loop(n));
+  }
+}
+
+class Game {
+  constructor() {
+    this.data = this.load();
+    this.sfx = new Sfx();
+    this.fx = new Fx(document.getElementById("fx"));
+    this.board = document.getElementById("board");
+    this.frame = document.getElementById("frame");
+    this.faceBtn = document.getElementById("face");
+    this.modal = document.getElementById("modal");
+    this.modalCard = document.getElementById("modalCard");
+    this.sfx.setMuted(!!this.data.mute);
+    this.logicOn = !!this.data.logic;
+    this.mode = this.data.lastMode || "easy";
+    if (!NAMES[this.mode]) this.mode = "easy";
+    this.faceState = "";
+    this.tension = 0;
+    this.closing = false;
+    this.lastShare = "";
+    this.cursor = 0;
+    this.cursorEl = null;
+    this.kb = false;
+    this.round = 0;
+    this.faceToken = {};
+  }
+  load() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
+      raw.best = raw.best || {};
+      raw.clean = raw.clean || {};
+      raw.custom = raw.custom || { w: 12, h: 12, mines: 20 };
+      return raw;
+    } catch {
+      return { best: {}, clean: {}, custom: { w: 12, h: 12, mines: 20 } };
+    }
+  }
+  save() {
+    try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch {}
+  }
+  init() {
+    const nav = document.getElementById("modes");
+    this.modeButtons = MODES.map(([id, label, title]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.mode = id;
+      b.textContent = label;
+      b.title = title;
+      b.addEventListener("click", () => this.setMode(id));
+      nav.appendChild(b);
+      return b;
+    });
+    const c = this.data.custom;
+    document.getElementById("cw").value = clamp(c.w, 5, 40);
+    document.getElementById("ch").value = clamp(c.h, 5, 24);
+    document.getElementById("cm").value = clamp(c.mines, 1, 200);
+    this.faceBtn.addEventListener("click", () => this.newGame());
+    document.getElementById("hintBtn").addEventListener("click", () => this.hint());
+    document.getElementById("logicBtn").addEventListener("click", () => this.toggleLogic());
+    document.getElementById("muteBtn").addEventListener("click", () => this.toggleMute());
+    document.getElementById("applyCustom").addEventListener("click", () => this.applyCustom());
+    document.getElementById("custom").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); this.applyCustom(); }
+    });
+    document.getElementById("shieldPill").addEventListener("click", () => {
+      this.toast(this.shield > 0 ? "Purku on passiivinen. Se laukeaa, jos osut miinaan." : "Purku on jo käytetty.");
+    });
+    document.getElementById("modalCopy").addEventListener("click", () => this.copyResult());
+    this.modal.addEventListener("close", () => {
+      if (this.closing) return;
+      if (this.modal.returnValue === "again") this.newGame();
+    });
+    this.modal.addEventListener("click", (e) => { if (e.target === this.modal) this.modal.close(); });
+    this.board.addEventListener("pointerdown", (e) => this.onDown(e));
+    this.board.addEventListener("pointermove", (e) => this.onMove(e));
+    this.board.addEventListener("pointerup", () => this.onUp());
+    this.board.addEventListener("pointercancel", () => this.onUp());
+    this.board.addEventListener("contextmenu", (e) => this.onContext(e));
+    this.board.addEventListener("click", (e) => this.onClick(e));
+    this.board.addEventListener("auxclick", (e) => { if (e.button === 1) e.preventDefault(); });
+    addEventListener("keydown", (e) => this.onKey(e));
+    addEventListener("pointermove", (e) => this.look(e));
+    addEventListener("resize", () => this.layout());
+    this.updateMute();
+    this.updateModes();
+    document.getElementById("custom").hidden = this.mode !== "custom";
+    this.newGame();
+  }
+  look(e) {
+    const r = this.faceBtn.getBoundingClientRect();
+    const dx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / 180));
+    const dy = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / 180));
+    this.faceBtn.style.setProperty("--lx", dx.toFixed(3));
+    this.faceBtn.style.setProperty("--ly", dy.toFixed(3));
+  }
+  setMode(mode) {
+    this.mode = mode;
+    this.data.lastMode = mode;
+    this.save();
+    document.getElementById("custom").hidden = mode !== "custom";
+    this.updateModes();
+    this.newGame();
+  }
+  applyCustom() {
+    const w = clamp(document.getElementById("cw").value, 5, 40);
+    const h = clamp(document.getElementById("ch").value, 5, 24);
+    const mines = clamp(document.getElementById("cm").value, 1, w * h - 1);
+    document.getElementById("cw").value = w;
+    document.getElementById("ch").value = h;
+    document.getElementById("cm").value = mines;
+    const warn = document.getElementById("customWarn");
+    warn.textContent = mines > w * h - 9 ? "Tiheä kenttä. Ensimmäinen klikkaus on silti turvassa." : "";
+    this.data.custom = { w, h, mines };
+    this.save();
+    if (this.mode !== "custom") this.setMode("custom");
+    else this.newGame();
+  }
+  preset() {
+    if (this.mode === "easy") return { w: 9, h: 9, mines: 10 };
+    if (this.mode === "medium") return { w: 16, h: 16, mines: 40 };
+    if (this.mode === "hard") return { w: 30, h: 16, mines: 99 };
+    if (this.mode === "daily") return { w: 16, h: 16, mines: 40 };
+    const c = this.data.custom || { w: 12, h: 12, mines: 20 };
+    const w = clamp(c.w, 5, 40);
+    const h = clamp(c.h, 5, 24);
+    return { w, h, mines: clamp(c.mines, 1, w * h - 1) };
+  }
+  hintBudget() {
+    if (this.mode === "easy") return 3;
+    if (this.mode === "medium") return 2;
+    return 1;
+  }
+  newGame() {
+    this.closing = true;
+    if (this.modal.open) this.modal.close("silent");
+    this.closing = false;
+    clearInterval(this.timerId);
+    clearTimeout(this.hold);
+    this.round++;
+    this.faceToken = {};
+    this.over = false;
+    this.started = false;
+    this.generated = false;
+    this.firstDone = false;
+    this.stoppedAt = 0;
+    this.score = 0;
+    this.chain = 1;
+    this.bestChain = 1;
+    this.lastAction = 0;
+    this.shield = 1;
+    this.hints = this.hintBudget();
+    this.hintsUsed = 0;
+    this.defusedCount = 0;
+    this.logicUsed = this.logicOn;
+    this.suppress = false;
+    this.press = null;
+    this.kb = false;
+    const p = this.preset();
+    this.w = p.w;
+    this.h = p.h;
+    this.budget = p.mines;
+    this.mineCount = p.mines;
+    this.seed = this.mode === "daily" ? hashStr(todayKey()) : 0;
+    this.cells = [];
+    for (let y = 0; y < this.h; y++) {
+      for (let x = 0; x < this.w; x++) {
+        this.cells.push({ i: y * this.w + x, x, y, mine: false, adj: 0, revealed: false, flag: 0, defused: false, badflag: false, exploded: false, pip: null, el: null });
+      }
+    }
+    if (this.mode === "daily") {
+      this.place(mulberry32(this.seed), new Set(), 0);
+      this.generated = true;
+      this.mineCount = this.budget;
+    }
+    this.cursor = (Math.floor(this.h / 2) * this.w) + Math.floor(this.w / 2);
+    this.cursorEl = null;
+    this.render();
+    this.layout();
+    this.paintScore();
+    this.paintChain();
+    document.getElementById("timer").textContent = "00:00";
+    document.getElementById("chainLife").style.transform = "scaleX(0)";
+    this.updateMines();
+    this.updateTension();
+    this.updateTools();
+    this.updateModes();
+    this.updateRecords();
+    this.paintSetup();
+    this.updateLogic();
+    this.flavor();
+    this.setFace("idle");
+    document.title = "Louhos — miinaharava";
+    document.body.classList.remove("panic");
+  }
+  render() {
+    this.board.style.setProperty("--cols", this.w);
+    this.board.replaceChildren();
+    for (const c of this.cells) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cell";
+      b.dataset.i = String(c.i);
+      b.tabIndex = -1;
+      c.el = b;
+      this.board.appendChild(b);
+      this.paint(c, false);
+    }
+  }
+  layout() {
+    const gap = this.w >= 24 ? 2 : 3;
+    const wrap = Math.max(160, this.frame.clientWidth - 24);
+    const maxH = Math.max(180, Math.min(window.innerHeight * 0.72, 840) - 24);
+    const cap = this.w <= 10 ? 58 : this.w <= 16 ? 44 : 32;
+    const cell = Math.max(18, Math.min(cap, Math.floor((wrap - gap * (this.w - 1)) / this.w), Math.floor((maxH - gap * (this.h - 1)) / this.h)));
+    this.board.style.setProperty("--cell", cell + "px");
+    this.board.style.setProperty("--gap", gap + "px");
+  }
+  shuffle(list, rand) {
+    const arr = list.slice();
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rand() * (i + 1));
+      const tmp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = tmp;
+    }
+    return arr;
+  }
+  place(rand, forbidden, safeIndex) {
+    for (const c of this.cells) c.mine = false;
+    let blocked = forbidden;
+    if (this.w * this.h - blocked.size < this.budget) blocked = new Set([safeIndex]);
+    if (this.w * this.h - blocked.size < this.budget) blocked = new Set();
+    const pool = this.shuffle(this.cells.filter((c) => !blocked.has(c.i)), rand);
+    const n = Math.min(this.budget, pool.length);
+    for (let i = 0; i < n; i++) pool[i].mine = true;
+    this.mineCount = this.cells.filter((c) => c.mine).length;
+    this.computeAdj();
+  }
+  zone(cell) {
+    const s = new Set([cell.i]);
+    for (const n of this.neighbors(cell)) s.add(n.i);
+    return s;
+  }
+  prepareFirst(cell) {
+    if (this.firstDone) return;
+    this.firstDone = true;
+    if (!this.generated) {
+      this.place(Math.random, this.zone(cell), cell.i);
+      this.generated = true;
+    } else {
+      const rand = mulberry32((this.seed ^ Math.imul(cell.i + 1, 2654435761)) >>> 0);
+      this.relocateZone(cell, rand);
+    }
+    if (cell.mine) {
+      cell.mine = false;
+      this.mineCount = this.cells.filter((c) => c.mine).length;
+      this.computeAdj();
+    }
+    if (this.mineCount < this.budget) {
+      this.toast("Miinoja oli liikaa turvalliseen aukkoon. Nyt niitä on " + this.mineCount + ".");
+      this.paintSetup();
+      this.updateMines();
+    }
+  }
+  relocateZone(cell, rand) {
+    const zone = this.zone(cell);
+    const movers = this.cells.filter((c) => c.mine && zone.has(c.i));
+    const pool = this.shuffle(this.cells.filter((c) => !c.mine && !zone.has(c.i)), rand);
+    for (const m of movers) {
+      const dest = pool.pop();
+      m.mine = false;
+      if (dest) dest.mine = true;
+    }
+    this.mineCount = this.cells.filter((c) => c.mine).length;
+    this.computeAdj();
+  }
+  computeAdj() {
+    for (const c of this.cells) {
+      c.adj = c.mine ? 0 : this.neighbors(c).filter((n) => n.mine).length;
+    }
+  }
+  neighbors(cell) {
+    const out = [];
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (!dx && !dy) continue;
+        const x = cell.x + dx;
+        const y = cell.y + dy;
+        if (x < 0 || y < 0 || x >= this.w || y >= this.h) continue;
+        out.push(this.cells[y * this.w + x]);
+      }
+    }
+    return out;
+  }
+  ensureStart() {
+    if (this.started || this.over) return;
+    this.started = true;
+    this.t0 = performance.now();
+    this.stoppedAt = 0;
+    this.timerId = setInterval(() => this.paintTime(), 200);
+    this.data.played = (this.data.played || 0) + 1;
+    this.save();
+    this.updateRecords();
+  }
+  stopTimer() {
+    clearInterval(this.timerId);
+    if (this.started && !this.stoppedAt) this.stoppedAt = performance.now();
+  }
+  elapsed() {
+    if (!this.started) return 0;
+    return ((this.stoppedAt || performance.now()) - this.t0) / 1000;
+  }
+  open(cell) {
+    if (this.over || !cell || cell.revealed || cell.flag === 1) return;
+    this.ensureStart();
+    this.prepareFirst(cell);
+    if (cell.mine) {
+      this.resolveMines([cell]);
+      this.afterChange();
+      return;
+    }
+    this.bumpChain();
+    const res = this.uncover(cell);
+    this.scoreOpened(res.opened, cell);
+    this.resolveMines(res.mines);
+    this.afterChange();
+  }
+  chord(cell) {
+    if (this.over || !cell?.revealed || !cell.adj) return;
+    const neigh = this.neighbors(cell);
+    if (neigh.filter((n) => n.flag === 1).length !== cell.adj) return;
+    if (!neigh.some((n) => !n.revealed && n.flag !== 1)) return;
+    this.bumpChain();
+    const opened = [];
+    const mines = [];
+    for (const n of neigh) {
+      if (n.revealed || n.flag === 1) continue;
+      const res = this.uncover(n);
+      opened.push(...res.opened);
+      mines.push(...res.mines);
+    }
+    this.scoreOpened(opened, cell);
+    this.resolveMines(mines);
+    this.afterChange();
+  }
+  uncover(origin) {
+    const opened = [];
+    const mines = [];
+    const q = [origin];
+    const seen = new Set();
+    while (q.length) {
+      const c = q.shift();
+      if (!c || seen.has(c.i) || c.revealed || c.flag === 1) continue;
+      seen.add(c.i);
+      if (c.mine) { mines.push(c); continue; }
+      c.revealed = true;
+      opened.push(c);
+      if (c.adj === 0) {
+        for (const n of this.neighbors(c)) if (!seen.has(n.i)) q.push(n);
+      }
+    }
+    return { opened, mines };
+  }
+  scoreOpened(opened, origin) {
+    if (!opened.length) return;
+    const n = opened.length;
+    let base = n * 6;
+    if (n >= 8) base += 36;
+    if (n >= 20) base += 80;
+    if (n >= 40) base += 140;
+    if (origin && origin.revealed && origin.adj >= 6) base += 24;
+    const gained = base * this.chain;
+    this.score += gained;
+    this.paintScore();
+    if (origin?.el) this.float(origin.el, "+" + gained);
+    const ox = origin ? origin.x : opened[0].x;
+    const oy = origin ? origin.y : opened[0].y;
+    for (const c of opened) {
+      c.el.style.setProperty("--d", Math.min((Math.abs(c.x - ox) + Math.abs(c.y - oy)) * 22, 380) + "ms");
+      this.paint(c, true);
+    }
+    if (n >= 8) this.sfx.flood();
+    else this.sfx.reveal(origin?.adj || 0);
+  }
+  resolveMines(mines) {
+    for (const m of mines) {
+      if (!m.mine || m.defused || m.exploded) continue;
+      if (this.shield > 0) {
+        this.shield--;
+        m.defused = true;
+        m.revealed = true;
+        m.flag = 0;
+        this.defusedCount++;
+        this.score = Math.max(0, this.score - 120);
+        this.paint(m, true);
+        this.paintScore();
+        this.sfx.defuse();
+        this.toast("Johdot poikki. Yksi henki meni.");
+        const r = m.el.getBoundingClientRect();
+        this.fx.burst(r.left + r.width / 2, r.top + r.height / 2, "#d6ff4a", 18, 140);
+        this.forceFace("sweat");
+        const token = {};
+        this.faceToken = token;
+        setTimeout(() => {
+          if (this.faceToken !== token || this.over) return;
+          this.restoreFace();
+        }, 1100);
+        continue;
+      }
+      this.lose(m);
+      return;
+    }
+  }
+  afterChange() {
+    this.updateMines();
+    this.updateTension();
+    this.updateLogic();
+    this.updateTools();
+    if (!this.over) this.checkWin();
+  }
+  checkWin() {
+    if (this.cells.every((c) => c.mine || c.revealed)) this.win();
+  }
+  win() {
+    this.over = true;
+    this.stopTimer();
+    const time = this.elapsed();
+    const clean = !this.logicUsed && this.hintsUsed === 0 && this.defusedCount === 0;
+    let bonus = 500 + Math.max(0, Math.round((this.par() - time) * 10));
+    bonus += this.hints * 60 + this.shield * 140;
+    if (clean) bonus += 300;
+    this.score += bonus;
+    this.paintScore();
+    const beaten = this.record(time, clean);
+    this.sfx.win();
+    this.fx.confetti();
+    this.forceFace("cool");
+    document.body.classList.remove("panic");
+    document.title = "Louhos — voitit";
+    const round = this.round;
+    const left = this.cells.filter((c) => c.mine && !c.defused && c.flag !== 1);
+    left.forEach((c, i) => setTimeout(() => {
+      if (this.round !== round || !c.el) return;
+      c.flag = 1;
+      this.paint(c, false);
+      this.updateMines();
+    }, i * 36));
+    setTimeout(() => {
+      if (this.round === round) this.showEnd(true, time, clean, beaten);
+    }, Math.min(left.length * 36, 700) + 280);
+  }
+  lose(trigger) {
+    if (this.over) return;
+    this.over = true;
+    this.stopTimer();
+    trigger.exploded = true;
+    for (const c of this.cells) {
+      if (c.mine && !c.defused) {
+        if (c.flag !== 1) c.revealed = true;
+      } else if (c.flag === 1) c.badflag = true;
+      this.paint(c, false);
+    }
+    this.sfx.boom();
+    if (!REDUCE) {
+      this.frame.classList.remove("shake");
+      void this.frame.offsetWidth;
+      this.frame.classList.add("shake");
+    }
+    document.getElementById("vignette").classList.add("on");
+    setTimeout(() => document.getElementById("vignette").classList.remove("on"), 460);
+    const r = trigger.el.getBoundingClientRect();
+    this.fx.burst(r.left + r.width / 2, r.top + r.height / 2, "#ff5c1a", 36, 220);
+    this.forceFace("dead");
+    document.body.classList.remove("panic");
+    if (this.data.streak) {
+      this.data.streak = 0;
+      this.save();
+      this.updateRecords();
+    }
+    document.title = "Louhos — räjähdit";
+    const round = this.round;
+    const time = this.elapsed();
+    setTimeout(() => {
+      if (this.round === round) this.showEnd(false, time, false, false);
+    }, 460);
+  }
+  par() {
+    if (this.mode === "easy") return 40;
+    if (this.mode === "medium" || this.mode === "daily") return 150;
+    if (this.mode === "hard") return 360;
+    return Math.round(this.w * this.h * 0.65);
+  }
+  recordKey() {
+    if (this.mode === "custom") return "custom:" + this.w + "x" + this.h + "x" + this.mineCount;
+    return this.mode;
+  }
+  record(time, clean) {
+    const key = this.recordKey();
+    const prev = this.data.best[key];
+    const beaten = !prev || time < prev.t;
+    if (beaten) this.data.best[key] = { t: time, score: this.score, clean };
+    if (clean) {
+      const pc = this.data.clean[key];
+      if (!pc || time < pc.t) this.data.clean[key] = { t: time, score: this.score };
+    }
+    if (this.mode === "daily") this.data.dailyWon = todayKey();
+    this.data.wins = (this.data.wins || 0) + 1;
+    this.data.streak = (this.data.streak || 0) + 1;
+    this.save();
+    this.updateRecords();
+    this.updateModes();
+    return beaten;
+  }
+  showEnd(won, time, clean, beaten) {
+    const notes = [];
+    if (won && beaten) notes.push("Uusi ennätys tällä mitalla.");
+    if (won && clean) notes.push("Puhdas peli: ei vihjettä, ei purkua, ei loogikkoa.");
+    else if (won && this.logicUsed) notes.push("Loogikko oli päällä, joten puhdas tähti jäi väliin.");
+    if (won && this.defusedCount) notes.push("Purku piti sinut hengissä.");
+    if (won && this.data.streak >= 2) notes.push("Putki: " + this.data.streak + " voittoa.");
+    if (won && !notes.length) notes.push(pick(WIN_LINES));
+    if (!won) notes.push(this.shield === 0 && this.defusedCount ? "Toinen miina ei neuvottele." : pick(LOSE_LINES));
+    let kicker = won ? "KENTTÄ HILJENI" : "RÄJÄHDYS";
+    if (won && beaten && clean) kicker = "UUSI PUHDAS ENNÄTYS";
+    else if (won && beaten) kicker = "UUSI ENNÄTYS";
+    else if (won && clean) kicker = "PUHDAS LOUHOS";
+    document.getElementById("modalKicker").textContent = kicker;
+    document.getElementById("modalTitle").textContent = won ? fmt(time) : "Sortui";
+    document.getElementById("modalText").textContent = notes.join(" ");
+    const bits = [
+      ["Aika", fmt(time)],
+      ["Pisteet", fmtScore(this.score)],
+      ["Ketju", "×" + this.bestChain],
+      ["Tyyli", !won ? "—" : clean ? "Puhdas" : this.logicUsed ? "Opastettu" : "Selviytyjä"]
+    ];
+    document.getElementById("modalStats").innerHTML = bits.map(([k, v]) => `<div><span>${k}</span><strong>${v}</strong></div>`).join("");
+    const style = clean ? "puhdas" : this.logicUsed ? "loogikko" : "selviytyjä";
+    this.lastShare = "Louhos · " + NAMES[this.mode] + " · " + fmt(time) + " · " + fmtScore(this.score) + " pistettä · ketju ×" + this.bestChain + " · " + style;
+    document.getElementById("modalShare").textContent = this.lastShare;
+    this.modalCard.classList.toggle("win", won);
+    this.modalCard.classList.toggle("lose", !won);
+    if (!this.modal.open) this.modal.showModal();
+  }
+  async copyResult() {
+    try {
+      await navigator.clipboard.writeText(this.lastShare);
+      this.toast("Tulos kopioitu.");
+    } catch {
+      this.toast(this.lastShare);
+    }
+  }
+  hint() {
+    if (this.over || this.hints <= 0) return;
+    if (!this.firstDone) {
+      this.toast("Avaa ensin yksi ruutu. Vihje ei arvaa tyhjää kenttää.");
+      return;
+    }
+    const deduced = this.deduce();
+    const hiddenSafe = this.cells.filter((c) => !c.revealed && !c.mine && c.flag !== 1);
+    if (!hiddenSafe.length) return;
+    const forced = hiddenSafe.filter((c) => deduced.safe.has(c.i));
+    const frontier = hiddenSafe.filter((c) => this.neighbors(c).some((n) => n.revealed));
+    const pool = forced.length ? forced : frontier.length ? frontier : hiddenSafe;
+    const pickCell = pool[Math.floor(Math.random() * pool.length)];
+    this.hints--;
+    this.hintsUsed++;
+    this.score = Math.max(0, this.score - 40);
+    this.paintScore();
+    for (const c of this.cells) c.el.classList.remove("hinted");
+    pickCell.el.classList.add("hinted");
+    pickCell.el.scrollIntoView({ block: "nearest", inline: "nearest" });
+    this.sfx.tone(740, 0.08, "sine", 0.25);
+    this.updateTools();
+    this.toast("Keltainen kehä on turvallinen. Sinä klikkaat.");
+  }
+  toggleLogic() {
+    this.logicOn = !this.logicOn;
+    this.data.logic = this.logicOn;
+    if (this.logicOn) this.logicUsed = true;
+    this.save();
+    this.updateLogic();
+    this.updateTools();
+  }
+  toggleMute() {
+    this.data.mute = !this.data.mute;
+    this.sfx.setMuted(!!this.data.mute);
+    this.save();
+    this.updateMute();
+    if (!this.data.mute) this.sfx.reveal(2);
+  }
+  updateMute() {
+    const b = document.getElementById("muteBtn");
+    const on = !this.data.mute;
+    b.setAttribute("aria-pressed", String(on));
+    b.textContent = on ? "Äänet" : "Äänet pois";
+  }
+  flag(cell, cycle) {
+    if (this.over || !cell || cell.revealed) return;
+    cell.flag = cycle ? (cell.flag + 1) % 3 : cell.flag === 1 ? 0 : 1;
+    this.paint(cell, false);
+    this.sfx.flag();
+    this.updateMines();
+    this.updateLogic();
+  }
+  deduce() {
+    const forcedMine = new Set();
+    const forcedSafe = new Set();
+    if (!this.generated) return { mine: forcedMine, safe: forcedSafe };
+    for (let pass = 0; pass < 8; pass++) {
+      const infos = [];
+      for (const c of this.cells) {
+        if (!c.revealed || c.mine || !c.adj) continue;
+        const unknown = [];
+        let known = 0;
+        for (const n of this.neighbors(c)) {
+          if ((n.revealed && n.mine) || forcedMine.has(n.i)) known++;
+          else if (!n.revealed && !forcedSafe.has(n.i) && !forcedMine.has(n.i)) unknown.push(n.i);
+        }
+        const need = c.adj - known;
+        if (need < 0 || need > unknown.length) continue;
+        infos.push({ x: c.x, y: c.y, unknown, need });
+      }
+      const addMine = new Set();
+      const addSafe = new Set();
+      for (const info of infos) {
+        if (info.need === 0) info.unknown.forEach((id) => addSafe.add(id));
+        else if (info.unknown.length && info.need === info.unknown.length) info.unknown.forEach((id) => addMine.add(id));
+      }
+      for (let i = 0; i < infos.length; i++) {
+        for (let j = 0; j < infos.length; j++) {
+          if (i === j) continue;
+          const A = infos[i];
+          const B = infos[j];
+          if (!A.unknown.length || A.unknown.length >= B.unknown.length) continue;
+          if (Math.abs(A.x - B.x) > 2 || Math.abs(A.y - B.y) > 2) continue;
+          if (!A.unknown.every((id) => B.unknown.includes(id))) continue;
+          const extra = B.unknown.filter((id) => !A.unknown.includes(id));
+          const diff = B.need - A.need;
+          if (diff === 0) extra.forEach((id) => addSafe.add(id));
+          else if (diff > 0 && diff === extra.length) extra.forEach((id) => addMine.add(id));
+        }
+      }
+      let changed = false;
+      for (const id of addSafe) {
+        if (addMine.has(id) || forcedMine.has(id) || forcedSafe.has(id)) continue;
+        forcedSafe.add(id);
+        changed = true;
+      }
+      for (const id of addMine) {
+        if (addSafe.has(id) || forcedSafe.has(id) || forcedMine.has(id)) continue;
+        forcedMine.add(id);
+        changed = true;
+      }
+      if (!changed) break;
+    }
+    return { mine: forcedMine, safe: forcedSafe };
+  }
+  updateLogic() {
+    const deduced = this.logicOn ? this.deduce() : { mine: new Set(), safe: new Set() };
+    for (const c of this.cells) {
+      let pip = null;
+      if (this.logicOn && !c.revealed) {
+        if (c.flag === 1 && deduced.safe.has(c.i)) pip = "wrong";
+        else if (c.flag !== 1 && deduced.mine.has(c.i)) pip = "mine";
+        else if (c.flag !== 1 && deduced.safe.has(c.i)) pip = "safe";
+      }
+      c.pip = pip;
+      c.el.classList.toggle("pip-mine", pip === "mine");
+      c.el.classList.toggle("pip-safe", pip === "safe");
+      c.el.classList.toggle("pip-wrong", pip === "wrong");
+      c.el.setAttribute("aria-label", this.labelFor(c));
+    }
+    document.getElementById("logicLegend").hidden = !this.logicOn;
+    const btn = document.getElementById("logicBtn");
+    btn.setAttribute("aria-pressed", String(this.logicOn));
+  }
+  labelFor(c) {
+    const pos = "Rivi " + (c.y + 1) + ", sarake " + (c.x + 1);
+    if (c.exploded) return pos + ", räjähtänyt miina";
+    if (c.defused) return pos + ", purettu miina";
+    if (c.badflag) return pos + ", väärä lippu";
+    if (!c.revealed && c.flag === 1) return pos + ", lippu";
+    if (!c.revealed && c.flag === 2) return pos + ", kysymys";
+    if (c.revealed && c.mine) return pos + ", miina";
+    if (c.revealed) return pos + ", " + (c.adj || "tyhjä");
+    if (c.pip === "safe") return pos + ", loogikon mukaan turvallinen";
+    if (c.pip === "mine") return pos + ", loogikon mukaan miina";
+    return pos;
+  }
+  glyph(c) {
+    if (c.defused) return DEFUSED;
+    if (c.badflag) return BADFLAG;
+    if (c.exploded || (c.revealed && c.mine)) return MINE;
+    if (!c.revealed && c.flag === 1) return FLAG;
+    if (!c.revealed && c.flag === 2) return '<span class="q">?</span>';
+    if (c.revealed && c.adj > 0) return '<span class="num">' + c.adj + "</span>";
+    return "";
+  }
+  paint(c, anim) {
+    const el = c.el;
+    if (!el) return;
+    el.classList.toggle("open", c.revealed && !c.mine);
+    el.classList.toggle("deadmine", c.revealed && c.mine && !c.exploded && !c.defused);
+    el.classList.toggle("exploded", c.exploded);
+    el.classList.toggle("defused", c.defused);
+    el.classList.toggle("badflag", c.badflag);
+    if (c.revealed) el.classList.remove("hinted");
+    if (c.revealed && !c.mine) el.dataset.n = String(c.adj);
+    else delete el.dataset.n;
+    const html = this.glyph(c);
+    if (el.dataset.g !== html) {
+      el.innerHTML = html;
+      el.dataset.g = html;
+    }
+    el.setAttribute("aria-label", this.labelFor(c));
+    if (anim && !REDUCE) {
+      el.classList.remove("just");
+      void el.offsetWidth;
+      el.classList.add("just");
+    }
+  }
+  updateMines() {
+    const flags = this.cells.filter((c) => c.flag === 1 && !c.revealed).length;
+    const n = this.mineCount - this.defusedCount - flags;
+    const el = document.getElementById("mines");
+    el.textContent = pad3(n);
+    document.getElementById("mineStat").classList.toggle("bad", n < 0);
+  }
+  updateTension() {
+    let t = 0;
+    if (this.generated && this.started) {
+      const hidden = this.cells.filter((c) => !c.revealed).length;
+      const density = (this.mineCount - this.defusedCount) / Math.max(1, hidden);
+      let heat = 0;
+      let n = 0;
+      for (const c of this.cells) {
+        if (!c.revealed || c.mine) continue;
+        if (this.neighbors(c).some((x) => !x.revealed)) { heat += c.adj; n++; }
+      }
+      const frontier = n ? heat / (n * 8) : 0;
+      t = Math.max(0, Math.min(1, density * 0.7 + frontier * 0.85));
+    }
+    this.tension = t;
+    document.querySelector("#tension > i").style.width = Math.round(t * 100) + "%";
+    document.body.classList.toggle("panic", t > 0.82 && !this.over && this.started);
+    if (!this.over && (this.faceState === "idle" || this.faceState === "sweat")) {
+      this.setFace(t > 0.72 ? "sweat" : "idle");
+    }
+  }
+  updateTools() {
+    document.getElementById("hintCount").textContent = String(this.hints);
+    document.getElementById("hintBtn").disabled = this.hints <= 0 || this.over;
+    const pill = document.getElementById("shieldPill");
+    document.getElementById("shieldCount").textContent = String(this.shield);
+    pill.classList.toggle("spent", this.shield <= 0);
+  }
+  updateModes() {
+    const won = this.data.dailyWon === todayKey();
+    for (const b of this.modeButtons) {
+      b.setAttribute("aria-pressed", String(b.dataset.mode === this.mode));
+      if (b.dataset.mode === "daily") b.textContent = won ? "Päivä ✓" : "Päivä";
+    }
+  }
+  paintSetup() {
+    let text = NAMES[this.mode] + " · " + this.w + "×" + this.h + " · " + this.mineCount + " miinaa";
+    if (this.mode === "daily") text += " · " + todayKey();
+    document.getElementById("setup").textContent = text;
+  }
+  updateRecords() {
+    const streak = this.data.streak || 0;
+    const chip = document.getElementById("streak");
+    chip.hidden = streak < 2;
+    chip.textContent = "Putki " + streak;
+    const bits = ["easy", "medium", "hard"].map((k) => this.recordLine(k, NAMES[k]));
+    if (this.mode === "custom") bits.push(this.recordLine(this.recordKey(), "Tämä oma"));
+    if (this.mode === "daily") bits.push(this.recordLine("daily", "Päivä"));
+    const wins = this.data.wins || 0;
+    const played = this.data.played || 0;
+    document.getElementById("records").textContent = bits.join("   ·   ") + "   ·   " + wins + " voittoa / " + played + " aloitusta";
+  }
+  recordLine(key, label) {
+    const b = this.data.best[key];
+    if (!b) return label + " —";
+    const clean = this.data.clean[key];
+    let s = label + " " + fmt(b.t) + (b.clean ? " ★" : "");
+    if (clean && !b.clean) s += " (puhdas " + fmt(clean.t) + ")";
+    return s;
+  }
+  paintTime() {
+    document.getElementById("timer").textContent = fmt(this.elapsed());
+    if (this.lastAction && this.chain > 1 && performance.now() - this.lastAction > 2200) {
+      this.chain = 1;
+      this.paintChain();
+    }
+    const left = this.lastAction && this.chain > 1 ? Math.max(0, 1 - (performance.now() - this.lastAction) / 2200) : 0;
+    document.getElementById("chainLife").style.transform = "scaleX(" + left + ")";
+  }
+  paintScore() { document.getElementById("score").textContent = fmtScore(this.score); }
+  paintChain() {
+    const el = document.getElementById("chain");
+    el.textContent = "×" + this.chain;
+    document.getElementById("chainName").textContent = CHAIN_NAME[this.chain] || "valmis";
+    document.getElementById("chainStat").classList.toggle("hot", this.chain >= 4);
+    el.classList.remove("bump");
+    void el.offsetWidth;
+    el.classList.add("bump");
+  }
+  bumpChain() {
+    const now = performance.now();
+    if (this.lastAction && now - this.lastAction <= 2200) this.chain = Math.min(8, this.chain + 1);
+    else this.chain = 1;
+    this.lastAction = now;
+    this.bestChain = Math.max(this.bestChain, this.chain);
+    this.paintChain();
+    if (CHAIN_TOAST[this.chain]) this.toast(CHAIN_TOAST[this.chain]);
+  }
+  setFace(state) {
+    if (this.faceState === state) return;
+    this.faceState = state;
+    this.faceBtn.innerHTML = FACES[state];
+  }
+  forceFace(state) {
+    this.faceState = "";
+    this.setFace(state);
+  }
+  restoreFace() {
+    if (this.over) return;
+    this.forceFace(this.tension > 0.72 ? "sweat" : "idle");
+  }
+  flavor() {
+    const el = document.getElementById("flavor");
+    if (!this.data.seen) {
+      el.textContent = "Oikea klikkaus liputtaa. Loogikko näyttää siirrot, jotka numerot jo pakottavat — sammuta se, jos haluat pelata kovaa.";
+      this.data.seen = true;
+      this.save();
+      return;
+    }
+    let line = pick(FLAVOR);
+    if (line === this.lastFlavor) line = pick(FLAVOR);
+    this.lastFlavor = line;
+    el.textContent = line;
+  }
+  toast(msg) {
+    const box = document.getElementById("toasts");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    box.appendChild(t);
+    while (box.children.length > 3) box.firstChild.remove();
+    setTimeout(() => t.remove(), 2400);
+  }
+  float(el, text) {
+    if (REDUCE) return;
+    const r = el.getBoundingClientRect();
+    const s = document.createElement("span");
+    s.className = "floater";
+    s.textContent = text;
+    s.style.left = (r.left + r.width / 2) + "px";
+    s.style.top = r.top + "px";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 700);
+  }
+  cellFrom(e) {
+    const el = e.target.closest?.(".cell");
+    if (!el || !this.board.contains(el)) return null;
+    return this.cells[Number(el.dataset.i)] || null;
+  }
+  onDown(e) {
+    if (e.button === 2) return;
+    const cell = this.cellFrom(e);
+    if (!cell || this.over) return;
+    this.kb = false;
+    this.board.classList.remove("show-cursor");
+    if (e.button === 1) {
+      e.preventDefault();
+      if (cell.revealed) this.chord(cell);
+      return;
+    }
+    this.forceFace("wow");
+    this.press = { x: e.clientX, y: e.clientY, i: cell.i };
+    clearTimeout(this.hold);
+    if (!cell.revealed) {
+      this.hold = setTimeout(() => {
+        this.flag(this.cells[this.press.i], false);
+        this.suppress = true;
+        setTimeout(() => { this.suppress = false; }, 400);
+        this.hold = null;
+      }, 430);
+    } else this.peek(cell);
+  }
+  onMove(e) {
+    if (!this.press) return;
+    if (Math.hypot(e.clientX - this.press.x, e.clientY - this.press.y) > 12) {
+      clearTimeout(this.hold);
+      this.hold = null;
+    }
+  }
+  onUp() {
+    clearTimeout(this.hold);
+    this.hold = null;
+    this.press = null;
+    this.clearPeek();
+    if (!this.over && this.faceState === "wow") this.restoreFace();
+  }
+  onContext(e) {
+    e.preventDefault();
+    const cell = this.cellFrom(e);
+    if (cell) this.flag(cell, true);
+  }
+  onClick(e) {
+    if (this.suppress) { this.suppress = false; return; }
+    const cell = this.cellFrom(e);
+    if (!cell) return;
+    if (cell.revealed) this.chord(cell);
+    else this.open(cell);
+  }
+  peek(cell) {
+    this.clearPeek();
+    if (!cell?.revealed) return;
+    cell.el.classList.add("peek");
+    for (const n of this.neighbors(cell)) n.el.classList.add("peek");
+  }
+  clearPeek() {
+    for (const c of this.cells) c.el?.classList.remove("peek");
+  }
+  paintCursor() {
+    if (this.cursorEl) this.cursorEl.classList.remove("cursor");
+    this.cursorEl = this.cells[this.cursor]?.el || null;
+    if (this.cursorEl) this.cursorEl.classList.add("cursor");
+    this.board.classList.toggle("show-cursor", this.kb);
+  }
+  onKey(e) {
+    if (e.target.closest("input, textarea")) return;
+    if (this.modal.open) return;
+    const k = e.key.toLowerCase();
+    if (k === "arrowleft" || k === "arrowright" || k === "arrowup" || k === "arrowdown") {
+      e.preventDefault();
+      this.kb = true;
+      const dx = k === "arrowleft" ? -1 : k === "arrowright" ? 1 : 0;
+      const dy = k === "arrowup" ? -1 : k === "arrowdown" ? 1 : 0;
+      const cur = this.cells[this.cursor];
+      const x = clamp(cur.x + dx, 0, this.w - 1);
+      const y = clamp(cur.y + dy, 0, this.h - 1);
+      this.cursor = y * this.w + x;
+      this.paintCursor();
+      this.cursorEl?.scrollIntoView({ block: "nearest", inline: "nearest" });
+      return;
+    }
+    if (e.repeat && (k === " " || k === "f" || k === "h" || k === "n")) return;
+    if (k === " " || k === "enter") {
+      e.preventDefault();
+      const c = this.cells[this.cursor];
+      if (!c) return;
+      if (c.revealed) this.chord(c);
+      else this.open(c);
+    } else if (k === "f") {
+      this.flag(this.cells[this.cursor], true);
+    } else if (k === "h") this.hint();
+    else if (k === "l") this.toggleLogic();
+    else if (k === "m") this.toggleMute();
+    else if (k === "n") this.newGame();
+  }
+}
+
+new Game().init();
+</script>
+</body>
+</html>

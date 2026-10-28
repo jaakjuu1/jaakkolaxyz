@@ -20,7 +20,7 @@ After cutover, Caddy sends `jaakkola.xyz` traffic to two local processes:
 | `/api/dashboard/*`, `/dashboard*` | Express `127.0.0.1:5000` | Basic Auth stays in Caddy |
 | `/_emdash/*` | EmDash `127.0.0.1:4321` (`jaakkolaxyz-cms.service`) | admin and API limited to Juuso's IP (section 5); media files public |
 | `/_astro/*` | EmDash | Astro already sends `Cache-Control: public, max-age=31536000, immutable` for hashed assets; Caddy adds nothing |
-| everything else (`/`, `/blog`, `/privacy`, `/learn/`, `/reports/`, `/sitemap*.xml`, `/robots.txt`, `/rss.xml`) | EmDash `127.0.0.1:4321` | |
+| everything else (`/`, `/blog`, `/privacy`, `/learn/`, `/reports/`, `/pelit/`, `/sitemap*.xml`, `/robots.txt`, `/rss.xml`) | EmDash `127.0.0.1:4321` | |
 
 Until the Express split is deployed (section 12), Express still serves the old SPA at `/`.
 
@@ -941,6 +941,7 @@ curl -s -D - -o /dev/null https://jaakkola.xyz/privacy | grep -i '^location\|^HT
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/en/privacy             # 200
 curl -s https://jaakkola.xyz/learn/ | grep -o '<title>[^<]*'                        # the learn catalogue title
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/reports/age-pressure-finland/   # 200
+curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/pelit/louhos/                    # 200
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c 'https://jaakkola.xyz/'          # more than 0
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c localhost                        # 0
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/robots.txt             # 200
