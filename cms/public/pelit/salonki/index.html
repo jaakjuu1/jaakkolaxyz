@@ -703,6 +703,7 @@ function layout(animate) {
     board.classList.remove("instant");
   }
   paintStats();
+  saveGame();
 }
 function snap() {
   return {
@@ -728,6 +729,49 @@ function restore(s) {
   S.moves = s.moves;
   S.selected = null;
   layout(true);
+}
+// The game in progress is kept in localStorage, so a reload (Android browsers reload the tab when
+// a Fold opens or closes) or reopening the installed app continues it. A won game is forgotten.
+const GAME_KEY = "salonki-game-v1";
+function saveGame() {
+  if (S.won) return;
+  try {
+    localStorage.setItem(GAME_KEY, JSON.stringify({
+      drawN: S.drawN,
+      state: snap(),
+      hist: S.hist.slice(-60),
+      started: S.started,
+      elapsed: S.started ? performance.now() - S.t0 : 0
+    }));
+  } catch {}
+}
+function forgetGame() {
+  try { localStorage.removeItem(GAME_KEY); } catch {}
+}
+function resumeGame() {
+  try {
+    const g = JSON.parse(localStorage.getItem(GAME_KEY) || "null");
+    if (!g || !g.state) return false;
+    const ids = [...g.state.stock, ...g.state.waste, ...g.state.foundations.flat(), ...g.state.tableau.flat().map((t) => t.id)];
+    if (ids.length !== 52 || new Set(ids).size !== 52 || ids.some((id) => !S.cards[id])) throw new Error("bad save");
+    S.drawN = g.drawN === 3 ? 3 : 1;
+    S.hist = Array.isArray(g.hist) ? g.hist : [];
+    S.won = false;
+    S.busy = false;
+    restore(g.state);
+    document.getElementById("undoBtn").disabled = !S.hist.length;
+    if (g.started) {
+      S.started = true;
+      S.t0 = performance.now() - (Number(g.elapsed) || 0);
+      S.timer = setInterval(paintTime, 250);
+      paintTime();
+    }
+    updateFinish();
+    return true;
+  } catch {
+    forgetGame();
+    return false;
+  }
 }
 function pushHist() {
   S.hist.push(snap());
@@ -1033,6 +1077,7 @@ function celebrate() {
   if (S.won) return;
   S.won = true;
   S.busy = true;
+  forgetGame();
   S.selected = null;
   clearInterval(S.timer);
   const time = S.started ? performance.now() - S.t0 : 0;
@@ -1343,11 +1388,13 @@ new ResizeObserver(() => {
   layout(false);
 }).observe(table);
 makeCards();
-paintDraw();
 paintMute();
 paintZoom();
 coach.hidden = !!data.seen;
-newGame();
+if (!resumeGame()) newGame();
+paintDraw();
+addEventListener("pagehide", saveGame);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveGame(); });
 </script>
 <div class="install-tip" id="installTip" role="status" hidden>
   <p id="installText">Asenna Salonki laitteellesi: se aukeaa omana sovelluksenaan ja toimii ilman nettiä.</p>
