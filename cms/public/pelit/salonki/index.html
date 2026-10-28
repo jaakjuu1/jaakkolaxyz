@@ -280,6 +280,30 @@
     .stats { width: 100%; margin-left: 0; }
     h1 { font-size: 20px; }
   }
+  /* Narrow portrait phones turn the table sideways so the player turns the phone.
+     An unfolded Fold is wider and squarer, so it stays upright. */
+  @media (orientation: portrait) and (max-width: 600px) and (max-aspect-ratio: 2/3) {
+    html { overflow: hidden; background: #06140e; }
+    body {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vh;
+      width: 100dvh;
+      height: 100vw;
+      transform-origin: 0 0;
+      transform: translateX(100vw) rotate(90deg);
+    }
+  }
+  body.compact header { padding: 6px 14px; gap: 10px; }
+  body.compact header::after { left: 14px; right: 14px; }
+  body.compact .brand { min-width: 0; }
+  body.compact h1 { font-size: 18px; }
+  body.compact .brand p { margin-top: 3px; font-size: 10px; }
+  body.compact .tools { gap: 6px; }
+  body.compact button.pill, body.compact .seg button { padding: 5px 10px; font-size: 13px; }
+  body.compact .stats { width: auto; margin-left: auto; gap: 12px; font-size: 10px; }
+  body.compact .stats b { font-size: 15px; }
   @media (prefers-reduced-motion: reduce) {
     .card { transition: none; }
     .stats b.bump { animation: none; }
@@ -322,6 +346,7 @@
 </div>
 <script>
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const TURNED = matchMedia("(orientation: portrait) and (max-width: 600px) and (max-aspect-ratio: 2/3)");
 const KEY = "salonki-v1";
 const SUITS = [
   { id: "h", sym: "♥", name: "Hertta", red: true },
@@ -458,7 +483,8 @@ function measure() {
   const w = document.getElementById("table").clientWidth;
   const h = document.getElementById("table").clientHeight;
   const inner = Math.max(320, w - 36);
-  const cardW = Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)));
+  const fit = Math.floor((h - 138) / 2.8);
+  const cardW = Math.max(56, Math.min(fit, Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)))));
   const cardH = Math.round(cardW * 1.4);
   const gap = Math.max(8, Math.min(16, Math.floor((inner - cardW * 7) / 6)));
   const rowW = cardW * 7 + gap * 6;
@@ -490,6 +516,7 @@ function tag() {
 }
 function layout(animate) {
   if (S.drag) return;
+  document.body.classList.toggle("compact", document.body.clientHeight < 520);
   const m = measure();
   S.metrics = m;
   board.style.setProperty("--cw", m.cardW + "px");
@@ -527,7 +554,7 @@ function layout(animate) {
     pile.forEach((c, i) => setCard(c, x, m.top, 8 + i, true));
   });
   let bottom = m.tabY + m.cardH;
-  const avail = Math.max(m.cardH + 40, m.h - m.tabY - 20);
+  const avail = Math.max(m.cardH + 40, m.h - m.tabY - 28);
   S.tableau.forEach((col, ci) => {
     const x = m.x0 + (m.cardW + m.gap) * ci;
     const gaps = [];
@@ -909,7 +936,7 @@ function celebrate() {
 function fountain(done) {
   const my = S.token;
   document.body.classList.add("flying");
-  const h = window.innerHeight;
+  const h = document.body.clientHeight;
   const parts = S.cards.map((c) => ({
     el: c.el,
     x: c.x,
@@ -948,11 +975,17 @@ function cardFrom(e) {
   if (!el) return null;
   return S.cards[Number(el.dataset.id)] || null;
 }
+// While the page is turned sideways, client coordinates are rotated 90° from the page's own.
+function toPage(x, y) {
+  return TURNED.matches ? { x: y, y: document.documentElement.clientWidth - x } : { x, y };
+}
 function destAt(x, y) {
   const m = S.metrics || measure();
   const rect = board.getBoundingClientRect();
-  const bx = x - rect.left;
-  const by = y - rect.top;
+  const p = toPage(x, y);
+  const o = TURNED.matches ? toPage(rect.right, rect.top) : { x: rect.left, y: rect.top };
+  const bx = p.x - o.x;
+  const by = p.y - o.y;
   if (by < m.tabY - 8) {
     for (let i = 0; i < 4; i++) {
       const fx = m.x0 + (m.cardW + m.gap) * (3 + i);
@@ -979,17 +1012,18 @@ function onDown(e) {
   const stack = stackFrom(card);
   if (!stack) return;
   cardsLayer.setPointerCapture(e.pointerId);
+  const p = toPage(e.clientX, e.clientY);
   S.drag = {
     pointer: e.pointerId,
     stack,
-    x: e.clientX,
-    y: e.clientY,
+    x: p.x,
+    y: p.y,
     ox: stack.map((c) => c.x),
     oy: stack.map((c) => c.y),
     moved: false,
     raf: 0,
-    cx: e.clientX,
-    cy: e.clientY
+    cx: p.x,
+    cy: p.y
   };
 }
 function applyDrag() {
@@ -1009,8 +1043,9 @@ function applyDrag() {
 function onMove(e) {
   const d = S.drag;
   if (!d || e.pointerId !== d.pointer) return;
-  d.cx = e.clientX;
-  d.cy = e.clientY;
+  const p = toPage(e.clientX, e.clientY);
+  d.cx = p.x;
+  d.cy = p.y;
   if (!d.raf) d.raf = requestAnimationFrame(applyDrag);
 }
 function onUp(e) {
