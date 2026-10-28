@@ -943,6 +943,10 @@ curl -s https://jaakkola.xyz/learn/ | grep -o '<title>[^<]*'                    
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/reports/age-pressure-finland/   # 200
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/pelit/louhos/                    # 200
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/pelit/salonki/                   # 200
+# The games install as apps (PWA): each folder has manifest.webmanifest, sw.js and its icons.
+# Bump CACHE in sw.js when the icons or the manifest change; the page itself is fetched network-first.
+curl -s -D - -o /dev/null https://jaakkola.xyz/pelit/salonki/manifest.webmanifest | grep -i '^content-type'  # application/manifest+json
+curl -s -D - -o /dev/null https://jaakkola.xyz/pelit/salonki/sw.js | grep -i '^content-type'                 # text/javascript
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c 'https://jaakkola.xyz/'          # more than 0
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c localhost                        # 0
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/robots.txt             # 200

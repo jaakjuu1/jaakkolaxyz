@@ -1,0 +1,34 @@
+{
+  "id": "/pelit/salonki/",
+  "name": "Salonki — pasianssi",
+  "short_name": "Salonki",
+  "description": "Klondike-pasianssi: nosta yksi tai kolme, kumoa ja vihje, kun pöytä jumittaa.",
+  "lang": "fi",
+  "start_url": "/pelit/salonki/",
+  "scope": "/pelit/salonki/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0e4a32",
+  "background_color": "#08261b",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "/pelit/salonki/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pelit/salonki/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pelit/salonki/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

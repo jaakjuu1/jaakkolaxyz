@@ -683,6 +683,30 @@ describe("misc", () => {
 		await htmlPage("/pelit/salonki/");
 	});
 
+	for (const game of ["louhos", "salonki"]) {
+		const base = `/pelit/${game}/`;
+		it(`${base} installs as an app: manifest, icons and service worker`, async () => {
+			const link = tagsNamed(await htmlPage(base), "link").find((tag) => tag.rel === "manifest");
+			assert.equal(link?.href, `${base}manifest.webmanifest`, "manifest link");
+			const res = await call("GET", `${base}manifest.webmanifest`);
+			assert.equal(res.status, 200);
+			expectMatch(res.headers.get("content-type") ?? "", /^application\/(manifest\+)?json/, "manifest content type");
+			const manifest = JSON.parse(res.body);
+			assert.equal(manifest.start_url, base);
+			assert.equal(manifest.scope, base);
+			assert.equal(manifest.display, "standalone");
+			assert.ok(manifest.icons.some((icon: { purpose?: string }) => icon.purpose === "maskable"), "maskable icon");
+			for (const icon of manifest.icons as { src: string }[]) {
+				const img = await call("HEAD", icon.src);
+				assert.equal(img.status, 200, icon.src);
+				expectMatch(img.headers.get("content-type") ?? "", /^image\/png/, `${icon.src} content type`);
+			}
+			const sw = await call("GET", `${base}sw.js`);
+			assert.equal(sw.status, 200);
+			expectMatch(sw.headers.get("content-type") ?? "", /javascript/, "service worker content type");
+		});
+	}
+
 	for (const [path, type] of [
 		["/favicon.png", "image/png"],
 		["/apple-touch-icon.png", "image/png"],
