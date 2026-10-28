@@ -85,7 +85,7 @@ commands in 1.2 and 1.3 stay in the runbook so that the values are re-checked on
 | Free disk | about 13 GB on `/` |
 | Express | listens on `0.0.0.0:5000` (all interfaces) |
 | App git checkout | `bee9465` (main) |
-| Juuso's IPv4 (for the `/_emdash` restriction) | `80.220.157.227` (IPv6 not known; section 5.2) |
+| Juuso's IPv4 (for the `/_emdash` restriction) | `80.220.157.227` and `89.236.107.118` (added 2026-10-28; IPv6 not known; section 5.2) |
 
 ### 1.2 Read-only checks on teppo-server **[read-only, needs Juuso's yes]**
 
@@ -528,7 +528,7 @@ jaakkola.xyz {
 	@emdash_blocked {
 		path /_emdash/*
 		not path /_emdash/api/media/file/*
-		not remote_ip 80.220.157.227
+		not remote_ip 80.220.157.227 89.236.107.118
 	}
 	handle @emdash_blocked {
 		respond 403
@@ -1139,7 +1139,7 @@ move the backups off the server when they matter (as in `deploy.md`, Backups).
 
 - The current `/etc/caddy/Caddyfile` contents: the `basic_auth` user and hash, and any directive
   inside the `jaakkola.xyz` block that is not shown here (known: Caddy v2.10.2).
-- Juuso's IPv6 address for the `remote_ip` matcher (IPv4 `80.220.157.227` is known; 5.2 says how to
+- Juuso's IPv6 address for the `remote_ip` matcher (IPv4 `80.220.157.227` and `89.236.107.118` are known; 5.2 says how to
   find the IPv6 if the browser gets 403), and whether he keeps the admin restriction.
 - Whether `:4321` and `:5000` answer from the internet (1.2). Express is bound to `0.0.0.0:5000`, so
   check it; if either answers, a firewall change comes first.
