@@ -123,10 +123,14 @@
     flex: 1;
     min-height: 0;
     overflow: auto;
+    scrollbar-width: none;
   }
+  /* The table and the side column scroll by swipe, wheel or trackpad, without visible scroll bars. */
+  #table::-webkit-scrollbar, header::-webkit-scrollbar { display: none; }
   #board {
     position: relative;
     min-height: 100%;
+    touch-action: none;
   }
   #cards { position: absolute; inset: 0; touch-action: none; }
   .slot {
@@ -334,9 +338,10 @@
     flex-wrap: nowrap;
     align-items: stretch;
     width: 150px;
-    gap: 12px;
-    padding: 12px 12px 12px 14px;
+    gap: 8px;
+    padding: 8px 10px 8px 12px;
     overflow-y: auto;
+    scrollbar-width: none;
   }
   body.compact header::after {
     left: auto;
@@ -350,14 +355,18 @@
   body.compact .brand { min-width: 0; }
   body.compact h1 { font-size: 18px; }
   body.compact .brand p { margin-top: 3px; font-size: 10px; letter-spacing: .12em; }
-  body.compact .tools { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 6px; }
+  body.compact .tools { display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 5px; }
   body.compact .tools .seg, body.compact #finishBtn { grid-column: span 2; }
   body.compact .seg button { flex: 1; }
-  body.compact button.pill, body.compact .seg button { padding: 5px 8px; font-size: 13px; }
-  body.compact .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; width: auto; margin: 0; font-size: 10px; letter-spacing: .08em; }
+  body.compact button.pill, body.compact .seg button { padding: 4px 8px; font-size: 13px; }
+  body.compact .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; width: auto; margin: 0; font-size: 10px; letter-spacing: .08em; }
   body.compact .stats b { font-size: 15px; }
   body.compact #table { min-width: 0; }
   body.compact .coach { display: none; }
+  /* Card size buttons: only short screens need them, so only the side column shows them. */
+  .zoom { display: none; }
+  body.compact .tools .zoom { display: flex; gap: 6px; grid-column: span 2; }
+  body.compact .zoom button { flex: 1; padding: 3px 8px; font-size: 18px; line-height: 1.1; }
   @media (prefers-reduced-motion: reduce) {
     .card { transition: none; }
     .stats b.bump { animation: none; }
@@ -405,6 +414,10 @@
       <button type="button" id="draw3" aria-pressed="false" title="Nosta kolme">Kolme</button>
     </div>
     <button type="button" class="pill" id="muteBtn" title="Äänet (M)">Äänet</button>
+    <div class="zoom" role="group" aria-label="Korttien koko">
+      <button type="button" class="pill" id="zoomOut" title="Pienennä kortteja" aria-label="Pienennä kortteja">−</button>
+      <button type="button" class="pill" id="zoomIn" title="Suurenna kortteja" aria-label="Suurenna kortteja">+</button>
+    </div>
     <button type="button" class="pill install" id="installBtn" title="Asenna Salonki sovellukseksi" hidden>Asenna</button>
   </div>
   <div class="stats">
@@ -476,6 +489,9 @@ const S = {
 };
 let data = load();
 S.drawN = data.draw === 3 ? 3 : 1;
+// Card size steps for the side column's − and + buttons; ZOOMS[4] is the size that fits the screen.
+const ZOOMS = [0.6, 0.7, 0.8, 0.9, 1, 1.15, 1.3, 1.5];
+let zoomAt = ZOOMS[data.zoom] ? data.zoom : 4;
 
 const sfx = {
   ctx: null,
@@ -565,7 +581,9 @@ function measure(cap = 128) {
   const h = document.getElementById("table").clientHeight;
   const inner = Math.max(320, w - 36);
   const fit = Math.floor((h - 138) / 2.8);
-  const cardW = Math.max(50, Math.min(cap, fit, Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)))));
+  const base = Math.max(50, Math.min(fit, Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)))));
+  const zoom = document.body.classList.contains("compact") ? ZOOMS[zoomAt] : 1;
+  const cardW = Math.max(32, Math.min(cap, Math.round(base * zoom)));
   const cardH = Math.round(cardW * 1.4);
   const gap = Math.max(8, Math.min(16, Math.floor((inner - cardW * 7) / 6)));
   const rowW = cardW * 7 + gap * 6;
@@ -677,6 +695,9 @@ function layout(animate) {
   for (const c of S.cards) c.el.classList.toggle("picked", pickedSet.has(c));
   const h = Math.max(m.h, bottom + 28);
   if (board.style.height !== h + "px") board.style.height = h + "px";
+  // zoomed in, the row can be wider than the table: the board (and the card layer that takes swipes) grows with it
+  const bw = Math.max(m.w, m.x0 + m.cardW * 7 + m.gap * 6 + 12);
+  if (board.style.width !== bw + "px") board.style.width = bw + "px";
   if (!animate) {
     void board.offsetWidth;
     board.classList.remove("instant");
@@ -1142,16 +1163,25 @@ function applyDrag() {
   d.stack.forEach((c, i) => setCard(c, d.ox[i] + dx, d.oy[i] + dy, 900 + i, true));
 }
 function startPan(e) {
-  if (table.scrollHeight <= table.clientHeight) return;
-  cardsLayer.setPointerCapture(e.pointerId);
-  S.pan = { pointer: e.pointerId, y: toPage(e.clientX, e.clientY).y, top: table.scrollTop, moved: false };
+  if (table.scrollHeight <= table.clientHeight && table.scrollWidth <= table.clientWidth) return;
+  const p = toPage(e.clientX, e.clientY);
+  S.pan = { pointer: e.pointerId, x: p.x, y: p.y, left: table.scrollLeft, top: table.scrollTop, moved: false };
 }
 function onMove(e) {
   const pan = S.pan;
   if (pan && e.pointerId === pan.pointer) {
-    const dy = toPage(e.clientX, e.clientY).y - pan.y;
-    if (Math.abs(dy) > 6) pan.moved = true;
-    if (pan.moved) table.scrollTop = pan.top - dy;
+    const p = toPage(e.clientX, e.clientY);
+    const dx = p.x - pan.x;
+    const dy = p.y - pan.y;
+    if (!pan.moved && Math.hypot(dx, dy) > 6) {
+      // capture only once it is a swipe, so a plain tap on an empty slot still reaches the slot
+      pan.moved = true;
+      cardsLayer.setPointerCapture(e.pointerId);
+    }
+    if (pan.moved) {
+      table.scrollLeft = pan.left - dx;
+      table.scrollTop = pan.top - dy;
+    }
     return;
   }
   const d = S.drag;
@@ -1247,6 +1277,17 @@ function onKey(e) {
   else if (k === "enter") finish();
   else if (k === "escape") { S.selected = null; layout(false); }
 }
+function setZoom(step) {
+  zoomAt = Math.max(0, Math.min(ZOOMS.length - 1, zoomAt + step));
+  data.zoom = zoomAt;
+  save();
+  paintZoom();
+  layout(false);
+}
+function paintZoom() {
+  document.getElementById("zoomOut").disabled = zoomAt === 0;
+  document.getElementById("zoomIn").disabled = zoomAt === ZOOMS.length - 1;
+}
 function toggleMute() {
   data.mute = !data.mute;
   sfx.muted = !!data.mute;
@@ -1280,10 +1321,13 @@ document.getElementById("finishBtn").addEventListener("click", finish);
 document.getElementById("draw1").addEventListener("click", () => setDraw(1));
 document.getElementById("draw3").addEventListener("click", () => setDraw(3));
 document.getElementById("muteBtn").addEventListener("click", toggleMute);
-cardsLayer.addEventListener("pointerdown", onDown);
-cardsLayer.addEventListener("pointermove", onMove);
-cardsLayer.addEventListener("pointerup", onUp);
-cardsLayer.addEventListener("pointercancel", onUp);
+document.getElementById("zoomOut").addEventListener("click", () => setZoom(-1));
+document.getElementById("zoomIn").addEventListener("click", () => setZoom(1));
+// on the board, so a swipe can start on an empty slot as well as on the bare table
+board.addEventListener("pointerdown", onDown);
+board.addEventListener("pointermove", onMove);
+board.addEventListener("pointerup", onUp);
+board.addEventListener("pointercancel", onUp);
 cardsLayer.addEventListener("click", onClick);
 cardsLayer.addEventListener("contextmenu", (e) => {
   const card = cardFrom(e);
@@ -1301,6 +1345,7 @@ new ResizeObserver(() => {
 makeCards();
 paintDraw();
 paintMute();
+paintZoom();
 coach.hidden = !!data.seen;
 newGame();
 </script>
