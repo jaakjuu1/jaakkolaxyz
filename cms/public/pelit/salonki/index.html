@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Salonki — pasianssi · jaakkola.xyz</title>
+<meta name="description" content="Salonki on selaimessa pelattava Klondike-pasianssi: nosto yksi tai kolme, kumoa, vihjeet ja ennätykset.">
+<link rel="canonical" href="https://jaakkola.xyz/pelit/salonki/">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Salonki — pasianssi">
+<meta property="og:description" content="Klondike-pasianssi selaimessa: nosto yksi tai kolme, kumoa ja vihjeet.">
+<meta property="og:url" content="https://jaakkola.xyz/pelit/salonki/">
+<meta property="og:image" content="https://jaakkola.xyz/opengraph.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root {
+    --brass: #d7b56a;
+    --ivory: #f4efe4;
+    --ink: #1b1714;
+    --heart: #c5363c;
+    --muted: #b7c7b8;
+    --ease: cubic-bezier(.16, .84, .24, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--ivory);
+    font-family: Bahnschrift, "Segoe UI Variable", "Segoe UI", sans-serif;
+    background:
+      radial-gradient(880px 520px at 50% 28%, rgba(255,255,255,.045), transparent 58%),
+      radial-gradient(1200px 760px at 50% 8%, #1c7a4e, #0e4a32 40%, #08261b 72%, #06140e);
+    user-select: none;
+  }
+  button, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { opacity: .38; cursor: default; }
+  :focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  header {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 22px 10px;
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    right: 22px;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(215,181,106,.7), transparent);
+  }
+  .brand { display: flex; flex-direction: column; min-width: 148px; }
+  h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 560;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  h1 span { color: var(--brass); letter-spacing: 0; margin-right: 6px; }
+  .brand p { margin: 4px 0 0; color: var(--muted); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }
+  .brand .home { color: inherit; text-decoration: none; text-transform: none; letter-spacing: .04em; }
+  .brand .home:hover, .brand .home:focus-visible { color: var(--brass); }
+  .tools, .seg { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .seg { gap: 0; }
+  button.pill, .seg button {
+    background: transparent;
+    border: 1px solid rgba(215,181,106,.38);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 14px;
+    letter-spacing: .03em;
+  }
+  .seg button { border-radius: 0; }
+  .seg button:first-child { border-radius: 999px 0 0 999px; }
+  .seg button:last-child { border-radius: 0 999px 999px 0; margin-left: -1px; }
+  .seg button[aria-pressed="true"], #finish:not([hidden]) {
+    background: var(--brass);
+    color: #1a140c;
+    border-color: var(--brass);
+    font-weight: 700;
+  }
+  .stats {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .stats b {
+    display: block;
+    margin-top: 2px;
+    color: var(--ivory);
+    font-family: "Cascadia Mono", Consolas, ui-monospace, monospace;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats b.bump { animation: bump .22s var(--ease); }
+  @keyframes bump { 40% { transform: translateY(-2px); color: var(--brass); } }
+  #table {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  #board {
+    position: relative;
+    min-height: 100%;
+  }
+  #cards { position: absolute; inset: 0; touch-action: none; }
+  .slot {
+    position: absolute;
+    width: var(--cw);
+    height: var(--ch);
+    border-radius: 10px;
+    border: 1px dashed rgba(215,181,106,.32);
+    background: rgba(0,0,0,.14);
+    color: rgba(215,181,106,.34);
+  }
+  .slot .mark, .slot .count {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    font-size: 28px;
+  }
+  .slot .count {
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    display: block;
+    text-align: center;
+    font-family: "Cascadia Mono", Consolas, monospace;
+    font-size: 12px;
+    letter-spacing: .08em;
+    color: var(--brass);
+  }
+  .slot.occupied .mark { opacity: 0; }
+  .slot.glow { border-style: solid; border-color: var(--brass); box-shadow: 0 0 0 3px rgba(215,181,106,.28); }
+  .card {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: var(--cw);
+    height: var(--ch);
+    transform: translate3d(var(--x), var(--y), 0) rotateY(var(--ry));
+    transform-style: preserve-3d;
+    transition: transform .24s var(--ease);
+    font-family: Georgia, "Palatino Linotype", Palatino, serif;
+    font-size: var(--fs);
+  }
+  .instant .card, .card.dragging, .card.free { transition: none; }
+  .card.glide, .card.dragging, .card.free { will-change: transform; }
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 9px;
+    backface-visibility: hidden;
+    overflow: hidden;
+  }
+  .front {
+    background: linear-gradient(165deg, #fffaf3, #f1e6d4);
+    color: var(--ink);
+    transform: rotateY(180deg);
+    box-shadow: 0 8px 16px rgba(0,0,0,.24), inset 0 0 0 1px rgba(255,255,255,.65);
+  }
+  .back {
+    background: #123f2e;
+    box-shadow: inset 0 0 0 5px #123f2e, inset 0 0 0 6px rgba(215,181,106,.78), 0 8px 16px rgba(0,0,0,.24);
+  }
+  .back::after {
+    content: "";
+    position: absolute;
+    inset: 16%;
+    border-radius: 8px;
+    border: 1px solid rgba(215,181,106,.7);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(215,181,106,.9) 0 1.5px, transparent 2px),
+      repeating-linear-gradient(45deg, rgba(215,181,106,.22) 0 1px, transparent 1px 8px),
+      repeating-linear-gradient(-45deg, rgba(215,181,106,.22) 0 1px, transparent 1px 8px);
+  }
+  .card.red { color: var(--heart); }
+  .card.red .front { color: var(--heart); }
+  .corner {
+    position: absolute;
+    width: 1.7em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: .92;
+    font-weight: 700;
+  }
+  .corner.tl { top: 5px; left: 5px; }
+  .corner.br { right: 5px; bottom: 5px; transform: rotate(180deg); }
+  .corner b { font-size: 1.22em; letter-spacing: -.03em; }
+  .corner i { font-style: normal; font-size: 1em; }
+  .card.ten .corner b { font-size: 1.02em; }
+  .pip {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 1.28em;
+    line-height: 1;
+  }
+  .pip.inv { transform: translate(-50%, -50%) rotate(180deg); }
+  .ace, .royal {
+    position: absolute;
+    display: grid;
+    place-items: center;
+  }
+  .ace { inset: 16% 0 8%; font-size: 3.5em; line-height: 1; }
+  .royal {
+    inset: 22% 18% 16%;
+    border: 1px solid currentColor;
+    border-radius: 46% 46% 34% 34%;
+    background: linear-gradient(165deg, #fffaf3, #f3e7d6);
+    box-shadow: inset 0 0 0 4px #f7f1e6, inset 0 0 0 5px currentColor;
+  }
+  .royal b { font-size: 2.7em; line-height: .8; font-weight: 500; }
+  .royal i { font-style: normal; font-size: 1.35em; }
+  .card.playable { cursor: grab; }
+  body.dragging, body.dragging .card { cursor: grabbing; }
+  .card.picked .front { box-shadow: 0 0 0 2px var(--brass), 0 10px 18px rgba(0,0,0,.3); }
+  .card.glow .front { box-shadow: 0 0 0 3px var(--brass), 0 10px 18px rgba(0,0,0,.28); }
+  .card.dragging { z-index: 800; }
+  .card.dragging .front, .flying .front, .flying .back { box-shadow: 0 14px 22px rgba(0,0,0,.32); }
+  .coach {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    text-align: center;
+    color: rgba(244,239,228,.72);
+    font-size: 13px;
+    letter-spacing: .04em;
+    pointer-events: none;
+  }
+  .banner {
+    position: fixed;
+    z-index: 6;
+    top: 74px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 14px 12px 18px;
+    background: rgba(7, 22, 15, .92);
+    border: 1px solid rgba(215,181,106,.55);
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  }
+  .banner[hidden] { display: none; }
+  .banner p { margin: 0; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; color: var(--brass); }
+  .banner strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 22px;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .banner button { background: var(--brass); color: #1a140c; border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; }
+  @media (max-width: 860px) {
+    .stats { width: 100%; margin-left: 0; }
+    h1 { font-size: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
+    .stats b.bump { animation: none; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1><span>♦</span>Salonki</h1>
+    <p>Klondike · <a class="home" href="/">jaakkola.xyz</a></p>
+  </div>
+  <div class="tools">
+    <button type="button" class="pill" id="newBtn" title="Uusi peli (N)">Uusi</button>
+    <button type="button" class="pill" id="undoBtn" title="Kumoa (Ctrl+Z)" disabled>Kumoa</button>
+    <button type="button" class="pill" id="hintBtn" title="Vihje (H)">Vihje</button>
+    <button type="button" class="pill" id="finishBtn" hidden>Viimeistele</button>
+    <div class="seg" role="group" aria-label="Nosto">
+      <button type="button" id="draw1" aria-pressed="true" title="Nosta yksi">Yksi</button>
+      <button type="button" id="draw3" aria-pressed="false" title="Nosta kolme">Kolme</button>
+    </div>
+    <button type="button" class="pill" id="muteBtn" title="Äänet (M)">Äänet</button>
+  </div>
+  <div class="stats">
+    <span>Aika <b id="time">0:00</b></span>
+    <span>Siirrot <b id="moves">0</b></span>
+    <span>Pisteet <b id="score">0</b></span>
+    <span>Ennätys <b id="best">—</b></span>
+  </div>
+</header>
+<div id="table">
+  <div id="board"></div>
+</div>
+<div class="banner" id="banner" hidden>
+  <div>
+    <p id="bannerKicker">Pöytä selvä</p>
+    <strong id="bannerText"></strong>
+  </div>
+  <button type="button" id="bannerNew">Uusi peli</button>
+</div>
+<script>
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const KEY = "salonki-v1";
+const SUITS = [
+  { id: "h", sym: "♥", name: "Hertta", red: true },
+  { id: "d", sym: "♦", name: "Ruutu", red: true },
+  { id: "s", sym: "♠", name: "Pata", red: false },
+  { id: "c", sym: "♣", name: "Risti", red: false }
+];
+const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+const RANK_NAMES = ["ässä", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jätkä", "kuningatar", "kuningas"];
+const PIPS = {
+  2: [[50, 22], [50, 78, 1]],
+  3: [[50, 20], [50, 50], [50, 80, 1]],
+  4: [[30, 20], [70, 20], [30, 80, 1], [70, 80, 1]],
+  5: [[30, 20], [70, 20], [50, 50], [30, 80, 1], [70, 80, 1]],
+  6: [[30, 20], [70, 20], [30, 50], [70, 50], [30, 80, 1], [70, 80, 1]],
+  7: [[30, 18], [70, 18], [50, 34], [30, 50], [70, 50], [30, 82, 1], [70, 82, 1]],
+  8: [[30, 18], [70, 18], [30, 38], [70, 38], [30, 62, 1], [70, 62, 1], [30, 82, 1], [70, 82, 1]],
+  9: [[30, 16], [70, 16], [30, 34], [70, 34], [50, 50], [30, 66, 1], [70, 66, 1], [30, 84, 1], [70, 84, 1]],
+  10: [[30, 14], [70, 14], [50, 28], [30, 38], [70, 38], [30, 62, 1], [70, 62, 1], [50, 72, 1], [30, 86, 1], [70, 86, 1]]
+};
+
+const board = document.getElementById("board");
+const cardsLayer = document.createElement("div");
+cardsLayer.id = "cards";
+board.appendChild(cardsLayer);
+
+const S = {
+  cards: [],
+  stock: [],
+  waste: [],
+  foundations: [[], [], [], []],
+  tableau: [[], [], [], [], [], [], []],
+  drawN: 1,
+  score: 0,
+  moves: 0,
+  hist: [],
+  selected: null,
+  drag: null,
+  busy: false,
+  won: false,
+  started: false,
+  t0: 0,
+  timer: 0,
+  token: 0,
+  metrics: null
+};
+let data = load();
+S.drawN = data.draw === 3 ? 3 : 1;
+
+const sfx = {
+  ctx: null,
+  muted: !!data.mute,
+  ensure() {
+    if (this.muted) return null;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!this.ctx) this.ctx = new AC();
+    if (this.ctx.state === "suspended") this.ctx.resume();
+    return this.ctx;
+  },
+  tone(freq, dur, type, gain) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type;
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(gain, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+    o.connect(g); g.connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime + dur + 0.02);
+  },
+  place() { this.tone(520, 0.045, "triangle", 0.05); },
+  flip() { this.tone(240, 0.05, "sine", 0.04); },
+  win() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => this.tone(f, 0.16, "triangle", 0.06), i * 90)); }
+};
+
+function load() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(KEY) || "{}");
+    raw.best = raw.best || {};
+    return raw;
+  } catch {
+    return { best: {} };
+  }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
+}
+function fmt(ms) {
+  const s = Math.max(0, Math.floor(ms / 1000));
+  return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
+function pipMarkup(rank, sym) {
+  if (rank === 1) return `<div class="ace">${sym}</div>`;
+  if (rank > 10) return `<div class="royal"><b>${RANKS[rank - 1]}</b><i>${sym}</i></div>`;
+  return `<div class="pips">${PIPS[rank].map(([x, y, inv]) => `<span class="pip${inv ? " inv" : ""}" style="left:${x}%;top:${y}%">${sym}</span>`).join("")}</div>`;
+}
+function makeCards() {
+  for (let id = 0; id < 52; id++) {
+    const suit = SUITS[id % 4];
+    const rank = (id / 4 | 0) + 1;
+    const el = document.createElement("div");
+    el.className = "card" + (suit.red ? " red" : " black") + (rank === 10 ? " ten" : "");
+    el.dataset.id = String(id);
+    el.innerHTML = `<div class="face back"></div><div class="face front"><span class="corner tl"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span>${pipMarkup(rank, suit.sym)}<span class="corner br"><b>${RANKS[rank - 1]}</b><i>${suit.sym}</i></span></div>`;
+    cardsLayer.appendChild(el);
+    S.cards.push({ id, suit: suit.id, sym: suit.sym, suitName: suit.name, rank, rankName: RANK_NAMES[rank - 1], red: suit.red, el, pile: "stock", up: false, x: 0, y: 0, playable: false, fi: 0, ci: 0 });
+  }
+}
+function slot(kind, index, mark) {
+  const el = document.createElement("div");
+  el.className = "slot";
+  el.dataset.kind = kind;
+  el.dataset.index = String(index);
+  el.innerHTML = `<span class="mark">${mark || ""}</span>${kind === "stock" ? '<em class="count"></em>' : ""}`;
+  board.appendChild(el);
+  el.addEventListener("pointerup", () => onSlot(el));
+  return el;
+}
+const slots = {
+  stock: slot("stock", 0, "↻"),
+  waste: slot("waste", 0, ""),
+  found: [0, 1, 2, 3].map((i) => slot("found", i, "A")),
+  tab: [0, 1, 2, 3, 4, 5, 6].map((i) => slot("tab", i, "K"))
+};
+const coach = document.createElement("p");
+coach.className = "coach";
+coach.textContent = "Vedä kortteja. Kaksoisklikkaus vie kotiin. Ctrl+A vie kaikki sinne sopivat. Välilyönti nostaa pakasta.";
+board.appendChild(coach);
+
+function measure() {
+  const w = document.getElementById("table").clientWidth;
+  const h = document.getElementById("table").clientHeight;
+  const inner = Math.max(320, w - 36);
+  const cardW = Math.max(64, Math.min(128, Math.floor((inner - 12 * 6) / 7)));
+  const cardH = Math.round(cardW * 1.4);
+  const gap = Math.max(8, Math.min(16, Math.floor((inner - cardW * 7) / 6)));
+  const rowW = cardW * 7 + gap * 6;
+  const x0 = Math.max(12, Math.floor((w - rowW) / 2));
+  const top = 16;
+  return { w, h, cardW, cardH, gap, x0, top, tabY: top + cardH + 28, fs: Math.max(13, Math.round(cardW * 0.155)) };
+}
+function placeSlot(el, x, y) {
+  el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+}
+function setCard(card, x, y, z, face) {
+  x = Math.round(x);
+  y = Math.round(y);
+  card.x = x;
+  card.y = y;
+  card.el.style.zIndex = String(z);
+  card.el.style.setProperty("--x", x + "px");
+  card.el.style.setProperty("--y", y + "px");
+  card.el.style.setProperty("--ry", face ? "180deg" : "0deg");
+  card.el.classList.toggle("playable", card.playable);
+  card.el.style.pointerEvents = card.playable ? "auto" : "none";
+  card.el.setAttribute("aria-label", face ? card.suitName + " " + card.rankName : "Kortti selin");
+}
+function tag() {
+  S.stock.forEach((c, i) => { c.pile = "stock"; c.up = false; c.playable = i === S.stock.length - 1; });
+  S.waste.forEach((c, i) => { c.pile = "waste"; c.up = true; c.playable = i === S.waste.length - 1; });
+  S.foundations.forEach((pile, fi) => pile.forEach((c, i) => { c.pile = "found"; c.fi = fi; c.up = true; c.playable = i === pile.length - 1; }));
+  S.tableau.forEach((col, ci) => col.forEach((c) => { c.pile = "tab"; c.ci = ci; c.playable = c.up; }));
+}
+function layout(animate) {
+  if (S.drag) return;
+  const m = measure();
+  S.metrics = m;
+  board.style.setProperty("--cw", m.cardW + "px");
+  board.style.setProperty("--ch", m.cardH + "px");
+  board.style.setProperty("--fs", m.fs + "px");
+  if (!animate) board.classList.add("instant");
+  const sx = m.x0;
+  const wx = m.x0 + m.cardW + m.gap;
+  placeSlot(slots.stock, sx, m.top);
+  placeSlot(slots.waste, wx, m.top);
+  slots.found.forEach((el, i) => placeSlot(el, m.x0 + (m.cardW + m.gap) * (3 + i), m.top));
+  slots.tab.forEach((el, i) => placeSlot(el, m.x0 + (m.cardW + m.gap) * i, m.tabY));
+  slots.stock.classList.toggle("occupied", S.stock.length > 0);
+  slots.waste.classList.toggle("occupied", S.waste.length > 0);
+  slots.found.forEach((el, i) => el.classList.toggle("occupied", S.foundations[i].length > 0));
+  slots.tab.forEach((el, i) => el.classList.toggle("occupied", S.tableau[i].length > 0));
+  const count = slots.stock.querySelector(".count");
+  count.textContent = S.stock.length ? String(S.stock.length) : "";
+  slots.stock.querySelector(".mark").style.opacity = !S.stock.length && S.waste.length ? "1" : "0";
+  tag();
+  const picked = S.selected ? stackFrom(S.selected) : null;
+  S.stock.forEach((c, i) => {
+    const depth = Math.min(S.stock.length - 1 - i, 4);
+    setCard(c, sx - depth, m.top - depth, i + 1, false);
+  });
+  const fanN = S.drawN === 3 ? 3 : 1;
+  const fan = S.waste.slice(-fanN);
+  S.waste.forEach((c) => {
+    const fi = fan.indexOf(c);
+    if (fi < 0) setCard(c, wx, m.top, 2, true);
+    else setCard(c, wx + fi * (S.drawN === 3 ? 20 : 0), m.top, 12 + fi, true);
+  });
+  S.foundations.forEach((pile, fi) => {
+    const x = m.x0 + (m.cardW + m.gap) * (3 + fi);
+    pile.forEach((c, i) => setCard(c, x, m.top, 8 + i, true));
+  });
+  let bottom = m.tabY + m.cardH;
+  const avail = Math.max(m.cardH + 40, m.h - m.tabY - 20);
+  S.tableau.forEach((col, ci) => {
+    const x = m.x0 + (m.cardW + m.gap) * ci;
+    const gaps = [];
+    for (let i = 0; i < col.length - 1; i++) gaps.push(col[i].up ? Math.max(36, Math.round(m.cardH * 0.23)) : Math.max(20, Math.round(m.cardH * 0.15)));
+    const extra = gaps.reduce((a, b) => a + b, 0);
+    if (extra + m.cardH > avail && extra > 0) {
+      const scale = (avail - m.cardH) / extra;
+      for (let i = 0; i < gaps.length; i++) gaps[i] = Math.max(11, Math.floor(gaps[i] * scale));
+    }
+    let y = m.tabY;
+    col.forEach((c, i) => {
+      setCard(c, x, y, 30 + i, c.up);
+      if (i < gaps.length) y += gaps[i];
+    });
+    bottom = Math.max(bottom, y + m.cardH);
+  });
+  const pickedSet = new Set(picked || []);
+  for (const c of S.cards) c.el.classList.toggle("picked", pickedSet.has(c));
+  const h = Math.max(m.h, bottom + 28);
+  if (board.style.height !== h + "px") board.style.height = h + "px";
+  if (!animate) {
+    void board.offsetWidth;
+    board.classList.remove("instant");
+  }
+  paintStats();
+}
+function snap() {
+  return {
+    stock: S.stock.map((c) => c.id),
+    waste: S.waste.map((c) => c.id),
+    foundations: S.foundations.map((p) => p.map((c) => c.id)),
+    tableau: S.tableau.map((col) => col.map((c) => ({ id: c.id, up: c.up }))),
+    score: S.score,
+    moves: S.moves
+  };
+}
+function restore(s) {
+  const card = (id) => S.cards[id];
+  S.stock = s.stock.map(card);
+  S.waste = s.waste.map(card);
+  S.foundations = s.foundations.map((p) => p.map(card));
+  S.tableau = s.tableau.map((col) => col.map((item) => {
+    const c = card(item.id);
+    c.up = item.up;
+    return c;
+  }));
+  S.score = s.score;
+  S.moves = s.moves;
+  S.selected = null;
+  layout(true);
+}
+function pushHist() {
+  S.hist.push(snap());
+  if (S.hist.length > 250) S.hist.shift();
+  document.getElementById("undoBtn").disabled = false;
+}
+function undo() {
+  if (S.busy || !S.hist.length || S.won) return;
+  restore(S.hist.pop());
+  document.getElementById("undoBtn").disabled = !S.hist.length;
+  updateFinish();
+}
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = list[i];
+    list[i] = list[j];
+    list[j] = t;
+  }
+  return list;
+}
+function stopLoops() { S.token++; }
+function newGame() {
+  stopLoops();
+  const my = S.token;
+  S.busy = true;
+  S.won = false;
+  S.started = false;
+  S.selected = null;
+  S.drag = null;
+  S.hist = [];
+  S.score = 0;
+  S.moves = 0;
+  clearInterval(S.timer);
+  document.getElementById("banner").hidden = true;
+  document.getElementById("undoBtn").disabled = true;
+  document.body.classList.remove("flying");
+  for (const c of S.cards) {
+    c.el.classList.remove("free", "picked", "dragging", "glide");
+    c.el.style.transform = "";
+  }
+  const deck = shuffle(S.cards.slice());
+  S.tableau = [[], [], [], [], [], [], []];
+  S.foundations = [[], [], [], []];
+  S.waste = [];
+  for (let r = 0; r < 7; r++) {
+    for (let c = r; c < 7; c++) {
+      const card = deck.pop();
+      card.up = r === c;
+      S.tableau[c].push(card);
+    }
+  }
+  S.stock = deck;
+  for (const c of S.stock) c.up = false;
+  data.played = (data.played || 0) + 1;
+  save();
+  const m = measure();
+  S.metrics = m;
+  layout(false);
+  board.classList.add("instant");
+  for (const c of S.cards) setCard(c, m.x0, m.top, 1, false);
+  void board.offsetWidth;
+  board.classList.remove("instant");
+  if (REDUCE) {
+    layout(false);
+    S.busy = false;
+    return;
+  }
+  let n = 0;
+  for (const col of S.tableau) {
+    for (const c of col) c.el.style.transitionDelay = (n++ * 18) + "ms";
+  }
+  requestAnimationFrame(() => {
+    if (S.token !== my) return;
+    layout(true);
+    setTimeout(() => {
+      if (S.token !== my) return;
+      for (const c of S.cards) c.el.style.transitionDelay = "";
+      S.busy = false;
+    }, n * 18 + 280);
+  });
+}
+function ensureTimer() {
+  if (S.started) return;
+  S.started = true;
+  S.t0 = performance.now();
+  S.timer = setInterval(paintTime, 250);
+  coach.hidden = true;
+  if (!data.seen) { data.seen = true; save(); }
+}
+function paintTime() {
+  if (!S.started) return;
+  document.getElementById("time").textContent = fmt(performance.now() - S.t0);
+}
+function paintStats() {
+  document.getElementById("moves").textContent = String(S.moves);
+  const score = document.getElementById("score");
+  const next = String(S.score);
+  if (score.textContent !== next) {
+    score.textContent = next;
+    score.classList.remove("bump");
+    void score.offsetWidth;
+    score.classList.add("bump");
+  }
+  const best = data.best[String(S.drawN)];
+  document.getElementById("best").textContent = best ? fmt(best.time) : "—";
+  paintTime();
+}
+function stackFrom(card) {
+  if (!card || !card.playable && card.pile !== "tab") return null;
+  if (card.pile === "waste") return S.waste.at(-1) === card ? [card] : null;
+  if (card.pile === "found") return S.foundations[card.fi].at(-1) === card ? [card] : null;
+  if (card.pile !== "tab" || !card.up) return null;
+  const col = S.tableau[card.ci];
+  const idx = col.indexOf(card);
+  if (idx < 0) return null;
+  const stack = col.slice(idx);
+  for (let i = 0; i < stack.length - 1; i++) {
+    if (!stack[i].up || !stack[i + 1].up) return null;
+    if (stack[i].red === stack[i + 1].red) return null;
+    if (stack[i].rank !== stack[i + 1].rank + 1) return null;
+  }
+  return stack;
+}
+function canMove(stack, dest) {
+  if (!stack || !stack.length || !dest) return false;
+  const card = stack[0];
+  if (dest.type === "found") {
+    if (stack.length !== 1) return false;
+    const pile = S.foundations[dest.i];
+    if (!pile.length) return card.rank === 1;
+    const top = pile.at(-1);
+    return top.suit === card.suit && top.rank + 1 === card.rank;
+  }
+  if (dest.type === "tab") {
+    if (card.pile === "tab" && card.ci === dest.i) return false;
+    const col = S.tableau[dest.i];
+    if (!col.length) return card.rank === 13;
+    const top = col.at(-1);
+    return top.up && top.red !== card.red && top.rank === card.rank + 1;
+  }
+  return false;
+}
+function homeFor(card) {
+  let empty = -1;
+  for (let i = 0; i < 4; i++) {
+    const pile = S.foundations[i];
+    if (!pile.length) { if (empty < 0) empty = i; continue; }
+    if (pile[0].suit === card.suit) return pile.at(-1).rank + 1 === card.rank ? i : -1;
+  }
+  return card.rank === 1 ? empty : -1;
+}
+function moveStack(stack, dest, silent) {
+  if (!canMove(stack, dest)) return false;
+  if (!silent) pushHist();
+  ensureTimer();
+  const from = stack[0].pile;
+  const srcCol = from === "tab" ? S.tableau[stack[0].ci] : null;
+  if (from === "waste") S.waste.pop();
+  else if (from === "found") S.foundations[stack[0].fi].pop();
+  else srcCol.splice(srcCol.indexOf(stack[0]));
+  let revealed = false;
+  if (srcCol && srcCol.length && !srcCol.at(-1).up) {
+    srcCol.at(-1).up = true;
+    revealed = true;
+  }
+  if (dest.type === "found") S.foundations[dest.i].push(stack[0]);
+  else S.tableau[dest.i].push(...stack);
+  if (dest.type === "found") S.score += 10;
+  else if (from === "waste") S.score += 5;
+  else if (from === "found") S.score -= 15;
+  if (revealed) S.score += 5;
+  S.moves++;
+  if (!silent) sfx.place();
+  S.selected = null;
+  tag();
+  layout(true);
+  updateFinish();
+  if (wonNow()) celebrate();
+  return true;
+}
+function wonNow() { return S.foundations.every((p) => p.length === 13); }
+function onStock() {
+  if (S.busy || S.won) return;
+  if (S.stock.length) {
+    pushHist();
+    ensureTimer();
+    const n = Math.min(S.drawN, S.stock.length);
+    for (let i = 0; i < n; i++) S.waste.push(S.stock.pop());
+    S.moves++;
+    S.selected = null;
+    tag();
+    layout(true);
+    sfx.flip();
+    updateFinish();
+    return;
+  }
+  if (!S.waste.length) return;
+  pushHist();
+  ensureTimer();
+  S.stock = S.waste.slice().reverse();
+  S.waste = [];
+  S.score -= S.drawN === 1 ? 100 : 20;
+  S.moves++;
+  S.selected = null;
+  tag();
+  layout(true);
+  sfx.flip();
+}
+function sendHome(card) {
+  if (S.busy || S.won || !card || !card.up) return false;
+  let ok = S.waste.at(-1) === card;
+  if (!ok) {
+    for (let i = 0; i < 7; i++) {
+      if (S.tableau[i].at(-1) === card) {
+        card.pile = "tab";
+        card.ci = i;
+        ok = true;
+        break;
+      }
+    }
+  }
+  if (!ok) return false;
+  const fi = homeFor(card);
+  if (fi < 0) return false;
+  return moveStack([card], { type: "found", i: fi });
+}
+function updateFinish() {
+  const ready = !S.won && !S.stock.length && !S.waste.length && S.tableau.every((col) => col.every((c) => c.up)) && S.tableau.some((col) => col.length);
+  document.getElementById("finishBtn").hidden = !ready;
+}
+function nextHome() {
+  const cands = [];
+  if (S.waste.length) cands.push(S.waste.at(-1));
+  for (const col of S.tableau) if (col.length && col.at(-1).up) cands.push(col.at(-1));
+  cands.sort((a, b) => a.rank - b.rank);
+  for (const c of cands) {
+    const fi = homeFor(c);
+    if (fi >= 0) return { card: c, fi };
+  }
+  return null;
+}
+function sweepHome() {
+  if (S.busy || S.won || !nextHome()) return;
+  pushHist();
+  S.busy = true;
+  S.selected = null;
+  const my = ++S.token;
+  sfx.place();
+  const step = () => {
+    if (S.token !== my || S.won) return;
+    if (wonNow()) { celebrate(); return; }
+    const n = nextHome();
+    if (!n) { S.busy = false; layout(true); updateFinish(); return; }
+    moveStack([n.card], { type: "found", i: n.fi }, true);
+    if (S.token !== my || S.won) return;
+    setTimeout(step, REDUCE ? 0 : 55);
+  };
+  step();
+}
+function finish() {
+  if (document.getElementById("finishBtn").hidden) return;
+  sweepHome();
+}
+function findHint() {
+  const tops = [];
+  if (S.waste.length) tops.push(S.waste.at(-1));
+  for (const col of S.tableau) if (col.length && col.at(-1).up) tops.push(col.at(-1));
+  for (const c of tops) {
+    const fi = homeFor(c);
+    if (fi >= 0) return { card: c, dest: { type: "found", i: fi } };
+  }
+  if (S.waste.length) {
+    const c = S.waste.at(-1);
+    for (let i = 0; i < 7; i++) if (canMove([c], { type: "tab", i })) return { card: c, dest: { type: "tab", i } };
+  }
+  for (const col of S.tableau) {
+    for (let i = 0; i < col.length; i++) {
+      if (!col[i].up) continue;
+      if (i > 0 && !col[i - 1].up) {
+        const stack = stackFrom(col[i]);
+        if (!stack) continue;
+        for (let d = 0; d < 7; d++) if (canMove(stack, { type: "tab", d })) return { card: col[i], dest: { type: "tab", d } };
+      }
+    }
+  }
+  if (S.stock.length || S.waste.length) return { stock: true };
+  return null;
+}
+function hint() {
+  if (S.busy || S.won) return;
+  document.querySelectorAll(".glow").forEach((el) => el.classList.remove("glow"));
+  const h = findHint();
+  if (!h) return;
+  if (h.stock) slots.stock.classList.add("glow");
+  else {
+    h.card.el.classList.add("glow");
+    const el = h.dest.type === "found" ? slots.found[h.dest.i] : slots.tab[h.dest.i];
+    el.classList.add("glow");
+  }
+  setTimeout(() => document.querySelectorAll(".glow").forEach((el) => el.classList.remove("glow")), 1400);
+}
+function celebrate() {
+  if (S.won) return;
+  S.won = true;
+  S.busy = true;
+  S.selected = null;
+  clearInterval(S.timer);
+  const time = S.started ? performance.now() - S.t0 : 0;
+  const key = String(S.drawN);
+  const prev = data.best[key];
+  const beaten = !prev || time < prev.time;
+  if (beaten) data.best[key] = { time, moves: S.moves, score: S.score };
+  data.wins = (data.wins || 0) + 1;
+  save();
+  paintStats();
+  updateFinish();
+  sfx.win();
+  const kicker = document.getElementById("bannerKicker");
+  kicker.textContent = beaten ? "Uusi ennätys" : "Pöytä selvä";
+  document.getElementById("bannerText").textContent = fmt(time) + " · " + S.moves + " siirtoa";
+  if (REDUCE) {
+    document.getElementById("banner").hidden = false;
+    S.busy = false;
+    return;
+  }
+  fountain(() => { document.getElementById("banner").hidden = false; });
+}
+function fountain(done) {
+  const my = S.token;
+  document.body.classList.add("flying");
+  const h = window.innerHeight;
+  const parts = S.cards.map((c) => ({
+    el: c.el,
+    x: c.x,
+    y: c.y,
+    vx: -220 + Math.random() * 440,
+    vy: -780 - Math.random() * 280,
+    r: 0,
+    vr: -160 + Math.random() * 320
+  }));
+  for (const c of S.cards) c.el.classList.add("free");
+  let last = performance.now();
+  const start = last;
+  const frame = (now) => {
+    if (S.token !== my) return;
+    const dt = Math.min(0.034, (now - last) / 1000);
+    last = now;
+    for (const p of parts) {
+      p.vy += 1700 * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.r += p.vr * dt;
+      if (p.y > h - 80 && p.vy > 0) {
+        p.y = h - 80;
+        p.vy *= -0.5;
+        p.vx *= 0.82;
+      }
+      p.el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) rotateY(180deg) rotate(${p.r}deg)`;
+    }
+    if (now - start < 4200) requestAnimationFrame(frame);
+    else done();
+  };
+  requestAnimationFrame(frame);
+}
+function cardFrom(e) {
+  const el = e.target.closest?.(".card");
+  if (!el) return null;
+  return S.cards[Number(el.dataset.id)] || null;
+}
+function destAt(x, y) {
+  const m = S.metrics || measure();
+  const rect = board.getBoundingClientRect();
+  const bx = x - rect.left;
+  const by = y - rect.top;
+  if (by < m.tabY - 8) {
+    for (let i = 0; i < 4; i++) {
+      const fx = m.x0 + (m.cardW + m.gap) * (3 + i);
+      if (bx >= fx - 8 && bx <= fx + m.cardW + 8) return { type: "found", i };
+    }
+    return null;
+  }
+  let best = -1;
+  let bestDx = 1e9;
+  for (let i = 0; i < 7; i++) {
+    const cx = m.x0 + (m.cardW + m.gap) * i + m.cardW / 2;
+    const dx = Math.abs(bx - cx);
+    if (dx < m.cardW * 0.72 && dx < bestDx) { best = i; bestDx = dx; }
+  }
+  return best < 0 ? null : { type: "tab", i: best };
+}
+let suppressClick = false;
+let lastTap = { id: -1, t: 0 };
+function onDown(e) {
+  if (S.busy || S.won || e.button !== 0) return;
+  const card = cardFrom(e);
+  if (!card || !card.playable) return;
+  if (card.pile === "stock") return;
+  const stack = stackFrom(card);
+  if (!stack) return;
+  cardsLayer.setPointerCapture(e.pointerId);
+  S.drag = {
+    pointer: e.pointerId,
+    stack,
+    x: e.clientX,
+    y: e.clientY,
+    ox: stack.map((c) => c.x),
+    oy: stack.map((c) => c.y),
+    moved: false,
+    raf: 0,
+    cx: e.clientX,
+    cy: e.clientY
+  };
+}
+function applyDrag() {
+  const d = S.drag;
+  if (!d) return;
+  d.raf = 0;
+  const dx = d.cx - d.x;
+  const dy = d.cy - d.y;
+  if (!d.moved && Math.hypot(dx, dy) < 6) return;
+  if (!d.moved) {
+    d.moved = true;
+    document.body.classList.add("dragging");
+    d.stack.forEach((c) => c.el.classList.add("dragging"));
+  }
+  d.stack.forEach((c, i) => setCard(c, d.ox[i] + dx, d.oy[i] + dy, 900 + i, true));
+}
+function onMove(e) {
+  const d = S.drag;
+  if (!d || e.pointerId !== d.pointer) return;
+  d.cx = e.clientX;
+  d.cy = e.clientY;
+  if (!d.raf) d.raf = requestAnimationFrame(applyDrag);
+}
+function onUp(e) {
+  const d = S.drag;
+  if (!d || e.pointerId !== d.pointer) return;
+  if (d.raf) cancelAnimationFrame(d.raf);
+  applyDrag();
+  S.drag = null;
+  document.body.classList.remove("dragging");
+  d.stack.forEach((c) => c.el.classList.remove("dragging"));
+  if (!d.moved) {
+    suppressClick = true;
+    setTimeout(() => { suppressClick = false; }, 40);
+    onTap(d.stack[0]);
+    return;
+  }
+  suppressClick = true;
+  const dest = destAt(e.clientX, e.clientY);
+  if (!dest || !moveStack(d.stack, dest)) {
+    S.selected = null;
+    layout(true);
+  }
+}
+function onTap(card) {
+  const now = performance.now();
+  if (lastTap.id === card.id && now - lastTap.t < 450) {
+    lastTap.id = -1;
+    sendHome(card);
+    return;
+  }
+  lastTap = { id: card.id, t: now };
+  selectCard(card);
+}
+function selectCard(card) {
+  if (S.busy || S.won || S.drag) return;
+  if (S.selected && S.selected !== card) {
+    const stack = stackFrom(S.selected);
+    const dest = card.pile === "found" ? { type: "found", i: card.fi } : card.pile === "tab" ? { type: "tab", i: card.ci } : null;
+    if (stack && dest && canMove(stack, dest)) { moveStack(stack, dest); return; }
+  }
+  const stack = stackFrom(card);
+  S.selected = stack ? (S.selected === card ? null : card) : null;
+  layout(false);
+}
+function onClick(e) {
+  if (suppressClick) { suppressClick = false; return; }
+  if (S.busy || S.won) return;
+  const card = cardFrom(e);
+  if (!card) {
+    if (e.target === cardsLayer || e.target === board) S.selected = null, layout(false);
+    return;
+  }
+  if (card.pile === "stock") { onStock(); return; }
+  if (e.detail >= 2) { sendHome(card); return; }
+  selectCard(card);
+}
+function onSlot(el) {
+  if (S.busy || S.won || S.drag) return;
+  const kind = el.dataset.kind;
+  const index = Number(el.dataset.index);
+  if (kind === "stock") { onStock(); return; }
+  if (!S.selected) return;
+  const stack = stackFrom(S.selected);
+  const dest = kind === "found" ? { type: "found", i: index } : kind === "tab" ? { type: "tab", i: index } : null;
+  if (stack && dest) moveStack(stack, dest);
+}
+function onKey(e) {
+  if (e.target.closest("input, textarea")) return;
+  const k = e.key.toLowerCase();
+  if (k === "n") newGame();
+  else if ((k === "z" && (e.ctrlKey || e.metaKey)) || k === "backspace") { e.preventDefault(); undo(); }
+  else if (k === "h") hint();
+  else if (k === " " || k === "d") { e.preventDefault(); onStock(); }
+  else if (k === "m") toggleMute();
+  else if (k === "a" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); sweepHome(); }
+  else if (k === "enter") finish();
+  else if (k === "escape") { S.selected = null; layout(false); }
+}
+function toggleMute() {
+  data.mute = !data.mute;
+  sfx.muted = !!data.mute;
+  save();
+  paintMute();
+  if (!data.mute) sfx.flip();
+}
+function paintMute() {
+  const b = document.getElementById("muteBtn");
+  b.textContent = data.mute ? "Äänet pois" : "Äänet";
+  b.setAttribute("aria-pressed", String(!data.mute));
+}
+function setDraw(n) {
+  if (S.drawN === n && !S.moves) return;
+  S.drawN = n;
+  data.draw = n;
+  save();
+  paintDraw();
+  newGame();
+}
+function paintDraw() {
+  document.getElementById("draw1").setAttribute("aria-pressed", String(S.drawN === 1));
+  document.getElementById("draw3").setAttribute("aria-pressed", String(S.drawN === 3));
+}
+
+document.getElementById("newBtn").addEventListener("click", newGame);
+document.getElementById("bannerNew").addEventListener("click", newGame);
+document.getElementById("undoBtn").addEventListener("click", undo);
+document.getElementById("hintBtn").addEventListener("click", hint);
+document.getElementById("finishBtn").addEventListener("click", finish);
+document.getElementById("draw1").addEventListener("click", () => setDraw(1));
+document.getElementById("draw3").addEventListener("click", () => setDraw(3));
+document.getElementById("muteBtn").addEventListener("click", toggleMute);
+cardsLayer.addEventListener("pointerdown", onDown);
+cardsLayer.addEventListener("pointermove", onMove);
+cardsLayer.addEventListener("pointerup", onUp);
+cardsLayer.addEventListener("pointercancel", onUp);
+cardsLayer.addEventListener("click", onClick);
+cardsLayer.addEventListener("contextmenu", (e) => {
+  const card = cardFrom(e);
+  if (!card) return;
+  e.preventDefault();
+  sendHome(card);
+});
+addEventListener("keydown", onKey);
+addEventListener("resize", () => { if (!S.drag && !S.won) layout(false); });
+makeCards();
+paintDraw();
+paintMute();
+coach.hidden = !!data.seen;
+newGame();
+</script>
+</body>
+</html>

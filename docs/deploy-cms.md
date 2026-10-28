@@ -942,6 +942,7 @@ curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/en/privacy        
 curl -s https://jaakkola.xyz/learn/ | grep -o '<title>[^<]*'                        # the learn catalogue title
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/reports/age-pressure-finland/   # 200
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/pelit/louhos/                    # 200
+curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/pelit/salonki/                   # 200
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c 'https://jaakkola.xyz/'          # more than 0
 curl -s https://jaakkola.xyz/sitemap.xml | grep -c localhost                        # 0
 curl -s -o /dev/null -w '%{http_code}\n' https://jaakkola.xyz/robots.txt             # 200

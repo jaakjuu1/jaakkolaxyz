@@ -679,6 +679,10 @@ describe("misc", () => {
 		await htmlPage("/pelit/louhos/");
 	});
 
+	it("/pelit/salonki/ is served", async () => {
+		await htmlPage("/pelit/salonki/");
+	});
+
 	for (const [path, type] of [
 		["/favicon.png", "image/png"],
 		["/apple-touch-icon.png", "image/png"],
