@@ -29,7 +29,7 @@ const COUNTS = {
 	/** Published learn_tracks cards on /learn/. */
 	learnTracks: 8,
 	/** Published `projects` rows on each home page; 0 means the section is left out. */
-	homeProjects: { fi: 10, en: 0 },
+	homeProjects: { fi: 11, en: 1 },
 	/** <img> tags inside the john-dee article (the English post with the table). */
 	johnDeeImages: 4,
 };
