@@ -522,6 +522,7 @@
 <script>
 const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const KEY = "louhos-v1";
+const GAME_KEY = "louhos-game-v1";
 const MODES = [
   ["easy", "Helppo", "9×9, 10 miinaa"],
   ["medium", "Keskivaikea", "16×16, 40 miinaa"],
@@ -775,6 +776,65 @@ class Game {
   save() {
     try { localStorage.setItem(KEY, JSON.stringify(this.data)); } catch {}
   }
+  // The board in progress survives a reload: phones rebuild the tab when the screen
+  // changes (a Fold opening, for one). Each cell is one base-32 digit:
+  // mine 1, revealed 2, defused 4, flag × 8.
+  saveGame() {
+    if (!this.started || this.over || !this.firstDone) return;
+    const cells = this.cells.map((c) => (+c.mine | c.revealed << 1 | c.defused << 2 | c.flag << 3).toString(32)).join("");
+    const game = { mode: this.mode, w: this.w, h: this.h, seed: this.seed, cells, score: this.score, bestChain: this.bestChain, shield: this.shield, hints: this.hints, hintsUsed: this.hintsUsed, defusedCount: this.defusedCount, logicUsed: this.logicUsed, elapsed: this.elapsed() };
+    try { localStorage.setItem(GAME_KEY, JSON.stringify(game)); } catch {}
+  }
+  forgetGame() {
+    try { localStorage.removeItem(GAME_KEY); } catch {}
+  }
+  resume() {
+    let s = null;
+    try { s = JSON.parse(localStorage.getItem(GAME_KEY) || "null"); } catch {}
+    if (!s || !NAMES[s.mode] || typeof s.cells !== "string" || (s.mode === "daily" && s.seed !== hashStr(todayKey()))) {
+      this.newGame();
+      return;
+    }
+    this.mode = s.mode;
+    document.getElementById("custom").hidden = this.mode !== "custom";
+    this.newGame();
+    const codes = [...s.cells].map((ch) => parseInt(ch, 32));
+    const sane = this.w === s.w && this.h === s.h && codes.length === this.cells.length
+      && codes.every((n) => n >= 0 && n < 24 && ((n & 3) !== 3 || n & 4))
+      && codes.some((n) => n & 2);
+    if (!sane) return;
+    this.cells.forEach((c, i) => {
+      const n = codes[i];
+      c.mine = !!(n & 1);
+      c.revealed = !!(n & 2);
+      c.defused = !!(n & 4);
+      c.flag = n >> 3;
+    });
+    this.computeAdj();
+    this.mineCount = this.cells.filter((c) => c.mine).length;
+    this.generated = true;
+    this.firstDone = true;
+    this.score = Math.max(0, Number(s.score) || 0);
+    this.bestChain = clamp(s.bestChain, 1, 8);
+    this.shield = clamp(s.shield, 0, 1);
+    this.hints = clamp(s.hints, 0, this.hintBudget());
+    this.hintsUsed = clamp(s.hintsUsed, 0, 99);
+    this.defusedCount = this.cells.filter((c) => c.defused).length;
+    this.logicUsed = !!s.logicUsed || this.logicOn;
+    this.started = true;
+    this.t0 = performance.now() - Math.max(0, Number(s.elapsed) || 0) * 1000;
+    this.timerId = setInterval(() => this.paintTime(), 200);
+    for (const c of this.cells) this.paint(c, false);
+    this.paintTime();
+    this.paintScore();
+    this.paintSetup();
+    this.updateMines();
+    this.updateTension();
+    this.updateLogic();
+    this.updateTools();
+    this.restoreFace();
+    this.saveGame();
+  }
   init() {
     const nav = document.getElementById("modes");
     this.modeButtons = MODES.map(([id, label, title]) => {
@@ -821,7 +881,9 @@ class Game {
     this.updateMute();
     this.updateModes();
     document.getElementById("custom").hidden = this.mode !== "custom";
-    this.newGame();
+    this.resume();
+    addEventListener("pagehide", () => this.saveGame());
+    document.addEventListener("visibilitychange", () => { if (document.hidden) this.saveGame(); });
   }
   look(e) {
     const r = this.faceBtn.getBoundingClientRect();
@@ -873,6 +935,7 @@ class Game {
     this.closing = false;
     clearInterval(this.timerId);
     clearTimeout(this.hold);
+    this.forgetGame();
     this.round++;
     this.faceToken = {};
     this.over = false;
@@ -1154,6 +1217,7 @@ class Game {
     this.updateLogic();
     this.updateTools();
     if (!this.over) this.checkWin();
+    this.saveGame();
   }
   checkWin() {
     if (this.cells.every((c) => c.mine || c.revealed)) this.win();
@@ -1161,6 +1225,7 @@ class Game {
   win() {
     this.over = true;
     this.stopTimer();
+    this.forgetGame();
     const time = this.elapsed();
     const clean = !this.logicUsed && this.hintsUsed === 0 && this.defusedCount === 0;
     let bonus = 500 + Math.max(0, Math.round((this.par() - time) * 10));
@@ -1190,6 +1255,7 @@ class Game {
     if (this.over) return;
     this.over = true;
     this.stopTimer();
+    this.forgetGame();
     trigger.exploded = true;
     for (const c of this.cells) {
       if (c.mine && !c.defused) {
@@ -1308,6 +1374,7 @@ class Game {
     pickCell.el.scrollIntoView({ block: "nearest", inline: "nearest" });
     this.sfx.tone(740, 0.08, "sine", 0.25);
     this.updateTools();
+    this.saveGame();
     this.toast("Keltainen kehä on turvallinen. Sinä klikkaat.");
   }
   toggleLogic() {
@@ -1315,6 +1382,7 @@ class Game {
     this.data.logic = this.logicOn;
     if (this.logicOn) this.logicUsed = true;
     this.save();
+    this.saveGame();
     this.updateLogic();
     this.updateTools();
   }
@@ -1338,6 +1406,7 @@ class Game {
     this.sfx.flag();
     this.updateMines();
     this.updateLogic();
+    this.saveGame();
   }
   deduce() {
     const forcedMine = new Set();
